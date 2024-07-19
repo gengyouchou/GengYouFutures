@@ -4,20 +4,27 @@ REM 根据你的 Visual Studio 版本和安装路径修改路径
 
 REM 设置编译器路径
 set "VS_VERSION=2019"  REM 设置 Visual Studio 版本
-set "VS_PATH=C:\Program Files (x86)\Microsoft Visual Studio\%VS_VERSION%\BuildTools\VC\Tools\MSVC"
+set "VS_PATH=C:\Program Files (x86)\Microsoft Visual Studio\%VS_VERSION%\Community"
 
-REM 确定 MSVC 版本号（需要根据实际安装的版本号进行调整）
-set "MSVC_VERSION=14.29.30133"  REM 设置 MSVC 版本号
+REM 找到 vcvarsall.bat 文件
+set "VC_VARS_PATH="
+for /d %%D in ("%VS_PATH%\*") do (
+    if exist "%%D\VC\Auxiliary\Build\vcvarsall.bat" (
+        set "VC_VARS_PATH=%%D\VC\Auxiliary\Build\vcvarsall.bat"
+        goto :found
+    )
+)
 
-REM 修复路径问题，去掉多余的反斜杠
-set "CL_PATH=%VS_PATH%\%MSVC_VERSION%\bin\Hostx64\x64"
-set "INCLUDE_PATH=%VS_PATH%\%MSVC_VERSION%\include"
-set "LIB_PATH=%VS_PATH%\%MSVC_VERSION%\lib\x64"
+echo Error: vcvarsall.bat was not found.
+exit /b 1
 
-REM 设置编译器环境变量
-set "PATH=%CL_PATH%;%PATH%"
-set "INCLUDE=%INCLUDE_PATH%"
-set "LIB=%LIB_PATH%"
+:found
+REM 调用 vcvarsall.bat 设置编译器环境
+call "%VC_VARS_PATH%" x64
+
+REM 设置其他环境变量
+set "CMAKE_GENERATOR=NMake Makefiles"
+set "CMAKE_BUILD_TYPE=Debug"
 
 REM 打印当前环境变量设置
 echo Visual Studio Build Tools environment variables set:
