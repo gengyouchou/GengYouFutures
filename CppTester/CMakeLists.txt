@@ -10,21 +10,31 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # 添加源文件
 set(SOURCES
-    CppTester/main.cpp
-    CppTester/SKCenterLib.cpp
-    CppTester/SKOrderLib.cpp
-    CppTester/SKQuoteLib.cpp
-    CppTester/SKReplyLib.cpp
+    main.cpp
+    SKCenterLib.cpp
+    SKOrderLib.cpp
+    SKQuoteLib.cpp
+    SKReplyLib.cpp
+)
+
+# 添加头文件
+set(HEADERS
+    SKCenterLib.h
+    SKCOM_reference.h
+    SKOrderLib.h
+    SKQuoteLib.h
+    SKReplyLib.h
+    TEventHandler.h
 )
 
 # 添加头文件目录
-include_directories(CppTester)
+include_directories(${CMAKE_SOURCE_DIR})
 
 # 设置不同配置的编译选项
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 
 # 定义生成的目标
-add_executable(CppTester ${SOURCES})
+add_executable(CppTester ${SOURCES} ${HEADERS})
 
 # 设置编译器标志
 target_compile_options(CppTester PRIVATE
@@ -36,14 +46,4 @@ target_compile_options(CppTester PRIVATE
 target_link_options(CppTester PRIVATE
     $<$<CONFIG:Debug>:-debug>
     $<$<CONFIG:Release>:-optimize>
-)
-
-# 添加头文件
-target_include_directories(CppTester PRIVATE
-    CppTester/SKCenterLib.h
-    CppTester/SKCOM_reference.h
-    CppTester/SKOrderLib.h
-    CppTester/SKQuoteLib.h
-    CppTester/SKReplyLib.h
-    CppTester/TEventHandler.h
 )
