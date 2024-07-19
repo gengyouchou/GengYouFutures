@@ -1,4 +1,5 @@
 @echo off
+REM setup_enc.bat
 REM 设置 Visual Studio 环境变量
 REM 根据你的 Visual Studio 版本和安装路径修改路径
 
@@ -23,9 +24,9 @@ echo PATH: %PATH%
 echo INCLUDE: %INCLUDE%
 echo LIB: %LIB%
 
-REM 确保 CMakeLists.txt 文件存在于指定目录
-set "SOURCE_DIR=C:\GengYouFutures\CppTester"
-set "BUILD_DIR=C:\GengYouFutures\CppTester\build"
+REM 确保 CMakeLists.txt 文件存在于当前目录
+set "SOURCE_DIR=%CD%"
+set "BUILD_DIR=%CD%\..\build"
 
 if exist "%SOURCE_DIR%\CMakeLists.txt" (
     echo CMakeLists.txt found in %SOURCE_DIR%. Running CMake...
