@@ -3,7 +3,7 @@ REM 设置 Visual Studio Build Tools 环境变量
 REM 根据你的 Visual Studio 版本和安装路径修改路径
 
 REM 设置编译器路径
-set "VS_VERSION=2019"  REM 设置 Visual Studio 版本
+set "VS_VERSION=2019"
 set "VS_PATH=C:\Program Files (x86)\Microsoft Visual Studio\%VS_VERSION%\Community\VC\Auxiliary\Build"
 
 REM 设置 Windows Kits 路径
