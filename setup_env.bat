@@ -9,6 +9,7 @@ set "VS_PATH=C:\Program Files (x86)\Microsoft Visual Studio\%VS_VERSION%\BuildTo
 REM 确定 MSVC 版本号（需要根据实际安装的版本号进行调整）
 set "MSVC_VERSION=14.29.30133"  REM 设置 MSVC 版本号
 
+REM 修复路径问题，去掉多余的反斜杠
 set "CL_PATH=%VS_PATH%\%MSVC_VERSION%\bin\Hostx64\x64"
 set "INCLUDE_PATH=%VS_PATH%\%MSVC_VERSION%\include"
 set "LIB_PATH=%VS_PATH%\%MSVC_VERSION%\lib\x64"
@@ -24,8 +25,16 @@ echo PATH: %PATH%
 echo INCLUDE: %INCLUDE%
 echo LIB: %LIB%
 
-REM 运行 CMake 命令
-cmake -S %CD% -B %CD%\build
+REM 确保 CMakeLists.txt 文件存在于指定目录
+set "SOURCE_DIR=C:\GengYouFutures\CppTester"
+set "BUILD_DIR=C:\GengYouFutures\CppTester\build"
+
+if exist "%SOURCE_DIR%\CMakeLists.txt" (
+    echo CMakeLists.txt found in %SOURCE_DIR%. Running CMake...
+    cmake -S "%SOURCE_DIR%" -B "%BUILD_DIR%"
+) else (
+    echo Error: CMakeLists.txt not found in %SOURCE_DIR%.
+)
 
 REM 提示用户按任意键继续
 echo.
