@@ -34,7 +34,4 @@ if exist "%SOURCE_DIR%\CMakeLists.txt" (
     echo Error: CMakeLists.txt not found in %SOURCE_DIR%.
 )
 
-REM 提示用户按任意键继续
-echo.
-echo Press any key to continue...
-pause >nul
+chcp 65001
