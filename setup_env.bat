@@ -22,7 +22,7 @@ exit /b 1
 REM 调用 vcvarsall.bat 设置编译器环境
 call "%VC_VARS_PATH%" x64
 
-REM 设置其他环境变量
+REM 设置 CMake 生成器
 set "CMAKE_GENERATOR=NMake Makefiles"
 set "CMAKE_BUILD_TYPE=Debug"
 
@@ -31,14 +31,13 @@ echo Visual Studio Build Tools environment variables set:
 echo PATH: %PATH%
 echo INCLUDE: %INCLUDE%
 echo LIB: %LIB%
-
 REM 确保 CMakeLists.txt 文件存在于指定目录
 set "SOURCE_DIR=C:\GengYouFutures\CppTester"
 set "BUILD_DIR=C:\GengYouFutures\CppTester\build"
 
 if exist "%SOURCE_DIR%\CMakeLists.txt" (
     echo CMakeLists.txt found in %SOURCE_DIR%. Running CMake...
-    cmake -S "%SOURCE_DIR%" -B "%BUILD_DIR%"
+    cmake -G "%CMAKE_GENERATOR%" -S "%SOURCE_DIR%" -B "%BUILD_DIR%"
 ) else (
     echo Error: CMakeLists.txt not found in %SOURCE_DIR%.
 )
