@@ -34,7 +34,7 @@ include_directories(${CMAKE_SOURCE_DIR})
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 
 # 定义生成的目标
-add_executable(CppTester ${SOURCES} ${HEADERS})
+add_executable(CppTester ${SOURCES})
 
 # 设置编译器标志
 target_compile_options(CppTester PRIVATE
