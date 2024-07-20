@@ -4,6 +4,9 @@ __pycache__/
 v16
 .vs
 
+# 忽略 VS Code 配置文件夹
+.vscode/
+
 # C extensions
 *.so
 *.obj
