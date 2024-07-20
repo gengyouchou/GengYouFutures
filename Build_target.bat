@@ -1,11 +1,12 @@
 @echo off
 REM Build_target.bat
 
+REM 自动检测当前盘符
+set "DRIVE=%~d0"
+set "SOURCE_DIR=%DRIVE%\GengYouFutures\CppTester"
+set "BUILD_DIR=%DRIVE%\GengYouFutures\build"
 
 REM 确保 CMakeLists.txt 文件存在于指定目录
-set "SOURCE_DIR=C:\GengYouFutures\CppTester"
-set "BUILD_DIR=C:\GengYouFutures\build"
-
 if exist "%SOURCE_DIR%\CMakeLists.txt" (
     echo CMakeLists.txt found in %SOURCE_DIR%. Running CMake...
     cmake -S "%SOURCE_DIR%" -B "%BUILD_DIR%"
