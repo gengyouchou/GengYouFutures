@@ -1,3 +1,5 @@
+# File: CMakeLists.txt
+
 # 指定所需的最低 CMake 版本
 cmake_minimum_required(VERSION 3.10)
 
@@ -46,4 +48,11 @@ target_compile_options(CppTester PRIVATE
 target_link_options(CppTester PRIVATE
     $<$<CONFIG:Debug>:-debug>
     $<$<CONFIG:Release>:-optimize>
+)
+
+# 设置 DLL 的路径，确保 DLL 可以被找到
+add_custom_command(TARGET CppTester POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_SOURCE_DIR}/../DLL/x64/SKCOM.dll"
+    $<TARGET_FILE_DIR:CppTester>
 )

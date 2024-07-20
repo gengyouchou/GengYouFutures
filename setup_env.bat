@@ -33,6 +33,10 @@ if errorlevel 1 (
     echo Environment variables set using "%VS_PATH%".
 )
 
+REM 设置 DLL 的路径
+set "DLL_PATH=D:\GengYouFutures\DLL\x64"
+set "PATH=%DLL_PATH%;%PATH%"
+
 REM 打印当前环境变量设置
 echo Visual Studio Build Tools environment variables set:
 echo PATH: %PATH%
