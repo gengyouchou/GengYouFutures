@@ -1,12 +1,17 @@
 @echo off
 REM Build_target.bat
 
-REM 设置 SOURCE_DIR 和 BUILD_DIR
+
+REM 确保 CMakeLists.txt 文件存在于指定目录
 set "SOURCE_DIR=C:\GengYouFutures\CppTester"
 set "BUILD_DIR=C:\GengYouFutures\build"
 
-REM 运行 CMake 生成构建文件
-cmake -S "%SOURCE_DIR%" -B "%BUILD_DIR%"
+if exist "%SOURCE_DIR%\CMakeLists.txt" (
+    echo CMakeLists.txt found in %SOURCE_DIR%. Running CMake...
+    cmake -S "%SOURCE_DIR%" -B "%BUILD_DIR%"
+) else (
+    echo Error: CMakeLists.txt not found in %SOURCE_DIR%.
+)
 
 REM 使用 CMake 和 Visual Studio 进行构建
 echo Building project...
