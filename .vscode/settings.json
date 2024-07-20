@@ -1,3 +1,6 @@
 {
-    "cmake.sourceDirectory": "D:/GengYouFutures/CppTester"
+    "cmake.sourceDirectory": "D:/GengYouFutures/CppTester",
+    "files.associations": {
+        "ios": "cpp"
+    }
 }

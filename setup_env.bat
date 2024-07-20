@@ -12,7 +12,7 @@ set "VS_PATH=C:\Program Files (x86)\Microsoft Visual Studio\%VS_VERSION%\VC\Auxi
 set "COMMUNITY_PATH=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build"
 
 REM 确定 MSVC 版本号（需要根据实际安装的版本号进行调整）
-set "MSVC_VERSION=14.29.30133" 
+set "MSVC_VERSION=14.29.30133"
 
 REM 尝试设置编译器环境变量
 echo Trying to set environment variables using "%VS_PATH%"...
@@ -33,12 +33,36 @@ if errorlevel 1 (
     echo Environment variables set using "%VS_PATH%".
 )
 
-REM 设置 DLL 的路径
+REM 设置临时变量
+set "CMAKE_SOURCE_DIR=D:\GengYouFutures\CppTester"
+set "BUILD_DIR=D:\GengYouFutures\build"
 set "DLL_PATH=D:\GengYouFutures\DLL\x64"
 set "PATH=%DLL_PATH%;%PATH%"
 
-REM 打印当前环境变量设置
-echo Visual Studio Build Tools environment variables set:
-echo PATH: %PATH%
-echo INCLUDE: %INCLUDE%
-echo LIB: %LIB%
+REM 打印所有临时变量
+echo.
+echo Temporary Variables:
+echo CMAKE_SOURCE_DIR=%CMAKE_SOURCE_DIR%
+echo BUILD_DIR=%BUILD_DIR%
+echo DLL_PATH=%DLL_PATH%
+echo PATH=%PATH%
+echo INCLUDE=%INCLUDE%
+echo LIB=%LIB%
+echo.
+
+REM 检查 DLL 文件是否存在
+if exist "%DLL_PATH%\SKCOM.dll" (
+    echo SKCOM.dll found in %DLL_PATH%.
+) else (
+    echo Error: SKCOM.dll not found in %DLL_PATH%.
+)
+
+REM 确保 CMakeLists.txt 文件存在于指定目录
+if exist "%CMAKE_SOURCE_DIR%\CMakeLists.txt" (
+    echo CMakeLists.txt found in %CMAKE_SOURCE_DIR%. Running CMake...
+    cmake -S "%CMAKE_SOURCE_DIR%" -B "%BUILD_DIR%"
+) else (
+    echo Error: CMakeLists.txt not found in %CMAKE_SOURCE_DIR%.
+    exit /b 1
+)
+

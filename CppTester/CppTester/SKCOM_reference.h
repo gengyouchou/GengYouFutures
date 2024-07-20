@@ -1,7 +1,7 @@
-//請自行放入SKCOM.dll檔
+//嚙請自佗蕭嚙皚SKCOM.dll嚙踝蕭
 
 #ifdef _WIN64
-#import "DLL/x64/SKCOM.dll"
+#import "../../DLL/x64/SKCOM.dll"
 #else
 #import "DLL/x86/SKCOM.dll"
 #endif
