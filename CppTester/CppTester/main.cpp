@@ -370,6 +370,9 @@ void thread_main()
 
 int main()
 {
+
+	logger.log("Application started.", __func__);
+
 	CoInitialize(NULL);
 
 	init();
@@ -410,6 +413,8 @@ int main()
 	{
 		DispatchMessageW(&msg);
 	}
+
+	logger.log("Application end.", __func__);
 
 	return 0;
 }
