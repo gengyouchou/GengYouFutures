@@ -1,7 +1,6 @@
 #include "Logger.h"
 #include <iostream>
 
-// 在 Release 版本中禁用调试信息
 #ifndef NDEBUG
 #define LOGGING_ENABLED
 #endif
