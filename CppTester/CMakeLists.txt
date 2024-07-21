@@ -31,6 +31,8 @@ set(HEADERS
 
 # 添加头文件目录
 include_directories(${CMAKE_SOURCE_DIR}/CppTester)
+include_directories("../Logger")
+include_directories("../../")
 
 # 设置不同配置的编译选项
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
@@ -49,6 +51,17 @@ target_link_options(CppTester PRIVATE
     $<$<CONFIG:Debug>:-debug>
     $<$<CONFIG:Release>:-optimize>
 )
+
+# # 添加库路径
+# link_directories("${CMAKE_SOURCE_DIR}/../DLL/x64")
+
+# # 链接库
+# target_link_libraries(CppTester SKCOM)
+
+# # 设置运行时 DLL 路径
+# set_target_properties(CppTester PROPERTIES
+#     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../"
+# )
 
 # 设置 DLL 的路径，确保 DLL 可以被找到
 add_custom_command(TARGET CppTester POST_BUILD
