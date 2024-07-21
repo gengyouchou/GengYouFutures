@@ -1,7 +1,11 @@
 @echo off
 REM setup_env.bat
+
 REM 设置字符集
 chcp 65001
+
+REM 获取当前脚本的目录
+set "SCRIPT_DIR=%~dp0"
 
 REM 设置 Visual Studio 环境变量
 REM 根据你的 Visual Studio 版本和安装路径修改路径
@@ -34,9 +38,9 @@ if errorlevel 1 (
 )
 
 REM 设置临时变量
-set "CMAKE_SOURCE_DIR=D:\GengYouFutures\CppTester"
-set "BUILD_DIR=D:\GengYouFutures\build"
-set "DLL_PATH=D:\GengYouFutures\DLL\x64"
+set "CMAKE_SOURCE_DIR=%SCRIPT_DIR%\CppTester"
+set "BUILD_DIR=%SCRIPT_DIR%\build"
+set "DLL_PATH=%SCRIPT_DIR%\DLL\x64"
 set "PATH=%DLL_PATH%;%PATH%"
 
 REM 打印所有临时变量
@@ -65,4 +69,3 @@ if exist "%CMAKE_SOURCE_DIR%\CMakeLists.txt" (
     echo Error: CMakeLists.txt not found in %CMAKE_SOURCE_DIR%.
     exit /b 1
 )
-
