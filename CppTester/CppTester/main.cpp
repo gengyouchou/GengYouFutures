@@ -6,6 +6,9 @@
 #include <conio.h>
 #include <thread>
 
+// Define the global logger instance
+Logger logger("debug.log");
+
 CSKCenterLib *pSKCenterLib;
 CSKQuoteLib *pSKQuoteLib;
 CSKReplyLib *pSKReplyLib;
@@ -13,7 +16,6 @@ CSKOrderLib *pSKOrderLib;
 
 long g_nCode = 0;
 string g_strUserId;
-
 
 void AutoOrderMTX()
 {

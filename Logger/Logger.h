@@ -15,6 +15,6 @@ private:
     std::ofstream logFile;
 };
 
-Logger logger("debug.log");
+extern Logger logger;
 
 #endif // LOGGER_H
