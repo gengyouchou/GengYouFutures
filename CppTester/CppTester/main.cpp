@@ -4,6 +4,7 @@
 #include "SKReplyLib.h"
 #include <conio.h>
 #include <thread>
+#include <Logger.h>
 
 CSKCenterLib *pSKCenterLib;
 CSKQuoteLib *pSKQuoteLib;
@@ -13,8 +14,12 @@ CSKOrderLib *pSKOrderLib;
 long g_nCode = 0;
 string g_strUserId;
 
+Logger logger("debug.log");
+
 void AutoOrderMTX()
 {
+	logger.log("Application started.", __func__);
+
 	bool bOrder = true;
 	string strStockNo = "", strPrice = "", strNo = "";
 	short sPrime = 0, sPeriod = 0, sFlag = 0, sBuySell = 0, sTradeType = 0, sDayTrade = 0, sNewClose = 0, sReserved = 0;
@@ -39,6 +44,8 @@ void AutoOrderMTX()
 	g_nCode = pSKOrderLib->SendStockOrder(g_strUserId, false, "MTX", sPrime, sPeriod, sFlag, sBuySell, strPrice, nQty, nTradeType, nSpecialTradeType);
 
 	pSKCenterLib->PrintfCodeMessage("Order", "SendStockOrder", g_nCode);
+
+	logger.log("Application finished.", __func__);
 }
 
 void Order()

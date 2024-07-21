@@ -17,6 +17,7 @@ set(SOURCES
     CppTester/SKOrderLib.cpp
     CppTester/SKQuoteLib.cpp
     CppTester/SKReplyLib.cpp
+    ../Logger/Logger.cpp
 )
 
 # 添加头文件
@@ -27,6 +28,7 @@ set(HEADERS
     CppTester/SKQuoteLib.h
     CppTester/SKReplyLib.h
     CppTester/TEventHandler.h
+    ../Logger/Logger.h
 )
 
 # 添加头文件目录
@@ -69,3 +71,4 @@ add_custom_command(TARGET CppTester POST_BUILD
     "${CMAKE_SOURCE_DIR}/../DLL/x64/SKCOM.dll"
     $<TARGET_FILE_DIR:CppTester>
 )
+
