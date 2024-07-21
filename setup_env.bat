@@ -5,7 +5,7 @@ REM 设置字符集
 chcp 65001
 
 REM 获取当前脚本的目录
-set "SCRIPT_DIR=%~dp0"
+set "SCRIPT_DIR=%cd%"
 
 REM 设置 Visual Studio 环境变量
 REM 根据你的 Visual Studio 版本和安装路径修改路径
@@ -46,12 +46,18 @@ set "PATH=%DLL_PATH%;%PATH%"
 REM 打印所有临时变量
 echo.
 echo Temporary Variables:
+echo.
 echo CMAKE_SOURCE_DIR=%CMAKE_SOURCE_DIR%
+echo.
 echo BUILD_DIR=%BUILD_DIR%
+echo.
 echo DLL_PATH=%DLL_PATH%
-echo PATH=%PATH%
+echo.
 echo INCLUDE=%INCLUDE%
+echo.
 echo LIB=%LIB%
+echo.
+echo PATH=%PATH%
 echo.
 
 REM 检查 DLL 文件是否存在
