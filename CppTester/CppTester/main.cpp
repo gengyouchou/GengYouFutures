@@ -2,9 +2,9 @@
 #include "SKOrderLib.h"
 #include "SKQuoteLib.h"
 #include "SKReplyLib.h"
+#include <Logger.h>
 #include <conio.h>
 #include <thread>
-#include <Logger.h>
 
 CSKCenterLib *pSKCenterLib;
 CSKQuoteLib *pSKQuoteLib;
@@ -14,7 +14,6 @@ CSKOrderLib *pSKOrderLib;
 long g_nCode = 0;
 string g_strUserId;
 
-Logger logger("debug.log");
 
 void AutoOrderMTX()
 {
@@ -44,6 +43,9 @@ void AutoOrderMTX()
 	g_nCode = pSKOrderLib->SendStockOrder(g_strUserId, false, "MTX", sPrime, sPeriod, sFlag, sBuySell, strPrice, nQty, nTradeType, nSpecialTradeType);
 
 	pSKCenterLib->PrintfCodeMessage("Order", "SendStockOrder", g_nCode);
+
+	g_nCode = pSKOrderLib->FutureRightsInfo(g_strUserId);
+	pSKCenterLib->PrintfCodeMessage("Order", "FutureRightsInfo", g_nCode);
 
 	logger.log("Application finished.", __func__);
 }

@@ -1,8 +1,10 @@
 #include "SKOrderLib.h"
 #include "SKCenterLib.h"
 
-#include <vector>
+#include <Logger.h>
 #include <string>
+#include <vector>
+
 using namespace std;
 
 CSKOrderLib::CSKOrderLib()
@@ -20,23 +22,22 @@ CSKOrderLib::~CSKOrderLib()
         m_pSKOrderLibEventHandler = NULL;
     }
 
-    if (m_pSKOrderLib) {
+    if (m_pSKOrderLib)
+    {
         m_pSKOrderLib->Release();
     }
 }
 
-HRESULT CSKOrderLib::OnEventFiringObjectInvoke
-(
-    ISKOrderLibEventHandler* pEventHandler,
+HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
+    ISKOrderLibEventHandler *pEventHandler,
     DISPID dispidMember,
     REFIID riid,
     LCID lcid,
     WORD wFlags,
-    DISPPARAMS* pdispparams,
-    VARIANT* pvarResult,
-    EXCEPINFO* pexcepinfo,
-    UINT* puArgErr
-)
+    DISPPARAMS *pdispparams,
+    VARIANT *pvarResult,
+    EXCEPINFO *pexcepinfo,
+    UINT *puArgErr)
 {
     VARIANT varlValue;
     VariantInit(&varlValue);
@@ -44,34 +45,34 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke
 
     switch (dispidMember)
     {
-        case 1 :
-        {
-            varlValue = (pdispparams->rgvarg)[1];
-            _bstr_t bstrLoginID = V_BSTR(&varlValue);
-            varlValue = (pdispparams->rgvarg)[0];
-            _bstr_t bstrData = V_BSTR(&varlValue);
-            OnAccount(string(bstrLoginID), string(bstrData));
+    case 1:
+    {
+        varlValue = (pdispparams->rgvarg)[1];
+        _bstr_t bstrLoginID = V_BSTR(&varlValue);
+        varlValue = (pdispparams->rgvarg)[0];
+        _bstr_t bstrData = V_BSTR(&varlValue);
+        OnAccount(string(bstrLoginID), string(bstrData));
 
-            break;
-        }
-        case 2 : 
-        {
-            varlValue = (pdispparams->rgvarg)[2];
-            LONG nThreadID = V_I4(&varlValue);
-            varlValue = (pdispparams->rgvarg)[1];
-            LONG nCode = V_I4(&varlValue);
-            varlValue = (pdispparams->rgvarg)[0];
-            _bstr_t bstrMessage = V_BSTR(&varlValue);
-            OnAsyncOrder(nThreadID, nCode, string(bstrMessage));
+        break;
+    }
+    case 2:
+    {
+        varlValue = (pdispparams->rgvarg)[2];
+        LONG nThreadID = V_I4(&varlValue);
+        varlValue = (pdispparams->rgvarg)[1];
+        LONG nCode = V_I4(&varlValue);
+        varlValue = (pdispparams->rgvarg)[0];
+        _bstr_t bstrMessage = V_BSTR(&varlValue);
+        OnAsyncOrder(nThreadID, nCode, string(bstrMessage));
 
-            break;
-        }
+        break;
+    }
     }
 
     return S_OK;
 }
 
-//Methods
+// Methods
 long CSKOrderLib::Initialize()
 {
     return m_pSKOrderLib->SKOrderLib_Initialize();
@@ -93,7 +94,7 @@ long CSKOrderLib::SendStockOrder(string strLogInID, bool bAsyncOrder, string str
 
     if (vec_strFullAccount_TS.size() > 0)
         strFullAccount_TS = vec_strFullAccount_TS[0];
-    else 
+    else
     {
         cout << "SendStockOrder Error : No Stock Account.";
         return -1;
@@ -150,7 +151,7 @@ long CSKOrderLib::SendFutureOrder(string strLogInID, bool bAsyncOrder, string st
 
     ::SysFreeString(bstrMessage);
 
-    return  m_nCode;
+    return m_nCode;
 }
 
 long CSKOrderLib::SendOptionOrder(string strLogInID, bool bAsyncOrder, string strStockNo, short sTradeType, short sBuySell, short sDayTrade, short sNewClose, string strPrice, long nQty, short sReserved)
@@ -182,10 +183,10 @@ long CSKOrderLib::SendOptionOrder(string strLogInID, bool bAsyncOrder, string st
 
     ::SysFreeString(bstrMessage);
 
-    return  m_nCode;
+    return m_nCode;
 }
 
-long  CSKOrderLib::CancelOrder(string strLogInID, bool bAsyncOrder, int nMarket, int nType, string strNo)
+long CSKOrderLib::CancelOrder(string strLogInID, bool bAsyncOrder, int nMarket, int nType, string strNo)
 {
     string strFullAccount = "";
     long m_nCode = 0;
@@ -215,13 +216,13 @@ long  CSKOrderLib::CancelOrder(string strLogInID, bool bAsyncOrder, int nMarket,
 
     if (nType == 0)
         m_nCode = m_pSKOrderLib->CancelOrderBySeqNo(_bstr_t(strLogInID.c_str()), VARIANT_BOOL(bAsyncOrder),
-            _bstr_t(strFullAccount.c_str()), _bstr_t(strNo.c_str()), &bstrMessage);
+                                                    _bstr_t(strFullAccount.c_str()), _bstr_t(strNo.c_str()), &bstrMessage);
     else if (nType == 1)
         m_nCode = m_pSKOrderLib->CancelOrderByBookNo(_bstr_t(strLogInID.c_str()), VARIANT_BOOL(bAsyncOrder),
-            _bstr_t(strFullAccount.c_str()), _bstr_t(strNo.c_str()), &bstrMessage);
+                                                     _bstr_t(strFullAccount.c_str()), _bstr_t(strNo.c_str()), &bstrMessage);
     else if (nType == 2)
         m_nCode = m_pSKOrderLib->CancelOrderByStockNo(_bstr_t(strLogInID.c_str()), VARIANT_BOOL(bAsyncOrder),
-            _bstr_t(strFullAccount.c_str()), _bstr_t(strNo.c_str()), &bstrMessage);
+                                                      _bstr_t(strFullAccount.c_str()), _bstr_t(strNo.c_str()), &bstrMessage);
 
     cout << "CancelOrder : " << string(_bstr_t(bstrMessage)) << endl;
 
@@ -258,20 +259,20 @@ long CSKOrderLib::CorrectPrice(string strLogInID, bool bAsyncOrder, int nMarket,
             return -1;
         }
 
-        if(nMarket == 1)
+        if (nMarket == 1)
             strMarketSymbol = "TF";
         else
             strMarketSymbol = "TO";
     }
-    
+
     BSTR bstrMessage = ::SysAllocString(L"");
 
     if (nType == 0)
         m_nCode = m_pSKOrderLib->CorrectPriceBySeqNo(_bstr_t(strLogInID.c_str()), VARIANT_BOOL(bAsyncOrder),
-            _bstr_t(strFullAccount.c_str()), _bstr_t(strNo.c_str()), _bstr_t(strPrice.c_str()), nTradeType, &bstrMessage);
+                                                     _bstr_t(strFullAccount.c_str()), _bstr_t(strNo.c_str()), _bstr_t(strPrice.c_str()), nTradeType, &bstrMessage);
     else if (nType == 1)
         m_nCode = m_pSKOrderLib->CorrectPriceByBookNo(_bstr_t(strLogInID.c_str()), VARIANT_BOOL(bAsyncOrder),
-            _bstr_t(strFullAccount.c_str()), _bstr_t(strMarketSymbol.c_str()), _bstr_t(strNo.c_str()), _bstr_t(strPrice.c_str()), nTradeType, &bstrMessage);
+                                                      _bstr_t(strFullAccount.c_str()), _bstr_t(strMarketSymbol.c_str()), _bstr_t(strNo.c_str()), _bstr_t(strPrice.c_str()), nTradeType, &bstrMessage);
 
     cout << "CorrectPrice : " << string(_bstr_t(bstrMessage)) << endl;
 
@@ -308,7 +309,7 @@ long CSKOrderLib::DecreaseOrder(string strLogInID, bool bAsyncOrder, int nMarket
 
     BSTR bstrMessage;
     m_nCode = m_pSKOrderLib->DecreaseOrderBySeqNo(_bstr_t(strLogInID.c_str()), VARIANT_BOOL(bAsyncOrder),
-        _bstr_t(strFullAccount.c_str()), _bstr_t(strNo.c_str()), nDecreaseQty, &bstrMessage);
+                                                  _bstr_t(strFullAccount.c_str()), _bstr_t(strNo.c_str()), nDecreaseQty, &bstrMessage);
     cout << "DecreaseOrder : " << string(_bstr_t(bstrMessage)) << endl;
 
     ::SysFreeString(bstrMessage);
@@ -319,7 +320,7 @@ long CSKOrderLib::DecreaseOrder(string strLogInID, bool bAsyncOrder, int nMarket
 // Event
 void CSKOrderLib::OnAccount(string strLoginID, string strAccountData)
 {
-    cout << "¡iOnAccount¡jID=" + strLoginID + "  Account=" + strAccountData << endl;
+    cout << "On Account ID = " + strLoginID + "  Account=" + strAccountData << endl;
     vector<string> vec_strValues;
     string strTemp;
 
@@ -339,19 +340,19 @@ void CSKOrderLib::OnAccount(string strLoginID, string strAccountData)
     {
         string strFullAccount_TS = vec_strValues[1] + vec_strValues[3];
         vec_strFullAccount_TS.push_back(strFullAccount_TS);
-        printf("¡iOnAccount¡jTSFullAccount=%s\n", strFullAccount_TS.c_str());
+        printf("ï¿½iOnAccountï¿½jTSFullAccount=%s\n", strFullAccount_TS.c_str());
     }
     else if (vec_strValues.size() >= 7 && vec_strValues[0] == "TF")
     {
         string strFullAccount_TF = vec_strValues[1] + vec_strValues[3];
         vec_strFullAccount_TF.push_back(strFullAccount_TF);
-        printf("¡iOnAccount¡jTFFullAccount=%s\n", strFullAccount_TF.c_str());
+        printf("ï¿½iOnAccountï¿½jTFFullAccount=%s\n", strFullAccount_TF.c_str());
     }
     else if (vec_strValues.size() >= 7 && vec_strValues[0] == "OF")
     {
         string strFullAccount_OF = vec_strValues[1] + vec_strValues[3];
         vec_strFullAccount_OF.push_back(strFullAccount_OF);
-        printf("¡iOnAccount¡jOFFullAccount=%s\n", strFullAccount_OF.c_str());
+        printf("ï¿½iOnAccountï¿½jOFFullAccount=%s\n", strFullAccount_OF.c_str());
     }
     else
     {
@@ -360,5 +361,32 @@ void CSKOrderLib::OnAccount(string strLoginID, string strAccountData)
 
 void CSKOrderLib::OnAsyncOrder(long nThreadID, long nCode, string strMessage)
 {
-    cout << "¡iOnAsyncOrder¡jThreadID : " << nThreadID << ", nCode : " << nCode << ", Message : " << strMessage;
+    cout << "ï¿½iOnAsyncOrderï¿½jThreadID : " << nThreadID << ", nCode : " << nCode << ", Message : " << strMessage;
+}
+
+long CSKOrderLib::FutureRightsInfo(string strLogInID)
+{
+    logger.log("Application started.", __func__);
+
+    string strFullAccount_TF = "";
+
+    if (vec_strFullAccount_TF.size() > 0)
+        strFullAccount_TF = vec_strFullAccount_TF[0];
+    else
+    {
+        cout << "FutureRightsInfo Error : No Future Account.";
+        return -1;
+    }
+
+    BSTR BstrUserId = _bstr_t(strLogInID.c_str());
+    BSTR BstrFullAccount = _bstr_t(strFullAccount_TF.c_str()).Detach();
+
+    // long m_nCode = m_pSKOrderLib->SendOptionOrder(_bstr_t(g_strUserId.c_str()), VARIANT_BOOL(bAsyncOrder), &pFutures, &bstrMessage);
+    // cout << "SendOptionOrder : " << string(_bstr_t(bstrMessage)) << endl;
+
+    m_pSKOrderLib->GetFutureRights(BstrUserId, BstrFullAccount, 0);
+
+    logger.log("Application finished.", __func__);
+
+    return 0;
 }

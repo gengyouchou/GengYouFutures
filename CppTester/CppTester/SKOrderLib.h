@@ -2,18 +2,18 @@
 
 #include "SKCOM_reference.h"
 #include "TEventHandler.h"
-#include <vector>
-#include <string>
 #include <iostream>
+#include <string>
+#include <vector>
 
 using namespace std;
 
-//void OrderType();
+// void OrderType();
 
 class CSKOrderLib
 {
 public:
-	typedef TEventHandlerNamespace::TEventHandler<CSKOrderLib, SKCOMLib::ISKOrderLib, SKCOMLib::_ISKOrderLibEvents>ISKOrderLibEventHandler;
+	typedef TEventHandlerNamespace::TEventHandler<CSKOrderLib, SKCOMLib::ISKOrderLib, SKCOMLib::_ISKOrderLibEvents> ISKOrderLibEventHandler;
 
 	CSKOrderLib();
 	~CSKOrderLib();
@@ -32,27 +32,24 @@ public:
 	// Event
 	void OnAccount(string strLoginID, string strAccountData);
 	void OnAsyncOrder(long nThreadID, long nCode, string strMessage);
+	long FutureRightsInfo(string strLogInID);
 
 private:
-	HRESULT OnEventFiringObjectInvoke
-	(
-		ISKOrderLibEventHandler* pEventHandler,
+	HRESULT OnEventFiringObjectInvoke(
+		ISKOrderLibEventHandler *pEventHandler,
 		DISPID dispidMember,
 		REFIID riid,
 		LCID lcid,
 		WORD wFlags,
-		DISPPARAMS* pdispparams,
-		VARIANT* pvarResult,
-		EXCEPINFO* pexcepinfo,
-		UINT* puArgErr
-	);
+		DISPPARAMS *pdispparams,
+		VARIANT *pvarResult,
+		EXCEPINFO *pexcepinfo,
+		UINT *puArgErr);
 
 	SKCOMLib::ISKOrderLibPtr m_pSKOrderLib;
-	ISKOrderLibEventHandler* m_pSKOrderLibEventHandler;
+	ISKOrderLibEventHandler *m_pSKOrderLibEventHandler;
 
 	vector<string> vec_strFullAccount_TS;
 	vector<string> vec_strFullAccount_TF;
 	vector<string> vec_strFullAccount_OF;
 };
-
-
