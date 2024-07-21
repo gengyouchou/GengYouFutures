@@ -1,4 +1,4 @@
-//�Цۦ��JSKCOM.dll��
+// SKCOM.dll
 
 #ifdef _WIN64
 #import "../../DLL/x64/SKCOM.dll"
@@ -6,7 +6,7 @@
 #import "DLL/x86/SKCOM.dll"
 #endif
 
-#include<iostream>
-#include<string>
+#include <iostream>
+#include <string>
 
 using namespace std;

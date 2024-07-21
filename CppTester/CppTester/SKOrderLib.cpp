@@ -381,10 +381,13 @@ long CSKOrderLib::FutureRightsInfo(string strLogInID)
     BSTR BstrUserId = _bstr_t(strLogInID.c_str());
     BSTR BstrFullAccount = _bstr_t(strFullAccount_TF.c_str()).Detach();
 
-    // long m_nCode = m_pSKOrderLib->SendOptionOrder(_bstr_t(g_strUserId.c_str()), VARIANT_BOOL(bAsyncOrder), &pFutures, &bstrMessage);
-    // cout << "SendOptionOrder : " << string(_bstr_t(bstrMessage)) << endl;
-
     m_pSKOrderLib->GetFutureRights(BstrUserId, BstrFullAccount, 0);
+
+    BSTR Res;
+
+    m_pSKOrderLib->OnFutureRights(Res);
+
+    cout << Res;
 
     logger.log("Application finished.", __func__);
 
