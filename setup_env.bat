@@ -42,6 +42,8 @@ set "CMAKE_SOURCE_DIR=%SCRIPT_DIR%\CppTester"
 set "BUILD_DIR=%SCRIPT_DIR%\build"
 set "DLL_PATH=%SCRIPT_DIR%\DLL\x64"
 set "PATH=%DLL_PATH%;%PATH%"
+Path=%Path%;C:\Program Files\CMake\bin
+
 
 REM 打印所有临时变量
 echo.
