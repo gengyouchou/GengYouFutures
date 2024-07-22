@@ -43,10 +43,13 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
     VariantInit(&varlValue);
     VariantClear(&varlValue);
 
+    logger.log("dispidMember == %d", __func__, dispidMember);
+
     switch (dispidMember)
     {
     case 1:
     {
+        logger.log("case 1", __func__);
         varlValue = (pdispparams->rgvarg)[1];
         _bstr_t bstrLoginID = V_BSTR(&varlValue);
         varlValue = (pdispparams->rgvarg)[0];
@@ -57,6 +60,8 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
     }
     case 2:
     {
+        logger.log("case 2", __func__);
+
         varlValue = (pdispparams->rgvarg)[2];
         LONG nThreadID = V_I4(&varlValue);
         varlValue = (pdispparams->rgvarg)[1];
@@ -67,13 +72,17 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
 
         break;
     }
-    case 3: // 假设 DISPID 为 3
+    case 3: // DISPID == 3
+    {
+        logger.log("case 3", __func__);
+
         if (pdispparams->cArgs == 1)
         {
             BSTR bstrData = pdispparams->rgvarg[0].bstrVal;
             OnFutureRights(bstrData);
         }
         break;
+    }
     }
 
     return S_OK;

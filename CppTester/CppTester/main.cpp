@@ -338,34 +338,35 @@ void release()
 
 void thread_main()
 {
-	int nServiceType;
-	bool bWhile = true;
-	while (bWhile)
-	{
-		printf("\n請選擇要使用的項目 (1：下單 , 2：回報 , 3：報價 , -1：離開)：");
+	// int nServiceType;
+	AutoOrderMTX();
+	
+	// bool bWhile = true;
+	// while (bWhile)
+	// {
+	// 	printf("\n請選擇要使用的項目 (1：下單 , 2：回報 , 3：報價 , -1：離開)：");
 
-		cin >> nServiceType;
-		switch (nServiceType)
-		{
-		case -1:
-			bWhile = false;
-			printf("離開程式\n");
-			break;
-		case 1:
-			AutoOrderMTX();
-			Order();
-			break;
-		case 2:
-			Reply();
-			break;
-		case 3:
-			Quote();
-			break;
-		default:
-			printf("輸入代碼錯誤，請重新輸入\n");
-			break;
-		}
-	}
+	// 	cin >> nServiceType;
+	// 	switch (nServiceType)
+	// 	{
+	// 	case -1:
+	// 		bWhile = false;
+	// 		printf("離開程式\n");
+	// 		break;
+	// 	case 1:
+	// 		Order();
+	// 		break;
+	// 	case 2:
+	// 		Reply();
+	// 		break;
+	// 	case 3:
+	// 		Quote();
+	// 		break;
+	// 	default:
+	// 		printf("輸入代碼錯誤，請重新輸入\n");
+	// 		break;
+	// 	}
+	// }
 
 	release();
 
