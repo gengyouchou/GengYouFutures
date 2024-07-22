@@ -67,6 +67,13 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
 
         break;
     }
+    case 3: // 假设 DISPID 为 3
+        if (pdispparams->cArgs == 1)
+        {
+            BSTR bstrData = pdispparams->rgvarg[0].bstrVal;
+            OnFutureRights(bstrData);
+        }
+        break;
     }
 
     return S_OK;
@@ -359,9 +366,19 @@ void CSKOrderLib::OnAccount(string strLoginID, string strAccountData)
     }
 }
 
+void CSKOrderLib::OnFutureRights(BSTR bstrData)
+{
+    logger.log("Application started.", __func__);
+    string strMessage = string(_bstr_t(bstrData));
+
+    cout << "On OnFutureRights ThreadID : " << "Message : " << strMessage;
+
+    logger.log("Application finished.", __func__);
+}
+
 void CSKOrderLib::OnAsyncOrder(long nThreadID, long nCode, string strMessage)
 {
-    cout << "�iOnAsyncOrder�jThreadID : " << nThreadID << ", nCode : " << nCode << ", Message : " << strMessage;
+    cout << "On AsyncOrder ThreadID : " << nThreadID << ", nCode : " << nCode << ", Message : " << strMessage;
 }
 
 long CSKOrderLib::FutureRightsInfo(string strLogInID)
@@ -382,12 +399,6 @@ long CSKOrderLib::FutureRightsInfo(string strLogInID)
     BSTR BstrFullAccount = _bstr_t(strFullAccount_TF.c_str()).Detach();
 
     m_pSKOrderLib->GetFutureRights(BstrUserId, BstrFullAccount, 0);
-
-    BSTR Res;
-
-    m_pSKOrderLib->OnFutureRights(Res);
-
-    cout << Res;
 
     logger.log("Application finished.", __func__);
 
