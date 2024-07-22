@@ -43,7 +43,7 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
     VariantInit(&varlValue);
     VariantClear(&varlValue);
 
-    logger.log("dispidMember == %d", __func__, dispidMember);
+    logger.log(__func__ ,"dispidMember == %d", dispidMember);
 
     switch (dispidMember)
     {
