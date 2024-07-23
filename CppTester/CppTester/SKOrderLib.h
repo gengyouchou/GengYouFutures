@@ -19,6 +19,7 @@ public:
     // Methods
     long Initialize();
     long GetUserAccount();
+    long GetFutureRights(string strLogInID);
     long ReadCertByID(string strLogInID);
     long SendStockOrder(string strLogInID, bool bAsyncOrder, string strStockNo, short sPrime, short sPeriod, short sFlag, short sBuySell, string strPrice, long nQty, long nTradeType, long nSpecialTradeType);
     long SendFutureOrder(string strLogInID, bool bAsyncOrder, string strStockNo, short sTradeType, short sBuySell, short sDayTrade, short sNewClose, string strPrice, long nQty, short sReserved);
@@ -27,7 +28,6 @@ public:
     long DecreaseOrder(string strLogInID, bool bAsyncOrder, int nMarket, string strNo, long nDecreaseQty);
     long CorrectPrice(string strLogInID, bool bAsyncOrder, int nMarket, int nType, string strNo, string strPrice, long nTradeType);
     long CancelOrder(string strLogInID, bool bAsyncOrder, int nMarket, int nType, string strNo);
-    long FutureRightsInfo(string strLogInID);
 
     // Event
     void OnAccount(string strLoginID, string strAccountData);

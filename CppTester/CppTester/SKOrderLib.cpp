@@ -99,6 +99,32 @@ long CSKOrderLib::GetUserAccount()
     return m_pSKOrderLib->GetUserAccount();
 }
 
+long CSKOrderLib::GetFutureRights(string strLogInID)
+{
+    logger.log("Application started.", __func__);
+
+    string strFullAccount_TF = "";
+
+    if (vec_strFullAccount_TF.size() > 0)
+        strFullAccount_TF = vec_strFullAccount_TF[0];
+    else
+    {
+        cout << "GetFutureRights Error : No Future Account.";
+        return -1;
+    }
+
+    BSTR BstrUserId = _bstr_t(strLogInID.c_str());
+    BSTR BstrFullAccount = _bstr_t(strFullAccount_TF.c_str()).Detach();
+
+    long res = m_pSKOrderLib->GetFutureRights(BstrUserId, BstrFullAccount, 0);
+
+    logger.log(__func__, "m_pSKOrderLib->GetFutureRights result = %d", res);
+
+    logger.log("Application finished.", __func__);
+
+    return res;
+}
+
 long CSKOrderLib::ReadCertByID(string strLogInID)
 {
     return m_pSKOrderLib->ReadCertByID(_bstr_t(strLogInID.c_str()));
@@ -388,30 +414,4 @@ void CSKOrderLib::OnFutureRights(BSTR bstrData)
 void CSKOrderLib::OnAsyncOrder(long nThreadID, long nCode, string strMessage)
 {
     cout << "On AsyncOrder ThreadID : " << nThreadID << ", nCode : " << nCode << ", Message : " << strMessage;
-}
-
-long CSKOrderLib::FutureRightsInfo(string strLogInID)
-{
-    logger.log("Application started.", __func__);
-
-    string strFullAccount_TF = "";
-
-    if (vec_strFullAccount_TF.size() > 0)
-        strFullAccount_TF = vec_strFullAccount_TF[0];
-    else
-    {
-        cout << "FutureRightsInfo Error : No Future Account.";
-        return -1;
-    }
-
-    BSTR BstrUserId = _bstr_t(strLogInID.c_str());
-    BSTR BstrFullAccount = _bstr_t(strFullAccount_TF.c_str()).Detach();
-
-    long res = m_pSKOrderLib->GetFutureRights(BstrUserId, BstrFullAccount, 0);
-
-    logger.log(__func__, "m_pSKOrderLib->GetFutureRights result = %d", res);
-
-    logger.log("Application finished.", __func__);
-
-    return 0;
 }
