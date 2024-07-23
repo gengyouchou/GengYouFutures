@@ -42,13 +42,16 @@ void AutoOrderMTX()
     g_nCode = pSKOrderLib->Initialize();
     pSKCenterLib->PrintfCodeMessage("Order", "Initialize", g_nCode);
 
-    g_nCode = pSKOrderLib->SendStockOrder(g_strUserId, false, "MTX", sPrime, sPeriod, sFlag, sBuySell, strPrice, nQty, nTradeType, nSpecialTradeType);
+    // g_nCode = pSKOrderLib->SendStockOrder(g_strUserId, false, "MTX", sPrime, sPeriod, sFlag, sBuySell, strPrice, nQty, nTradeType, nSpecialTradeType);
 
-    pSKCenterLib->PrintfCodeMessage("Order", "SendStockOrder", g_nCode);
+    // pSKCenterLib->PrintfCodeMessage("Order", "SendStockOrder", g_nCode);
 
     g_nCode = pSKOrderLib->GetFutureRights(g_strUserId);
 
-    pSKCenterLib->PrintfCodeMessage("Order", "pSKOrderLib->GetFutureRights", g_nCode);
+    pSKCenterLib->PrintfCodeMessage("Order", "GetFutureRights", g_nCode);
+
+    g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId, false, "MTX", 2, 1, 0, 2, "P", 1, 0);
+    pSKCenterLib->PrintfCodeMessage("Order", "SendFutureOrder", g_nCode);
 
     logger.log("Application finished.", __func__);
 }
@@ -371,6 +374,8 @@ void thread_main()
 
     release();
 
+    system("pause");
+
     exit(0);
 }
 
@@ -421,6 +426,8 @@ int main()
     }
 
     logger.log("Application end.", __func__);
+
+    system("pause");
 
     return 0;
 }
