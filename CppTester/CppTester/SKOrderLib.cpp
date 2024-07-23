@@ -72,9 +72,9 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
 
         break;
     }
-    case 3: // DISPID == 3
+    case 9: // DISPID == 9
     {
-        logger.log("case 3", __func__);
+        logger.log("case 9", __func__);
 
         if (pdispparams->cArgs == 1)
         {
@@ -362,7 +362,7 @@ long CSKOrderLib::DecreaseOrder(string strLogInID, bool bAsyncOrder, int nMarket
 // Event
 void CSKOrderLib::OnAccount(string strLoginID, string strAccountData)
 {
-    cout << "On Account ID = " + strLoginID + "  Account=" + strAccountData << endl;
+    cout << "OnAccount ID = " + strLoginID + "  Account=" + strAccountData << endl;
     vector<string> vec_strValues;
     string strTemp;
 
@@ -382,19 +382,19 @@ void CSKOrderLib::OnAccount(string strLoginID, string strAccountData)
     {
         string strFullAccount_TS = vec_strValues[1] + vec_strValues[3];
         vec_strFullAccount_TS.push_back(strFullAccount_TS);
-        printf("�iOnAccount�jTSFullAccount=%s\n", strFullAccount_TS.c_str());
+        printf(" iOnAccount jTSFullAccount=%s\n", strFullAccount_TS.c_str());
     }
     else if (vec_strValues.size() >= 7 && vec_strValues[0] == "TF")
     {
         string strFullAccount_TF = vec_strValues[1] + vec_strValues[3];
         vec_strFullAccount_TF.push_back(strFullAccount_TF);
-        printf("�iOnAccount�jTFFullAccount=%s\n", strFullAccount_TF.c_str());
+        printf(" iOnAccount jTFFullAccount=%s\n", strFullAccount_TF.c_str());
     }
     else if (vec_strValues.size() >= 7 && vec_strValues[0] == "OF")
     {
         string strFullAccount_OF = vec_strValues[1] + vec_strValues[3];
         vec_strFullAccount_OF.push_back(strFullAccount_OF);
-        printf("�iOnAccount�jOFFullAccount=%s\n", strFullAccount_OF.c_str());
+        printf(" iOnAccount jOFFullAccount=%s\n", strFullAccount_OF.c_str());
     }
     else
     {
@@ -406,7 +406,10 @@ void CSKOrderLib::OnFutureRights(BSTR bstrData)
     logger.log("Application started.", __func__);
     string strMessage = string(_bstr_t(bstrData));
 
-    cout << "On OnFutureRights ThreadID : " << "Message : " << strMessage;
+    cout << "OnFutureRights ThreadID : " << endl;
+    cout << "Message : " << strMessage;
+
+    cout << endl;
 
     logger.log("Application finished.", __func__);
 }
@@ -414,4 +417,5 @@ void CSKOrderLib::OnFutureRights(BSTR bstrData)
 void CSKOrderLib::OnAsyncOrder(long nThreadID, long nCode, string strMessage)
 {
     cout << "On AsyncOrder ThreadID : " << nThreadID << ", nCode : " << nCode << ", Message : " << strMessage;
+    cout << endl;
 }

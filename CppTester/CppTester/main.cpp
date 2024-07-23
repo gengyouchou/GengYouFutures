@@ -50,7 +50,7 @@ void AutoOrderMTX()
 
     pSKCenterLib->PrintfCodeMessage("Order", "GetFutureRights", g_nCode);
 
-    g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId, false, "MTX", 2, 1, 0, 2, "P", 1, 0);
+    g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId, false, "MTX00", 2, 1, 0, 2, "P", 1, 0);
     pSKCenterLib->PrintfCodeMessage("Order", "SendFutureOrder", g_nCode);
 
     logger.log("Application finished.", __func__);
@@ -383,6 +383,8 @@ int main()
 {
 
     logger.log("Application started.", __func__);
+
+    SetConsoleOutputCP(CP_UTF8);
 
     CoInitialize(NULL);
 
