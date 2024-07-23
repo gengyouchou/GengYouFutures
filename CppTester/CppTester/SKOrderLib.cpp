@@ -43,7 +43,7 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
     VariantInit(&varlValue);
     VariantClear(&varlValue);
 
-    logger.log(__func__ ,"dispidMember == %d", dispidMember);
+    logger.log(__func__, "dispidMember == %d", dispidMember);
 
     switch (dispidMember)
     {
@@ -407,7 +407,9 @@ long CSKOrderLib::FutureRightsInfo(string strLogInID)
     BSTR BstrUserId = _bstr_t(strLogInID.c_str());
     BSTR BstrFullAccount = _bstr_t(strFullAccount_TF.c_str()).Detach();
 
-    m_pSKOrderLib->GetFutureRights(BstrUserId, BstrFullAccount, 0);
+    long res = m_pSKOrderLib->GetFutureRights(BstrUserId, BstrFullAccount, 0);
+
+    logger.log(__func__, "m_pSKOrderLib->GetFutureRights result = %d", res);
 
     logger.log("Application finished.", __func__);
 

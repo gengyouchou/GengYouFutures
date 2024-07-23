@@ -8,8 +8,6 @@
 
 using namespace std;
 
-// void OrderType();
-
 class CSKOrderLib
 {
 public:
@@ -29,10 +27,12 @@ public:
     long DecreaseOrder(string strLogInID, bool bAsyncOrder, int nMarket, string strNo, long nDecreaseQty);
     long CorrectPrice(string strLogInID, bool bAsyncOrder, int nMarket, int nType, string strNo, string strPrice, long nTradeType);
     long CancelOrder(string strLogInID, bool bAsyncOrder, int nMarket, int nType, string strNo);
+    long FutureRightsInfo(string strLogInID);
+
     // Event
     void OnAccount(string strLoginID, string strAccountData);
     void OnAsyncOrder(long nThreadID, long nCode, string strMessage);
-    long FutureRightsInfo(string strLogInID);
+
     void OnFutureRights(BSTR bstrData);
 
 private:
