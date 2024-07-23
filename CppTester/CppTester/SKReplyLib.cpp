@@ -21,18 +21,16 @@ CSKReplyLib::~CSKReplyLib()
 	}
 }
 
-HRESULT CSKReplyLib::OnEventFiringObjectInvoke
-(
-	ISKReplyLibEventHandler* pEventHandler,
+HRESULT CSKReplyLib::OnEventFiringObjectInvoke(
+	ISKReplyLibEventHandler *pEventHandler,
 	DISPID dispidMember,
 	REFIID riid,
 	LCID lcid,
 	WORD wFlags,
-	DISPPARAMS* pdispparams,
-	VARIANT* pvarResult,
-	EXCEPINFO* pexcepinfo,
-	UINT* puArgErr
-)
+	DISPPARAMS *pdispparams,
+	VARIANT *pvarResult,
+	EXCEPINFO *pexcepinfo,
+	UINT *puArgErr)
 {
 	VARIANT varlValue;
 	VariantInit(&varlValue);
@@ -40,68 +38,68 @@ HRESULT CSKReplyLib::OnEventFiringObjectInvoke
 
 	switch (dispidMember)
 	{
-		case 1:
-		{
-			varlValue = (pdispparams->rgvarg)[1];
-			_bstr_t bstrLoginID = V_BSTR(&varlValue);
-			varlValue = (pdispparams->rgvarg)[0];
-			LONG nCode = V_I4(&varlValue);
-			OnConnect(string(bstrLoginID), nCode);
-			break;
-		}
-		case 2:
-		{
-			varlValue = (pdispparams->rgvarg)[1];
-			_bstr_t bstrLoginID = V_BSTR(&varlValue);
-			varlValue = (pdispparams->rgvarg)[0];
-			LONG nCode = V_I4(&varlValue);
-			OnDisconnect(string(bstrLoginID), nCode);
-			break;
-		}
-		case 3:
-		{
-			OnComplete();
-			break;
-		}
-		case 4:
-			break;
-		case 5:
-			break;
-		case 6: // Event1 event.
-		{
-			varlValue = (pdispparams->rgvarg)[2];
-			_bstr_t bstrUserID = V_BSTR(&varlValue);
-			varlValue = (pdispparams->rgvarg)[1];
-			_bstr_t bstrMessage = V_BSTR(&varlValue);
-			varlValue = (pdispparams->rgvarg)[0];
-			OnReplyMessage(string(bstrMessage), string(bstrUserID), varlValue.piVal);
-			break;
-		}
-		case 7:
-			break;
-		case 8:
-		{
-			varlValue = (pdispparams->rgvarg)[0];
-			_bstr_t Data = V_BSTR(&varlValue);
-			OnNewData(string(Data));
-			break;
-		}
-		case 9:
-			break;
-		case 10:
-			break;
-		case 11:
-			break;
-		case 12:
-			break;
-		case 13:
-			break;
+	case 1:
+	{
+		varlValue = (pdispparams->rgvarg)[1];
+		_bstr_t bstrLoginID = V_BSTR(&varlValue);
+		varlValue = (pdispparams->rgvarg)[0];
+		LONG nCode = V_I4(&varlValue);
+		OnConnect(string(bstrLoginID), nCode);
+		break;
+	}
+	case 2:
+	{
+		varlValue = (pdispparams->rgvarg)[1];
+		_bstr_t bstrLoginID = V_BSTR(&varlValue);
+		varlValue = (pdispparams->rgvarg)[0];
+		LONG nCode = V_I4(&varlValue);
+		OnDisconnect(string(bstrLoginID), nCode);
+		break;
+	}
+	case 3:
+	{
+		OnComplete();
+		break;
+	}
+	case 4:
+		break;
+	case 5:
+		break;
+	case 6: // Event1 event.
+	{
+		varlValue = (pdispparams->rgvarg)[2];
+		_bstr_t bstrUserID = V_BSTR(&varlValue);
+		varlValue = (pdispparams->rgvarg)[1];
+		_bstr_t bstrMessage = V_BSTR(&varlValue);
+		varlValue = (pdispparams->rgvarg)[0];
+		OnReplyMessage(string(bstrMessage), string(bstrUserID), varlValue.piVal);
+		break;
+	}
+	case 7:
+		break;
+	case 8:
+	{
+		varlValue = (pdispparams->rgvarg)[0];
+		_bstr_t Data = V_BSTR(&varlValue);
+		OnNewData(string(Data));
+		break;
+	}
+	case 9:
+		break;
+	case 10:
+		break;
+	case 11:
+		break;
+	case 12:
+		break;
+	case 13:
+		break;
 	}
 
 	return S_OK;
 }
 
-//Methods
+// Methods
 long CSKReplyLib::SKReplyLib_ConnectByID(string strUserID)
 {
 	return m_pSKReplyLib->SKReplyLib_ConnectByID(_bstr_t(strUserID.c_str()));
@@ -115,27 +113,27 @@ long CSKReplyLib::SKReplyLib_SolaceCloseByID(string strUserID)
 	return m_pSKReplyLib->SKReplyLib_CloseByID(_bstr_t(strUserID.c_str()));
 }
 
-//Event
+// Event
 void CSKReplyLib::OnConnect(string strUserID, long nCode)
 {
-	cout << "【OnConnect】回報連線：" << strUserID << ", " << nCode << endl;
+	cout << "iOnConnect" << strUserID << ", " << nCode << endl;
 }
 void CSKReplyLib::OnDisconnect(string strUserID, long nCode)
 {
-	cout << "【OnConnect】回報斷線：" << strUserID << ", " << nCode << endl;
+	cout << "iOnConnect" << strUserID << ", " << nCode << endl;
 }
 void CSKReplyLib::OnComplete()
 {
-	cout << "【OnConnect】回補完成" << endl;
+	cout << "iOnConnect" << endl;
 }
 
-void CSKReplyLib::OnReplyMessage(string strMessage, string strLoginID, short* sConfirmCode)
+void CSKReplyLib::OnReplyMessage(string strMessage, string strLoginID, short *sConfirmCode)
 {
 	*sConfirmCode = -1;
-	cout << "【OnReplyMessage】Login ID : " << strLoginID << ", Message : " << strMessage << endl;
+	cout << "iOnReplyMessagejLogin ID : " << strLoginID << ", Message : " << strMessage << endl;
 }
 
 void CSKReplyLib::OnNewData(string strData)
 {
-	cout << "【OnNewData】" << strData << endl;
+	cout << "iOnNewDataj" << strData << endl;
 }
