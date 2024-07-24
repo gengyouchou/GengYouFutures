@@ -17,37 +17,35 @@ CSKOrderLib *pSKOrderLib;
 long g_nCode = 0;
 string g_strUserId;
 
-void AutoOrderMTX()
+void AutoLogIn()
 {
-	logger.log("Application started.", __func__);
-
-	bool bOrder = true;
-	string strStockNo = "", strPrice = "", strNo = "";
-	short sPrime = 0, sPeriod = 0, sFlag = 0, sBuySell = 0, sTradeType = 0, sDayTrade = 0, sNewClose = 0, sReserved = 0;
-	int nOrderType = 0, nMarket = 0, nType = 0;
-	long nQty = 0, nTradeType = 0, nSpecialTradeType = 0;
+	DEBUG("Started");
 
 	// 初始化
 	g_nCode = pSKOrderLib->Initialize();
-	pSKCenterLib->PrintfCodeMessage("Order", "Initialize", g_nCode);
+	pSKCenterLib->PrintfCodeMessage("AutoLogIn", "Initialize", g_nCode);
 
 	// 讀取憑證
 	g_nCode = pSKOrderLib->ReadCertByID(g_strUserId);
-	pSKCenterLib->PrintfCodeMessage("Order", "ReadCertByID", g_nCode);
+	pSKCenterLib->PrintfCodeMessage("AutoLogIn", "ReadCertByID", g_nCode);
 
 	// 取得帳號
 	g_nCode = pSKOrderLib->GetUserAccount();
-	pSKCenterLib->PrintfCodeMessage("Order", "GetUserAccount", g_nCode);
-	// 初始化
-	g_nCode = pSKOrderLib->Initialize();
-	pSKCenterLib->PrintfCodeMessage("Order", "Initialize", g_nCode);
+	pSKCenterLib->PrintfCodeMessage("AutoLogIn", "GetUserAccount", g_nCode);
+
+	DEBUG("End");
+}
+
+void AutoOrderMTX()
+{
+	DEBUG("Started");
 
 	g_nCode = pSKOrderLib->GetFutureRights(g_strUserId);
 
-	pSKCenterLib->PrintfCodeMessage("Order", "GetFutureRights", g_nCode);
+	pSKCenterLib->PrintfCodeMessage("AutoOrderMTX", "GetFutureRights", g_nCode);
 
 	g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId, false, "MTX00", 2, 1, 0, 2, "P", 1, 0);
-	pSKCenterLib->PrintfCodeMessage("Order", "SendFutureOrder", g_nCode);
+	pSKCenterLib->PrintfCodeMessage("AutoOrderMTX", "SendFutureOrder", g_nCode);
 
 	logger.log(__func__, "SendFutureOrder res = %d ", g_nCode);
 
@@ -62,11 +60,11 @@ void AutoOrderMTX()
 										   1,
 										   0);
 
-	pSKCenterLib->PrintfCodeMessage("Order", "SendFutureOrder", g_nCode);
+	pSKCenterLib->PrintfCodeMessage("AutoOrderMTX", "SendFutureOrder", g_nCode);
 
-	logger.log(__func__, "SendFutureOrder res = %d ", g_nCode);
+	DEBUG("SendFutureOrder res = %d", g_nCode);
 
-	logger.log("Application finished.", __func__);
+	DEBUG("End");
 }
 
 void Order()
@@ -355,8 +353,8 @@ void release()
 
 void thread_main()
 {
-	// int nServiceType;
-	Quote();
+	AutoLogIn();
+	//Quote();
 	AutoOrderMTX();
 
 	// bool bWhile = true;

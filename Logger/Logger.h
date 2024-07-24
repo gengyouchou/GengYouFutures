@@ -8,6 +8,7 @@
 
 #ifndef NDEBUG
 #define LOGGING_ENABLED
+#define ENABLE_DEBUG
 #endif
 
 class Logger
@@ -80,6 +81,16 @@ private:
         }
     }
 };
+
+#if !defined(NDEBUG) && defined(ENABLE_DEBUG)
+#define DEBUG(...)                         \
+    do                                     \
+    {                                      \
+        logger.log(__func__, __VA_ARGS__); \
+    } while (0)
+#else
+#define DEBUG(...)
+#endif
 
 extern Logger logger;
 
