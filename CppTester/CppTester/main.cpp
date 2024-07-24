@@ -76,6 +76,26 @@ void AutoGetFutureRights()
 	DEBUG("End");
 }
 
+void AutoQuote(IN string ProductNum)
+{
+	DEBUG("Started");
+
+	if (pSKQuoteLib->IsConnected() == 1)
+	{
+		short sPageNo = 1;
+		g_nCode = pSKQuoteLib->RequestStocks(&sPageNo, ProductNum);
+		pSKCenterLib->PrintfCodeMessage("Quote", "RequestStocks", g_nCode);
+	}
+	else
+	{
+		g_nCode = pSKQuoteLib->EnterMonitorLONG();
+
+		pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
+	}
+
+	DEBUG("End");
+}
+
 void Order()
 {
 	bool bOrder = true;
@@ -369,6 +389,15 @@ void thread_main()
 	AutoLogIn();
 	AutoOrderMTX();
 	AutoGetFutureRights();
+
+	int x = 1;
+
+	while (x)
+	{
+		AutoQuote("2330");
+
+		cin >> x;
+	}
 
 	release();
 

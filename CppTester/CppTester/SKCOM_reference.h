@@ -1,4 +1,3 @@
-// SKCOM.dll
 
 #ifdef _WIN64
 #import "../../DLL/x64/SKCOM.dll"
