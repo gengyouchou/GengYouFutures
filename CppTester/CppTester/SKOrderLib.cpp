@@ -406,7 +406,7 @@ void CSKOrderLib::OnFutureRights(BSTR bstrData)
 
     string strMessage = string(_bstr_t(bstrData));
 
-    cout << "OnFutureRights ThreadID : " << endl;
+    cout << "OnFutureRights : " << endl;
     cout << "Message : " << strMessage;
 
     cout << endl;

@@ -364,22 +364,11 @@ void release()
 	CoUninitialize();
 }
 
-void EventTrigger()
-{
-	DEBUG("Start");
-	string str = "";
-
-	cin >> str;
-
-	DEBUG("End");
-}
-
 void thread_main()
 {
 	AutoLogIn();
 	AutoOrderMTX();
 	AutoGetFutureRights();
-	EventTrigger();
 
 	release();
 
