@@ -87,7 +87,7 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
 	}
 	case 22: // OnNotifyBest5LONG
 	{
-		// �R��
+		// R
 		long nBestBidQty1 = V_I4(&(pdispparams->rgvarg)[24]);
 		long nBestBid1 = V_I4(&(pdispparams->rgvarg)[23]);
 
@@ -103,7 +103,7 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
 		long nBestBidQty5 = V_I4(&(pdispparams->rgvarg)[16]);
 		long nBestBid5 = V_I4(&(pdispparams->rgvarg)[15]);
 
-		// ���
+		//
 		long nBestAsk1 = V_I4(&(pdispparams->rgvarg)[12]);
 		long nBestAskQty1 = V_I4(&(pdispparams->rgvarg)[13]);
 
@@ -234,18 +234,18 @@ void CSKQuoteLib::OnNotifyBest5LONG(
 	long nBestAsk4, long nBestAskQty4,
 	long nBestAsk5, long nBestAskQty5)
 {
-	printf("�iOnNotifyBest5LONG�j\n");
-	printf("�R��1�G%ld, �ƶq1�G%ld\n", nBestBid1, nBestBidQty1);
-	printf("�R��2�G%ld, �ƶq2�G%ld\n", nBestBid2, nBestBidQty2);
-	printf("�R��3�G%ld, �ƶq3�G%ld\n", nBestBid3, nBestBidQty3);
-	printf("�R��4�G%ld, �ƶq4�G%ld\n", nBestBid4, nBestBidQty4);
-	printf("�R��5�G%ld, �ƶq5�G%ld\n\n", nBestBid5, nBestBidQty5);
+	printf("OnNotifyBest5LONG\n");
+	printf("R1G%ld, q1G%ld\n", nBestBid1, nBestBidQty1);
+	printf("R2G%ld, q2G%ld\n", nBestBid2, nBestBidQty2);
+	printf("R3G%ld, q3G%ld\n", nBestBid3, nBestBidQty3);
+	printf("R4G%ld, q4G%ld\n", nBestBid4, nBestBidQty4);
+	printf("R5G%ld, q5G%ld\n\n", nBestBid5, nBestBidQty5);
 
-	printf("���1�G%ld,�ƶq1�G%ld\n", nBestAsk1, nBestAskQty1);
-	printf("���2�G%ld,�ƶq2�G%ld\n", nBestAsk2, nBestAskQty2);
-	printf("���3�G%ld,�ƶq3�G%ld\n", nBestAsk3, nBestAskQty3);
-	printf("���4�G%ld,�ƶq4�G%ld\n", nBestAsk4, nBestAskQty4);
-	printf("���5�G%ld,�ƶq5�G%ld\n\n", nBestAsk5, nBestAskQty5);
+	printf("1G%ld,q1G%ld\n", nBestAsk1, nBestAskQty1);
+	printf("2G%ld,q2G%ld\n", nBestAsk2, nBestAskQty2);
+	printf("3G%ld,q3G%ld\n", nBestAsk3, nBestAskQty3);
+	printf("4G%ld,q4G%ld\n", nBestAsk4, nBestAskQty4);
+	printf("5G%ld,q5G%ld\n\n", nBestAsk5, nBestAskQty5);
 	printf("=================================\n\n");
 }
 
