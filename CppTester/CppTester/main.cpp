@@ -356,6 +356,7 @@ void release()
 void thread_main()
 {
 	// int nServiceType;
+	Quote();
 	AutoOrderMTX();
 
 	// bool bWhile = true;
@@ -396,9 +397,6 @@ int main()
 {
 
 	logger.log("Application started.", __func__);
-
-	SetConsoleOutputCP(CP_UTF8);
-	std::wcout.imbue(std::locale("en_US.UTF-8"));
 
 	CoInitialize(NULL);
 
