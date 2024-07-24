@@ -96,6 +96,27 @@ void AutoQuote(IN string ProductNum)
 	DEBUG("End");
 }
 
+void AutoQuoteTicks(IN string ProductNum)
+{
+	DEBUG("Started");
+
+	if (pSKQuoteLib->IsConnected() == 1)
+	{
+		short sPageNo = -1;
+		g_nCode = pSKQuoteLib->RequestTicks(&sPageNo, ProductNum);
+
+		pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
+	}
+	else
+	{
+		g_nCode = pSKQuoteLib->EnterMonitorLONG();
+
+		pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
+	}
+
+	DEBUG("End");
+}
+
 void Order()
 {
 	bool bOrder = true;
@@ -394,8 +415,16 @@ void thread_main()
 
 	while (x)
 	{
-		AutoQuote("2330");
+		AutoQuote("MTX00");
 
+		cin >> x;
+	}
+
+	x = 1;
+
+	while (x)
+	{
+		AutoQuoteTicks("MTX00");
 		cin >> x;
 	}
 
