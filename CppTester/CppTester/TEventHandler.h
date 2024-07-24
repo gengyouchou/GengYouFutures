@@ -118,7 +118,7 @@ namespace TEventHandlerNamespace
 
         void SetupConnectionPoint(device_interface *pdevice_interface)
         {
-            logger.log("Application started.", __func__);
+            DEBUG("Start");
 
             IConnectionPointContainer *pIConnectionPointContainerTemp = NULL;
             IUnknown *pIUnknown = NULL;
@@ -129,7 +129,9 @@ namespace TEventHandlerNamespace
 
             if (pIUnknown)
             {
-                logger.log(__func__, "pIUnknown");
+
+                DEBUG("pIUnknown");
+
                 // QI the pdevice_interface for its connection point.
                 pdevice_interface->QueryInterface(IID_IConnectionPointContainer, (void **)&pIConnectionPointContainerTemp);
 
@@ -142,15 +144,15 @@ namespace TEventHandlerNamespace
 
                 if (m_pIConnectionPoint)
                 {
-                    logger.log(__func__, "m_pIConnectionPoint->Advise(pIUnknown, &m_dwEventCookie);");
+                    DEBUG("m_pIConnectionPoint->Advise");
+
                     m_pIConnectionPoint->Advise(pIUnknown, &m_dwEventCookie);
                 }
 
                 pIUnknown->Release();
                 pIUnknown = NULL;
             }
-
-            logger.log("Application end.", __func__);
+            DEBUG("End");
         }
 
     public:

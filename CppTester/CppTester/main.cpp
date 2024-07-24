@@ -47,7 +47,7 @@ void AutoOrderMTX()
 	g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId, false, "MTX00", 2, 1, 0, 2, "P", 1, 0);
 	pSKCenterLib->PrintfCodeMessage("AutoOrderMTX", "SendFutureOrder", g_nCode);
 
-	logger.log(__func__, "SendFutureOrder res = %d ", g_nCode);
+	DEBUG("SendFutureOrder res = %d", g_nCode);
 
 	g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
 										   false,
@@ -354,7 +354,7 @@ void release()
 void thread_main()
 {
 	AutoLogIn();
-	//Quote();
+	// Quote();
 	AutoOrderMTX();
 
 	// bool bWhile = true;
@@ -394,7 +394,7 @@ void thread_main()
 int main()
 {
 
-	logger.log("Application started.", __func__);
+	DEBUG("start");
 
 	CoInitialize(NULL);
 
@@ -437,7 +437,7 @@ int main()
 		DispatchMessageW(&msg);
 	}
 
-	logger.log("Application end.", __func__);
+	DEBUG("end");
 
 	system("pause");
 

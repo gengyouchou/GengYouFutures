@@ -43,13 +43,12 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
     VariantInit(&varlValue);
     VariantClear(&varlValue);
 
-    logger.log(__func__, "dispidMember == %d", dispidMember);
+    DEBUG("dispidMember == %d", dispidMember);
 
     switch (dispidMember)
     {
     case 1:
     {
-        logger.log("case 1", __func__);
         varlValue = (pdispparams->rgvarg)[1];
         _bstr_t bstrLoginID = V_BSTR(&varlValue);
         varlValue = (pdispparams->rgvarg)[0];
@@ -60,8 +59,6 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
     }
     case 2:
     {
-        logger.log("case 2", __func__);
-
         varlValue = (pdispparams->rgvarg)[2];
         LONG nThreadID = V_I4(&varlValue);
         varlValue = (pdispparams->rgvarg)[1];
@@ -74,8 +71,6 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
     }
     case 9: // DISPID == 9
     {
-        logger.log("case 9", __func__);
-
         if (pdispparams->cArgs == 1)
         {
             BSTR bstrData = pdispparams->rgvarg[0].bstrVal;
@@ -101,7 +96,7 @@ long CSKOrderLib::GetUserAccount()
 
 long CSKOrderLib::GetFutureRights(string strLogInID)
 {
-    logger.log("Application started.", __func__);
+    DEBUG("start");
 
     string strFullAccount_TF = "";
 
@@ -118,9 +113,9 @@ long CSKOrderLib::GetFutureRights(string strLogInID)
 
     long res = m_pSKOrderLib->GetFutureRights(BstrUserId, BstrFullAccount, 0);
 
-    logger.log(__func__, "m_pSKOrderLib->GetFutureRights result = %d", res);
+    DEBUG("m_pSKOrderLib->GetFutureRights result = %d", res);
 
-    logger.log("Application finished.", __func__);
+    DEBUG("end");
 
     return res;
 }
@@ -193,7 +188,7 @@ long CSKOrderLib::SendFutureOrder(string strLogInID, bool bAsyncOrder, string st
     string StrMessage = string(_bstr_t(bstrMessage));
     cout << "SendFutureOrder : " << StrMessage << endl;
 
-    logger.log(__func__, "SendFutureOrder : %s", StrMessage);
+    DEBUG("SendFutureOrder : %s", StrMessage);
 
     ::SysFreeString(bstrMessage);
 
@@ -407,7 +402,8 @@ void CSKOrderLib::OnAccount(string strLoginID, string strAccountData)
 
 void CSKOrderLib::OnFutureRights(BSTR bstrData)
 {
-    logger.log("Application started.", __func__);
+    DEBUG("start");
+
     string strMessage = string(_bstr_t(bstrData));
 
     cout << "OnFutureRights ThreadID : " << endl;
@@ -415,7 +411,7 @@ void CSKOrderLib::OnFutureRights(BSTR bstrData)
 
     cout << endl;
 
-    logger.log("Application finished.", __func__);
+    DEBUG("end");
 }
 
 void CSKOrderLib::OnAsyncOrder(long nThreadID, long nCode, string strMessage)
