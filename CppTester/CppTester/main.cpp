@@ -40,10 +40,6 @@ void AutoOrderMTX()
 {
 	DEBUG("Started");
 
-	g_nCode = pSKOrderLib->GetFutureRights(g_strUserId);
-
-	pSKCenterLib->PrintfCodeMessage("AutoOrderMTX", "GetFutureRights", g_nCode);
-
 	g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId, false, "MTX00", 2, 1, 0, 2, "P", 1, 0);
 	pSKCenterLib->PrintfCodeMessage("AutoOrderMTX", "SendFutureOrder", g_nCode);
 
@@ -67,6 +63,19 @@ void AutoOrderMTX()
 	DEBUG("End");
 }
 
+void AutoGetFutureRights()
+{
+	DEBUG("Started");
+
+	g_nCode = pSKOrderLib->GetFutureRights(g_strUserId);
+
+	pSKCenterLib->PrintfCodeMessage("AutoGetFutureRights", "GetFutureRights", g_nCode);
+
+	DEBUG("GetFutureRights res = %d", g_nCode);
+
+	DEBUG("End");
+}
+
 void Order()
 {
 	bool bOrder = true;
@@ -76,6 +85,7 @@ void Order()
 	long nQty = 0, nTradeType = 0, nSpecialTradeType = 0;
 
 	// 初始化
+
 	g_nCode = pSKOrderLib->Initialize();
 	pSKCenterLib->PrintfCodeMessage("Order", "Initialize", g_nCode);
 
@@ -252,6 +262,7 @@ void Reply()
 
 void Quote()
 {
+	DEBUG("start");
 	bool bQuote = true;
 	int QuoteType = 0;
 	short sPageNo = -1, sMarket = 0;
@@ -331,6 +342,8 @@ void Quote()
 			break;
 		}
 	}
+
+	DEBUG("end");
 }
 
 void init()
@@ -354,35 +367,9 @@ void release()
 void thread_main()
 {
 	AutoLogIn();
-	// Quote();
 	AutoOrderMTX();
-
-	// bool bWhile = true;
-	// while (bWhile)
-	// {
-	// 	printf("\n請選擇要使用的項目 (1：下單 , 2：回報 , 3：報價 , -1：離開)：");
-
-	// 	cin >> nServiceType;
-	// 	switch (nServiceType)
-	// 	{
-	// 	case -1:
-	// 		bWhile = false;
-	// 		printf("離開程式\n");
-	// 		break;
-	// 	case 1:
-	// 		Order();
-	// 		break;
-	// 	case 2:
-	// 		Reply();
-	// 		break;
-	// 	case 3:
-	// 		Quote();
-	// 		break;
-	// 	default:
-	// 		printf("輸入代碼錯誤，請重新輸入\n");
-	// 		break;
-	// 	}
-	// }
+	AutoGetFutureRights();
+	Quote();
 
 	release();
 
