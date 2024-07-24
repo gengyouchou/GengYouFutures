@@ -189,7 +189,11 @@ long CSKOrderLib::SendFutureOrder(string strLogInID, bool bAsyncOrder, string st
 
     BSTR bstrMessage;
     long m_nCode = m_pSKOrderLib->SendFutureOrderCLR(_bstr_t(strLogInID.c_str()), VARIANT_BOOL(bAsyncOrder), &pFutures, &bstrMessage);
-    cout << "SendFutureOrder : " << string(_bstr_t(bstrMessage)) << endl;
+
+    string StrMessage = string(_bstr_t(bstrMessage));
+    cout << "SendFutureOrder : " << StrMessage << endl;
+
+    logger.log(__func__, "SendFutureOrder : %s", StrMessage);
 
     ::SysFreeString(bstrMessage);
 

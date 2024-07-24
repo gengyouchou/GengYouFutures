@@ -25,12 +25,4 @@ Logger::~Logger()
 #endif
 }
 
-void Logger::log(const std::string &message, const std::string &functionName)
-{
-#ifdef LOGGING_ENABLED
-    if (logFile.is_open())
-    {
-        logFile << "[" << functionName << "] " << message << std::endl;
-    }
-#endif
-}
+

@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <iomanip> // for std::hex
 
 #ifndef NDEBUG
 #define LOGGING_ENABLED
@@ -35,7 +36,15 @@ private:
 
     void format_string(std::ostringstream &oss, const char *format)
     {
-        oss << format;
+        while (*format != '\0')
+        {
+            if (*format == '%' && (*(format + 1) == 's' || *(format + 1) == 'd' || *(format + 1) == 'x'))
+            {
+                // handle case where format specifier is not followed by any argument
+                throw std::runtime_error("Too few arguments for format string");
+            }
+            oss << *format++;
+        }
     }
 
     template <typename T, typename... Args>
@@ -43,9 +52,23 @@ private:
     {
         while (*format != '\0')
         {
-            if (*format == '%' && *(format + 1) == 'd')
+            if (*format == '%' && *(format + 1) == 's')
             {
                 oss << value;
+                format += 2;
+                format_string(oss, format, args...);
+                return;
+            }
+            else if (*format == '%' && *(format + 1) == 'd')
+            {
+                oss << std::dec << value;
+                format += 2;
+                format_string(oss, format, args...);
+                return;
+            }
+            else if (*format == '%' && *(format + 1) == 'x')
+            {
+                oss << std::hex << value;
                 format += 2;
                 format_string(oss, format, args...);
                 return;
