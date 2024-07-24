@@ -32,6 +32,8 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
 	EXCEPINFO *pexcepinfo,
 	UINT *puArgErr)
 {
+	DEBUG("dispidMember == %d", dispidMember);
+
 	VARIANT varlValue;
 	VariantInit(&varlValue);
 	VariantClear(&varlValue);
@@ -123,6 +125,15 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
 
 		break;
 	}
+	case 6:
+	{
+		BSTR bstrStockNo = pdispparams->rgvarg[0].bstrVal;
+		BSTR bstrData = pdispparams->rgvarg[1].bstrVal;
+
+		OnNotifyKLineData(bstrStockNo, bstrData);
+
+		break;
+	}
 	}
 
 	return S_OK;
@@ -162,6 +173,13 @@ long CSKQuoteLib::RequestTicks(short *psPageNo, string strStockNos)
 long CSKQuoteLib::RequestStockList(short MarketNo)
 {
 	return m_pSKQuoteLib->SKQuoteLib_RequestStockList(MarketNo);
+}
+
+long CSKQuoteLib::RequestKLine(string strStockNo)
+{
+	DEBUG("start");
+	BSTR BstrStockNo = _bstr_t(strStockNo.c_str());
+	return m_pSKQuoteLib->SKQuoteLib_RequestKLine(BstrStockNo, 4, 1);
 }
 
 // Events
@@ -268,4 +286,26 @@ void CSKQuoteLib::OnNotifyStockList(long sMarketNo, string strStockData)
 	}
 
 	cout << endl;
+}
+
+void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
+{
+	DEBUG("start");
+
+	string strStockNo = string(_bstr_t(bstrStockNo));
+
+	cout << "OnNotifyKLineData : " << endl;
+	cout << "strStockNo : " << strStockNo << endl;
+
+	DEBUG("strStockNo= %s", strStockNo);
+
+	string strData = string(_bstr_t(bstrData));
+
+	cout << "strData : " << strData;
+
+	DEBUG("strData= %s", strData);
+
+	cout << endl;
+
+	DEBUG("end");
 }
