@@ -193,6 +193,13 @@ long CSKQuoteLib::RequestKLine(string strStockNo)
 	long res = m_pSKQuoteLib->SKQuoteLib_RequestKLineAMByDate(BstrStockNo, 4, 1, 1, StartDate, EndDate, 0);
 
 	DEBUG("m_pSKQuoteLib->SKQuoteLib_RequestKLineAMByDate = %d", res);
+
+	if (res != 0)
+	{
+		res = m_pSKQuoteLib->SKQuoteLib_RequestKLine(BstrStockNo, 4, 1);
+		DEBUG("m_pSKQuoteLib->SKQuoteLib_RequestKLine = %d", res);
+	}
+
 	return res;
 }
 
