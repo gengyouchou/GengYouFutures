@@ -1,5 +1,7 @@
 #include "SKQuoteLib.h"
 
+HANDLE hEvent;
+
 CSKQuoteLib::CSKQuoteLib()
 {
 	m_pSKQuoteLib.CreateInstance(__uuidof(SKCOMLib::SKQuoteLib));
@@ -200,6 +202,9 @@ long CSKQuoteLib::RequestKLine(string strStockNo)
 		DEBUG("m_pSKQuoteLib->SKQuoteLib_RequestKLine = %d", res);
 	}
 
+	WaitForSingleObject(hEvent, INFINITE);
+	DEBUG("Event received, proceeding with next step");
+
 	return res;
 }
 
@@ -327,6 +332,8 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 	DEBUG("strData= %s", strData);
 
 	cout << endl;
+
+	SetEvent(hEvent);
 
 	DEBUG("end");
 }

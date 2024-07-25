@@ -121,18 +121,15 @@ void AutoKLineData(IN string ProductNum)
 {
 	DEBUG("Started");
 
-	if (pSKQuoteLib->IsConnected() == 1)
-	{
-		g_nCode = pSKQuoteLib->RequestKLine(ProductNum);
-
-		pSKCenterLib->PrintfCodeMessage("Quote", "RequestKLine", g_nCode);
-	}
-	else
+	if (pSKQuoteLib->IsConnected() != 1)
 	{
 		g_nCode = pSKQuoteLib->EnterMonitorLONG();
-
 		pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
 	}
+
+	g_nCode = pSKQuoteLib->RequestKLine(ProductNum);
+
+	pSKCenterLib->PrintfCodeMessage("Quote", "RequestKLine", g_nCode);
 
 	DEBUG("End");
 }
@@ -425,6 +422,8 @@ void release()
 	CoUninitialize();
 }
 
+extern HANDLE hEvent;
+
 void thread_main()
 {
 	AutoLogIn();
@@ -448,13 +447,11 @@ void thread_main()
 	//     cin >> x;
 	// }
 
-	x = 1;
+	hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-	while (x)
-	{
-		AutoKLineData("MTX00");
-		cin >> x;
-	}
+	AutoKLineData("MTX00");
+
+	CloseHandle(hEvent);
 
 	release();
 
