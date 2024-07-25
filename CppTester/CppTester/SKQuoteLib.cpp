@@ -127,11 +127,15 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
 	}
 	case 6:
 	{
-		BSTR bstrStockNo = pdispparams->rgvarg[0].bstrVal;
-		BSTR bstrData = pdispparams->rgvarg[1].bstrVal;
+		BSTR bstrStockNo = pdispparams->rgvarg[1].bstrVal;
+		BSTR bstrData = pdispparams->rgvarg[0].bstrVal;
 
 		OnNotifyKLineData(bstrStockNo, bstrData);
 
+		break;
+	}
+	case 7:
+	{
 		break;
 	}
 	}
@@ -179,7 +183,17 @@ long CSKQuoteLib::RequestKLine(string strStockNo)
 {
 	DEBUG("start");
 	BSTR BstrStockNo = _bstr_t(strStockNo.c_str());
-	return m_pSKQuoteLib->SKQuoteLib_RequestKLine(BstrStockNo, 4, 1);
+
+	string StartDateStr = "20240716";
+	BSTR StartDate = _bstr_t(StartDateStr.c_str());
+
+	string EndDateStr = "20240719";
+	BSTR EndDate = _bstr_t(EndDateStr.c_str());
+
+	long res = m_pSKQuoteLib->SKQuoteLib_RequestKLineAMByDate(BstrStockNo, 4, 1, 1, StartDate, EndDate, 0);
+
+	DEBUG("m_pSKQuoteLib->SKQuoteLib_RequestKLineAMByDate = %d", res);
+	return res;
 }
 
 // Events
