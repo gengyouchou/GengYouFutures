@@ -4,7 +4,8 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <iomanip> // for std::hex
+#include <iomanip>   // for std::hex
+#include <stdexcept> // for std::runtime_error
 
 #ifndef NDEBUG
 #define LOGGING_ENABLED
@@ -39,7 +40,7 @@ private:
     {
         while (*format != '\0')
         {
-            if (*format == '%' && (*(format + 1) == 's' || *(format + 1) == 'd' || *(format + 1) == 'x'))
+            if (*format == '%' && (*(format + 1) == 's' || *(format + 1) == 'd' || *(format + 1) == 'x' || *(format + 1) == 'l'))
             {
                 // handle case where format specifier is not followed by any argument
                 throw std::runtime_error("Too few arguments for format string");
@@ -71,6 +72,20 @@ private:
             {
                 oss << std::hex << value;
                 format += 2;
+                format_string(oss, format, args...);
+                return;
+            }
+            else if (*format == '%' && *(format + 1) == 'l' && *(format + 2) == 'd')
+            {
+                if constexpr (std::is_same_v<T, long>)
+                {
+                    oss << std::dec << value;
+                }
+                else
+                {
+                    throw std::runtime_error("Invalid type for %ld format specifier");
+                }
+                format += 3;
                 format_string(oss, format, args...);
                 return;
             }
