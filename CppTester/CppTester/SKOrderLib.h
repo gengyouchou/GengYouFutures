@@ -29,11 +29,15 @@ public:
     long CorrectPrice(string strLogInID, bool bAsyncOrder, int nMarket, int nType, string strNo, string strPrice, long nTradeType);
     long CancelOrder(string strLogInID, bool bAsyncOrder, int nMarket, int nType, string strNo);
 
+    // GetOpenInterestGW
+
     // Event
     void OnAccount(string strLoginID, string strAccountData);
     void OnAsyncOrder(long nThreadID, long nCode, string strMessage);
 
     void OnFutureRights(BSTR bstrData);
+
+    // OnOpenInterest
 
 private:
     HRESULT OnEventFiringObjectInvoke(

@@ -279,6 +279,8 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
 	printf("OnNotifyTicksLONG : %ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
 	DEBUG("nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
+
+	// CalculateLongOrShort();
 }
 
 void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty)
@@ -329,6 +331,8 @@ void CSKQuoteLib::OnNotifyBest5LONG(
 	DEBUG("Bid4: [%ld], q4G: [%ld]\n", nBestBid4, nBestBidQty4);
 	DEBUG("Bid5: [%ld], q5G: [%ld]\n\n", nBestBid5, nBestBidQty5);
 
+	// CalculateLongOrShort();
+
 	DEBUG("end");
 }
 
@@ -373,6 +377,8 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 	cout << endl;
 
 	SetEvent(hEvent);
+
+	// CalculateLongOrShort();
 
 	DEBUG("end");
 }

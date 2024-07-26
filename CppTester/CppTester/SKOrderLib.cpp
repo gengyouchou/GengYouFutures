@@ -411,6 +411,8 @@ void CSKOrderLib::OnFutureRights(BSTR bstrData)
 
     cout << endl;
 
+    // CalculateLoss();
+
     DEBUG("end");
 }
 
