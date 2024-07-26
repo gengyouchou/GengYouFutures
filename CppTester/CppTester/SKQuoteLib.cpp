@@ -65,6 +65,7 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
 	}
 	case 20: // OnNotifyHistoryTicksLONG
 	{
+		break;
 		long nStockIndex = V_I4(&(pdispparams->rgvarg)[9]);
 		long nPtr = V_I4(&(pdispparams->rgvarg)[8]);
 		long nDate = V_I4(&(pdispparams->rgvarg)[7]);
@@ -91,42 +92,59 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
 	}
 	case 22: // OnNotifyBest5LONG
 	{
-		// R
-		long nBestBidQty1 = V_I4(&(pdispparams->rgvarg)[24]);
-		long nBestBid1 = V_I4(&(pdispparams->rgvarg)[23]);
+		// from last to first
+		// LONG nSimulate = V_I4(&(pdispparams->rgvarg)[0]);
+		// LONG nExtendAskQty = V_I4(&(pdispparams->rgvarg)[1]);
+		LONG nExtendAsk = V_I4(&(pdispparams->rgvarg)[2]);
+		LONG nBestAskQty5 = V_I4(&(pdispparams->rgvarg)[3]);
+		LONG nBestAsk5 = V_I4(&(pdispparams->rgvarg)[4]);
+		LONG nBestAskQty4 = V_I4(&(pdispparams->rgvarg)[5]);
+		LONG nBestAsk4 = V_I4(&(pdispparams->rgvarg)[6]);
+		LONG nBestAskQty3 = V_I4(&(pdispparams->rgvarg)[7]);
+		LONG nBestAsk3 = V_I4(&(pdispparams->rgvarg)[8]);
+		LONG nBestAskQty2 = V_I4(&(pdispparams->rgvarg)[9]);
+		LONG nBestAsk2 = V_I4(&(pdispparams->rgvarg)[10]);
+		LONG nBestAskQty1 = V_I4(&(pdispparams->rgvarg)[11]);
+		LONG nBestAsk1 = V_I4(&(pdispparams->rgvarg)[12]);
+		// LONG nExtendBidQty = V_I4(&(pdispparams->rgvarg)[13]);
+		// LONG nExtendBid = V_I4(&(pdispparams->rgvarg)[14]);
+		LONG nBestBidQty5 = V_I4(&(pdispparams->rgvarg)[15]);
+		LONG nBestBid5 = V_I4(&(pdispparams->rgvarg)[16]);
+		LONG nBestBidQty4 = V_I4(&(pdispparams->rgvarg)[17]);
+		LONG nBestBid4 = V_I4(&(pdispparams->rgvarg)[18]);
+		LONG nBestBidQty3 = V_I4(&(pdispparams->rgvarg)[19]);
+		LONG nBestBid3 = V_I4(&(pdispparams->rgvarg)[20]);
+		LONG nBestBidQty2 = V_I4(&(pdispparams->rgvarg)[21]);
+		LONG nBestBid2 = V_I4(&(pdispparams->rgvarg)[22]);
+		LONG nBestBidQty1 = V_I4(&(pdispparams->rgvarg)[23]);
+		LONG nBestBid1 = V_I4(&(pdispparams->rgvarg)[24]);
+		// LONG nStockidx = V_I4(&(pdispparams->rgvarg)[25]);
+		// SHORT sMarketNo = V_I2(&(pdispparams->rgvarg)[26]);
 
-		long nBestBidQty2 = V_I4(&(pdispparams->rgvarg)[22]);
-		long nBestBid2 = V_I4(&(pdispparams->rgvarg)[21]);
-
-		long nBestBidQty3 = V_I4(&(pdispparams->rgvarg)[20]);
-		long nBestBid3 = V_I4(&(pdispparams->rgvarg)[19]);
-
-		long nBestBidQty4 = V_I4(&(pdispparams->rgvarg)[18]);
-		long nBestBid4 = V_I4(&(pdispparams->rgvarg)[17]);
-
-		long nBestBidQty5 = V_I4(&(pdispparams->rgvarg)[16]);
-		long nBestBid5 = V_I4(&(pdispparams->rgvarg)[15]);
-
-		//
-		long nBestAsk1 = V_I4(&(pdispparams->rgvarg)[12]);
-		long nBestAskQty1 = V_I4(&(pdispparams->rgvarg)[13]);
-
-		long nBestAsk2 = V_I4(&(pdispparams->rgvarg)[10]);
-		long nBestAskQty2 = V_I4(&(pdispparams->rgvarg)[11]);
-
-		long nBestAsk3 = V_I4(&(pdispparams->rgvarg)[8]);
-		long nBestAskQty3 = V_I4(&(pdispparams->rgvarg)[9]);
-
-		long nBestAsk4 = V_I4(&(pdispparams->rgvarg)[6]);
-		long nBestAskQty4 = V_I4(&(pdispparams->rgvarg)[7]);
-
-		long nBestAsk5 = V_I4(&(pdispparams->rgvarg)[4]);
-		long nBestAskQty5 = V_I4(&(pdispparams->rgvarg)[5]);
-
-		OnNotifyBest5LONG(nBestBid1, nBestBidQty1, nBestBid2, nBestBidQty2, nBestBid3, nBestBidQty3, nBestBid4, nBestBidQty4, nBestBid5, nBestBidQty5, nBestAsk1, nBestAskQty1, nBestAsk2, nBestAskQty2, nBestAsk3, nBestAskQty3, nBestAsk4, nBestAskQty4, nBestAsk5, nBestAskQty5);
+		OnNotifyBest5LONG(nBestBid1,
+						  nBestBidQty1,
+						  nBestBid2,
+						  nBestBidQty2,
+						  nBestBid3,
+						  nBestBidQty3,
+						  nBestBid4,
+						  nBestBidQty4,
+						  nBestBid5,
+						  nBestBidQty5,
+						  nBestAsk1,
+						  nBestAskQty1,
+						  nBestAsk2,
+						  nBestAskQty2,
+						  nBestAsk3,
+						  nBestAskQty3,
+						  nBestAsk4,
+						  nBestAskQty4,
+						  nBestAsk5,
+						  nBestAskQty5);
 
 		break;
 	}
+
 	case 6:
 	{
 		BSTR bstrStockNo = pdispparams->rgvarg[1].bstrVal;
@@ -281,19 +299,37 @@ void CSKQuoteLib::OnNotifyBest5LONG(
 	long nBestAsk4, long nBestAskQty4,
 	long nBestAsk5, long nBestAskQty5)
 {
-	printf("OnNotifyBest5LONG\n");
-	printf("R1G%ld, q1G%ld\n", nBestBid1, nBestBidQty1);
-	printf("R2G%ld, q2G%ld\n", nBestBid2, nBestBidQty2);
-	printf("R3G%ld, q3G%ld\n", nBestBid3, nBestBidQty3);
-	printf("R4G%ld, q4G%ld\n", nBestBid4, nBestBidQty4);
-	printf("R5G%ld, q5G%ld\n\n", nBestBid5, nBestBidQty5);
+	DEBUG("start");
 
-	printf("1G%ld,q1G%ld\n", nBestAsk1, nBestAskQty1);
-	printf("2G%ld,q2G%ld\n", nBestAsk2, nBestAskQty2);
-	printf("3G%ld,q3G%ld\n", nBestAsk3, nBestAskQty3);
-	printf("4G%ld,q4G%ld\n", nBestAsk4, nBestAskQty4);
-	printf("5G%ld,q5G%ld\n\n", nBestAsk5, nBestAskQty5);
+	printf("OnNotifyBest5LONG\n");
+
+	printf("Ofr1: [%ld],q1G: [%ld]\n", nBestAsk1, nBestAskQty1);
+	printf("Ofr2: [%ld],q2G: [%ld]\n", nBestAsk2, nBestAskQty2);
+	printf("Ofr3: [%ld],q3G: [%ld]\n", nBestAsk3, nBestAskQty3);
+	printf("Ofr4: [%ld],q4G: [%ld]\n", nBestAsk4, nBestAskQty4);
+	printf("Ofr5: [%ld],q5G: [%ld]\n\n", nBestAsk5, nBestAskQty5);
+
+	printf("Bid1: [%ld], q1G: [%ld]\n", nBestBid1, nBestBidQty1);
+	printf("Bid2: [%ld], q2G: [%ld]\n", nBestBid2, nBestBidQty2);
+	printf("Bid3: [%ld], q3G: [%ld]\n", nBestBid3, nBestBidQty3);
+	printf("Bid4: [%ld], q4G: [%ld]\n", nBestBid4, nBestBidQty4);
+	printf("Bid5: [%ld], q5G: [%ld]\n\n", nBestBid5, nBestBidQty5);
+
 	printf("=================================\n\n");
+
+	DEBUG("Ofr1: [%ld], q1G: [%ld]\n", nBestAsk1, nBestAskQty1);
+	DEBUG("Ofr2: [%ld], q2G: [%ld]\n", nBestAsk2, nBestAskQty2);
+	DEBUG("Ofr3: [%ld], q3G: [%ld]\n", nBestAsk3, nBestAskQty3);
+	DEBUG("Ofr4: [%ld], q4G: [%ld]\n", nBestAsk4, nBestAskQty4);
+	DEBUG("Ofr5: [%ld], q5G: [%ld]\n\n", nBestAsk5, nBestAskQty5);
+
+	DEBUG("Bid1: [%ld], q1G: [%ld]\n", nBestBid1, nBestBidQty1);
+	DEBUG("Bid2: [%ld], q2G: [%ld]\n", nBestBid2, nBestBidQty2);
+	DEBUG("Bid3: [%ld], q3G: [%ld]\n", nBestBid3, nBestBidQty3);
+	DEBUG("Bid4: [%ld], q4G: [%ld]\n", nBestBid4, nBestBidQty4);
+	DEBUG("Bid5: [%ld], q5G: [%ld]\n\n", nBestBid5, nBestBidQty5);
+
+	DEBUG("end");
 }
 
 void CSKQuoteLib::OnNotifyStockList(long sMarketNo, string strStockData)
