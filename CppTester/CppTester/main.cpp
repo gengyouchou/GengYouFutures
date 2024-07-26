@@ -434,24 +434,30 @@ void thread_main()
 
 	// while (x)
 	// {
-	//     AutoQuote("MTX00");
+	// 	AutoQuote("MTX00");
 
-	//     cin >> x;
+	// 	cin >> x;
 	// }
+
+	x = 1;
+
+	while (x)
+	{
+		AutoQuoteTicks("MTX00");
+		cin >> x;
+	}
+
+	// hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	// x = 1;
 
 	// while (x)
 	// {
-	//     AutoQuoteTicks("MTX00");
-	//     cin >> x;
+	// 	AutoKLineData("MTX00");
+	// 	cin >> x;
 	// }
 
-	hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-	AutoKLineData("MTX00");
-
-	CloseHandle(hEvent);
+	// CloseHandle(hEvent);
 
 	release();
 
