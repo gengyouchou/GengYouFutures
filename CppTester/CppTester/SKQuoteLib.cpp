@@ -1,6 +1,11 @@
 #include "SKQuoteLib.h"
+#include <deque>
+#include <iostream>
 
-HANDLE hEvent;
+std::deque<long> gDaysKlineDiff;
+#define DayMA 20
+
+long CalculateDiff(const std::string &data);
 
 CSKQuoteLib::CSKQuoteLib()
 {
@@ -379,6 +384,15 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 
 	cout << endl;
 
+	long diff = CalculateDiff(strData);
+
+	gDaysKlineDiff.push_back(diff);
+
+	if (gDaysKlineDiff.size() > DayMA)
+	{
+		gDaysKlineDiff.pop_front();
+	}
+
 	// CalculateDailyWavesAndKeyPrices()
 
 	// SetEvent(hEvent);
@@ -386,4 +400,32 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 	// CalculateLongOrShort();
 
 	DEBUG("end");
+}
+
+long CalculateDiff(const std::string &data)
+{
+	std::istringstream stream(data);
+	std::string token;
+	std::string highStr, lowStr;
+
+	// Skip to the third and fourth values (22156.00 and 21918.00)
+	for (int i = 0; i < 4; ++i)
+	{
+		std::getline(stream, token, ',');
+		if (i == 2)
+		{
+			highStr = token;
+		}
+		else if (i == 3)
+		{
+			lowStr = token;
+		}
+	}
+
+	// Convert the strings to doubles
+	double high = std::stod(highStr);
+	double low = std::stod(lowStr);
+
+	// Calculate and return the absolute difference
+	return std::lround(std::abs(high - low));
 }

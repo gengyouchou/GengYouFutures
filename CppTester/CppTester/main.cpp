@@ -5,6 +5,8 @@
 #include <Logger.h>
 #include <conio.h>
 #include <thread>
+#include <deque>
+#include <iostream>
 
 // Define the global logger instance
 Logger logger("debug.log");
@@ -422,7 +424,7 @@ void release()
 	CoUninitialize();
 }
 
-extern HANDLE hEvent;
+extern deque<long> gDaysKlineDiff;
 
 void thread_main()
 {
@@ -448,13 +450,18 @@ void thread_main()
 	// }
 
 	// hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-
 	x = 1;
 
 	while (x)
 	{
 		AutoKLineData("MTX00");
+
 		cin >> x;
+	}
+
+	for (int i = 0; i < gDaysKlineDiff.size(); ++i)
+	{
+		DEBUG("Diff = %ld ", gDaysKlineDiff[i]);
 	}
 
 	// CloseHandle(hEvent);
