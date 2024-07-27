@@ -459,10 +459,34 @@ void thread_main()
 	// 	cin >> x;
 	// }
 
+	long long accu = 0;
+	long AverAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;
+
 	for (int i = 0; i < gDaysKlineDiff.size(); ++i)
 	{
 		DEBUG("Diff = %ld ", gDaysKlineDiff[i]);
+
+		accu += gDaysKlineDiff[i];
+
+		LargestAmp = max(LargestAmp, gDaysKlineDiff[i]);
+		SmallestAmp = min(SmallestAmp, gDaysKlineDiff[i]);
 	}
+
+	AverAmp = accu / DayMA;
+
+	LargerAmp = (AverAmp + LargestAmp) / 2;
+	SmallAmp = (AverAmp + SmallestAmp) / 2;
+
+	DEBUG("SmallestAmp : %ld", SmallestAmp);
+	DEBUG("SmallAmp : %ld", SmallAmp);
+	DEBUG("AverAmp : %ld", AverAmp);
+	DEBUG("LargerAmp : %ld", LargerAmp);
+	DEBUG("LargestAmp : %ld", LargestAmp);
+
+	// while (true)
+	// {
+
+	// }
 
 	// CloseHandle(hEvent);
 

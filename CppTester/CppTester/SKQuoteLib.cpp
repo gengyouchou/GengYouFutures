@@ -3,7 +3,7 @@
 #include <iostream>
 
 std::deque<long> gDaysKlineDiff;
-#define DayMA 20
+
 
 long CalculateDiff(const std::string &data);
 
