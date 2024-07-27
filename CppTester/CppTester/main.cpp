@@ -4,9 +4,9 @@
 #include "SKReplyLib.h"
 #include <Logger.h>
 #include <conio.h>
-#include <thread>
 #include <deque>
 #include <iostream>
+#include <thread>
 
 // Define the global logger instance
 Logger logger("debug.log");
@@ -123,7 +123,7 @@ void AutoKLineData(IN string ProductNum)
 {
 	DEBUG("Started");
 
-	if (pSKQuoteLib->IsConnected() != 1)
+	while (pSKQuoteLib->IsConnected() != 1)
 	{
 		g_nCode = pSKQuoteLib->EnterMonitorLONG();
 		pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
@@ -450,14 +450,14 @@ void thread_main()
 	// }
 
 	// hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	x = 1;
+	// x = 1;
 
-	while (x)
-	{
-		AutoKLineData("MTX00");
+	// while (x)
+	// {
+	AutoKLineData("MTX00");
 
-		cin >> x;
-	}
+	// 	cin >> x;
+	// }
 
 	for (int i = 0; i < gDaysKlineDiff.size(); ++i)
 	{
