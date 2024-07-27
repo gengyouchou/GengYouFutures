@@ -82,18 +82,15 @@ void AutoQuote(IN string ProductNum)
 {
 	DEBUG("Started");
 
-	if (pSKQuoteLib->IsConnected() == 1)
-	{
-		short sPageNo = 1;
-		g_nCode = pSKQuoteLib->RequestStocks(&sPageNo, ProductNum);
-		pSKCenterLib->PrintfCodeMessage("Quote", "RequestStocks", g_nCode);
-	}
-	else
+	while (pSKQuoteLib->IsConnected() != 1)
 	{
 		g_nCode = pSKQuoteLib->EnterMonitorLONG();
-
 		pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
 	}
+
+	short sPageNo = 1;
+	g_nCode = pSKQuoteLib->RequestStocks(&sPageNo, ProductNum);
+	pSKCenterLib->PrintfCodeMessage("Quote", "RequestStocks", g_nCode);
 
 	DEBUG("End");
 }
@@ -483,10 +480,15 @@ void thread_main()
 	DEBUG("LargerAmp : %ld", LargerAmp);
 	DEBUG("LargestAmp : %ld", LargestAmp);
 
-	// while (true)
-	// {
+	AutoQuote("MTX00");
 
-	// }
+	int count = 0;
+
+	while (count < INT_MAX)
+	{
+		DEBUG("count=%d", count);
+		++count;
+	}
 
 	// CloseHandle(hEvent);
 

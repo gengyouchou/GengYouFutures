@@ -4,7 +4,6 @@
 
 std::deque<long> gDaysKlineDiff;
 
-
 long CalculateDiff(const std::string &data);
 
 CSKQuoteLib::CSKQuoteLib()
@@ -262,6 +261,8 @@ void CSKQuoteLib::OnConnection(long nKind, long nCode)
 
 void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
 {
+	DEBUG("Start");
+
 	SKCOMLib::SKSTOCKLONG skStock;
 	long nResult = GetStockByIndexLONG(sMarketNo, nStockIndex, &skStock);
 	if (nResult != 0)
@@ -277,6 +278,8 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
 		   skStock.nAsk,
 		   skStock.nClose,
 		   skStock.nTQty);
+
+	DEBUG("OnNotifyQuoteLONG : %s %s bid:%d ask:%d last:%d volume:%d\n");
 
 	delete[] szStockName;
 	delete[] szStockNo;
