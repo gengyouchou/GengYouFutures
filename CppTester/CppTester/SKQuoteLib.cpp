@@ -191,6 +191,7 @@ long CSKQuoteLib::GetStockByIndexLONG(short sMarketNo, long nStockIndex, SKCOMLi
 
 long CSKQuoteLib::RequestTicks(short *psPageNo, string strStockNos)
 {
+	// SKQuoteLib_RequestLiveTick
 	return m_pSKQuoteLib->SKQuoteLib_RequestTicks(psPageNo, _bstr_t(strStockNos.c_str()));
 }
 
@@ -204,24 +205,26 @@ long CSKQuoteLib::RequestKLine(string strStockNo)
 	DEBUG("start");
 	BSTR BstrStockNo = _bstr_t(strStockNo.c_str());
 
-	string StartDateStr = "20240716";
-	BSTR StartDate = _bstr_t(StartDateStr.c_str());
+	// string StartDateStr = "20240716";
+	// BSTR StartDate = _bstr_t(StartDateStr.c_str());
 
-	string EndDateStr = "20240719";
-	BSTR EndDate = _bstr_t(EndDateStr.c_str());
+	// string EndDateStr = "20240719";
+	// BSTR EndDate = _bstr_t(EndDateStr.c_str());
 
-	long res = m_pSKQuoteLib->SKQuoteLib_RequestKLineAMByDate(BstrStockNo, 4, 1, 1, StartDate, EndDate, 0);
+	long res = 0;
 
-	DEBUG("m_pSKQuoteLib->SKQuoteLib_RequestKLineAMByDate = %d", res);
+	// res = m_pSKQuoteLib->SKQuoteLib_RequestKLineAMByDate(BstrStockNo, 4, 1, 1, StartDate, EndDate, 0);
 
-	if (res != 0)
-	{
-		res = m_pSKQuoteLib->SKQuoteLib_RequestKLine(BstrStockNo, 4, 1);
-		DEBUG("m_pSKQuoteLib->SKQuoteLib_RequestKLine = %d", res);
-	}
+	// DEBUG("m_pSKQuoteLib->SKQuoteLib_RequestKLineAMByDate = %d", res);
 
-	WaitForSingleObject(hEvent, INFINITE);
-	DEBUG("Event received, proceeding with next step");
+	// if (res != 0)
+	// {
+	res = m_pSKQuoteLib->SKQuoteLib_RequestKLine(BstrStockNo, 4, 1);
+	DEBUG("m_pSKQuoteLib->SKQuoteLib_RequestKLine = %d", res);
+	//}
+
+	// WaitForSingleObject(hEvent, INFINITE);
+	// DEBUG("Event received, proceeding with next step");
 
 	return res;
 }
@@ -376,7 +379,9 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 
 	cout << endl;
 
-	SetEvent(hEvent);
+	// CalculateDailyWavesAndKeyPrices()
+
+	// SetEvent(hEvent);
 
 	// CalculateLongOrShort();
 
