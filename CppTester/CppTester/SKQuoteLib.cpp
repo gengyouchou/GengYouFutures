@@ -161,8 +161,20 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
 	}
 	case 7:
 	{
+
+		short sHour = V_I2(&(pdispparams->rgvarg)[3]);
+		short sMinute = V_I2(&(pdispparams->rgvarg)[2]);
+		short sSecond = V_I2(&(pdispparams->rgvarg)[1]);
+		LONG nTotal = V_I4(&(pdispparams->rgvarg)[0]);
+
+		OnNotifyServerTime(sHour, sMinute, sSecond, nTotal);
+
 		break;
 	}
+
+	default:
+
+		break;
 	}
 
 	return S_OK;
@@ -230,6 +242,16 @@ long CSKQuoteLib::RequestKLine(string strStockNo)
 
 	// WaitForSingleObject(hEvent, INFINITE);
 	// DEBUG("Event received, proceeding with next step");
+
+	return res;
+}
+
+long CSKQuoteLib::RequestServerTime()
+{
+	long res = 0;
+
+	res = m_pSKQuoteLib->SKQuoteLib_RequestServerTime();
+	DEBUG("m_pSKQuoteLib->SKQuoteLib_RequestServerTime = %d", res);
 
 	return res;
 }
@@ -447,6 +469,11 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 	// CalculateLongOrShort();
 
 	DEBUG("end");
+}
+
+void CSKQuoteLib::OnNotifyServerTime(SHORT sHour, SHORT sMinute, SHORT sSecond, LONG nTotal)
+{
+	DEBUG("Hour: %d Minute: %d Second: %d Total[%ld]", sHour, sMinute, sSecond, nTotal);
 }
 
 long CalculateDiff(const std::string &data)

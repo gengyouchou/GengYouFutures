@@ -489,6 +489,10 @@ void thread_main()
 
 	// cin >> x;
 
+	int res = pSKQuoteLib->RequestServerTime();
+
+	DEBUG("pSKQuoteLib->RequestServerTime()=%d", res);
+
 	while (true)
 	{
 		if (gEatOffer == true)
