@@ -264,10 +264,17 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
 {
 	DEBUG("Start");
 
+	DEBUG("sMarketNo= ", sMarketNo);
+
 	SKCOMLib::SKSTOCKLONG skStock;
 	long nResult = GetStockByIndexLONG(sMarketNo, nStockIndex, &skStock);
+
+	DEBUG("GetStockByIndexLONG res = ", nResult);
+
 	if (nResult != 0)
+	{
 		return;
+	}
 
 	char *szStockNo = _com_util::ConvertBSTRToString(skStock.bstrStockNo);
 	char *szStockName = _com_util::ConvertBSTRToString(skStock.bstrStockName);
