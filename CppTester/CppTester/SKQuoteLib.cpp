@@ -3,6 +3,7 @@
 #include <iostream>
 
 std::deque<long> gDaysKlineDiff;
+bool gEatOffer = false;
 
 long CalculateDiff(const std::string &data);
 
@@ -286,6 +287,16 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
 		   skStock.nAsk,
 		   skStock.nClose,
 		   skStock.nTQty);
+
+	if (skStock.nClose >= skStock.nAsk)
+	{
+		// will raise
+		gEatOffer = true;
+	}
+	else
+	{
+		gEatOffer = false;
+	}
 
 	delete[] szStockName;
 	delete[] szStockNo;
