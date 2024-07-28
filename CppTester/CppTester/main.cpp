@@ -88,9 +88,10 @@ void AutoQuote(IN string ProductNum)
 		pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
 	}
 
-	short sPageNo = 1;
+	short sPageNo = -1;
 	g_nCode = pSKQuoteLib->RequestStocks(&sPageNo, ProductNum);
 	pSKCenterLib->PrintfCodeMessage("Quote", "RequestStocks", g_nCode);
+	DEBUG("g_nCode= %d", g_nCode);
 
 	DEBUG("End");
 }
@@ -99,19 +100,18 @@ void AutoQuoteTicks(IN string ProductNum)
 {
 	DEBUG("Started");
 
-	if (pSKQuoteLib->IsConnected() == 1)
-	{
-		short sPageNo = -1;
-		g_nCode = pSKQuoteLib->RequestTicks(&sPageNo, ProductNum);
-
-		pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
-	}
-	else
+	while (pSKQuoteLib->IsConnected() != 1)
 	{
 		g_nCode = pSKQuoteLib->EnterMonitorLONG();
-
 		pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
 	}
+
+	short sPageNo = -1;
+	g_nCode = pSKQuoteLib->RequestTicks(&sPageNo, ProductNum);
+
+	pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
+
+	DEBUG("g_nCode= %d", g_nCode);
 
 	DEBUG("End");
 }
@@ -481,14 +481,24 @@ void thread_main()
 	DEBUG("LargestAmp : %ld", LargestAmp);
 
 	AutoQuote("MTX00");
+	AutoQuote("2330");
 
-	int count = 0;
+	AutoQuoteTicks("MTX00");
+	AutoQuoteTicks("2330");
 
-	while (count < INT_MAX)
+	// cin >> x;
+
+	while (true)
 	{
-		DEBUG("count=%d", count);
-		++count;
 	}
+
+	// int count = 0;
+
+	// while (count < INT_MAX)
+	// {
+	// 	DEBUG("count=%d", count);
+	// 	++count;
+	// }
 
 	// CloseHandle(hEvent);
 
