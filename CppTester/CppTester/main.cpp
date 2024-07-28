@@ -78,7 +78,7 @@ void AutoGetFutureRights()
 	DEBUG("End");
 }
 
-void AutoQuote(IN string ProductNum)
+void AutoQuote(IN string ProductNum, short sPageNo)
 {
 	DEBUG("Started");
 
@@ -88,7 +88,6 @@ void AutoQuote(IN string ProductNum)
 		pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
 	}
 
-	short sPageNo = -1;
 	g_nCode = pSKQuoteLib->RequestStocks(&sPageNo, ProductNum);
 	pSKCenterLib->PrintfCodeMessage("Quote", "RequestStocks", g_nCode);
 	DEBUG("g_nCode= %d", g_nCode);
@@ -96,7 +95,7 @@ void AutoQuote(IN string ProductNum)
 	DEBUG("End");
 }
 
-void AutoQuoteTicks(IN string ProductNum)
+void AutoQuoteTicks(IN string ProductNum, short sPageNo)
 {
 	DEBUG("Started");
 
@@ -106,7 +105,6 @@ void AutoQuoteTicks(IN string ProductNum)
 		pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
 	}
 
-	short sPageNo = -1;
 	g_nCode = pSKQuoteLib->RequestTicks(&sPageNo, ProductNum);
 
 	pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
@@ -481,11 +479,11 @@ void thread_main()
 	DEBUG("LargerAmp : %ld", LargerAmp);
 	DEBUG("LargestAmp : %ld", LargestAmp);
 
-	AutoQuote("MTX00");
-	AutoQuote("2330");
+	AutoQuote("MTX00", 1);
+	AutoQuote("2330", 2);
 
-	AutoQuoteTicks("MTX00");
-	AutoQuoteTicks("2330");
+	AutoQuoteTicks("MTX00", 1);
+	AutoQuoteTicks("2330", 2);
 
 	// current time
 	// Estimated trading volume
@@ -497,7 +495,7 @@ void thread_main()
 	{
 		if (gEatOffer == true)
 		{
-				}
+		}
 	}
 
 	// int count = 0;
