@@ -88,9 +88,10 @@ void AutoQuote(IN string ProductNum)
 		pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
 	}
 
-	short sPageNo = 1;
+	short sPageNo = -1;
 	g_nCode = pSKQuoteLib->RequestStocks(&sPageNo, ProductNum);
 	pSKCenterLib->PrintfCodeMessage("Quote", "RequestStocks", g_nCode);
+	DEBUG("g_nCode= %d", g_nCode);
 
 	DEBUG("End");
 }
@@ -109,6 +110,8 @@ void AutoQuoteTicks(IN string ProductNum)
 	g_nCode = pSKQuoteLib->RequestTicks(&sPageNo, ProductNum);
 
 	pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
+
+	DEBUG("g_nCode= %d", g_nCode);
 
 	DEBUG("End");
 }
@@ -478,10 +481,16 @@ void thread_main()
 	DEBUG("LargestAmp : %ld", LargestAmp);
 
 	AutoQuote("MTX00");
+	AutoQuote("2330");
 
 	AutoQuoteTicks("MTX00");
+	AutoQuoteTicks("2330");
 
-	cin >> x;
+	// cin >> x;
+
+	while (true)
+	{
+	}
 
 	// int count = 0;
 

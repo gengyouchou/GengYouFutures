@@ -271,6 +271,14 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
 	char *szStockNo = _com_util::ConvertBSTRToString(skStock.bstrStockNo);
 	char *szStockName = _com_util::ConvertBSTRToString(skStock.bstrStockName);
 
+	DEBUG("szStockNo: %s, szStockName : %s, bid: %d, ask: %d, last: %d, volume: %d",
+		  szStockNo,
+		  szStockName,
+		  skStock.nBid,
+		  skStock.nAsk,
+		  skStock.nClose,
+		  skStock.nTQty);
+
 	printf("OnNotifyQuoteLONG : %s %s bid:%d ask:%d last:%d volume:%d\n",
 		   szStockNo,
 		   szStockName,
@@ -278,8 +286,6 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
 		   skStock.nAsk,
 		   skStock.nClose,
 		   skStock.nTQty);
-
-	DEBUG("OnNotifyQuoteLONG : %s %s bid:%d ask:%d last:%d volume:%d\n");
 
 	delete[] szStockName;
 	delete[] szStockNo;
