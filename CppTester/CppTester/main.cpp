@@ -99,19 +99,16 @@ void AutoQuoteTicks(IN string ProductNum)
 {
 	DEBUG("Started");
 
-	if (pSKQuoteLib->IsConnected() == 1)
-	{
-		short sPageNo = -1;
-		g_nCode = pSKQuoteLib->RequestTicks(&sPageNo, ProductNum);
-
-		pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
-	}
-	else
+	while (pSKQuoteLib->IsConnected() != 1)
 	{
 		g_nCode = pSKQuoteLib->EnterMonitorLONG();
-
 		pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
 	}
+
+	short sPageNo = -1;
+	g_nCode = pSKQuoteLib->RequestTicks(&sPageNo, ProductNum);
+
+	pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
 
 	DEBUG("End");
 }
@@ -482,13 +479,17 @@ void thread_main()
 
 	AutoQuote("MTX00");
 
-	int count = 0;
+	AutoQuoteTicks("MTX00");
 
-	while (count < INT_MAX)
-	{
-		DEBUG("count=%d", count);
-		++count;
-	}
+	cin >> x;
+
+	// int count = 0;
+
+	// while (count < INT_MAX)
+	// {
+	// 	DEBUG("count=%d", count);
+	// 	++count;
+	// }
 
 	// CloseHandle(hEvent);
 
