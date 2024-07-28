@@ -295,7 +295,20 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
 		   skStock.nClose,
 		   skStock.nTQty);
 
-	if (skStock.nClose >= skStock.nAsk)
+	delete[] szStockName;
+	delete[] szStockNo;
+}
+
+void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty)
+{
+	DEBUG("Start");
+
+	printf("OnNotifyTicksLONG : %ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
+
+	DEBUG("nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
+		  nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
+
+	if (nClose >= nAsk)
 	{
 		// will raise
 		gEatOffer = true;
@@ -305,23 +318,30 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
 		gEatOffer = false;
 	}
 
-	delete[] szStockName;
-	delete[] szStockNo;
-}
-
-void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty)
-{
-	printf("OnNotifyTicksLONG : %ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
-
-	DEBUG("nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
+	DEBUG("End");
 
 	// CalculateLongOrShort();
 }
 
 void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty)
 {
+	DEBUG("Start");
+
 	printf("OnNotifyHistoryTicksLONG : %ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
-	DEBUG("nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
+	DEBUG("nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
+		  nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
+
+	if (nClose >= nAsk)
+	{
+		// will raise
+		gEatOffer = true;
+	}
+	else
+	{
+		gEatOffer = false;
+	}
+
+	DEBUG("End");
 }
 
 void CSKQuoteLib::OnNotifyBest5LONG(

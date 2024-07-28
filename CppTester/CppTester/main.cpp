@@ -479,7 +479,7 @@ void thread_main()
 	DEBUG("LargerAmp : %ld", LargerAmp);
 	DEBUG("LargestAmp : %ld", LargestAmp);
 
-	AutoQuote("MTX00, 2330", 1);
+	// AutoQuote("MTX00, 2330", 1);
 
 	AutoQuoteTicks("MTX00, 2330", 2);
 
