@@ -479,11 +479,9 @@ void thread_main()
 	DEBUG("LargerAmp : %ld", LargerAmp);
 	DEBUG("LargestAmp : %ld", LargestAmp);
 
-	AutoQuote("MTX00", 1);
-	AutoQuote("2330", 2);
+	AutoQuote("MTX00, 2330", 1);
 
-	AutoQuoteTicks("MTX00", 1);
-	AutoQuoteTicks("2330", 2);
+	AutoQuoteTicks("MTX00, 2330", 2);
 
 	// current time
 	// Estimated trading volume
