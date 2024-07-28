@@ -3,6 +3,8 @@
 #include "SKCOM_reference.h"
 #include "TEventHandler.h"
 
+#define DayMA 20
+
 class CSKQuoteLib
 {
 public:
