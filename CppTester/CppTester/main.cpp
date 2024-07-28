@@ -487,14 +487,17 @@ void thread_main()
 	AutoQuoteTicks("MTX00");
 	AutoQuoteTicks("2330");
 
+	// current time
+	// Estimated trading volume
+	// Instant profit and loss
+
 	// cin >> x;
 
 	while (true)
 	{
 		if (gEatOffer == true)
 		{
-			
-		}
+				}
 	}
 
 	// int count = 0;
