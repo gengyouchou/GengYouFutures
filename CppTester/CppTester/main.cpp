@@ -422,6 +422,7 @@ void release()
 }
 
 extern deque<long> gDaysKlineDiff;
+extern bool gEatOffer;
 
 void thread_main()
 {
@@ -490,6 +491,10 @@ void thread_main()
 
 	while (true)
 	{
+		if (gEatOffer == true)
+		{
+			
+		}
 	}
 
 	// int count = 0;
