@@ -4,10 +4,12 @@
 #include "SKReplyLib.h"
 #include <Logger.h>
 #include <array>
-#include <conio.h>
+#include <chrono>  // For std::chrono::steady_clock
+#include <conio.h> // For kbhit() and _getch()
+#include <cstdlib> // For system("cls")
 #include <deque>
 #include <iostream>
-#include <thread>
+#include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 
 // Define the global logger instance
@@ -441,7 +443,7 @@ void thread_main()
 	AutoKLineData("MTX00");
 
 	long long accu = 0;
-	long AverAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;
+	long AvgAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;
 
 	for (int i = 0; i < gDaysKlineDiff.size(); ++i)
 	{
@@ -453,14 +455,14 @@ void thread_main()
 		SmallestAmp = min(SmallestAmp, gDaysKlineDiff[i]);
 	}
 
-	AverAmp = accu / DayMA;
+	AvgAmp = accu / DayMA;
 
-	LargerAmp = (AverAmp + LargestAmp) / 2;
-	SmallAmp = (AverAmp + SmallestAmp) / 2;
+	LargerAmp = (AvgAmp + LargestAmp) / 2;
+	SmallAmp = (AvgAmp + SmallestAmp) / 2;
 
 	DEBUG(DEBUG_LEVEL_INFO, "SmallestAmp : %ld", SmallestAmp);
 	DEBUG(DEBUG_LEVEL_INFO, "SmallAmp : %ld", SmallAmp);
-	DEBUG(DEBUG_LEVEL_INFO, "AverAmp : %ld", AverAmp);
+	DEBUG(DEBUG_LEVEL_INFO, "AvgAmp : %ld", AvgAmp);
 	DEBUG(DEBUG_LEVEL_INFO, "LargerAmp : %ld", LargerAmp);
 	DEBUG(DEBUG_LEVEL_INFO, "LargestAmp : %ld", LargestAmp);
 
@@ -498,19 +500,57 @@ void thread_main()
 
 	DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
 
-	while (x > 0)
+	// 设置定期清屏的时间间隔（以毫秒为单位）
+	const int refreshInterval = 1000; // 1000毫秒
+	auto lastClearTime = std::chrono::steady_clock::now();
+
+	while (true)
 	{
-		if (gEatOffer == true)
+		long CurHigh = gCurCommHighLowPoint[MTXIdxNo][0];
+		long CurLow = gCurCommHighLowPoint[MTXIdxNo][1];
+
+		// 获取当前时间
+		auto now = std::chrono::steady_clock::now();
+		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClearTime);
+
+		// 检查是否需要清屏
+		if (elapsed.count() >= refreshInterval)
 		{
+			// 清屏
+			system("cls");
+
+			// 更新最后清屏时间
+			lastClearTime = now;
+
+			if (gCurCommHighLowPoint.count(MTXIdxNo) > 0)
+			{
+				DEBUG(DEBUG_LEVEL_INFO, "MTXIdxNo: %ld. High: %ld, Low: %ld", MTXIdxNo, CurHigh, CurLow);
+
+				printf("Long Key 5: %ld\n", CurLow + LargestAmp);
+				printf("Long Key 4: %ld\n", CurLow + LargerAmp);
+				printf("Long Key 3: %ld\n", CurLow + AvgAmp);
+				printf("Long Key 2: %ld\n", CurLow + SmallAmp);
+				printf("Long Key 1: %ld\n", CurLow + SmallestAmp);
+
+				printf("Short Key 1: %ld\n", CurHigh - SmallestAmp);
+				printf("Short Key 2: %ld\n", CurHigh - SmallAmp);
+				printf("Short Key 3: %ld\n", CurHigh - AvgAmp);
+				printf("Short Key 4: %ld\n", CurHigh - LargerAmp);
+				printf("Short Key 5: %ld\n", CurHigh - LargestAmp);
+			}
 		}
 
-		if (gCurCommHighLowPoint.count(MTXIdxNo) > 0)
+		// 检测按键事件
+		if (_kbhit())
 		{
-			DEBUG(DEBUG_LEVEL_INFO, "MTXIdxNo: %ld. High: %ld, Low: %ld",
-				  MTXIdxNo, gCurCommHighLowPoint[MTXIdxNo][0], gCurCommHighLowPoint[MTXIdxNo][1]);
+			// 读取按键
+			char ch = _getch();
+			// 退出循环
+			break;
 		}
 
-		// cin >> x;
+		// 继续循环，确保不阻塞其他操作
+		std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 短暂休眠，避免过度占用 CPU
 	}
 
 	// CloseHandle(hEvent);
