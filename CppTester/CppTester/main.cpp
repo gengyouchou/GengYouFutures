@@ -481,7 +481,7 @@ void thread_main()
 
 	// AutoQuote("MTX00, 2330", 1);
 
-	AutoQuoteTicks("MTX00, 2330", 2);
+	AutoQuoteTicks("MTX00", 2);
 
 	// current time
 	// Estimated trading volume
