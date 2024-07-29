@@ -9,6 +9,7 @@ bool gEatOffer = false;
 std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
 
 long CalculateDiff(const std::string &data);
+void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate);
 
 CSKQuoteLib::CSKQuoteLib()
 {
