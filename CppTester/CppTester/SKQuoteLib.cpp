@@ -1,10 +1,12 @@
 #include "SKQuoteLib.h"
+#include <array>
 #include <deque>
 #include <iostream>
+#include <unordered_map>
 
 std::deque<long> gDaysKlineDiff;
 bool gEatOffer = false;
-long gCurTXHighLowPoint[2] = {0, 0};
+std::unordered_map<long, std::array<long, 2>> gCurTXHighLowPoint;
 
 long CalculateDiff(const std::string &data);
 
@@ -355,6 +357,11 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
     DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
+    if (nClose <= 0)
+    {
+        return;
+    }
+
     if (nClose >= nAsk)
     {
         // will raise
@@ -364,6 +371,14 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
     {
         gEatOffer = false;
     }
+
+    if (gCurTXHighLowPoint.count(nStockIndex) <= 0)
+    {
+        gCurTXHighLowPoint[nStockIndex] = {nClose, nClose};
+    }
+
+    gCurTXHighLowPoint[nStockIndex][0] = max(gCurTXHighLowPoint[nStockIndex][0], nClose);
+    gCurTXHighLowPoint[nStockIndex][1] = min(gCurTXHighLowPoint[nStockIndex][1], nClose);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 
@@ -378,6 +393,11 @@ void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDa
     DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
+    if (nClose <= 0)
+    {
+        return;
+    }
+
     if (nClose >= nAsk)
     {
         // will raise
@@ -387,6 +407,14 @@ void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDa
     {
         gEatOffer = false;
     }
+
+    if (gCurTXHighLowPoint.count(nStockIndex) <= 0)
+    {
+        gCurTXHighLowPoint[nStockIndex] = {nClose, nClose};
+    }
+
+    gCurTXHighLowPoint[nStockIndex][0] = max(gCurTXHighLowPoint[nStockIndex][0], nClose);
+    gCurTXHighLowPoint[nStockIndex][1] = min(gCurTXHighLowPoint[nStockIndex][1], nClose);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
