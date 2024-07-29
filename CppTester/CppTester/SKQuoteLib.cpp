@@ -465,17 +465,17 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
     string strStockNo = string(_bstr_t(bstrStockNo));
 
     cout << "OnNotifyKLineData : " << endl;
-    cout << "strStockNo : " << strStockNo << endl;
+    // cout << "strStockNo : " << strStockNo << endl;
 
     DEBUG(DEBUG_LEVEL_DEBUG, "strStockNo= %s", strStockNo);
 
     string strData = string(_bstr_t(bstrData));
 
-    cout << "strData : " << strData;
+    // cout << "strData : " << strData;
 
     DEBUG(DEBUG_LEVEL_DEBUG, "strData= %s", strData);
 
-    cout << endl;
+    // cout << endl;
 
     long diff = CalculateDiff(strData);
 
