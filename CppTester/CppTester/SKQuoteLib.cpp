@@ -270,7 +270,7 @@ long CSKQuoteLib::RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKSTO
         DEBUG(DEBUG_LEVEL_INFO, "szStockNo: %s, szStockName : %s, nStockidx : %ld, nHigh: %d, nLow: %d",
               szStockNo,
               szStockName,
-              pSKStock->nStockidx,
+              pSKStock->nStockIdx,
               pSKStock->nHigh,
               pSKStock->nLow);
 
