@@ -81,7 +81,8 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
         long nAsk = V_I4(&(pdispparams->rgvarg)[3]);
         long nClose = V_I4(&(pdispparams->rgvarg)[2]);
         long nQty = V_I4(&(pdispparams->rgvarg)[1]);
-        OnNotifyHistoryTicksLONG(nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
+        long nSimulate = V_I4(&(pdispparams->rgvarg)[1]);
+        OnNotifyHistoryTicksLONG(nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty, nSimulate);
         break;
     }
     case 21: // OnNotifyTicksLONG
@@ -94,7 +95,8 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
         long nAsk = V_I4(&(pdispparams->rgvarg)[3]);
         long nClose = V_I4(&(pdispparams->rgvarg)[2]);
         long nQty = V_I4(&(pdispparams->rgvarg)[1]);
-        OnNotifyTicksLONG(nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
+        long nSimulate = V_I4(&(pdispparams->rgvarg)[1]);
+        OnNotifyTicksLONG(nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty, nSimulate);
         break;
     }
     case 22: // OnNotifyBest5LONG
