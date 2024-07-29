@@ -8,6 +8,8 @@ std::deque<long> gDaysKlineDiff;
 bool gEatOffer = false;
 std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
 
+SHORT gCurServerTime[3] = {0, 0, 0};
+
 long CalculateDiff(const std::string &data);
 void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate);
 
@@ -402,33 +404,33 @@ void CSKQuoteLib::OnNotifyBest5LONG(
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
-    printf("OnNotifyBest5LONG\n");
+    // printf("OnNotifyBest5LONG\n");
 
-    printf("Ofr5: [%ld],q5G: [%ld]\n\n", nBestAsk5, nBestAskQty5);
-    printf("Ofr4: [%ld],q4G: [%ld]\n", nBestAsk4, nBestAskQty4);
-    printf("Ofr3: [%ld],q3G: [%ld]\n", nBestAsk3, nBestAskQty3);
-    printf("Ofr2: [%ld],q2G: [%ld]\n", nBestAsk2, nBestAskQty2);
-    printf("Ofr1: [%ld],q1G: [%ld]\n", nBestAsk1, nBestAskQty1);
+    // printf("Ofr5: [%ld],q5G: [%ld]\n\n", nBestAsk5, nBestAskQty5);
+    // printf("Ofr4: [%ld],q4G: [%ld]\n", nBestAsk4, nBestAskQty4);
+    // printf("Ofr3: [%ld],q3G: [%ld]\n", nBestAsk3, nBestAskQty3);
+    // printf("Ofr2: [%ld],q2G: [%ld]\n", nBestAsk2, nBestAskQty2);
+    // printf("Ofr1: [%ld],q1G: [%ld]\n", nBestAsk1, nBestAskQty1);
 
-    printf("Bid1: [%ld], q1G: [%ld]\n", nBestBid1, nBestBidQty1);
-    printf("Bid2: [%ld], q2G: [%ld]\n", nBestBid2, nBestBidQty2);
-    printf("Bid3: [%ld], q3G: [%ld]\n", nBestBid3, nBestBidQty3);
-    printf("Bid4: [%ld], q4G: [%ld]\n", nBestBid4, nBestBidQty4);
-    printf("Bid5: [%ld], q5G: [%ld]\n\n", nBestBid5, nBestBidQty5);
+    // printf("Bid1: [%ld], q1G: [%ld]\n", nBestBid1, nBestBidQty1);
+    // printf("Bid2: [%ld], q2G: [%ld]\n", nBestBid2, nBestBidQty2);
+    // printf("Bid3: [%ld], q3G: [%ld]\n", nBestBid3, nBestBidQty3);
+    // printf("Bid4: [%ld], q4G: [%ld]\n", nBestBid4, nBestBidQty4);
+    // printf("Bid5: [%ld], q5G: [%ld]\n\n", nBestBid5, nBestBidQty5);
 
-    printf("=================================\n\n");
+    // printf("=================================\n\n");
 
-    DEBUG(DEBUG_LEVEL_INFO, "Ofr5: [%ld], q5G: [%ld]\n\n", nBestAsk5, nBestAskQty5);
-    DEBUG(DEBUG_LEVEL_INFO, "Ofr4: [%ld], q4G: [%ld]\n", nBestAsk4, nBestAskQty4);
-    DEBUG(DEBUG_LEVEL_INFO, "Ofr3: [%ld], q3G: [%ld]\n", nBestAsk3, nBestAskQty3);
-    DEBUG(DEBUG_LEVEL_INFO, "Ofr2: [%ld], q2G: [%ld]\n", nBestAsk2, nBestAskQty2);
-    DEBUG(DEBUG_LEVEL_INFO, "Ofr1: [%ld], q1G: [%ld]\n", nBestAsk1, nBestAskQty1);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Ofr5: [%ld], q5G: [%ld]\n\n", nBestAsk5, nBestAskQty5);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Ofr4: [%ld], q4G: [%ld]\n", nBestAsk4, nBestAskQty4);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Ofr3: [%ld], q3G: [%ld]\n", nBestAsk3, nBestAskQty3);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Ofr2: [%ld], q2G: [%ld]\n", nBestAsk2, nBestAskQty2);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Ofr1: [%ld], q1G: [%ld]\n", nBestAsk1, nBestAskQty1);
 
-    DEBUG(DEBUG_LEVEL_INFO, "Bid1: [%ld], q1G: [%ld]\n", nBestBid1, nBestBidQty1);
-    DEBUG(DEBUG_LEVEL_INFO, "Bid2: [%ld], q2G: [%ld]\n", nBestBid2, nBestBidQty2);
-    DEBUG(DEBUG_LEVEL_INFO, "Bid3: [%ld], q3G: [%ld]\n", nBestBid3, nBestBidQty3);
-    DEBUG(DEBUG_LEVEL_INFO, "Bid4: [%ld], q4G: [%ld]\n", nBestBid4, nBestBidQty4);
-    DEBUG(DEBUG_LEVEL_INFO, "Bid5: [%ld], q5G: [%ld]\n\n", nBestBid5, nBestBidQty5);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Bid1: [%ld], q1G: [%ld]\n", nBestBid1, nBestBidQty1);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Bid2: [%ld], q2G: [%ld]\n", nBestBid2, nBestBidQty2);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Bid3: [%ld], q3G: [%ld]\n", nBestBid3, nBestBidQty3);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Bid4: [%ld], q4G: [%ld]\n", nBestBid4, nBestBidQty4);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Bid5: [%ld], q5G: [%ld]\n\n", nBestBid5, nBestBidQty5);
 
     // CalculateLongOrShort();
 
@@ -496,6 +498,10 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 void CSKQuoteLib::OnNotifyServerTime(SHORT sHour, SHORT sMinute, SHORT sSecond, LONG nTotal)
 {
     DEBUG(DEBUG_LEVEL_INFO, "Hour: %d Minute: %d Second: %d Total[%ld]", sHour, sMinute, sSecond, nTotal);
+
+    gCurServerTime[0] = sHour;
+    gCurServerTime[1] = sMinute;
+    gCurServerTime[2] = sSecond;
 }
 
 long CalculateDiff(const std::string &data)

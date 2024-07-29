@@ -426,6 +426,7 @@ void release()
 extern std::deque<long> gDaysKlineDiff;
 extern bool gEatOffer;
 extern std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
+extern SHORT gCurServerTime[3];
 
 void thread_main()
 {
@@ -531,12 +532,14 @@ void thread_main()
 				printf("Long Key 3: %ld\n", CurLow + AvgAmp);
 				printf("Long Key 2: %ld\n", CurLow + SmallAmp);
 				printf("Long Key 1: %ld\n", CurLow + SmallestAmp);
-
+				printf("=========================================\n");
 				printf("Short Key 1: %ld\n", CurHigh - SmallestAmp);
 				printf("Short Key 2: %ld\n", CurHigh - SmallAmp);
 				printf("Short Key 3: %ld\n", CurHigh - AvgAmp);
 				printf("Short Key 4: %ld\n", CurHigh - LargerAmp);
 				printf("Short Key 5: %ld\n", CurHigh - LargestAmp);
+
+				printf("ServerTime: %d: %d: %d", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
 			}
 		}
 
