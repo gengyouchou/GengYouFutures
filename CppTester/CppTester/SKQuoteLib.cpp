@@ -6,7 +6,7 @@
 
 std::deque<long> gDaysKlineDiff;
 bool gEatOffer = false;
-std::unordered_map<long, std::array<long, 2>> gCurTXHighLowPoint;
+std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
 
 long CalculateDiff(const std::string &data);
 
@@ -348,7 +348,7 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
     delete[] szStockNo;
 }
 
-void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty)
+void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
@@ -357,35 +357,12 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
     DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
-    if (nClose <= 0)
-    {
-        return;
-    }
-
-    if (nClose >= nAsk)
-    {
-        // will raise
-        gEatOffer = true;
-    }
-    else
-    {
-        gEatOffer = false;
-    }
-
-    if (gCurTXHighLowPoint.count(nStockIndex) <= 0)
-    {
-        gCurTXHighLowPoint[nStockIndex] = {nClose, nClose};
-    }
-
-    gCurTXHighLowPoint[nStockIndex][0] = max(gCurTXHighLowPoint[nStockIndex][0], nClose);
-    gCurTXHighLowPoint[nStockIndex][1] = min(gCurTXHighLowPoint[nStockIndex][1], nClose);
-
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 
-    // CalculateLongOrShort();
+    CaluCurCommHighLowPoint(nStockIndex, nClose, nSimulate);
 }
 
-void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty)
+void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
@@ -408,13 +385,7 @@ void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDa
         gEatOffer = false;
     }
 
-    if (gCurTXHighLowPoint.count(nStockIndex) <= 0)
-    {
-        gCurTXHighLowPoint[nStockIndex] = {nClose, nClose};
-    }
-
-    gCurTXHighLowPoint[nStockIndex][0] = max(gCurTXHighLowPoint[nStockIndex][0], nClose);
-    gCurTXHighLowPoint[nStockIndex][1] = min(gCurTXHighLowPoint[nStockIndex][1], nClose);
+    CaluCurCommHighLowPoint(nStockIndex, nClose, nSimulate);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
@@ -555,4 +526,20 @@ long CalculateDiff(const std::string &data)
 
     // Calculate and return the absolute difference
     return std::lround(std::abs(high - low));
+}
+
+void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate)
+{
+    if (nClose <= 0 || nSimulate == 1)
+    {
+        return;
+    }
+
+    if (gCurCommHighLowPoint.count(nStockIndex) <= 0)
+    {
+        gCurCommHighLowPoint[nStockIndex] = {nClose, nClose};
+    }
+
+    gCurCommHighLowPoint[nStockIndex][0] = max(gCurCommHighLowPoint[nStockIndex][0], nClose);
+    gCurCommHighLowPoint[nStockIndex][1] = min(gCurCommHighLowPoint[nStockIndex][1], nClose);
 }

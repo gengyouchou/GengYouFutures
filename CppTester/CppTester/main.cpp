@@ -423,7 +423,7 @@ void release()
 
 extern std::deque<long> gDaysKlineDiff;
 extern bool gEatOffer;
-extern std::unordered_map<long, std::array<long, 2>> gCurTXHighLowPoint;
+extern std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
 
 void thread_main()
 {
@@ -504,13 +504,13 @@ void thread_main()
 		{
 		}
 
-		if (gCurTXHighLowPoint.count(MTXIdxNo) > 0)
+		if (gCurCommHighLowPoint.count(MTXIdxNo) > 0)
 		{
 			DEBUG(DEBUG_LEVEL_INFO, "MTXIdxNo: %ld. High: %ld, Low: %ld",
-				  MTXIdxNo, gCurTXHighLowPoint[MTXIdxNo][0], gCurTXHighLowPoint[MTXIdxNo][1]);
+				  MTXIdxNo, gCurCommHighLowPoint[MTXIdxNo][0], gCurCommHighLowPoint[MTXIdxNo][1]);
 		}
 
-		//cin >> x;
+		// cin >> x;
 	}
 
 	// CloseHandle(hEvent);
