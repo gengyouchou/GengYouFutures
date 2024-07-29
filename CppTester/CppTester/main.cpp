@@ -506,6 +506,8 @@ void thread_main()
 	const int refreshInterval = 1000; // 1000毫秒
 	auto lastClearTime = std::chrono::steady_clock::now();
 
+	// The price will be unstable at the beginning and will change from high to low.
+
 	while (true)
 	{
 		// 获取当前时间
