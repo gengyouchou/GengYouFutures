@@ -481,7 +481,18 @@ void thread_main()
 
     DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
 
-    
+    res = pSKQuoteLib->RequestStockIndexMap("2330", &skStock);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+
+    res = pSKQuoteLib->RequestStockIndexMap("2317", &skStock);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+
+    res = pSKQuoteLib->RequestStockIndexMap("2454", &skStock);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+
     // while (true)
     // {
     //     if (gEatOffer == true)
