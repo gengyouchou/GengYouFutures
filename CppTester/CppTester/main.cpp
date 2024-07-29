@@ -428,6 +428,10 @@ void thread_main()
     // AutoOrderMTX();
     // AutoGetFutureRights();
 
+    g_nCode = pSKQuoteLib->LeaveMonitor();
+
+    pSKCenterLib->PrintfCodeMessage("Quote", "LeaveMonitor", g_nCode);
+
     int x = 1;
 
     // while (x)
@@ -493,12 +497,14 @@ void thread_main()
 
     DEBUG("pSKQuoteLib->RequestServerTime()=%d", res);
 
-    while (true)
-    {
-        if (gEatOffer == true)
-        {
-        }
-    }
+    // while (true)
+    // {
+    //     if (gEatOffer == true)
+    //     {
+    //     }
+    // }
+
+    cin >> x;
 
     // int count = 0;
 
