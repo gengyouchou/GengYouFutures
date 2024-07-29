@@ -23,6 +23,7 @@ public:
     long GetStockByIndexLONG(short sMarketNo, long bStockIndex, SKCOMLib::SKSTOCKLONG *pSKStock);
     long RequestKLine(string strStockNo);
     long RequestServerTime();
+    long RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKSTOCKLONG *pSKStock);
 
     // Events
     void OnConnection(long nKind, long nCode);

@@ -471,10 +471,17 @@ void thread_main()
 
     // cin >> x;
 
-    int res = pSKQuoteLib->RequestServerTime();
+    long res = pSKQuoteLib->RequestServerTime();
 
     DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestServerTime()=%d", res);
 
+    SKCOMLib::SKSTOCKLONG skStock;
+
+    res = pSKQuoteLib->RequestStockIndexMap("MTX00", &skStock);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+
+    
     // while (true)
     // {
     //     if (gEatOffer == true)

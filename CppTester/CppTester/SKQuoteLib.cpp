@@ -253,6 +253,34 @@ long CSKQuoteLib::RequestServerTime()
     return res;
 }
 
+long CSKQuoteLib::RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKSTOCKLONG *pSKStock)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
+
+    BSTR bstrStockNo = _bstr_t(strStockNo.c_str());
+
+    long res = m_pSKQuoteLib->SKQuoteLib_GetStockByNoLONG(bstrStockNo, pSKStock);
+    DEBUG(DEBUG_LEVEL_INFO, "m_pSKQuoteLib->SKQuoteLib_GetStockByNoLONG = %d", res);
+
+    if (res == 0)
+    {
+        char *szStockNo = _com_util::ConvertBSTRToString(pSKStock->bstrStockNo);
+        char *szStockName = _com_util::ConvertBSTRToString(pSKStock->bstrStockName);
+
+        DEBUG(DEBUG_LEVEL_INFO, "szStockNo: %s, szStockName : %s, nStockidx : %ld, nHigh: %d, nLow: %d",
+              szStockNo,
+              szStockName,
+              pSKStock->nStockidx,
+              pSKStock->nHigh,
+              pSKStock->nLow);
+
+        delete[] szStockName;
+        delete[] szStockNo;
+    }
+
+    return res;
+}
+
 // Events
 void CSKQuoteLib::OnConnection(long nKind, long nCode)
 {
@@ -349,8 +377,6 @@ void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDa
     printf("OnNotifyHistoryTicksLONG : %ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
     DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
-
-          gCurTXHighLowPoint
 
     if (nClose >= nAsk)
     {
