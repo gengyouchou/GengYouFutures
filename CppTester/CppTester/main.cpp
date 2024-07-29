@@ -428,36 +428,14 @@ void thread_main()
     // AutoOrderMTX();
     // AutoGetFutureRights();
 
-    g_nCode = pSKQuoteLib->LeaveMonitor();
+    // g_nCode = pSKQuoteLib->LeaveMonitor();
 
-    pSKCenterLib->PrintfCodeMessage("Quote", "LeaveMonitor", g_nCode);
+    // pSKCenterLib->PrintfCodeMessage("Quote", "LeaveMonitor", g_nCode);
 
     int x = 1;
 
-    // while (x)
-    // {
-    // 	AutoQuote("MTX00");
-
-    // 	cin >> x;
-    // }
-
-    // x = 1;
-
-    // while (x)
-    // {
-    // 	AutoQuoteTicks("MTX00");
-    // 	cin >> x;
-    // }
-
     // hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    // x = 1;
-
-    // while (x)
-    // {
     AutoKLineData("MTX00");
-
-    // 	cin >> x;
-    // }
 
     long long accu = 0;
     long AverAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;

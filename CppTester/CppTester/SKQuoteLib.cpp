@@ -70,7 +70,6 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
     }
     case 20: // OnNotifyHistoryTicksLONG
     {
-        break;
         long nStockIndex = V_I4(&(pdispparams->rgvarg)[9]);
         long nPtr = V_I4(&(pdispparams->rgvarg)[8]);
         long nDate = V_I4(&(pdispparams->rgvarg)[7]);
