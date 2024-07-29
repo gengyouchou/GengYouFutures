@@ -39,7 +39,7 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
     EXCEPINFO *pexcepinfo,
     UINT *puArgErr)
 {
-    DEBUG("dispidMember == %d", dispidMember);
+    DEBUG(DEBUG_LEVEL_DEBUG, "dispidMember == %d", dispidMember);
 
     VARIANT varlValue;
     VariantInit(&varlValue);
@@ -218,7 +218,7 @@ long CSKQuoteLib::RequestStockList(short MarketNo)
 
 long CSKQuoteLib::RequestKLine(string strStockNo)
 {
-    DEBUG("start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
     BSTR BstrStockNo = _bstr_t(strStockNo.c_str());
 
     // string StartDateStr = "20240716";
@@ -231,16 +231,13 @@ long CSKQuoteLib::RequestKLine(string strStockNo)
 
     // res = m_pSKQuoteLib->SKQuoteLib_RequestKLineAMByDate(BstrStockNo, 4, 1, 1, StartDate, EndDate, 0);
 
-    // DEBUG("m_pSKQuoteLib->SKQuoteLib_RequestKLineAMByDate = %d", res);
-
     // if (res != 0)
     // {
     res = m_pSKQuoteLib->SKQuoteLib_RequestKLine(BstrStockNo, 4, 1);
-    DEBUG("m_pSKQuoteLib->SKQuoteLib_RequestKLine = %d", res);
+    DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKQuoteLib->SKQuoteLib_RequestKLine = %d", res);
     //}
 
     // WaitForSingleObject(hEvent, INFINITE);
-    // DEBUG("Event received, proceeding with next step");
 
     return res;
 }
@@ -250,7 +247,7 @@ long CSKQuoteLib::RequestServerTime()
     long res = 0;
 
     res = m_pSKQuoteLib->SKQuoteLib_RequestServerTime();
-    DEBUG("m_pSKQuoteLib->SKQuoteLib_RequestServerTime = %d", res);
+    DEBUG(DEBUG_LEVEL_INFO, "m_pSKQuoteLib->SKQuoteLib_RequestServerTime = %d", res);
 
     return res;
 }
@@ -283,14 +280,14 @@ void CSKQuoteLib::OnConnection(long nKind, long nCode)
 
 void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
 {
-    DEBUG("Start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
-    DEBUG("sMarketNo= ", sMarketNo);
+    DEBUG(DEBUG_LEVEL_DEBUG, "sMarketNo= ", sMarketNo);
 
     SKCOMLib::SKSTOCKLONG skStock;
     long nResult = GetStockByIndexLONG(sMarketNo, nStockIndex, &skStock);
 
-    DEBUG("GetStockByIndexLONG res = ", nResult);
+    DEBUG(DEBUG_LEVEL_DEBUG, "GetStockByIndexLONG res = ", nResult);
 
     if (nResult != 0)
     {
@@ -300,7 +297,7 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
     char *szStockNo = _com_util::ConvertBSTRToString(skStock.bstrStockNo);
     char *szStockName = _com_util::ConvertBSTRToString(skStock.bstrStockName);
 
-    DEBUG("szStockNo: %s, szStockName : %s, bid: %d, ask: %d, last: %d, volume: %d",
+    DEBUG(DEBUG_LEVEL_DEBUG, "szStockNo: %s, szStockName : %s, bid: %d, ask: %d, last: %d, volume: %d",
           szStockNo,
           szStockName,
           skStock.nBid,
@@ -322,11 +319,11 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
 
 void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty)
 {
-    DEBUG("Start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     printf("OnNotifyTicksLONG : %ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
-    DEBUG("nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
+    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
     if (nClose >= nAsk)
@@ -339,17 +336,17 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
         gEatOffer = false;
     }
 
-    DEBUG("End");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 
     // CalculateLongOrShort();
 }
 
 void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty)
 {
-    DEBUG("Start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     printf("OnNotifyHistoryTicksLONG : %ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
-    DEBUG("nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
+    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
     if (nClose >= nAsk)
@@ -362,7 +359,7 @@ void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDa
         gEatOffer = false;
     }
 
-    DEBUG("End");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
 void CSKQuoteLib::OnNotifyBest5LONG(
@@ -377,7 +374,7 @@ void CSKQuoteLib::OnNotifyBest5LONG(
     long nBestAsk4, long nBestAskQty4,
     long nBestAsk5, long nBestAskQty5)
 {
-    DEBUG("start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     printf("OnNotifyBest5LONG\n");
 
@@ -395,21 +392,21 @@ void CSKQuoteLib::OnNotifyBest5LONG(
 
     printf("=================================\n\n");
 
-    DEBUG("Ofr5: [%ld], q5G: [%ld]\n\n", nBestAsk5, nBestAskQty5);
-    DEBUG("Ofr4: [%ld], q4G: [%ld]\n", nBestAsk4, nBestAskQty4);
-    DEBUG("Ofr3: [%ld], q3G: [%ld]\n", nBestAsk3, nBestAskQty3);
-    DEBUG("Ofr2: [%ld], q2G: [%ld]\n", nBestAsk2, nBestAskQty2);
-    DEBUG("Ofr1: [%ld], q1G: [%ld]\n", nBestAsk1, nBestAskQty1);
+    DEBUG(DEBUG_LEVEL_INFO, "Ofr5: [%ld], q5G: [%ld]\n\n", nBestAsk5, nBestAskQty5);
+    DEBUG(DEBUG_LEVEL_INFO, "Ofr4: [%ld], q4G: [%ld]\n", nBestAsk4, nBestAskQty4);
+    DEBUG(DEBUG_LEVEL_INFO, "Ofr3: [%ld], q3G: [%ld]\n", nBestAsk3, nBestAskQty3);
+    DEBUG(DEBUG_LEVEL_INFO, "Ofr2: [%ld], q2G: [%ld]\n", nBestAsk2, nBestAskQty2);
+    DEBUG(DEBUG_LEVEL_INFO, "Ofr1: [%ld], q1G: [%ld]\n", nBestAsk1, nBestAskQty1);
 
-    DEBUG("Bid1: [%ld], q1G: [%ld]\n", nBestBid1, nBestBidQty1);
-    DEBUG("Bid2: [%ld], q2G: [%ld]\n", nBestBid2, nBestBidQty2);
-    DEBUG("Bid3: [%ld], q3G: [%ld]\n", nBestBid3, nBestBidQty3);
-    DEBUG("Bid4: [%ld], q4G: [%ld]\n", nBestBid4, nBestBidQty4);
-    DEBUG("Bid5: [%ld], q5G: [%ld]\n\n", nBestBid5, nBestBidQty5);
+    DEBUG(DEBUG_LEVEL_INFO, "Bid1: [%ld], q1G: [%ld]\n", nBestBid1, nBestBidQty1);
+    DEBUG(DEBUG_LEVEL_INFO, "Bid2: [%ld], q2G: [%ld]\n", nBestBid2, nBestBidQty2);
+    DEBUG(DEBUG_LEVEL_INFO, "Bid3: [%ld], q3G: [%ld]\n", nBestBid3, nBestBidQty3);
+    DEBUG(DEBUG_LEVEL_INFO, "Bid4: [%ld], q4G: [%ld]\n", nBestBid4, nBestBidQty4);
+    DEBUG(DEBUG_LEVEL_INFO, "Bid5: [%ld], q5G: [%ld]\n\n", nBestBid5, nBestBidQty5);
 
     // CalculateLongOrShort();
 
-    DEBUG("end");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
 void CSKQuoteLib::OnNotifyStockList(long sMarketNo, string strStockData)
@@ -435,20 +432,20 @@ void CSKQuoteLib::OnNotifyStockList(long sMarketNo, string strStockData)
 
 void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 {
-    DEBUG("start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     string strStockNo = string(_bstr_t(bstrStockNo));
 
     cout << "OnNotifyKLineData : " << endl;
     cout << "strStockNo : " << strStockNo << endl;
 
-    DEBUG("strStockNo= %s", strStockNo);
+    DEBUG(DEBUG_LEVEL_DEBUG, "strStockNo= %s", strStockNo);
 
     string strData = string(_bstr_t(bstrData));
 
     cout << "strData : " << strData;
 
-    DEBUG("strData= %s", strData);
+    DEBUG(DEBUG_LEVEL_DEBUG, "strData= %s", strData);
 
     cout << endl;
 
@@ -467,12 +464,12 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 
     // CalculateLongOrShort();
 
-    DEBUG("end");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
 void CSKQuoteLib::OnNotifyServerTime(SHORT sHour, SHORT sMinute, SHORT sSecond, LONG nTotal)
 {
-    DEBUG("Hour: %d Minute: %d Second: %d Total[%ld]", sHour, sMinute, sSecond, nTotal);
+    DEBUG(DEBUG_LEVEL_INFO, "Hour: %d Minute: %d Second: %d Total[%ld]", sHour, sMinute, sSecond, nTotal);
 }
 
 long CalculateDiff(const std::string &data)

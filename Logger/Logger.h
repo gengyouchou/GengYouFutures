@@ -12,6 +12,14 @@
 #define ENABLE_DEBUG
 #endif
 
+// Define different debug levels
+#define DEBUG_LEVEL_INFO 1
+#define DEBUG_LEVEL_ERROR 2
+#define DEBUG_LEVEL_DEBUG 3
+
+// Set the current debug level
+#define DEBUG_LEVEL DEBUG_LEVEL_INFO
+
 class Logger
 {
 public:
@@ -21,10 +29,10 @@ public:
     void log(const std::string &message, const std::string &functionName);
 
     template <typename... Args>
-    void log(const std::string &functionName, const char *format, Args... args)
+    void log(int level, const std::string &functionName, const char *format, Args... args)
     {
 #ifdef LOGGING_ENABLED
-        if (logFile.is_open())
+        if (logFile.is_open() && level <= DEBUG_LEVEL)
         {
             std::ostringstream oss;
             format_string(oss, format, args...);
@@ -97,15 +105,15 @@ private:
     }
 };
 
-#if !defined(NDEBUG) && defined(ENABLE_DEBUG)
-#define DEBUG(...)                         \
-    do                                     \
-    {                                      \
-        logger.log(__func__, __VA_ARGS__); \
+// Macro to simplify logging calls
+#define DEBUG(level, ...)                             \
+    do                                                \
+    {                                                 \
+        if (level <= DEBUG_LEVEL)                     \
+        {                                             \
+            logger.log(level, __func__, __VA_ARGS__); \
+        }                                             \
     } while (0)
-#else
-#define DEBUG(...)
-#endif
 
 extern Logger logger;
 

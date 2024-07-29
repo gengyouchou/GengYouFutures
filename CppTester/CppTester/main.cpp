@@ -21,7 +21,7 @@ string g_strUserId;
 
 void AutoLogIn()
 {
-    DEBUG("Started");
+    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
     // 初始化
     g_nCode = pSKOrderLib->Initialize();
@@ -35,17 +35,17 @@ void AutoLogIn()
     g_nCode = pSKOrderLib->GetUserAccount();
     pSKCenterLib->PrintfCodeMessage("AutoLogIn", "GetUserAccount", g_nCode);
 
-    DEBUG("End");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
 void AutoOrderMTX()
 {
-    DEBUG("Started");
+    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
     g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId, false, "MTX00", 2, 1, 0, 2, "P", 1, 0);
     pSKCenterLib->PrintfCodeMessage("AutoOrderMTX", "SendFutureOrder", g_nCode);
 
-    DEBUG("SendFutureOrder res = %d", g_nCode);
+    DEBUG(DEBUG_LEVEL_DEBUG, "SendFutureOrder res = %d", g_nCode);
 
     g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
                                            false,
@@ -60,27 +60,27 @@ void AutoOrderMTX()
 
     pSKCenterLib->PrintfCodeMessage("AutoOrderMTX", "SendFutureOrder", g_nCode);
 
-    DEBUG("SendFutureOrder res = %d", g_nCode);
+    DEBUG(DEBUG_LEVEL_DEBUG, "SendFutureOrder res = %d", g_nCode);
 
-    DEBUG("End");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
 void AutoGetFutureRights()
 {
-    DEBUG("Started");
+    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
     g_nCode = pSKOrderLib->GetFutureRights(g_strUserId);
 
     pSKCenterLib->PrintfCodeMessage("AutoGetFutureRights", "GetFutureRights", g_nCode);
 
-    DEBUG("GetFutureRights res = %d", g_nCode);
+    DEBUG(DEBUG_LEVEL_DEBUG, "GetFutureRights res = %d", g_nCode);
 
-    DEBUG("End");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
 void AutoQuote(IN string ProductNum, short sPageNo)
 {
-    DEBUG("Started");
+    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
     while (pSKQuoteLib->IsConnected() != 1)
     {
@@ -90,14 +90,14 @@ void AutoQuote(IN string ProductNum, short sPageNo)
 
     g_nCode = pSKQuoteLib->RequestStocks(&sPageNo, ProductNum);
     pSKCenterLib->PrintfCodeMessage("Quote", "RequestStocks", g_nCode);
-    DEBUG("g_nCode= %d", g_nCode);
+    DEBUG(DEBUG_LEVEL_DEBUG, "g_nCode= %d", g_nCode);
 
-    DEBUG("End");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
 void AutoQuoteTicks(IN string ProductNum, short sPageNo)
 {
-    DEBUG("Started");
+    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
     while (pSKQuoteLib->IsConnected() != 1)
     {
@@ -109,14 +109,14 @@ void AutoQuoteTicks(IN string ProductNum, short sPageNo)
 
     pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
 
-    DEBUG("g_nCode= %d", g_nCode);
+    DEBUG(DEBUG_LEVEL_DEBUG, "g_nCode= %d", g_nCode);
 
-    DEBUG("End");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
 void AutoKLineData(IN string ProductNum)
 {
-    DEBUG("Started");
+    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
     while (pSKQuoteLib->IsConnected() != 1)
     {
@@ -128,7 +128,7 @@ void AutoKLineData(IN string ProductNum)
 
     pSKCenterLib->PrintfCodeMessage("Quote", "RequestKLine", g_nCode);
 
-    DEBUG("End");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
 void Order()
@@ -317,7 +317,7 @@ void Reply()
 
 void Quote()
 {
-    DEBUG("start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
     bool bQuote = true;
     int QuoteType = 0;
     short sPageNo = -1, sMarket = 0;
@@ -398,7 +398,7 @@ void Quote()
         }
     }
 
-    DEBUG("end");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
 void init()
@@ -442,7 +442,7 @@ void thread_main()
 
     for (int i = 0; i < gDaysKlineDiff.size(); ++i)
     {
-        DEBUG("Diff = %ld ", gDaysKlineDiff[i]);
+        DEBUG(DEBUG_LEVEL_INFO, "Diff = %ld ", gDaysKlineDiff[i]);
 
         accu += gDaysKlineDiff[i];
 
@@ -455,11 +455,11 @@ void thread_main()
     LargerAmp = (AverAmp + LargestAmp) / 2;
     SmallAmp = (AverAmp + SmallestAmp) / 2;
 
-    DEBUG("SmallestAmp : %ld", SmallestAmp);
-    DEBUG("SmallAmp : %ld", SmallAmp);
-    DEBUG("AverAmp : %ld", AverAmp);
-    DEBUG("LargerAmp : %ld", LargerAmp);
-    DEBUG("LargestAmp : %ld", LargestAmp);
+    DEBUG(DEBUG_LEVEL_INFO, "SmallestAmp : %ld", SmallestAmp);
+    DEBUG(DEBUG_LEVEL_INFO, "SmallAmp : %ld", SmallAmp);
+    DEBUG(DEBUG_LEVEL_INFO, "AverAmp : %ld", AverAmp);
+    DEBUG(DEBUG_LEVEL_INFO, "LargerAmp : %ld", LargerAmp);
+    DEBUG(DEBUG_LEVEL_INFO, "LargestAmp : %ld", LargestAmp);
 
     AutoQuoteTicks("2330", 1);
 
@@ -473,7 +473,7 @@ void thread_main()
 
     int res = pSKQuoteLib->RequestServerTime();
 
-    DEBUG("pSKQuoteLib->RequestServerTime()=%d", res);
+    DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestServerTime()=%d", res);
 
     // while (true)
     // {
@@ -483,14 +483,6 @@ void thread_main()
     // }
 
     cin >> x;
-
-    // int count = 0;
-
-    // while (count < INT_MAX)
-    // {
-    // 	DEBUG("count=%d", count);
-    // 	++count;
-    // }
 
     // CloseHandle(hEvent);
 
@@ -504,7 +496,7 @@ void thread_main()
 int main()
 {
 
-    DEBUG("start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     CoInitialize(NULL);
 
@@ -547,7 +539,7 @@ int main()
         DispatchMessageW(&msg);
     }
 
-    DEBUG("end");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 
     system("pause");
 

@@ -43,7 +43,7 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
     VariantInit(&varlValue);
     VariantClear(&varlValue);
 
-    DEBUG("dispidMember == %d", dispidMember);
+    DEBUG(DEBUG_LEVEL_DEBUG, "dispidMember == %d", dispidMember);
 
     switch (dispidMember)
     {
@@ -96,7 +96,7 @@ long CSKOrderLib::GetUserAccount()
 
 long CSKOrderLib::GetFutureRights(string strLogInID)
 {
-    DEBUG("start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     string strFullAccount_TF = "";
 
@@ -113,9 +113,9 @@ long CSKOrderLib::GetFutureRights(string strLogInID)
 
     long res = m_pSKOrderLib->GetFutureRights(BstrUserId, BstrFullAccount, 0);
 
-    DEBUG("m_pSKOrderLib->GetFutureRights result = %d", res);
+    DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKOrderLib->GetFutureRights result = %d", res);
 
-    DEBUG("end");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 
     return res;
 }
@@ -188,7 +188,7 @@ long CSKOrderLib::SendFutureOrder(string strLogInID, bool bAsyncOrder, string st
     string StrMessage = string(_bstr_t(bstrMessage));
     cout << "SendFutureOrder : " << StrMessage << endl;
 
-    DEBUG("SendFutureOrder : %s", StrMessage);
+    DEBUG(DEBUG_LEVEL_INFO, "SendFutureOrder : %s", StrMessage);
 
     ::SysFreeString(bstrMessage);
 
@@ -402,7 +402,7 @@ void CSKOrderLib::OnAccount(string strLoginID, string strAccountData)
 
 void CSKOrderLib::OnFutureRights(BSTR bstrData)
 {
-    DEBUG("start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     string strMessage = string(_bstr_t(bstrData));
 
@@ -413,7 +413,7 @@ void CSKOrderLib::OnFutureRights(BSTR bstrData)
 
     // CalculateLoss();
 
-    DEBUG("end");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
 void CSKOrderLib::OnAsyncOrder(long nThreadID, long nCode, string strMessage)
