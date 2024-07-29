@@ -4,6 +4,7 @@
 
 std::deque<long> gDaysKlineDiff;
 bool gEatOffer = false;
+long gCurTXHighLowPoint[2] = {0, 0};
 
 long CalculateDiff(const std::string &data);
 
@@ -348,6 +349,8 @@ void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDa
     printf("OnNotifyHistoryTicksLONG : %ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
     DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
+
+          gCurTXHighLowPoint
 
     if (nClose >= nAsk)
     {
