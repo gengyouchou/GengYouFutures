@@ -507,9 +507,6 @@ void thread_main()
 
 	while (true)
 	{
-		long CurHigh = gCurCommHighLowPoint[MTXIdxNo][0];
-		long CurLow = gCurCommHighLowPoint[MTXIdxNo][1];
-
 		// 获取当前时间
 		auto now = std::chrono::steady_clock::now();
 		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClearTime);
@@ -525,6 +522,9 @@ void thread_main()
 
 			if (gCurCommHighLowPoint.count(MTXIdxNo) > 0)
 			{
+				long CurHigh = gCurCommHighLowPoint[MTXIdxNo][0] / 100;
+				long CurLow = gCurCommHighLowPoint[MTXIdxNo][1] / 100;
+
 				DEBUG(DEBUG_LEVEL_INFO, "MTXIdxNo: %ld. High: %ld, Low: %ld", MTXIdxNo, CurHigh, CurLow);
 
 				printf("Long Key 5: %ld\n", CurLow + LargestAmp);
