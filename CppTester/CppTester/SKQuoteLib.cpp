@@ -7,12 +7,13 @@
 std::deque<long> gDaysKlineDiff;
 bool gEatOffer = false;
 std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
+std::unordered_map<long, long> gCurMtxPrice;
 
 SHORT gCurServerTime[3] = {0, 0, 0};
 
 long CalculateDiff(const std::string &data);
 void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate);
-
+void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate);
 CSKQuoteLib::CSKQuoteLib()
 {
     m_pSKQuoteLib.CreateInstance(__uuidof(SKCOMLib::SKQuoteLib));
@@ -362,9 +363,11 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
     DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "end");
+    GetCurPrice(nStockIndex, nClose, nSimulate);
 
     CaluCurCommHighLowPoint(nStockIndex, nClose, nSimulate);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
 void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate)
@@ -546,4 +549,14 @@ void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimul
 
     gCurCommHighLowPoint[nStockIndex][0] = max(gCurCommHighLowPoint[nStockIndex][0], nClose);
     gCurCommHighLowPoint[nStockIndex][1] = min(gCurCommHighLowPoint[nStockIndex][1], nClose);
+}
+
+void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate)
+{
+    if (nClose <= 0 || nSimulate == 1)
+    {
+        return;
+    }
+
+    gCurMtxPrice[nStockIndex] = nClose / 100;
 }

@@ -427,6 +427,7 @@ extern std::deque<long> gDaysKlineDiff;
 extern bool gEatOffer;
 extern std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
 extern SHORT gCurServerTime[3];
+extern std::unordered_map<long, long> gCurMtxPrice;
 
 void thread_main()
 {
@@ -526,6 +527,9 @@ void thread_main()
 				long CurLow = gCurCommHighLowPoint[MTXIdxNo][1] / 100;
 
 				DEBUG(DEBUG_LEVEL_INFO, "MTXIdxNo: %ld. High: %ld, Low: %ld", MTXIdxNo, CurHigh, CurLow);
+
+				printf("CurMtxPrice: %ld\n\n", gCurMtxPrice[MTXIdxNo]);
+				printf("=========================================\n");
 
 				printf("Long Key 5: %ld\n", CurLow + LargestAmp);
 				printf("Long Key 4: %ld\n", CurLow + LargerAmp);
