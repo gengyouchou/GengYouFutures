@@ -47,7 +47,7 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
     EXCEPINFO *pexcepinfo,
     UINT *puArgErr)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "dispidMember == %d", dispidMember);
+    DEBUG(DEBUG_LEVEL_DEBUG, "dispidMember == %d", dispidMember);
 
     VARIANT varlValue;
     VariantInit(&varlValue);
@@ -325,7 +325,7 @@ long CSKQuoteLib::GetMarketBuySellUpDown(VOID)
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     long res = m_pSKQuoteLib->SKQuoteLib_GetMarketBuySellUpDown();
-    DEBUG(DEBUG_LEVEL_INFO, "m_pSKQuoteLib->SKQuoteLib_GetMarketBuySellUpDown = %d", res);
+    DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKQuoteLib->SKQuoteLib_GetMarketBuySellUpDown = %d", res);
 
     return res;
 }
@@ -508,7 +508,7 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 
     string strStockNo = string(_bstr_t(bstrStockNo));
 
-    cout << "OnNotifyKLineData : " << endl;
+    // cout << "OnNotifyKLineData : " << endl;
     // cout << "strStockNo : " << strStockNo << endl;
 
     DEBUG(DEBUG_LEVEL_DEBUG, "strStockNo= %s", strStockNo);
@@ -550,9 +550,9 @@ void CSKQuoteLib::OnNotifyServerTime(SHORT sHour, SHORT sMinute, SHORT sSecond, 
 
 void CSKQuoteLib::OnNotifyMarketTot(SHORT sMarketNo, SHORT sPtr, LONG nTime, LONG nTotv, LONG nTots, LONG nTotc)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
-    DEBUG(DEBUG_LEVEL_INFO, "sMarketNo: %d nTime: %d nTotv: %ld", sMarketNo, nTime, nTotv);
+    DEBUG(DEBUG_LEVEL_DEBUG, "sMarketNo: %d nTime: %d nTotv: %ld", sMarketNo, nTime, nTotv);
 
     gCurTaiexInfo[sMarketNo][0] = nTime;
     gCurTaiexInfo[sMarketNo][1] = nTotv;
@@ -562,9 +562,9 @@ void CSKQuoteLib::OnNotifyMarketTot(SHORT sMarketNo, SHORT sPtr, LONG nTime, LON
 
 void CSKQuoteLib::OnNotifyMarketBuySell(SHORT sMarketNo, SHORT sPtr, LONG nTime, LONG nBc, LONG nSc, LONG nBs, LONG nSs)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
-    DEBUG(DEBUG_LEVEL_INFO, "sMarketNo: %d nTime: %d Buy: %ld Sell: %ld", sMarketNo, nTime, nBs, nSs);
+    DEBUG(DEBUG_LEVEL_DEBUG, "sMarketNo: %d nTime: %d Buy: %ld Sell: %ld", sMarketNo, nTime, nBs, nSs);
 
     gCurTaiexInfo[sMarketNo][2] = nBs;
     gCurTaiexInfo[sMarketNo][3] = nSs;
