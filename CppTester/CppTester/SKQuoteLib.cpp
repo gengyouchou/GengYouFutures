@@ -8,6 +8,7 @@ std::deque<long> gDaysKlineDiff;
 bool gEatOffer = false;
 std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
 std::unordered_map<long, long> gCurMtxPrice;
+std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 
 SHORT gCurServerTime[3] = {0, 0, 0};
 
@@ -552,6 +553,11 @@ void CSKQuoteLib::OnNotifyMarketTot(SHORT sMarketNo, SHORT sPtr, LONG nTime, LON
     DEBUG(DEBUG_LEVEL_INFO, "start");
 
     DEBUG(DEBUG_LEVEL_INFO, "sMarketNo: %d nTime: %d nTotv: %ld", sMarketNo, nTime, nTotv);
+
+    gCurTaiexInfo[sMarketNo][0] = nTime;
+    gCurTaiexInfo[sMarketNo][1] = nTotv;
+
+    // GetCurTaiexInfo(sMarketNo, nTime, nTotv, 0, 0);
 }
 
 void CSKQuoteLib::OnNotifyMarketBuySell(SHORT sMarketNo, SHORT sPtr, LONG nTime, LONG nBc, LONG nSc, LONG nBs, LONG nSs)
@@ -559,6 +565,9 @@ void CSKQuoteLib::OnNotifyMarketBuySell(SHORT sMarketNo, SHORT sPtr, LONG nTime,
     DEBUG(DEBUG_LEVEL_INFO, "start");
 
     DEBUG(DEBUG_LEVEL_INFO, "sMarketNo: %d nTime: %d Buy: %ld Sell: %ld", sMarketNo, nTime, nBs, nSs);
+
+    gCurTaiexInfo[sMarketNo][2] = nBs;
+    gCurTaiexInfo[sMarketNo][3] = nSs;
 }
 
 long CalculateDiff(const std::string &data)
@@ -618,4 +627,8 @@ void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate)
     }
 
     gCurMtxPrice[nStockIndex] = nClose / 100;
+}
+
+void GetCurTaiexInfo(SHORT sMarketNo, LONG nTime, LONG nTotv, LONG nBs, LONG nSs)
+{
 }

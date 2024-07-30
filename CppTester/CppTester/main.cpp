@@ -428,6 +428,7 @@ extern bool gEatOffer;
 extern std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
 extern SHORT gCurServerTime[3];
 extern std::unordered_map<long, long> gCurMtxPrice;
+extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 
 void thread_main()
 {
@@ -531,6 +532,9 @@ void thread_main()
 
             printf("CurMtxPrice: %ld    ", gCurMtxPrice[MTXIdxNo]);
             printf("ServerTime: %d: %d: %d\n", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+            printf("Time: %ld: Valume: %ld: Buy: %ld Sell: %ld\n",
+                   gCurTaiexInfo[0][0], gCurTaiexInfo[0][1], gCurTaiexInfo[0][2], gCurTaiexInfo[0][3]);
+
             printf("=========================================\n");
 
             if (gCurCommHighLowPoint.count(MTXIdxNo) > 0)
