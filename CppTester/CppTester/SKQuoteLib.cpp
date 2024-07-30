@@ -500,7 +500,7 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 
 void CSKQuoteLib::OnNotifyServerTime(SHORT sHour, SHORT sMinute, SHORT sSecond, LONG nTotal)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "Hour: %d Minute: %d Second: %d Total[%ld]", sHour, sMinute, sSecond, nTotal);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Hour: %d Minute: %d Second: %d Total[%ld]", sHour, sMinute, sSecond, nTotal);
 
     gCurServerTime[0] = sHour;
     gCurServerTime[1] = sMinute;

@@ -506,7 +506,10 @@ void thread_main()
     const int refreshInterval = 1000; // 1000毫秒
     auto lastClearTime = std::chrono::steady_clock::now();
 
-    // The price will be unstable at the beginning and will change from high to low.
+    // 1. The price will be unstable at the beginning and will change from high to low.
+    // 2. need to add TAIEX infomation : SKQuoteLib_GetMarketBuySellUpDown
+    // 3. Add open position query.
+    // 4. Add stop loss and profit stop mechanism
 
     while (true)
     {
@@ -528,11 +531,12 @@ void thread_main()
                 long CurHigh = gCurCommHighLowPoint[MTXIdxNo][0] / 100;
                 long CurLow = gCurCommHighLowPoint[MTXIdxNo][1] / 100;
 
-                DEBUG(DEBUG_LEVEL_INFO, "MTXIdxNo: %ld. High: %ld, Low: %ld", MTXIdxNo, CurHigh, CurLow);
+                DEBUG(DEBUG_LEVEL_DEBUG, "MTXIdxNo: %ld. High: %ld, Low: %ld", MTXIdxNo, CurHigh, CurLow);
 
-                printf("CurMtxPrice: %ld\n", gCurMtxPrice[MTXIdxNo]);
-                printf("CurHigh: %ld, CurLow: %ld\n", CurHigh, CurLow);
-                
+                printf("CurMtxPrice: %ld    ,", gCurMtxPrice[MTXIdxNo]);
+                printf("CurHigh: %ld, CurLow: %ld    ,", CurHigh, CurLow);
+                printf("ServerTime: %d: %d: %d\n", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+
                 printf("=========================================\n");
 
                 printf("Long Key 5: %ld\n", CurLow + LargestAmp);
@@ -558,8 +562,6 @@ void thread_main()
                 printf("CurAmp : %d\n", CurHigh - CurLow);
 
                 printf("=========================================\n");
-
-                printf("ServerTime: %d: %d: %d", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
             }
         }
 
