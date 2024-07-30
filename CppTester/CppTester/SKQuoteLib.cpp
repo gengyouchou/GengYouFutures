@@ -276,7 +276,7 @@ long CSKQuoteLib::RequestServerTime()
     long res = 0;
 
     res = m_pSKQuoteLib->SKQuoteLib_RequestServerTime();
-    DEBUG(DEBUG_LEVEL_INFO, "m_pSKQuoteLib->SKQuoteLib_RequestServerTime = %d", res);
+    DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKQuoteLib->SKQuoteLib_RequestServerTime = %d", res);
 
     return res;
 }
@@ -288,14 +288,14 @@ long CSKQuoteLib::RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKSTO
     BSTR bstrStockNo = _bstr_t(strStockNo.c_str());
 
     long res = m_pSKQuoteLib->SKQuoteLib_GetStockByNoLONG(bstrStockNo, pSKStock);
-    DEBUG(DEBUG_LEVEL_INFO, "m_pSKQuoteLib->SKQuoteLib_GetStockByNoLONG = %d", res);
+    DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKQuoteLib->SKQuoteLib_GetStockByNoLONG = %d", res);
 
     if (res == 0)
     {
         char *szStockNo = _com_util::ConvertBSTRToString(pSKStock->bstrStockNo);
         char *szStockName = _com_util::ConvertBSTRToString(pSKStock->bstrStockName);
 
-        DEBUG(DEBUG_LEVEL_INFO, "szStockNo: %s, szStockName : %s, nStockidx : %ld, nHigh: %d, nLow: %d",
+        DEBUG(DEBUG_LEVEL_DEBUG, "szStockNo: %s, szStockName : %s, nStockidx : %ld, nHigh: %d, nLow: %d",
               szStockNo,
               szStockName,
               pSKStock->nStockIdx,
@@ -372,13 +372,13 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
           skStock.nClose,
           skStock.nTQty);
 
-    printf("OnNotifyQuoteLONG : %s %s bid:%d ask:%d last:%d volume:%d\n",
-           szStockNo,
-           szStockName,
-           skStock.nBid,
-           skStock.nAsk,
-           skStock.nClose,
-           skStock.nTQty);
+    // printf("OnNotifyQuoteLONG : %s %s bid:%d ask:%d last:%d volume:%d\n",
+    //        szStockNo,
+    //        szStockName,
+    //        skStock.nBid,
+    //        skStock.nAsk,
+    //        skStock.nClose,
+    //        skStock.nTQty);
 
     delete[] szStockName;
     delete[] szStockNo;
@@ -405,7 +405,7 @@ void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDa
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     // printf("OnNotifyHistoryTicksLONG : %ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
-    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
+    DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
     if (nClose >= nAsk)

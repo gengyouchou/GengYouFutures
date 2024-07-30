@@ -449,7 +449,7 @@ void thread_main()
 
     for (int i = 0; i < gDaysKlineDiff.size(); ++i)
     {
-        DEBUG(DEBUG_LEVEL_INFO, "Diff = %ld ", gDaysKlineDiff[i]);
+        DEBUG(DEBUG_LEVEL_DEBUG, "Diff = %ld ", gDaysKlineDiff[i]);
 
         accu += gDaysKlineDiff[i];
 
