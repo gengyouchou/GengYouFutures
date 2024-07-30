@@ -46,7 +46,7 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
     EXCEPINFO *pexcepinfo,
     UINT *puArgErr)
 {
-    DEBUG(DEBUG_LEVEL_DEBUG, "dispidMember == %d", dispidMember);
+    DEBUG(DEBUG_LEVEL_INFO, "dispidMember == %d", dispidMember);
 
     VARIANT varlValue;
     VariantInit(&varlValue);
@@ -180,8 +180,28 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
         break;
     }
 
-    default:
+    case 8:
+    {
+        // Your code for cases 8, 9, 10, and 17 here
+        // ...
 
+        SHORT sMarketNo = V_I2(&(pdispparams->rgvarg)[5]);
+        LONG nTime = V_I4(&(pdispparams->rgvarg)[3]);
+        LONG nTotv = V_I4(&(pdispparams->rgvarg)[2]);
+
+        OnNotifyMarketTot(sMarketNo, 0, nTime, nTotv, 0, 0);
+
+        break;
+    }
+    case 9:
+    case 10:
+    case 17:
+    {
+        break;
+    }
+
+    default:
+        // Code for other cases
         break;
     }
 
@@ -285,6 +305,16 @@ long CSKQuoteLib::RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKSTO
         delete[] szStockName;
         delete[] szStockNo;
     }
+
+    return res;
+}
+
+long CSKQuoteLib::GetMarketBuySellUpDown(VOID)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
+
+    long res = m_pSKQuoteLib->SKQuoteLib_GetMarketBuySellUpDown();
+    DEBUG(DEBUG_LEVEL_INFO, "m_pSKQuoteLib->SKQuoteLib_GetMarketBuySellUpDown = %d", res);
 
     return res;
 }
@@ -505,6 +535,13 @@ void CSKQuoteLib::OnNotifyServerTime(SHORT sHour, SHORT sMinute, SHORT sSecond, 
     gCurServerTime[0] = sHour;
     gCurServerTime[1] = sMinute;
     gCurServerTime[2] = sSecond;
+}
+
+void CSKQuoteLib::OnNotifyMarketTot(SHORT sMarketNo, SHORT sPtr, LONG nTime, LONG nTotv, LONG nTots, LONG nTotc)
+{
+    DEBUG(DEBUG_LEVEL_INFO, "start");
+
+    DEBUG(DEBUG_LEVEL_INFO, "sMarketNo: %d nTime: %d nTotv: %ld", sMarketNo, nTime, nTotv);
 }
 
 long CalculateDiff(const std::string &data)

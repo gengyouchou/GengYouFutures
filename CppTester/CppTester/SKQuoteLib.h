@@ -24,6 +24,7 @@ public:
     long RequestKLine(string strStockNo);
     long RequestServerTime();
     long RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKSTOCKLONG *pSKStock);
+    long GetMarketBuySellUpDown(VOID);
 
     // Events
     void OnConnection(long nKind, long nCode);
@@ -34,6 +35,8 @@ public:
     void OnNotifyStockList(long sMarketNo, string strStockData);
     void OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData);
     void OnNotifyServerTime(SHORT sHour, SHORT sMinute, SHORT sSecond, LONG nTotal);
+    void OnNotifyMarketTot(SHORT sMarketNo, SHORT sPtr, LONG nTime, LONG nTotv, LONG nTots, LONG nTotc);
+    void OnNotifyMarketBuySell(SHORT sMarketNo, SHORT sPtr, LONG nTime, LONG nBc, LONG nSc, LONG nBs, LONG nSs);
 
 private:
     HRESULT OnEventFiringObjectInvoke(

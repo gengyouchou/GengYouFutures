@@ -482,6 +482,9 @@ void thread_main()
 
     DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestServerTime()=%d", res);
 
+    res = pSKQuoteLib->GetMarketBuySellUpDown();
+    DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
+
     SKCOMLib::SKSTOCKLONG skStock;
 
     res = pSKQuoteLib->RequestStockIndexMap("MTX00", &skStock);
