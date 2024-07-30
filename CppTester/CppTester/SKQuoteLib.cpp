@@ -194,6 +194,16 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
         break;
     }
     case 9:
+    {
+        SHORT sMarketNo = V_I2(&(pdispparams->rgvarg)[6]);
+        LONG nTime = V_I4(&(pdispparams->rgvarg)[4]);
+        LONG BuyCount = V_I4(&(pdispparams->rgvarg)[1]);
+        LONG SellCount = V_I4(&(pdispparams->rgvarg)[0]);
+
+        OnNotifyMarketBuySell(sMarketNo, 0, nTime, 0, 0, BuyCount, SellCount);
+
+        break;
+    }
     case 10:
     case 17:
     {
@@ -542,6 +552,13 @@ void CSKQuoteLib::OnNotifyMarketTot(SHORT sMarketNo, SHORT sPtr, LONG nTime, LON
     DEBUG(DEBUG_LEVEL_INFO, "start");
 
     DEBUG(DEBUG_LEVEL_INFO, "sMarketNo: %d nTime: %d nTotv: %ld", sMarketNo, nTime, nTotv);
+}
+
+void CSKQuoteLib::OnNotifyMarketBuySell(SHORT sMarketNo, SHORT sPtr, LONG nTime, LONG nBc, LONG nSc, LONG nBs, LONG nSs)
+{
+    DEBUG(DEBUG_LEVEL_INFO, "start");
+
+    DEBUG(DEBUG_LEVEL_INFO, "sMarketNo: %d nTime: %d Buy: %ld Sell: %ld", sMarketNo, nTime, nBs, nSs);
 }
 
 long CalculateDiff(const std::string &data)
