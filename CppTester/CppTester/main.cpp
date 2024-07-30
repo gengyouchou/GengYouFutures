@@ -526,6 +526,10 @@ void thread_main()
             // 更新最后清屏时间
             lastClearTime = now;
 
+            printf("CurMtxPrice: %ld    ", gCurMtxPrice[MTXIdxNo]);
+            printf("ServerTime: %d: %d: %d\n", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+            printf("=========================================\n");
+
             if (gCurCommHighLowPoint.count(MTXIdxNo) > 0)
             {
                 long CurHigh = gCurCommHighLowPoint[MTXIdxNo][0] / 100;
@@ -533,9 +537,7 @@ void thread_main()
 
                 DEBUG(DEBUG_LEVEL_DEBUG, "MTXIdxNo: %ld. High: %ld, Low: %ld", MTXIdxNo, CurHigh, CurLow);
 
-                printf("CurMtxPrice: %ld    ,", gCurMtxPrice[MTXIdxNo]);
-                printf("CurHigh: %ld, CurLow: %ld    ,", CurHigh, CurLow);
-                printf("ServerTime: %d: %d: %d\n", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+                printf("CurHigh: %ld, CurLow: %ld\n\n", CurHigh, CurLow);
 
                 printf("=========================================\n");
 
