@@ -12,7 +12,7 @@ std::unordered_map<long, long> gCurMtxPrice;
 SHORT gCurServerTime[3] = {0, 0, 0};
 
 long CalculateDiff(const std::string &data);
-void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate);
+void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate, IN long lTimehms);
 void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate);
 CSKQuoteLib::CSKQuoteLib()
 {
@@ -365,7 +365,7 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
 
     GetCurPrice(nStockIndex, nClose, nSimulate);
 
-    CaluCurCommHighLowPoint(nStockIndex, nClose, nSimulate);
+    CaluCurCommHighLowPoint(nStockIndex, nClose, nSimulate, lTimehms);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
@@ -375,7 +375,7 @@ void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDa
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     // printf("OnNotifyHistoryTicksLONG : %ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
-    DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
+    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
     if (nClose >= nAsk)
@@ -388,7 +388,7 @@ void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDa
         gEatOffer = false;
     }
 
-    CaluCurCommHighLowPoint(nStockIndex, nClose, nSimulate);
+    CaluCurCommHighLowPoint(nStockIndex, nClose, nSimulate, lTimehms);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
@@ -535,9 +535,14 @@ long CalculateDiff(const std::string &data)
     return std::lround(std::abs(high - low));
 }
 
-void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate)
+void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate, IN long lTimehms)
 {
     if (nClose <= 0 || nSimulate == 1)
+    {
+        return;
+    }
+
+    if (lTimehms < 84500 || lTimehms > 134500)
     {
         return;
     }
