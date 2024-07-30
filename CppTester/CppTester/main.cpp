@@ -46,14 +46,14 @@ void AutoOrderMTX()
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
-    g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId, false, "MTX00", 2, 1, 0, 2, "P", 1, 0);
+    g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId, false, "TMF00", 2, 1, 0, 2, "P", 1, 0);
     pSKCenterLib->PrintfCodeMessage("AutoOrderMTX", "SendFutureOrder", g_nCode);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "SendFutureOrder res = %d", g_nCode);
 
     g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
                                            false,
-                                           "MTX00",
+                                           "TMF00",
                                            2,
                                            0, // buy
                                            0,
@@ -433,7 +433,7 @@ extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 void thread_main()
 {
     AutoLogIn();
-    // AutoOrderMTX();
+    AutoOrderMTX();
     // AutoGetFutureRights();
 
     // g_nCode = pSKQuoteLib->LeaveMonitor();
