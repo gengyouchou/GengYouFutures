@@ -662,10 +662,10 @@ int main()
 	DWORD mode = 0;
 	GetConsoleMode(hStdin, &mode);
 	SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
-	pwd = "youlose1A";
-	cout << endl;
+	pwd = "youlose1A!";
+	// cout << endl;
 
-	cout << g_strUserId << " " << pwd << endl;
+	// cout << g_strUserId << " " << pwd << endl;
 
 	g_nCode = pSKCenterLib->Login(g_strUserId.c_str(), pwd.c_str());
 
