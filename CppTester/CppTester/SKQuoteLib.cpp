@@ -564,7 +564,7 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 	DEBUG(DEBUG_LEVEL_INFO, "strData= %s", strData);
 
 	parseAndProcessData(strData);
-	ProcessDaysOrNightCommHighLowPoint();
+	// ProcessDaysOrNightCommHighLowPoint();
 
 	// cout << endl;
 
