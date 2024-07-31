@@ -4,17 +4,22 @@
 #include <iostream>
 #include <unordered_map>
 
-std::deque<long> gDaysKlineDiff;
 bool gEatOffer = false;
 std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
+std::deque<long> gDaysKlineDiff;
+std::unordered_map<string, pair<double, double>> gDaysCommHighLowPoint;
+std::unordered_map<string, pair<double, double>> gNightCommHighLowPoint;
 std::unordered_map<long, long> gCurMtxPrice;
 std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 
-SHORT gCurServerTime[3] = {0, 0, 0};
+SHORT gCurServerTime[3] = {-1, -1, -1};
 
 long CalculateDiff(const std::string &data);
 void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate, IN long lTimehms);
 void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate);
+void parseAndProcessData(const string &data);
+void ProcessDaysOrNightCommHighLowPoint();
+
 CSKQuoteLib::CSKQuoteLib()
 {
 	m_pSKQuoteLib.CreateInstance(__uuidof(SKCOMLib::SKQuoteLib));
@@ -272,15 +277,8 @@ long CSKQuoteLib::RequestKLine(string strStockNo)
 
 	long res = 0;
 
-	// res = m_pSKQuoteLib->SKQuoteLib_RequestKLineAMByDate(BstrStockNo, 4, 1, 1, StartDate, EndDate, 0);
-
-	// if (res != 0)
-	// {
 	res = m_pSKQuoteLib->SKQuoteLib_RequestKLineAM(BstrStockNo, 0, 1, 0);
 	DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKQuoteLib->SKQuoteLib_RequestKLineAM = %d", res);
-	//}
-
-	// WaitForSingleObject(hEvent, INFINITE);
 
 	return res;
 }
@@ -331,6 +329,46 @@ long CSKQuoteLib::GetMarketBuySellUpDown(VOID)
 	DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKQuoteLib->SKQuoteLib_GetMarketBuySellUpDown = %d", res);
 
 	return res;
+}
+
+void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
+{
+	if (gCurServerTime[0] < 0)
+	{
+		return;
+	}
+
+	bool isDaySession = gCurServerTime[0] >= 8 && gCurServerTime[0] <= 14;
+
+	bool isNightSession = gCurServerTime[0] < 8 || gCurServerTime[0] > 14;
+
+	unordered_map<string, pair<double, double>> *x = nullptr;
+
+	if (isDaySession)
+	{
+		x = &gDaysCommHighLowPoint;
+	}
+	else if (isNightSession)
+	{
+		x = &gNightCommHighLowPoint;
+	}
+
+	if (x != nullptr)
+	{
+		for (const auto &entry : *x)
+		{
+			long diff = static_cast<long>(entry.second.first - entry.second.second);
+
+			DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %ld, Low: %ld", entry.first, entry.second.first, entry.second.second);
+
+			gDaysKlineDiff.push_back(diff);
+
+			if (gDaysKlineDiff.size() > DayMA)
+			{
+				gDaysKlineDiff.pop_front();
+			}
+		}
+	}
 }
 
 // Events
@@ -525,22 +563,10 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 
 	DEBUG(DEBUG_LEVEL_INFO, "strData= %s", strData);
 
+	parseAndProcessData(strData);
+	ProcessDaysOrNightCommHighLowPoint();
+
 	// cout << endl;
-
-	long diff = CalculateDiff(strData);
-
-	gDaysKlineDiff.push_back(diff);
-
-	if (gDaysKlineDiff.size() > DayMA)
-	{
-		gDaysKlineDiff.pop_front();
-	}
-
-	// CalculateDailyWavesAndKeyPrices()
-
-	// SetEvent(hEvent);
-
-	// CalculateLongOrShort();
 
 	DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
@@ -611,6 +637,11 @@ void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimul
 		return;
 	}
 
+	if (gCurServerTime[0] < 0)
+	{
+		return;
+	}
+
 	bool isDaySession = gCurServerTime[0] >= 8 && gCurServerTime[0] <= 14;
 
 	bool isNightSession = gCurServerTime[0] < 8 || gCurServerTime[0] > 14;
@@ -638,6 +669,68 @@ void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate)
 	gCurMtxPrice[nStockIndex] = nClose / 100;
 }
 
-void GetCurTaiexInfo(SHORT sMarketNo, LONG nTime, LONG nTotv, LONG nBs, LONG nSs)
+/**
+ * @brief Splits the given trading data into day and night sessions and records the highest and lowest prices.
+ *
+ * @param datetime The datetime string in "YYYY/MM/DD HH:MM" format.
+ * @param openPrice The opening price.
+ * @param highPrice The highest price.
+ * @param lowPrice The lowest price.
+ * @param closePrice The closing price.
+ * @param volume The trading volume.
+ */
+void processTradingData(const string &datetime, double openPrice, double highPrice, double lowPrice, double closePrice, int volume)
 {
+
+	DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %ld, lowPrice: %ld", datetime, highPrice, lowPrice);
+
+	// Extract the date and time from the datetime string
+	string date = datetime.substr(0, 10);
+	string time = datetime.substr(11, 5);
+
+	// Convert time to hour and minute
+	int hour = stoi(time.substr(0, 2));
+	int minute = stoi(time.substr(3, 2));
+
+	// Determine if the time is within the day session or night session
+	if ((hour == 8 && minute >= 45) || (hour >= 9 && hour < 13) || (hour == 13 && minute <= 45))
+	{
+		// Day session
+		auto &entry = gDaysCommHighLowPoint[date];
+		entry.first = max(entry.first, highPrice);
+		entry.second = min(entry.second, lowPrice);
+	}
+	else if ((hour >= 15) || (hour < 5))
+	{
+		// Night session
+		auto &entry = gNightCommHighLowPoint[date];
+		entry.first = max(entry.first, highPrice);
+		entry.second = min(entry.second, lowPrice);
+	}
+}
+
+/**
+ * @brief Parses a trading data string and processes it.
+ *
+ * @param data The trading data string in the format "YYYY/MM/DD HH:MM, openPrice, highPrice, lowPrice, closePrice, volume".
+ */
+void parseAndProcessData(const string &data)
+{
+	stringstream ss(data);
+	string datetime;
+	double openPrice, highPrice, lowPrice, closePrice;
+	int volume;
+
+	getline(ss, datetime, ',');
+	ss >> openPrice;
+	ss.ignore(1); // Ignore the comma
+	ss >> highPrice;
+	ss.ignore(1); // Ignore the comma
+	ss >> lowPrice;
+	ss.ignore(1); // Ignore the comma
+	ss >> closePrice;
+	ss.ignore(1); // Ignore the comma
+	ss >> volume;
+
+	processTradingData(datetime, openPrice, highPrice, lowPrice, closePrice, volume);
 }

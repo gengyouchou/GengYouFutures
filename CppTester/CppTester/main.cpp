@@ -486,6 +486,8 @@ void thread_main()
 	// hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	AutoKLineData("MTX00");
 
+	
+
 	long long accu = 0;
 	long AvgAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;
 
