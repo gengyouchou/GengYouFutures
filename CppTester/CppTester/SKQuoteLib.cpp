@@ -359,7 +359,7 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
 		{
 			long diff = static_cast<long>(entry.second.first - entry.second.second);
 
-			DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %ld, Low: %ld", entry.first, entry.second.first, entry.second.second);
+			DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", entry.first, entry.second.first, entry.second.second);
 
 			gDaysKlineDiff.push_back(diff);
 
@@ -564,7 +564,6 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 	DEBUG(DEBUG_LEVEL_INFO, "strData= %s", strData);
 
 	parseAndProcessData(strData);
-	// ProcessDaysOrNightCommHighLowPoint();
 
 	// cout << endl;
 
