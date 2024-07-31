@@ -25,6 +25,7 @@ public:
     long RequestServerTime();
     long RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKSTOCKLONG *pSKStock);
     long GetMarketBuySellUpDown(VOID);
+    void ProcessDaysOrNightCommHighLowPoint();
 
     // Events
     void OnConnection(long nKind, long nCode);

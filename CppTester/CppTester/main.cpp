@@ -173,6 +173,8 @@ void AutoKLineData(IN string ProductNum)
 
 	pSKCenterLib->PrintfCodeMessage("Quote", "RequestKLine", g_nCode);
 
+	pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
+
 	DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
@@ -471,15 +473,27 @@ extern SHORT gCurServerTime[3];
 extern std::unordered_map<long, long> gCurMtxPrice;
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 
+// To do list:
+// 日夜盤都要算振福關卡價
+// Estimated trading volume
+// Instant profit and loss
+// need VIX index
+// current time
+// Estimated trading volume
+// Instant profit and loss
+
 void thread_main()
 {
 	AutoLogIn();
-	AutoOrderMTX();
-	// AutoGetFutureRights();
 
-	// g_nCode = pSKQuoteLib->LeaveMonitor();
+	long res = pSKQuoteLib->RequestServerTime();
 
-	// pSKCenterLib->PrintfCodeMessage("Quote", "LeaveMonitor", g_nCode);
+	DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestServerTime()=%d", res);
+
+	res = pSKQuoteLib->GetMarketBuySellUpDown();
+	DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
+
+	// cin >> x;
 
 	int x = 1;
 
@@ -491,7 +505,7 @@ void thread_main()
 
 	for (int i = 0; i < gDaysKlineDiff.size(); ++i)
 	{
-		DEBUG(DEBUG_LEVEL_DEBUG, "Diff = %ld ", gDaysKlineDiff[i]);
+		DEBUG(DEBUG_LEVEL_INFO, "Diff = %ld ", gDaysKlineDiff[i]);
 
 		accu += gDaysKlineDiff[i];
 
@@ -510,27 +524,12 @@ void thread_main()
 	DEBUG(DEBUG_LEVEL_INFO, "LargerAmp : %ld", LargerAmp);
 	DEBUG(DEBUG_LEVEL_INFO, "LargestAmp : %ld", LargestAmp);
 
+	// AutoOrderMTX();
+	// AutoGetFutureRights();
+
 	AutoQuoteTicks("2330", 1);
 
 	AutoQuoteTicks("MTX00", 2);
-
-	// current time
-	// Estimated trading volume
-	// Instant profit and loss
-
-	// cin >> x;
-
-	long res = pSKQuoteLib->RequestServerTime();
-
-	DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestServerTime()=%d", res);
-
-	res = pSKQuoteLib->GetMarketBuySellUpDown();
-	DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
-	// To do list:
-	// 日夜盤都要算振福關卡價
-	// Estimated trading volume
-	// Instant profit and loss
-	// need VIX index
 
 	SKCOMLib::SKSTOCKLONG skStock;
 
