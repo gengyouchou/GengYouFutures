@@ -2,10 +2,11 @@
 #define LOGGER_H
 
 #include <fstream>
+#include <iomanip> // for std::hex, std::setprecision
 #include <sstream>
-#include <string>
-#include <iomanip>   // for std::hex
 #include <stdexcept> // for std::runtime_error
+#include <string>
+#include <type_traits> // for std::is_same_v
 
 #ifndef NDEBUG
 #define LOGGING_ENABLED
@@ -48,7 +49,7 @@ private:
     {
         while (*format != '\0')
         {
-            if (*format == '%' && (*(format + 1) == 's' || *(format + 1) == 'd' || *(format + 1) == 'x' || *(format + 1) == 'l'))
+            if (*format == '%' && (*(format + 1) == 's' || *(format + 1) == 'd' || *(format + 1) == 'x' || *(format + 1) == 'l' || *(format + 1) == 'f'))
             {
                 // handle case where format specifier is not followed by any argument
                 throw std::runtime_error("Too few arguments for format string");
@@ -97,6 +98,20 @@ private:
                 format_string(oss, format, args...);
                 return;
             }
+            else if (*format == '%' && *(format + 1) == 'f')
+            {
+                if constexpr (std::is_same_v<T, double>)
+                {
+                    oss << std::fixed << std::setprecision(6) << value;
+                }
+                else
+                {
+                    throw std::runtime_error("Invalid type for %f format specifier");
+                }
+                format += 2;
+                format_string(oss, format, args...);
+                return;
+            }
             else
             {
                 oss << *format++;
@@ -118,3 +133,5 @@ private:
 extern Logger logger;
 
 #endif // LOGGER_H
+
+
