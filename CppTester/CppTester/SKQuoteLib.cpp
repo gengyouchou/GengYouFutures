@@ -561,7 +561,7 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 	// (年/月/日 時:分, 開盤價, 最高價, 最低價, 收盤價, 成交量)
 	// 2024/07/30 16:16, 22256.00, 22259.00, 22250.00, 22255.00, 389
 
-	DEBUG(DEBUG_LEVEL_DEBUG, "strData= %s", strData);
+	DEBUG(DEBUG_LEVEL_INFO, "strData= %s", strData);
 
 	parseAndProcessData(strData);
 	ProcessDaysOrNightCommHighLowPoint();

@@ -465,6 +465,72 @@ extern SHORT gCurServerTime[3];
 extern std::unordered_map<long, long> gCurMtxPrice;
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 
+void SetupVariable(long &AvgAmp, long &LargestAmp, long &SmallestAmp, long &LargerAmp, long &SmallAmp, long &MTXIdxNo)
+{
+	if (pSKQuoteLib->IsConnected() != 1)
+	{
+		g_nCode = pSKQuoteLib->EnterMonitorLONG();
+		pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
+		long res = pSKQuoteLib->RequestServerTime();
+		DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestServerTime()=%d", res);
+
+		res = pSKQuoteLib->GetMarketBuySellUpDown();
+		DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
+
+		AutoKLineData("MTX00");
+
+		long long accu = 0;
+
+		for (int i = 0; i < gDaysKlineDiff.size(); ++i)
+		{
+			DEBUG(DEBUG_LEVEL_INFO, "Diff = %ld ", gDaysKlineDiff[i]);
+
+			accu += gDaysKlineDiff[i];
+
+			LargestAmp = max(LargestAmp, gDaysKlineDiff[i]);
+			SmallestAmp = min(SmallestAmp, gDaysKlineDiff[i]);
+		}
+
+		AvgAmp = accu / DayMA;
+
+		LargerAmp = (AvgAmp + LargestAmp) / 2;
+		SmallAmp = (AvgAmp + SmallestAmp) / 2;
+
+		DEBUG(DEBUG_LEVEL_INFO, "SmallestAmp : %ld", SmallestAmp);
+		DEBUG(DEBUG_LEVEL_INFO, "SmallAmp : %ld", SmallAmp);
+		DEBUG(DEBUG_LEVEL_INFO, "AvgAmp : %ld", AvgAmp);
+		DEBUG(DEBUG_LEVEL_INFO, "LargerAmp : %ld", LargerAmp);
+		DEBUG(DEBUG_LEVEL_INFO, "LargestAmp : %ld", LargestAmp);
+
+		// AutoOrderMTX();
+		// AutoGetFutureRights();
+
+		AutoQuoteTicks("2330", 1);
+
+		AutoQuoteTicks("MTX00", 2);
+
+		SKCOMLib::SKSTOCKLONG skStock;
+
+		res = pSKQuoteLib->RequestStockIndexMap("MTX00", &skStock);
+
+		DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+
+		MTXIdxNo = skStock.nStockIdx;
+
+		res = pSKQuoteLib->RequestStockIndexMap("2330", &skStock);
+
+		DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+
+		res = pSKQuoteLib->RequestStockIndexMap("2317", &skStock);
+
+		DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+
+		res = pSKQuoteLib->RequestStockIndexMap("2454", &skStock);
+
+		DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+	}
+}
+
 // To do list:
 // 日夜盤都要算振福關卡價
 // Estimated trading volume
@@ -476,78 +542,9 @@ extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 
 void thread_main()
 {
-	AutoLogIn();
-
-	while (pSKQuoteLib->IsConnected() != 1)
-	{
-		g_nCode = pSKQuoteLib->EnterMonitorLONG();
-		pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
-	}
-
-	long res = pSKQuoteLib->RequestServerTime();
-
-	DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestServerTime()=%d", res);
-
-	res = pSKQuoteLib->GetMarketBuySellUpDown();
-	DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
-
-	// cin >> x;
-
-	int x = 1;
-
-	// hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	AutoKLineData("MTX00");
-
-	long long accu = 0;
 	long AvgAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;
-
-	for (int i = 0; i < gDaysKlineDiff.size(); ++i)
-	{
-		DEBUG(DEBUG_LEVEL_INFO, "Diff = %ld ", gDaysKlineDiff[i]);
-
-		accu += gDaysKlineDiff[i];
-
-		LargestAmp = max(LargestAmp, gDaysKlineDiff[i]);
-		SmallestAmp = min(SmallestAmp, gDaysKlineDiff[i]);
-	}
-
-	AvgAmp = accu / DayMA;
-
-	LargerAmp = (AvgAmp + LargestAmp) / 2;
-	SmallAmp = (AvgAmp + SmallestAmp) / 2;
-
-	DEBUG(DEBUG_LEVEL_INFO, "SmallestAmp : %ld", SmallestAmp);
-	DEBUG(DEBUG_LEVEL_INFO, "SmallAmp : %ld", SmallAmp);
-	DEBUG(DEBUG_LEVEL_INFO, "AvgAmp : %ld", AvgAmp);
-	DEBUG(DEBUG_LEVEL_INFO, "LargerAmp : %ld", LargerAmp);
-	DEBUG(DEBUG_LEVEL_INFO, "LargestAmp : %ld", LargestAmp);
-
-	// AutoOrderMTX();
-	// AutoGetFutureRights();
-
-	AutoQuoteTicks("2330", 1);
-
-	AutoQuoteTicks("MTX00", 2);
-
-	SKCOMLib::SKSTOCKLONG skStock;
-
-	res = pSKQuoteLib->RequestStockIndexMap("MTX00", &skStock);
-
-	DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
-
-	long MTXIdxNo = skStock.nStockIdx;
-
-	res = pSKQuoteLib->RequestStockIndexMap("2330", &skStock);
-
-	DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
-
-	res = pSKQuoteLib->RequestStockIndexMap("2317", &skStock);
-
-	DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
-
-	res = pSKQuoteLib->RequestStockIndexMap("2454", &skStock);
-
-	DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+	long MTXIdxNo;
+	AutoLogIn();
 
 	// 设置定期清屏的时间间隔（以毫秒为单位）
 	const int refreshInterval = 1000; // 1000毫秒
@@ -560,6 +557,9 @@ void thread_main()
 
 	while (true)
 	{
+
+		SetupVariable(AvgAmp, LargestAmp, SmallestAmp, LargerAmp, SmallAmp, MTXIdxNo);
+
 		// 获取当前时间
 		auto now = std::chrono::steady_clock::now();
 		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClearTime);
