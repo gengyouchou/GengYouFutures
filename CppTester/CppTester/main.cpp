@@ -163,17 +163,9 @@ void AutoKLineData(IN string ProductNum)
 {
 	DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
-	while (pSKQuoteLib->IsConnected() != 1)
-	{
-		g_nCode = pSKQuoteLib->EnterMonitorLONG();
-		pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
-	}
-
 	g_nCode = pSKQuoteLib->RequestKLine(ProductNum);
 
 	pSKCenterLib->PrintfCodeMessage("Quote", "RequestKLine", g_nCode);
-
-	pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
 
 	DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
@@ -485,6 +477,12 @@ extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 void thread_main()
 {
 	AutoLogIn();
+
+	while (pSKQuoteLib->IsConnected() != 1)
+	{
+		g_nCode = pSKQuoteLib->EnterMonitorLONG();
+		pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
+	}
 
 	long res = pSKQuoteLib->RequestServerTime();
 

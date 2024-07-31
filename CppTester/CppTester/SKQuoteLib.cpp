@@ -18,6 +18,7 @@ long CalculateDiff(const std::string &data);
 void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate, IN long lTimehms);
 void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate);
 void parseAndProcessData(const string &data);
+void ProcessDaysOrNightCommHighLowPoint();
 
 CSKQuoteLib::CSKQuoteLib()
 {
@@ -276,15 +277,8 @@ long CSKQuoteLib::RequestKLine(string strStockNo)
 
 	long res = 0;
 
-	// res = m_pSKQuoteLib->SKQuoteLib_RequestKLineAMByDate(BstrStockNo, 4, 1, 1, StartDate, EndDate, 0);
-
-	// if (res != 0)
-	// {
 	res = m_pSKQuoteLib->SKQuoteLib_RequestKLineAM(BstrStockNo, 0, 1, 0);
 	DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKQuoteLib->SKQuoteLib_RequestKLineAM = %d", res);
-	//}
-
-	// WaitForSingleObject(hEvent, INFINITE);
 
 	return res;
 }
@@ -364,6 +358,8 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
 		for (const auto &entry : *x)
 		{
 			long diff = static_cast<long>(entry.second.first - entry.second.second);
+
+			DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %ld, Low: %ld", entry.first, entry.second.first, entry.second.second);
 
 			gDaysKlineDiff.push_back(diff);
 
@@ -565,9 +561,10 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 	// (年/月/日 時:分, 開盤價, 最高價, 最低價, 收盤價, 成交量)
 	// 2024/07/30 16:16, 22256.00, 22259.00, 22250.00, 22255.00, 389
 
-	DEBUG(DEBUG_LEVEL_INFO, "strData= %s", strData);
+	DEBUG(DEBUG_LEVEL_DEBUG, "strData= %s", strData);
 
 	parseAndProcessData(strData);
+	ProcessDaysOrNightCommHighLowPoint();
 
 	// cout << endl;
 
@@ -684,6 +681,9 @@ void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate)
  */
 void processTradingData(const string &datetime, double openPrice, double highPrice, double lowPrice, double closePrice, int volume)
 {
+
+	DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %ld, lowPrice: %ld", datetime, highPrice, lowPrice);
+
 	// Extract the date and time from the datetime string
 	string date = datetime.substr(0, 10);
 	string time = datetime.substr(11, 5);
