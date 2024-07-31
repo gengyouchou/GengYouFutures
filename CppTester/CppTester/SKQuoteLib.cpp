@@ -261,6 +261,9 @@ long CSKQuoteLib::RequestKLine(string strStockNo)
 	DEBUG(DEBUG_LEVEL_DEBUG, "start");
 	BSTR BstrStockNo = _bstr_t(strStockNo.c_str());
 
+	// string StrOutType = "1";
+	// BSTR BstrOutType = _bstr_t(StrOutType.c_str());
+
 	// string StartDateStr = "20240716";
 	// BSTR StartDate = _bstr_t(StartDateStr.c_str());
 
@@ -273,8 +276,8 @@ long CSKQuoteLib::RequestKLine(string strStockNo)
 
 	// if (res != 0)
 	// {
-	res = m_pSKQuoteLib->SKQuoteLib_RequestKLine(BstrStockNo, 4, 1);
-	DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKQuoteLib->SKQuoteLib_RequestKLine = %d", res);
+	res = m_pSKQuoteLib->SKQuoteLib_RequestKLineAM(BstrStockNo, 0, 1, 0);
+	DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKQuoteLib->SKQuoteLib_RequestKLineAM = %d", res);
 	//}
 
 	// WaitForSingleObject(hEvent, INFINITE);
@@ -517,7 +520,10 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 
 	// cout << "strData : " << strData;
 
-	DEBUG(DEBUG_LEVEL_DEBUG, "strData= %s", strData);
+	// (年/月/日 時:分, 開盤價, 最高價, 最低價, 收盤價, 成交量)
+	// 2024/07/30 16:16, 22256.00, 22259.00, 22250.00, 22255.00, 389
+
+	DEBUG(DEBUG_LEVEL_INFO, "strData= %s", strData);
 
 	// cout << endl;
 
