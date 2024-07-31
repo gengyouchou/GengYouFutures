@@ -524,8 +524,16 @@ void thread_main()
 
     DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestServerTime()=%d", res);
 
+<<<<<<< HEAD
     res = pSKQuoteLib->GetMarketBuySellUpDown();
     DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
+=======
+	// To do list:
+	// 日夜盤都要算振福關卡價
+	// Estimated trading volume 
+	// Instant profit and loss
+	// need VIX index
+>>>>>>> 1a3fc0c (chore: add to do list)
 
     SKCOMLib::SKSTOCKLONG skStock;
 
