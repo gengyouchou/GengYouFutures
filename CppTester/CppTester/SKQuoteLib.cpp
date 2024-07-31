@@ -682,7 +682,7 @@ void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate)
 void processTradingData(const string &datetime, double openPrice, double highPrice, double lowPrice, double closePrice, int volume)
 {
 
-	DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %ld, lowPrice: %ld", datetime, highPrice, lowPrice);
+	//DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %ld, lowPrice: %ld", datetime, highPrice, lowPrice);
 
 	// Extract the date and time from the datetime string
 	string date = datetime.substr(0, 10);
