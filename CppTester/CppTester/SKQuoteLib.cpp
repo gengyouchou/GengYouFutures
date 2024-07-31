@@ -695,16 +695,36 @@ void processTradingData(const string &datetime, double openPrice, double highPri
 	if ((hour == 8 && minute >= 45) || (hour >= 9 && hour < 13) || (hour == 13 && minute <= 45))
 	{
 		// Day session
-		auto &entry = gDaysCommHighLowPoint[date];
-		entry.first = max(entry.first, highPrice);
-		entry.second = min(entry.second, lowPrice);
+		if (gDaysCommHighLowPoint.count(date) == 0)
+		{
+			auto &entry = gDaysCommHighLowPoint[date];
+			entry.first = highPrice;
+			entry.second = lowPrice;
+		}
+		else
+		{
+			auto &entry = gDaysCommHighLowPoint[date];
+			entry.first = max(entry.first, highPrice);
+			entry.second = min(entry.second, lowPrice);
+		}
 	}
 	else if ((hour >= 15) || (hour < 5))
 	{
 		// Night session
-		auto &entry = gNightCommHighLowPoint[date];
-		entry.first = max(entry.first, highPrice);
-		entry.second = min(entry.second, lowPrice);
+
+		// Day session
+		if (gNightCommHighLowPoint.count(date) == 0)
+		{
+			auto &entry = gNightCommHighLowPoint[date];
+			entry.first = highPrice;
+			entry.second = lowPrice;
+		}
+		else
+		{
+			auto &entry = gNightCommHighLowPoint[date];
+			entry.first = max(entry.first, highPrice);
+			entry.second = min(entry.second, lowPrice);
+		}
 	}
 }
 
