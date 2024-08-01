@@ -472,19 +472,23 @@ extern std::unordered_map<long, long> gCurMtxPrice;
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 
+// To do list:
+// 日夜盤都要算振福關卡價 done
+// Estimated trading volume
+// Instant profit and loss
+// need VIX index
+// current time done
+// Estimated trading volume
+// Instant profit and loss
+
 void thread_main()
 {
     AutoLogIn();
     // AutoOrderMTX();
     // AutoGetFutureRights();
 
-    // g_nCode = pSKQuoteLib->LeaveMonitor();
-
-    // pSKCenterLib->PrintfCodeMessage("Quote", "LeaveMonitor", g_nCode);
-
     int x = 1;
 
-    // hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
     AutoKLineData("TX00");
 
     pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
@@ -529,11 +533,6 @@ void thread_main()
 
     res = pSKQuoteLib->GetMarketBuySellUpDown();
     DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
-    // To do list:
-    // 日夜盤都要算振福關卡價
-    // Estimated trading volume
-    // Instant profit and loss
-    // need VIX index
 
     SKCOMLib::SKSTOCKLONG skStock;
 

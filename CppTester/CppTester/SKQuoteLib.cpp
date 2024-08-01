@@ -359,7 +359,7 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
         {
             long diff = static_cast<long>(entry.second.first - entry.second.second);
 
-            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", entry.first, entry.second.first, entry.second.second);
+            DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f", entry.first, entry.second.first, entry.second.second);
 
             gDaysKlineDiff.push_back(diff);
 
@@ -385,7 +385,7 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
 
             long diff = static_cast<long>(cur.first - cur.second);
 
-            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", entry.first, cur.first, cur.second);
+            DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f", entry.first, cur.first, cur.second);
 
             gDaysKlineDiff.push_back(diff);
 
@@ -601,7 +601,7 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
     // (年/月/日 時:分, 開盤價, 最高價, 最低價, 收盤價, 成交量)
     // 2024/07/30 16:16, 22256.00, 22259.00, 22250.00, 22255.00, 389
 
-    DEBUG(DEBUG_LEVEL_INFO, "strData= %s", strData);
+    DEBUG(DEBUG_LEVEL_DEBUG, "strData= %s", strData);
 
     parseAndProcessData(strData);
 
@@ -763,9 +763,9 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             entry.first = max(entry.first, highPrice);
             entry.second = min(entry.second, lowPrice);
 
-            DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
+            DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
 
-            DEBUG(DEBUG_LEVEL_INFO, "Date15_00: %s, High: %f, Low: %f",
+            DEBUG(DEBUG_LEVEL_DEBUG, "Date15_00: %s, High: %f, Low: %f",
                   date, entry.first, entry.second);
         }
         else if (hour <= 5)
@@ -787,7 +787,7 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             {
                 --it;
                 prevDate = it->first;
-                DEBUG(DEBUG_LEVEL_INFO, "prevDate=%s", prevDate);
+                DEBUG(DEBUG_LEVEL_DEBUG, "prevDate=%s", prevDate);
             }
 
             // 更新當前 second
@@ -795,9 +795,9 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             entry.first = max(entry.first, prevEntry.first);
             entry.second = min(entry.second, prevEntry.second);
 
-            DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
+            DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
 
-            DEBUG(DEBUG_LEVEL_INFO, "Date0_5: %s, High: %f, Low: %f",
+            DEBUG(DEBUG_LEVEL_DEBUG, "Date0_5: %s, High: %f, Low: %f",
                   date, entry.first, entry.second);
         }
     }
