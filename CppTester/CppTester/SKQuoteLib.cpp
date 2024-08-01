@@ -499,7 +499,7 @@ void CSKQuoteLib::OnNotifyBest5LONG(
     LONG nExtendAsk, LONG nExtendAskQty,
     LONG nSimulate)
 {
-    DEBUG(DEBUG_LEVEL_DEBUG, "start");
+    DEBUG(DEBUG_LEVEL_INFO, "start");
 
     DEBUG(DEBUG_LEVEL_DEBUG, "Ofr5: [%ld], q5G: [%ld]\n\n", nBestAsk5, nBestAskQty5);
     DEBUG(DEBUG_LEVEL_DEBUG, "Ofr4: [%ld], q4G: [%ld]\n", nBestAsk4, nBestAskQty4);
@@ -515,17 +515,30 @@ void CSKQuoteLib::OnNotifyBest5LONG(
 
     if (nSimulate == 0)
     {
-        gBest5BidOffer[nStockidx].push_back({nBestBid1, nBestBidQty1});
-        gBest5BidOffer[nStockidx].push_back({nBestBid2, nBestBidQty2});
-        gBest5BidOffer[nStockidx].push_back({nBestBid3, nBestBidQty3});
-        gBest5BidOffer[nStockidx].push_back({nBestBid4, nBestBidQty4});
-        gBest5BidOffer[nStockidx].push_back({nBestBid5, nBestBidQty5});
+        gBest5BidOffer[nStockidx] = {
+            {0, 0},
+            {0, 0},
+            {0, 0},
+            {0, 0},
+            {0, 0},
+            {0, 0},
+            {0, 0},
+            {0, 0},
+            {0, 0},
+            {0, 0},
+        };
 
-        gBest5BidOffer[nStockidx].push_back({nBestAsk1, nBestAskQty1});
-        gBest5BidOffer[nStockidx].push_back({nBestAsk2, nBestAskQty2});
-        gBest5BidOffer[nStockidx].push_back({nBestAsk3, nBestAskQty3});
-        gBest5BidOffer[nStockidx].push_back({nBestAsk4, nBestAskQty4});
-        gBest5BidOffer[nStockidx].push_back({nBestAsk5, nBestAskQty5});
+        gBest5BidOffer[nStockidx][0] = {nBestBid1, nBestBidQty1};
+        gBest5BidOffer[nStockidx][1] = {nBestBid2, nBestBidQty2};
+        gBest5BidOffer[nStockidx][2] = {nBestBid3, nBestBidQty3};
+        gBest5BidOffer[nStockidx][3] = {nBestBid4, nBestBidQty4};
+        gBest5BidOffer[nStockidx][4] = {nBestBid5, nBestBidQty5};
+
+        gBest5BidOffer[nStockidx][5] = {nBestAsk1, nBestAskQty1};
+        gBest5BidOffer[nStockidx][6] = {nBestAsk2, nBestAskQty2};
+        gBest5BidOffer[nStockidx][7] = {nBestAsk3, nBestAskQty3};
+        gBest5BidOffer[nStockidx][8] = {nBestAsk4, nBestAskQty4};
+        gBest5BidOffer[nStockidx][9] = {nBestAsk5, nBestAskQty5};
     }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");

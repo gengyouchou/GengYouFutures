@@ -470,6 +470,7 @@ extern std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
 extern SHORT gCurServerTime[3];
 extern std::unordered_map<long, long> gCurMtxPrice;
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
+extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 
 void thread_main()
 {
@@ -632,21 +633,20 @@ void thread_main()
 
                 printf("TSMCIdxNo : CurHigh: %ld, CurLow: %ld\n\n", CurHigh, CurLow);
             }
-            // printf("OnNotifyBest5LONG\n");
 
-            // printf("Ofr5: [%ld],q5G: [%ld]\n\n", nBestAsk5, nBestAskQty5);
-            // printf("Ofr4: [%ld],q4G: [%ld]\n", nBestAsk4, nBestAskQty4);
-            // printf("Ofr3: [%ld],q3G: [%ld]\n", nBestAsk3, nBestAskQty3);
-            // printf("Ofr2: [%ld],q2G: [%ld]\n", nBestAsk2, nBestAskQty2);
-            // printf("Ofr1: [%ld],q1G: [%ld]\n", nBestAsk1, nBestAskQty1);
+            printf("Ask5: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][9].first, gBest5BidOffer[TSMCIdxNo][9].second);
+            printf("Ask4: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][8].first, gBest5BidOffer[TSMCIdxNo][8].second);
+            printf("Ask3: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][7].first, gBest5BidOffer[TSMCIdxNo][7].second);
+            printf("Ask2: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][6].first, gBest5BidOffer[TSMCIdxNo][6].second);
+            printf("Ask1: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][5].first, gBest5BidOffer[TSMCIdxNo][5].second);
+            printf("=========================================\n");
+            printf("Bid1: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][0].first, gBest5BidOffer[TSMCIdxNo][0].second);
+            printf("Bid2: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][1].first, gBest5BidOffer[TSMCIdxNo][1].second);
+            printf("Bid3: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][2].first, gBest5BidOffer[TSMCIdxNo][2].second);
+            printf("Bid4: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][3].first, gBest5BidOffer[TSMCIdxNo][3].second);
+            printf("Bid5: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][4].first, gBest5BidOffer[TSMCIdxNo][4].second);
 
-            // printf("Bid1: [%ld], q1G: [%ld]\n", nBestBid1, nBestBidQty1);
-            // printf("Bid2: [%ld], q2G: [%ld]\n", nBestBid2, nBestBidQty2);
-            // printf("Bid3: [%ld], q3G: [%ld]\n", nBestBid3, nBestBidQty3);
-            // printf("Bid4: [%ld], q4G: [%ld]\n", nBestBid4, nBestBidQty4);
-            // printf("Bid5: [%ld], q5G: [%ld]\n\n", nBestBid5, nBestBidQty5);
-
-            // printf("=================================\n\n");
+            printf("=========================================\n");
         }
 
         // 检测按键事件
