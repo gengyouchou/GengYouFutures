@@ -2,8 +2,8 @@
 #include <array>
 #include <deque>
 #include <iostream>
-#include <unordered_map>
 #include <map>
+#include <unordered_map>
 
 bool gEatOffer = false;
 std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
@@ -714,7 +714,6 @@ void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate)
  */
 void processTradingData(const string &datetime, double openPrice, double highPrice, double lowPrice, double closePrice, int volume)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
 
     // Extract the date and time from the datetime string
     string date = datetime.substr(0, 10);
@@ -746,11 +745,6 @@ void processTradingData(const string &datetime, double openPrice, double highPri
         //               Day       Day+1
         //           [fir, sec]  [fir, sec]
 
-        if (hour < 5 && gNightCommHighLowPoint.count(date) == 0)
-        {
-            return;
-        }
-
         if (hour >= 15)
         {
             // 處理夜盤的邏輯
@@ -762,9 +756,18 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             auto &entry = gNightCommHighLowPoint[date].first;
             entry.first = max(entry.first, highPrice);
             entry.second = min(entry.second, lowPrice);
+
+            DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
+
+            DEBUG(DEBUG_LEVEL_INFO, "Date15_00: %s, High: %f, Low: %f",
+                  date, entry.first, entry.second);
         }
         else if (hour < 5)
         {
+            if (gNightCommHighLowPoint.count(date) == 0)
+            {
+                gNightCommHighLowPoint[date] = {{DBL_MIN, DBL_MAX}, {highPrice, lowPrice}};
+            }
             auto &entry = gNightCommHighLowPoint[date].second;
             entry.first = max(entry.first, highPrice);
             entry.second = min(entry.second, lowPrice);
@@ -785,10 +788,12 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             auto &prevEntry = gNightCommHighLowPoint[prevDate].first;
             entry.first = max(entry.first, prevEntry.first);
             entry.second = min(entry.second, prevEntry.second);
-        }
 
-        DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f",
-              date, gNightCommHighLowPoint[date].second.first, gNightCommHighLowPoint[date].second.second);
+            DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
+
+            DEBUG(DEBUG_LEVEL_INFO, "Date0_5: %s, High: %f, Low: %f",
+                  date, entry.first, entry.second);
+        }
     }
 }
 
