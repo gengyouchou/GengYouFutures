@@ -499,7 +499,7 @@ void CSKQuoteLib::OnNotifyBest5LONG(
     LONG nExtendAsk, LONG nExtendAskQty,
     LONG nSimulate)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     DEBUG(DEBUG_LEVEL_DEBUG, "Ofr5: [%ld], q5G: [%ld]\n\n", nBestAsk5, nBestAskQty5);
     DEBUG(DEBUG_LEVEL_DEBUG, "Ofr4: [%ld], q4G: [%ld]\n", nBestAsk4, nBestAskQty4);
