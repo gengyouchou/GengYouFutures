@@ -3,12 +3,13 @@
 #include <deque>
 #include <iostream>
 #include <unordered_map>
+#include <map>
 
 bool gEatOffer = false;
 std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
 std::deque<long> gDaysKlineDiff;
-std::unordered_map<string, pair<double, double>> gDaysCommHighLowPoint;
-std::unordered_map<string, pair<double, double>> gNightCommHighLowPoint;
+std::map<string, pair<double, double>> gDaysCommHighLowPoint;
+std::map<string, pair<double, double>> gNightCommHighLowPoint;
 std::unordered_map<long, long> gCurMtxPrice;
 std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
@@ -350,14 +351,18 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
 
     bool isNightSession = gCurServerTime[0] < 8 || gCurServerTime[0] > 14;
 
-    unordered_map<string, pair<double, double>> *x = nullptr;
+    map<string, pair<double, double>> *x = nullptr;
 
     if (isDaySession)
     {
+        DEBUG(DEBUG_LEVEL_INFO, "isDaySession");
+
         x = &gDaysCommHighLowPoint;
     }
     else if (isNightSession)
     {
+        DEBUG(DEBUG_LEVEL_INFO, "isNightSession");
+
         x = &gNightCommHighLowPoint;
     }
 
