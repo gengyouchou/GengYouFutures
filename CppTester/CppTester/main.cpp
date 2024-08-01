@@ -485,7 +485,7 @@ void thread_main()
     int x = 1;
 
     // hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    AutoKLineData("MTX00");
+    AutoKLineData("TX00");
 
     pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
 
