@@ -377,6 +377,12 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
         {
             auto cur = entry.second.second;
 
+            if (cur.first == DBL_MIN || cur.second == DBL_MAX)
+            {
+                // Not every day there is an end of night trading
+                continue;
+            }
+
             long diff = static_cast<long>(cur.first - cur.second);
 
             DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", entry.first, cur.first, cur.second);
@@ -737,7 +743,7 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             entry.second = min(entry.second, lowPrice);
         }
     }
-    else if (hour >= 15 || hour < 5)
+    else if (hour >= 15 || hour <= 5)
     {
         // Night session
 
@@ -762,7 +768,7 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             DEBUG(DEBUG_LEVEL_INFO, "Date15_00: %s, High: %f, Low: %f",
                   date, entry.first, entry.second);
         }
-        else if (hour < 5)
+        else if (hour <= 5)
         {
             if (gNightCommHighLowPoint.count(date) == 0)
             {

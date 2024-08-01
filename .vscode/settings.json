@@ -3,6 +3,7 @@
     "files.associations": {
         "ios": "cpp",
         "xstring": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "xiosbase": "cpp"
     }
 }
