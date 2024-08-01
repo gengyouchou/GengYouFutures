@@ -729,9 +729,8 @@ void processTradingData(const string &datetime, double openPrice, double highPri
         // Day session
         if (gDaysCommHighLowPoint.count(date) == 0)
         {
-            auto &entry = gDaysCommHighLowPoint[date];
-            entry.first = highPrice;
-            entry.second = lowPrice;
+            // First time adding this date, initialize with current values
+            gDaysCommHighLowPoint[date] = {highPrice, lowPrice};
         }
         else
         {
@@ -746,52 +745,37 @@ void processTradingData(const string &datetime, double openPrice, double highPri
         //       day1            ->  day2             ->  day3
         // (00->05)(15->00)   (00->05)(15->00)     (00->05)(15->00)
         //  second  first      second   first       second   first
-
         if (hour >= 15)
         {
-            if (gNightCommHighLowPoint.count(date) == 0)
-            {
-                auto &entry = gNightCommHighLowPoint[date];
-                entry.first.first = highPrice;
-                entry.first.second = lowPrice;
-
-                entry.first.first = highPrice;
-                entry.first.second = lowPrice;
-            }
-            else
-            {
-                auto &entry = gNightCommHighLowPoint[date];
-                entry.first.first = max(entry.first.first, highPrice);
-                entry.first.second = min(entry.first.second, lowPrice);
-            }
+            // 15:00 - 24:00 当天夜盘
+            auto &entry = gNightCommHighLowPoint[date].first;
+            entry.first = max(entry.first, highPrice);
+            entry.second = min(entry.second, lowPrice);
         }
-
-        if (hour < 5)
+        else
         {
-            if (gNightCommHighLowPoint.count(date) == 0)
+            // 00:00 - 05:00 第二天早盘，更新前一天的夜盘
+            // 获取前一天的日期
+            string prevDate = date;
+            if (hour < 5)
             {
-                auto &entry = gNightCommHighLowPoint[date];
-                entry.second.first = highPrice;
-                entry.second.second = lowPrice;
+                auto it = gNightCommHighLowPoint.find(date);
+                if (it != gNightCommHighLowPoint.begin())
+                {
+                    --it;
+                    prevDate = it->first;
+                }
             }
-            else
-            {
-                auto &entry = gNightCommHighLowPoint[date];
-                entry.second.first = max(entry.second.first, highPrice);
-                entry.second.second = min(entry.second.second, lowPrice);
-            }
-        }
 
-        auto it = gNightCommHighLowPoint.find(date);
+            // 更新前一天的 second 部分
+            auto &prevEntry = gNightCommHighLowPoint[prevDate].second;
+            prevEntry.first = max(prevEntry.first, highPrice);
+            prevEntry.second = min(prevEntry.second, lowPrice);
 
-        if (it != gNightCommHighLowPoint.begin())
-        {
-            --it;
-            auto &previousEntry = it->second;
-            auto &entry = gNightCommHighLowPoint[date];
-
-            entry.second.first = max(entry.second.first, previousEntry.first.first);
-            entry.second.second = min(entry.second.second, previousEntry.first.second);
+            // 同时更新当前日期的 first 部分（因为同样属于夜盘）
+            auto &entry = gNightCommHighLowPoint[date].first;
+            entry.first = max(entry.first, highPrice);
+            entry.second = min(entry.second, lowPrice);
         }
     }
 }
