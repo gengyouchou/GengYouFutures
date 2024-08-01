@@ -9,7 +9,7 @@ bool gEatOffer = false;
 std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
 std::deque<long> gDaysKlineDiff;
 std::map<string, pair<double, double>> gDaysCommHighLowPoint;
-std::map<string, pair<double, double>> gNightCommHighLowPoint;
+std::map<string, pair<pair<double, double>, pair<double, double>>> gNightCommHighLowPoint;
 std::unordered_map<long, long> gCurMtxPrice;
 std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
@@ -351,28 +351,33 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
 
     bool isNightSession = gCurServerTime[0] < 8 || gCurServerTime[0] > 14;
 
-    map<string, pair<double, double>> *x = nullptr;
-
     if (isDaySession)
     {
         DEBUG(DEBUG_LEVEL_INFO, "isDaySession");
 
-        x = &gDaysCommHighLowPoint;
+        for (const auto &entry : gDaysCommHighLowPoint) // need ordered by date  from the past to the present
+        {
+            long diff = static_cast<long>(entry.second.first - entry.second.second);
+
+            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", entry.first, entry.second.first, entry.second.second);
+
+            gDaysKlineDiff.push_back(diff);
+
+            if (gDaysKlineDiff.size() > DayMA)
+            {
+                gDaysKlineDiff.pop_front();
+            }
+        }
     }
     else if (isNightSession)
     {
         DEBUG(DEBUG_LEVEL_INFO, "isNightSession");
 
-        x = &gNightCommHighLowPoint;
-    }
-
-    if (x != nullptr)
-    {
-        for (const auto &entry : *x) // need ordered by date  from the past to the present
+        for (const auto &entry : gNightCommHighLowPoint) // need ordered by date  from the past to the present
         {
-            long diff = static_cast<long>(entry.second.first - entry.second.second);
+            long diff = static_cast<long>(entry.second.second.first - entry.second.second.second);
 
-            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", entry.first, entry.second.first, entry.second.second);
+            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", entry.first, entry.second.second.first, entry.second.second.second);
 
             gDaysKlineDiff.push_back(diff);
 
@@ -738,19 +743,55 @@ void processTradingData(const string &datetime, double openPrice, double highPri
     else if ((hour >= 15) || (hour < 5))
     {
         // Night session
+        //       day1            ->  day2             ->  day3
+        // (00->05)(15->00)   (00->05)(15->00)     (00->05)(15->00)
+        //  second  first      second   first       second   first
 
-        // Day session
-        if (gNightCommHighLowPoint.count(date) == 0)
+        if (hour >= 15)
         {
-            auto &entry = gNightCommHighLowPoint[date];
-            entry.first = highPrice;
-            entry.second = lowPrice;
+            if (gNightCommHighLowPoint.count(date) == 0)
+            {
+                auto &entry = gNightCommHighLowPoint[date];
+                entry.first.first = highPrice;
+                entry.first.second = lowPrice;
+
+                entry.first.first = highPrice;
+                entry.first.second = lowPrice;
+            }
+            else
+            {
+                auto &entry = gNightCommHighLowPoint[date];
+                entry.first.first = max(entry.first.first, highPrice);
+                entry.first.second = min(entry.first.second, lowPrice);
+            }
         }
-        else
+
+        if (hour < 5)
         {
+            if (gNightCommHighLowPoint.count(date) == 0)
+            {
+                auto &entry = gNightCommHighLowPoint[date];
+                entry.second.first = highPrice;
+                entry.second.second = lowPrice;
+            }
+            else
+            {
+                auto &entry = gNightCommHighLowPoint[date];
+                entry.second.first = max(entry.second.first, highPrice);
+                entry.second.second = min(entry.second.second, lowPrice);
+            }
+        }
+
+        auto it = gNightCommHighLowPoint.find(date);
+
+        if (it != gNightCommHighLowPoint.begin())
+        {
+            --it;
+            auto &previousEntry = it->second;
             auto &entry = gNightCommHighLowPoint[date];
-            entry.first = max(entry.first, highPrice);
-            entry.second = min(entry.second, lowPrice);
+
+            entry.second.first = max(entry.second.first, previousEntry.first.first);
+            entry.second.second = min(entry.second.second, previousEntry.first.second);
         }
     }
 }
