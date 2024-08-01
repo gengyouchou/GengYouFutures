@@ -368,7 +368,7 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
 
     if (x != nullptr)
     {
-        for (const auto &entry : *x)
+        for (const auto &entry : *x) // need ordered by date  from the past to the present
         {
             long diff = static_cast<long>(entry.second.first - entry.second.second);
 
