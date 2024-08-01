@@ -375,9 +375,11 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
 
         for (const auto &entry : gNightCommHighLowPoint) // need ordered by date  from the past to the present
         {
-            long diff = static_cast<long>(entry.second.second.first - entry.second.second.second);
+            auto cur = entry.second.second;
 
-            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", entry.first, entry.second.second.first, entry.second.second.second);
+            long diff = static_cast<long>(cur.first - cur.second);
+
+            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", entry.first, cur.first, cur.second);
 
             gDaysKlineDiff.push_back(diff);
 
@@ -712,7 +714,6 @@ void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate)
  */
 void processTradingData(const string &datetime, double openPrice, double highPrice, double lowPrice, double closePrice, int volume)
 {
-
     DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
 
     // Extract the date and time from the datetime string
@@ -723,13 +724,11 @@ void processTradingData(const string &datetime, double openPrice, double highPri
     int hour = stoi(time.substr(0, 2));
     int minute = stoi(time.substr(3, 2));
 
-    // Determine if the time is within the day session or night session
     if ((hour == 8 && minute >= 45) || (hour >= 9 && hour < 13) || (hour == 13 && minute <= 45))
     {
         // Day session
         if (gDaysCommHighLowPoint.count(date) == 0)
         {
-            // First time adding this date, initialize with current values
             gDaysCommHighLowPoint[date] = {highPrice, lowPrice};
         }
         else
@@ -739,44 +738,57 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             entry.second = min(entry.second, lowPrice);
         }
     }
-    else if ((hour >= 15) || (hour < 5))
+    else if (hour >= 15 || hour < 5)
     {
         // Night session
-        //       day1            ->  day2             ->  day3
-        // (00->05)(15->00)   (00->05)(15->00)     (00->05)(15->00)
-        //  second  first      second   first       second   first
+
+        // only have [15 -> 00]  [00 -> 05]
+        //               Day       Day+1
+        //           [fir, sec]  [fir, sec]
+
+        if (hour < 5 && gNightCommHighLowPoint.count(date) == 0)
+        {
+            return;
+        }
+
         if (hour >= 15)
         {
-            // 15:00 - 24:00 当天夜盘
-            auto &entry = gNightCommHighLowPoint[date].first;
-            entry.first = max(entry.first, highPrice);
-            entry.second = min(entry.second, lowPrice);
-        }
-        else
-        {
-            // 00:00 - 05:00 第二天早盘，更新前一天的夜盘
-            // 获取前一天的日期
-            string prevDate = date;
-            if (hour < 5)
+            // 處理夜盤的邏輯
+            if (gNightCommHighLowPoint.count(date) == 0)
             {
-                auto it = gNightCommHighLowPoint.find(date);
-                if (it != gNightCommHighLowPoint.begin())
-                {
-                    --it;
-                    prevDate = it->first;
-                }
+                gNightCommHighLowPoint[date] = {{highPrice, lowPrice}, {DBL_MIN, DBL_MAX}};
             }
 
-            // 更新前一天的 second 部分
-            auto &prevEntry = gNightCommHighLowPoint[prevDate].second;
-            prevEntry.first = max(prevEntry.first, highPrice);
-            prevEntry.second = min(prevEntry.second, lowPrice);
-
-            // 同时更新当前日期的 first 部分（因为同样属于夜盘）
             auto &entry = gNightCommHighLowPoint[date].first;
             entry.first = max(entry.first, highPrice);
             entry.second = min(entry.second, lowPrice);
         }
+        else if (hour < 5)
+        {
+            auto &entry = gNightCommHighLowPoint[date].second;
+            entry.first = max(entry.first, highPrice);
+            entry.second = min(entry.second, lowPrice);
+
+            string prevDate = date;
+
+            // 如果時間是00:00到05:00，則視為前一天的夜盤
+            auto it = gNightCommHighLowPoint.find(date);
+
+            if (it != gNightCommHighLowPoint.begin())
+            {
+                --it;
+                prevDate = it->first;
+                DEBUG(DEBUG_LEVEL_INFO, "prevDate=%s", prevDate);
+            }
+
+            // 更新當前 second
+            auto &prevEntry = gNightCommHighLowPoint[prevDate].first;
+            entry.first = max(entry.first, prevEntry.first);
+            entry.second = min(entry.second, prevEntry.second);
+        }
+
+        DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f",
+              date, gNightCommHighLowPoint[date].second.first, gNightCommHighLowPoint[date].second.second);
     }
 }
 
