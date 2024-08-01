@@ -473,13 +473,17 @@ extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 
 // To do list:
-// 日夜盤都要算振福關卡價 done
+// 日夜盤都要算振福關卡價 (done)
 // Estimated trading volume
-// Instant profit and loss
 // need VIX index
-// current time done
+// current time (done)
 // Estimated trading volume
 // Instant profit and loss
+// Add open position query.
+// Add stop loss and profit stop mechanism
+
+// Bug:
+// The price will be unstable at the beginning and will change from high to low.
 
 void thread_main()
 {
@@ -517,16 +521,6 @@ void thread_main()
     DEBUG(DEBUG_LEVEL_INFO, "LargerAmp : %ld", LargerAmp);
     DEBUG(DEBUG_LEVEL_INFO, "LargestAmp : %ld", LargestAmp);
 
-    AutoQuoteTicks("2330", 1);
-
-    AutoQuoteTicks("MTX00", 2);
-
-    // current time
-    // Estimated trading volume
-    // Instant profit and loss
-
-    // cin >> x;
-
     long res = pSKQuoteLib->RequestServerTime();
 
     DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestServerTime()=%d", res);
@@ -560,10 +554,9 @@ void thread_main()
     const int refreshInterval = 1000; // 1000毫秒
     auto lastClearTime = std::chrono::steady_clock::now();
 
-    // 1. The price will be unstable at the beginning and will change from high to low.
-    // 2. need to add TAIEX infomation : SKQuoteLib_GetMarketBuySellUpDown
-    // 3. Add open position query.
-    // 4. Add stop loss and profit stop mechanism
+    AutoQuoteTicks("2330", 1);
+
+    AutoQuoteTicks("MTX00", 2);
 
     while (true)
     {
@@ -648,20 +641,8 @@ void thread_main()
             printf("=========================================\n");
         }
 
-        // 检测按键事件
-        if (_kbhit())
-        {
-            // 读取按键
-            char ch = _getch();
-            // 退出循环
-            break;
-        }
-
-        // 继续循环，确保不阻塞其他操作
-        std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 短暂休眠，避免过度占用 CPU
+        // std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 短暂休眠，避免过度占用 CPU
     }
-
-    // CloseHandle(hEvent);
 
     release();
 

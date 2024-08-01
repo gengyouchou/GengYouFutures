@@ -4,6 +4,8 @@
         "ios": "cpp",
         "xstring": "cpp",
         "ostream": "cpp",
-        "xiosbase": "cpp"
+        "xiosbase": "cpp",
+        "memory": "cpp",
+        "mutex": "cpp"
     }
 }
