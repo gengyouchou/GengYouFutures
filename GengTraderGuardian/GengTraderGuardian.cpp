@@ -37,42 +37,52 @@ DWORD GetProcessIDByName(const std::wstring &processName)
     return processID;
 }
 
-void RestartProcess(const std::wstring &processName, const std::wstring &processPath)
+bool RestartProcess(const std::wstring &processPath)
 {
-    DWORD processID = GetProcessIDByName(processName);
-    if (processID != 0)
-    {
-        HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, processID);
-        if (hProcess != NULL)
-        {
-            TerminateProcess(hProcess, 0);
-            CloseHandle(hProcess);
-        }
-    }
+    // Ensure the process is started
     STARTUPINFOW si = {sizeof(si)};
     PROCESS_INFORMATION pi;
     if (CreateProcessW(processPath.c_str(), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
     {
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
+        return true; // Process started successfully
     }
+    return false; // Failed to start the process
 }
 
 int main()
 {
-    std::wstring processName = L"XXX.exe";               // 要检测的进程名
-    std::wstring processPath = L"C:\\Path\\To\\XXX.exe"; // 进程的完整路径
+    std::wstring processName = L"CppTester.exe";                                            // 要检测的进程名
+    std::wstring processPath = L"C:\\GengYouFutures\\CppTester\\x64\\Debug\\CppTester.exe"; // 进程的完整路径
+
+    // Start the process initially
+    if (RestartProcess(processPath))
+    {
+        std::wcout << L"Started " << processName << std::endl;
+    }
+    else
+    {
+        std::wcerr << L"Failed to start " << processName << std::endl;
+        return 1; // Exit if process can't be started initially
+    }
 
     while (true)
     {
         DWORD processID = GetProcessIDByName(processName);
         if (processID == 0)
         {
-            // 进程不存在，重新启动
-            RestartProcess(processName, processPath);
-            std::wcout << L"Restarted " << processName << std::endl;
+            // Process is not running, restart it
+            if (RestartProcess(processPath))
+            {
+                std::wcout << L"Restarted " << processName << std::endl;
+            }
+            else
+            {
+                std::wcerr << L"Failed to restart " << processName << std::endl;
+            }
         }
-        Sleep(5000); // 每5秒检查一次
+        Sleep(5000); // Check every 5 seconds
     }
 
     return 0;
