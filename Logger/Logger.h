@@ -15,7 +15,7 @@
 
 // Define different debug levels
 #define DEBUG_LEVEL_INFO 1
-#define DEBUG_LEVEL_ERROR 2
+#define DEBUG_LEVEL_ERROR 0
 #define DEBUG_LEVEL_DEBUG 3
 
 // Set the current debug level
