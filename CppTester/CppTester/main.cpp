@@ -163,13 +163,13 @@ void AutoQuote(IN string ProductNum, short sPageNo)
 
 void AutoQuoteTicks(IN string ProductNum, short sPageNo)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "Started");
+    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
     g_nCode = pSKQuoteLib->RequestTicks(&sPageNo, ProductNum);
 
     pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
 
-    DEBUG(DEBUG_LEVEL_INFO, "g_nCode= %d", g_nCode);
+    DEBUG(DEBUG_LEVEL_DEBUG, "g_nCode= %d", g_nCode);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
@@ -186,7 +186,7 @@ void AutoKLineData(IN string ProductNum)
 
     g_nCode = pSKQuoteLib->RequestKLine(ProductNum);
 
-    DEBUG(DEBUG_LEVEL_INFO, "g_nCode=%ld", g_nCode);
+    DEBUG(DEBUG_LEVEL_DEBUG, "g_nCode=%ld", g_nCode);
 
     pSKCenterLib->PrintfCodeMessage("Quote", "RequestKLine", g_nCode);
 
