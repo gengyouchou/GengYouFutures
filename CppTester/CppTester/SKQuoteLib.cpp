@@ -8,8 +8,10 @@
 bool gEatOffer = false;
 std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
 std::deque<long> gDaysKlineDiff;
+
 std::map<string, pair<double, double>> gDaysCommHighLowPoint;
 std::map<string, pair<pair<double, double>, pair<double, double>>> gNightCommHighLowPoint;
+
 std::unordered_map<long, long> gCurMtxPrice;
 std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
@@ -585,7 +587,7 @@ void CSKQuoteLib::OnNotifyStockList(long sMarketNo, string strStockData)
 
 void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 {
-    DEBUG(DEBUG_LEVEL_DEBUG, "start");
+    DEBUG(DEBUG_LEVEL_INFO, "start");
 
     string strStockNo = string(_bstr_t(bstrStockNo));
 
@@ -604,8 +606,6 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
     DEBUG(DEBUG_LEVEL_DEBUG, "strData= %s", strData);
 
     parseAndProcessData(strData);
-
-    // cout << endl;
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
@@ -721,6 +721,8 @@ void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate)
 void processTradingData(const string &datetime, double openPrice, double highPrice, double lowPrice, double closePrice, int volume)
 {
 
+    DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %ld, lowPrice: %ld", datetime, highPrice, lowPrice);
+
     // Extract the date and time from the datetime string
     string date = datetime.substr(0, 10);
     string time = datetime.substr(11, 5);
@@ -763,9 +765,9 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             entry.first = max(entry.first, highPrice);
             entry.second = min(entry.second, lowPrice);
 
-            DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
+            DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
 
-            DEBUG(DEBUG_LEVEL_DEBUG, "Date15_00: %s, High: %f, Low: %f",
+            DEBUG(DEBUG_LEVEL_INFO, "Date15_00: %s, High: %f, Low: %f",
                   date, entry.first, entry.second);
         }
         else if (hour <= 5)
@@ -787,7 +789,7 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             {
                 --it;
                 prevDate = it->first;
-                DEBUG(DEBUG_LEVEL_DEBUG, "prevDate=%s", prevDate);
+                DEBUG(DEBUG_LEVEL_INFO, "prevDate=%s", prevDate);
             }
 
             // 更新當前 second
@@ -795,9 +797,9 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             entry.first = max(entry.first, prevEntry.first);
             entry.second = min(entry.second, prevEntry.second);
 
-            DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
+            DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
 
-            DEBUG(DEBUG_LEVEL_DEBUG, "Date0_5: %s, High: %f, Low: %f",
+            DEBUG(DEBUG_LEVEL_INFO, "Date0_5: %s, High: %f, Low: %f",
                   date, entry.first, entry.second);
         }
     }
@@ -810,6 +812,7 @@ void processTradingData(const string &datetime, double openPrice, double highPri
  */
 void parseAndProcessData(const string &data)
 {
+
     stringstream ss(data);
     string datetime;
     double openPrice, highPrice, lowPrice, closePrice;

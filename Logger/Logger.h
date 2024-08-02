@@ -133,5 +133,3 @@ private:
 extern Logger logger;
 
 #endif // LOGGER_H
-
-

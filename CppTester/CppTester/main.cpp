@@ -23,6 +23,15 @@ CSKOrderLib *pSKOrderLib;
 long g_nCode = 0;
 string g_strUserId;
 
+void AutoConnect()
+{
+    while (pSKQuoteLib->IsConnected() != 1)
+    {
+        g_nCode = pSKQuoteLib->EnterMonitorLONG();
+        pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
+    }
+}
+
 void AutoLogIn()
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
@@ -77,6 +86,18 @@ void AutoLogIn()
 void AutoOrderMTX()
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
+
+    g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
+                                           false,
+                                           "MTX00",
+                                           1, // IOC
+                                           1, // sell
+                                           0, // DayTrade
+                                           2, // NewClose
+                                           "P",
+                                           1,
+                                           0);
+    pSKCenterLib->PrintfCodeMessage("AutoOrderMTX", "SendFutureOrder", g_nCode);
 
     g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
                                            false,
@@ -164,6 +185,8 @@ void AutoKLineData(IN string ProductNum)
     }
 
     g_nCode = pSKQuoteLib->RequestKLine(ProductNum);
+
+    DEBUG(DEBUG_LEVEL_INFO, "g_nCode=%ld", g_nCode);
 
     pSKCenterLib->PrintfCodeMessage("Quote", "RequestKLine", g_nCode);
 
@@ -502,6 +525,15 @@ extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 
 // Bug:
 // The price will be unstable at the beginning and will change from high to low.
+
+// To do list:
+// 日夜盤都要算振福關卡價
+// Estimated trading volume
+// Instant profit and loss
+// need VIX index
+// current time
+// Estimated trading volume
+// Instant profit and loss
 
 void thread_main()
 {
