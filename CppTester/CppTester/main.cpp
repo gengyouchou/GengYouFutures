@@ -470,16 +470,16 @@ void AutoSetup()
         return;
     }
 
-    AutoLogIn();
+    // AutoLogIn();
 
-    long res = pSKQuoteLib->GetMarketBuySellUpDown();
-    DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
+    // long res = pSKQuoteLib->GetMarketBuySellUpDown();
+    // DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
 
-    res = pSKQuoteLib->RequestServerTime();
+    // res = pSKQuoteLib->RequestServerTime();
 
-    AutoQuoteTicks("2330", 1); // will return SK_ERROR_QUOTE_CONNECT_FIRST
+    // AutoQuoteTicks("2330", 1); // will return SK_ERROR_QUOTE_CONNECT_FIRST
 
-    AutoQuoteTicks("MTX00", 2); // will return SK_ERROR_QUOTE_CONNECT_FIRST
+    // AutoQuoteTicks("MTX00", 2); // will return SK_ERROR_QUOTE_CONNECT_FIRST
 }
 
 extern std::deque<long> gDaysKlineDiff;
@@ -585,7 +585,6 @@ void thread_main()
         // 检查是否需要清屏
         if (elapsed.count() >= refreshInterval)
         {
-            AutoSetup();
             // 清屏
             system("cls");
 
@@ -676,13 +675,14 @@ void thread_main()
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 短暂休眠，避免过度占用 CPU
+
+        if (pSKQuoteLib->IsConnected() != 1)
+        {
+            DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");
+            release();
+            exit(0);
+        }
     }
-
-    release();
-
-    system("pause");
-
-    exit(0);
 }
 
 int main()
