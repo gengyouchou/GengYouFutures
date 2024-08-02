@@ -3,6 +3,15 @@
 #include <iostream>
 #include <string>
 
+// Convert CHAR array to std::wstring
+std::wstring CharToWstring(const char *charArray)
+{
+    int size = MultiByteToWideChar(CP_ACP, 0, charArray, -1, NULL, 0);
+    std::wstring wideString(size, 0);
+    MultiByteToWideChar(CP_ACP, 0, charArray, -1, &wideString[0], size);
+    return wideString;
+}
+
 DWORD GetProcessIDByName(const std::wstring &processName)
 {
     DWORD processID = 0;
@@ -15,7 +24,7 @@ DWORD GetProcessIDByName(const std::wstring &processName)
         {
             do
             {
-                std::wstring exeFile(pe32.szExeFile);
+                std::wstring exeFile = CharToWstring(pe32.szExeFile); // Convert CHAR array to std::wstring
                 if (processName == exeFile)
                 {
                     processID = pe32.th32ProcessID;
