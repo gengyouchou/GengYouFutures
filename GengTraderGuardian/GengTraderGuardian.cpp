@@ -15,7 +15,8 @@ DWORD GetProcessIDByName(const std::wstring &processName)
         {
             do
             {
-                if (processName == pe32.szExeFile)
+                std::wstring exeFile(pe32.szExeFile);
+                if (processName == exeFile)
                 {
                     processID = pe32.th32ProcessID;
                     break;
@@ -39,9 +40,9 @@ void RestartProcess(const std::wstring &processName, const std::wstring &process
             CloseHandle(hProcess);
         }
     }
-    STARTUPINFO si = {sizeof(si)};
+    STARTUPINFOW si = {sizeof(si)};
     PROCESS_INFORMATION pi;
-    if (CreateProcess(processPath.c_str(), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
+    if (CreateProcessW(processPath.c_str(), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
     {
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
