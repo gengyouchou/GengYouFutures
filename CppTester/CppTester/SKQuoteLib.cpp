@@ -587,7 +587,7 @@ void CSKQuoteLib::OnNotifyStockList(long sMarketNo, string strStockData)
 
 void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     string strStockNo = string(_bstr_t(bstrStockNo));
 
@@ -721,7 +721,7 @@ void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate)
 void processTradingData(const string &datetime, double openPrice, double highPrice, double lowPrice, double closePrice, int volume)
 {
 
-    DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %ld, lowPrice: %ld", datetime, highPrice, lowPrice);
+    DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
 
     // Extract the date and time from the datetime string
     string date = datetime.substr(0, 10);
@@ -765,9 +765,9 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             entry.first = max(entry.first, highPrice);
             entry.second = min(entry.second, lowPrice);
 
-            DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
+            DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
 
-            DEBUG(DEBUG_LEVEL_INFO, "Date15_00: %s, High: %f, Low: %f",
+            DEBUG(DEBUG_LEVEL_DEBUG, "Date15_00: %s, High: %f, Low: %f",
                   date, entry.first, entry.second);
         }
         else if (hour <= 5)
@@ -789,7 +789,7 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             {
                 --it;
                 prevDate = it->first;
-                DEBUG(DEBUG_LEVEL_INFO, "prevDate=%s", prevDate);
+                DEBUG(DEBUG_LEVEL_DEBUG, "prevDate=%s", prevDate);
             }
 
             // 更新當前 second
@@ -797,9 +797,9 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             entry.first = max(entry.first, prevEntry.first);
             entry.second = min(entry.second, prevEntry.second);
 
-            DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
+            DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
 
-            DEBUG(DEBUG_LEVEL_INFO, "Date0_5: %s, High: %f, Low: %f",
+            DEBUG(DEBUG_LEVEL_DEBUG, "Date0_5: %s, High: %f, Low: %f",
                   date, entry.first, entry.second);
         }
     }
