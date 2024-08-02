@@ -470,6 +470,8 @@ void AutoSetup()
         return;
     }
 
+    AutoLogIn();
+
     long res = pSKQuoteLib->GetMarketBuySellUpDown();
     DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
 
