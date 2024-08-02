@@ -470,10 +470,10 @@ void AutoSetup()
         return;
     }
 
-    res = pSKQuoteLib->GetMarketBuySellUpDown();
+    long res = pSKQuoteLib->GetMarketBuySellUpDown();
     DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
 
-    long res = pSKQuoteLib->RequestServerTime();
+    res = pSKQuoteLib->RequestServerTime();
 
     AutoQuoteTicks("2330", 1);
 
@@ -643,6 +643,19 @@ void thread_main()
                 printf("TSMCIdxNo : CurHigh: %ld, CurLow: %ld\n\n", CurHigh, CurLow);
             }
 
+            long TotalBid = gBest5BidOffer[TSMCIdxNo][0].second +
+                            gBest5BidOffer[TSMCIdxNo][1].second +
+                            gBest5BidOffer[TSMCIdxNo][2].second +
+                            gBest5BidOffer[TSMCIdxNo][3].second +
+                            gBest5BidOffer[TSMCIdxNo][4].second;
+            long TotalOffer = gBest5BidOffer[TSMCIdxNo][9].second +
+                              gBest5BidOffer[TSMCIdxNo][8].second +
+                              gBest5BidOffer[TSMCIdxNo][7].second +
+                              gBest5BidOffer[TSMCIdxNo][6].second +
+                              gBest5BidOffer[TSMCIdxNo][5].second;
+
+            printf("Total Offer: [%ld]\n", TotalOffer);
+
             printf("Ask5: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][9].first, gBest5BidOffer[TSMCIdxNo][9].second);
             printf("Ask4: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][8].first, gBest5BidOffer[TSMCIdxNo][8].second);
             printf("Ask3: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][7].first, gBest5BidOffer[TSMCIdxNo][7].second);
@@ -654,6 +667,8 @@ void thread_main()
             printf("Bid3: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][2].first, gBest5BidOffer[TSMCIdxNo][2].second);
             printf("Bid4: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][3].first, gBest5BidOffer[TSMCIdxNo][3].second);
             printf("Bid5: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][4].first, gBest5BidOffer[TSMCIdxNo][4].second);
+
+            printf("Total Bid:   [%ld]\n", TotalBid);
 
             printf("=========================================\n");
         }

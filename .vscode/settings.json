@@ -6,6 +6,7 @@
         "ostream": "cpp",
         "xiosbase": "cpp",
         "memory": "cpp",
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "utility": "cpp"
     }
 }
