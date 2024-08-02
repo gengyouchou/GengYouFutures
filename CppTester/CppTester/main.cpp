@@ -158,7 +158,7 @@ void AutoQuote(IN string ProductNum, short sPageNo)
 
 void AutoQuoteTicks(IN string ProductNum, short sPageNo)
 {
-    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
+    DEBUG(DEBUG_LEVEL_INFO, "Started");
 
     g_nCode = pSKQuoteLib->RequestTicks(&sPageNo, ProductNum);
 
@@ -266,32 +266,32 @@ void thread_main()
 
     long res = pSKQuoteLib->RequestServerTime();
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestServerTime()=%d", res);
+    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestServerTime()=%d", res);
 
     res = pSKQuoteLib->GetMarketBuySellUpDown();
-    DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
+    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
 
     SKCOMLib::SKSTOCKLONG skStock;
 
     res = pSKQuoteLib->RequestStockIndexMap("MTX00", &skStock);
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
 
     long MTXIdxNo = skStock.nStockIdx;
 
     res = pSKQuoteLib->RequestStockIndexMap("2330", &skStock);
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
 
     long TSMCIdxNo = skStock.nStockIdx;
 
     res = pSKQuoteLib->RequestStockIndexMap("2317", &skStock);
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
 
     res = pSKQuoteLib->RequestStockIndexMap("2454", &skStock);
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
 
     // 设置定期清屏的时间间隔（以毫秒为单位）
     const int refreshInterval = 1000; // 1000毫秒
@@ -404,8 +404,10 @@ void thread_main()
         if (pSKQuoteLib->IsConnected() != 1)
         {
             DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");
-            release();
-            exit(0);
+
+            AutoConnect();
+            // release();
+            // exit(0);
         }
     }
 }
