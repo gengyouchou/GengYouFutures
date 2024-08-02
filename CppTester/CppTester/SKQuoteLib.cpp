@@ -5,6 +5,10 @@
 #include <map>
 #include <unordered_map>
 
+#define SK_SUBJECT_CONNECTION_CONNECTED 3001
+#define SK_SUBJECT_CONNECTION_DISCONNECT 3002
+#define SK_SUBJECT_CONNECTION_STOCKS_READY 3003
+
 bool gEatOffer = false;
 std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
 std::deque<long> gDaysKlineDiff;
@@ -404,22 +408,22 @@ void CSKQuoteLib::OnConnection(long nKind, long nCode)
 {
     switch (nKind)
     {
-    case 3001: // Connected
+    case SK_SUBJECT_CONNECTION_CONNECTED:
     {
         cout << endl
              << "OnConnection" << endl;
         break;
     }
-    case 3002: // Disconnected
+    case SK_SUBJECT_CONNECTION_DISCONNECT:
     {
         cout << endl
              << "OnConnection Disconnected" << endl;
         break;
     }
-    case 3003: //
+    case SK_SUBJECT_CONNECTION_STOCKS_READY: //
     {
         cout << endl
-             << "OnConnection 3003" << endl;
+             << "OnConnection STOCKS READY" << endl;
         break;
     }
     }

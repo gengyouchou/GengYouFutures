@@ -200,30 +200,6 @@ void release()
     CoUninitialize();
 }
 
-void AutoSetup()
-{
-    if (pSKQuoteLib->IsConnected() != 1)
-    {
-        g_nCode = pSKQuoteLib->EnterMonitorLONG();
-        pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
-    }
-    else
-    {
-        return;
-    }
-
-    // AutoLogIn();
-
-    // long res = pSKQuoteLib->GetMarketBuySellUpDown();
-    // DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
-
-    // res = pSKQuoteLib->RequestServerTime();
-
-    // AutoQuoteTicks("2330", 1); // will return SK_ERROR_QUOTE_CONNECT_FIRST
-
-    // AutoQuoteTicks("MTX00", 2); // will return SK_ERROR_QUOTE_CONNECT_FIRST
-}
-
 extern std::deque<long> gDaysKlineDiff;
 extern bool gEatOffer;
 extern std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
