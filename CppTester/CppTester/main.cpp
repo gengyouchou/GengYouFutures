@@ -144,12 +144,6 @@ void AutoQuoteTicks(IN string ProductNum, short sPageNo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
-    while (pSKQuoteLib->IsConnected() != 1)
-    {
-        g_nCode = pSKQuoteLib->EnterMonitorLONG();
-        pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
-    }
-
     g_nCode = pSKQuoteLib->RequestTicks(&sPageNo, ProductNum);
 
     pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
@@ -464,6 +458,28 @@ void release()
     CoUninitialize();
 }
 
+void AutoSetup()
+{
+    if (pSKQuoteLib->IsConnected() != 1)
+    {
+        g_nCode = pSKQuoteLib->EnterMonitorLONG();
+        pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
+    }
+    else
+    {
+        return;
+    }
+
+    res = pSKQuoteLib->GetMarketBuySellUpDown();
+    DEBUG(DEBUG_LEVEL_DEBUG, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
+
+    long res = pSKQuoteLib->RequestServerTime();
+
+    AutoQuoteTicks("2330", 1);
+
+    AutoQuoteTicks("MTX00", 2);
+}
+
 extern std::deque<long> gDaysKlineDiff;
 extern bool gEatOffer;
 extern std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
@@ -567,6 +583,7 @@ void thread_main()
         // 检查是否需要清屏
         if (elapsed.count() >= refreshInterval)
         {
+            AutoSetup();
             // 清屏
             system("cls");
 
@@ -641,7 +658,7 @@ void thread_main()
             printf("=========================================\n");
         }
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 短暂休眠，避免过度占用 CPU
+        std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 短暂休眠，避免过度占用 CPU
     }
 
     release();
