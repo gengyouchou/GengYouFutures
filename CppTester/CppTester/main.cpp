@@ -142,13 +142,13 @@ void AutoQuote(IN string ProductNum, short sPageNo)
 
 void AutoQuoteTicks(IN string ProductNum, short sPageNo)
 {
-    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
+    DEBUG(DEBUG_LEVEL_INFO, "Started");
 
     g_nCode = pSKQuoteLib->RequestTicks(&sPageNo, ProductNum);
 
     pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "g_nCode= %d", g_nCode);
+    DEBUG(DEBUG_LEVEL_INFO, "g_nCode= %d", g_nCode);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
@@ -477,9 +477,9 @@ void AutoSetup()
 
     res = pSKQuoteLib->RequestServerTime();
 
-    AutoQuoteTicks("2330", 1);
+    AutoQuoteTicks("2330", 1); // will return SK_ERROR_QUOTE_CONNECT_FIRST
 
-    AutoQuoteTicks("MTX00", 2);
+    AutoQuoteTicks("MTX00", 2); // will return SK_ERROR_QUOTE_CONNECT_FIRST
 }
 
 extern std::deque<long> gDaysKlineDiff;
