@@ -29,6 +29,7 @@ void AutoConnect()
     {
         g_nCode = pSKQuoteLib->EnterMonitorLONG();
         pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000)); // 短暂休眠，避免过度占用 CPU
     }
 }
 
@@ -148,12 +149,6 @@ void AutoQuote(IN string ProductNum, short sPageNo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
-    while (pSKQuoteLib->IsConnected() != 1)
-    {
-        g_nCode = pSKQuoteLib->EnterMonitorLONG();
-        pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
-    }
-
     g_nCode = pSKQuoteLib->RequestStocks(&sPageNo, ProductNum);
     pSKCenterLib->PrintfCodeMessage("Quote", "RequestStocks", g_nCode);
     DEBUG(DEBUG_LEVEL_DEBUG, "g_nCode= %d", g_nCode);
@@ -177,12 +172,6 @@ void AutoQuoteTicks(IN string ProductNum, short sPageNo)
 void AutoKLineData(IN string ProductNum)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
-
-    while (pSKQuoteLib->IsConnected() != 1)
-    {
-        g_nCode = pSKQuoteLib->EnterMonitorLONG();
-        pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
-    }
 
     g_nCode = pSKQuoteLib->RequestKLine(ProductNum);
 
@@ -268,10 +257,8 @@ extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 void thread_main()
 {
     AutoLogIn();
-    // AutoOrderMTX();
-    // AutoGetFutureRights();
 
-    int x = 1;
+    AutoConnect();
 
     AutoKLineData("TX00");
 
