@@ -689,8 +689,8 @@ void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimul
 
     bool isNightSession = gCurServerTime[0] < 8 || gCurServerTime[0] > 14;
 
-    if ((isDaySession && lTimehms >= 84500 && lTimehms <= 134500) ||
-        (isNightSession && (lTimehms < 84500 || lTimehms > 134500)))
+    if ((isDaySession && lTimehms > 50000 && lTimehms <= 134500) ||
+        (isNightSession && (lTimehms < 00000 || lTimehms > 134500)))
     {
         if (gCurCommHighLowPoint.count(nStockIndex) <= 0)
         {

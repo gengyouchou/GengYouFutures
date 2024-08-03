@@ -347,17 +347,17 @@ void thread_main()
                 printf("Short Key 5: %ld\n", CurHigh - LargestAmp);
 
                 printf("=========================================\n");
-
-                printf("SmallestAmp : %ld\n", SmallestAmp);
-                printf("SmallAmp : %ld\n", SmallAmp);
-                printf("AvgAmp : %ld\n", AvgAmp);
-                printf("LargerAmp : %ld\n", LargerAmp);
-                printf("LargestAmp : %ld\n", LargestAmp);
-                printf("\n");
-                printf("CurAmp : %d\n", CurHigh - CurLow);
-
-                printf("=========================================\n");
             }
+
+            printf("SmallestAmp : %ld\n", SmallestAmp);
+            printf("SmallAmp : %ld\n", SmallAmp);
+            printf("AvgAmp : %ld\n", AvgAmp);
+            printf("LargerAmp : %ld\n", LargerAmp);
+            printf("LargestAmp : %ld\n", LargestAmp);
+            printf("\n");
+            printf("CurAmp : %d\n", CurHigh - CurLow);
+
+            printf("=========================================\n");
 
             if (gCurCommHighLowPoint.count(TSMCIdxNo) > 0)
             {
