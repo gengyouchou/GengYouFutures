@@ -346,6 +346,9 @@ void thread_main()
                 printf("Short Key 4: %ld\n", CurHigh - LargerAmp);
                 printf("Short Key 5: %ld\n", CurHigh - LargestAmp);
 
+                printf("\n");
+                printf("CurAmp : %d\n", CurHigh - CurLow);
+
                 printf("=========================================\n");
             }
 
@@ -354,8 +357,6 @@ void thread_main()
             printf("AvgAmp : %ld\n", AvgAmp);
             printf("LargerAmp : %ld\n", LargerAmp);
             printf("LargestAmp : %ld\n", LargestAmp);
-            printf("\n");
-            printf("CurAmp : %d\n", CurHigh - CurLow);
 
             printf("=========================================\n");
 
