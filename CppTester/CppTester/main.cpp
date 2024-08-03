@@ -369,34 +369,41 @@ void thread_main()
                 printf("TSMCIdxNo : CurHigh: %ld, CurLow: %ld\n\n", CurHigh, CurLow);
             }
 
-            long TotalBid = gBest5BidOffer[TSMCIdxNo][0].second +
-                            gBest5BidOffer[TSMCIdxNo][1].second +
-                            gBest5BidOffer[TSMCIdxNo][2].second +
-                            gBest5BidOffer[TSMCIdxNo][3].second +
-                            gBest5BidOffer[TSMCIdxNo][4].second;
-            long TotalOffer = gBest5BidOffer[TSMCIdxNo][9].second +
-                              gBest5BidOffer[TSMCIdxNo][8].second +
-                              gBest5BidOffer[TSMCIdxNo][7].second +
-                              gBest5BidOffer[TSMCIdxNo][6].second +
-                              gBest5BidOffer[TSMCIdxNo][5].second;
+            if (gBest5BidOffer[TSMCIdxNo].size() >= 10)
+            {
+                long TotalBid = gBest5BidOffer[TSMCIdxNo][0].second +
+                                gBest5BidOffer[TSMCIdxNo][1].second +
+                                gBest5BidOffer[TSMCIdxNo][2].second +
+                                gBest5BidOffer[TSMCIdxNo][3].second +
+                                gBest5BidOffer[TSMCIdxNo][4].second;
+                long TotalOffer = gBest5BidOffer[TSMCIdxNo][9].second +
+                                  gBest5BidOffer[TSMCIdxNo][8].second +
+                                  gBest5BidOffer[TSMCIdxNo][7].second +
+                                  gBest5BidOffer[TSMCIdxNo][6].second +
+                                  gBest5BidOffer[TSMCIdxNo][5].second;
 
-            printf("Total Offer: [%ld]\n", TotalOffer);
+                printf("Total Offer: [%ld]\n", TotalOffer);
 
-            printf("Ask5: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][9].first, gBest5BidOffer[TSMCIdxNo][9].second);
-            printf("Ask4: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][8].first, gBest5BidOffer[TSMCIdxNo][8].second);
-            printf("Ask3: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][7].first, gBest5BidOffer[TSMCIdxNo][7].second);
-            printf("Ask2: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][6].first, gBest5BidOffer[TSMCIdxNo][6].second);
-            printf("Ask1: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][5].first, gBest5BidOffer[TSMCIdxNo][5].second);
-            printf("=========================================\n");
-            printf("Bid1: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][0].first, gBest5BidOffer[TSMCIdxNo][0].second);
-            printf("Bid2: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][1].first, gBest5BidOffer[TSMCIdxNo][1].second);
-            printf("Bid3: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][2].first, gBest5BidOffer[TSMCIdxNo][2].second);
-            printf("Bid4: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][3].first, gBest5BidOffer[TSMCIdxNo][3].second);
-            printf("Bid5: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][4].first, gBest5BidOffer[TSMCIdxNo][4].second);
+                printf("Ask5: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][9].first, gBest5BidOffer[TSMCIdxNo][9].second);
+                printf("Ask4: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][8].first, gBest5BidOffer[TSMCIdxNo][8].second);
+                printf("Ask3: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][7].first, gBest5BidOffer[TSMCIdxNo][7].second);
+                printf("Ask2: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][6].first, gBest5BidOffer[TSMCIdxNo][6].second);
+                printf("Ask1: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][5].first, gBest5BidOffer[TSMCIdxNo][5].second);
+                printf("=========================================\n");
+                printf("Bid1: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][0].first, gBest5BidOffer[TSMCIdxNo][0].second);
+                printf("Bid2: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][1].first, gBest5BidOffer[TSMCIdxNo][1].second);
+                printf("Bid3: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][2].first, gBest5BidOffer[TSMCIdxNo][2].second);
+                printf("Bid4: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][3].first, gBest5BidOffer[TSMCIdxNo][3].second);
+                printf("Bid5: [%ld]: [%ld]\n", gBest5BidOffer[TSMCIdxNo][4].first, gBest5BidOffer[TSMCIdxNo][4].second);
 
-            printf("Total Bid:   [%ld]\n", TotalBid);
+                printf("Total Bid:   [%ld]\n", TotalBid);
 
-            printf("=========================================\n");
+                printf("=========================================\n");
+            }
+            else
+            {
+                DEBUG(DEBUG_LEVEL_INFO, "gBest5BidOffer[TSMCIdxNo].size() < 10");
+            }
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 短暂休眠，避免过度占用 CPU
