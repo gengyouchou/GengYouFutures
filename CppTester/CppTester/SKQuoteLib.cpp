@@ -709,7 +709,7 @@ void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate)
         return;
     }
 
-    gCurCommPrice[nStockIndex] = nClose / 100;
+    gCurCommPrice[nStockIndex] = nClose;
 }
 
 /**

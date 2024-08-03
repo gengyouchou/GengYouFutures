@@ -374,8 +374,6 @@ void thread_main()
             {
                 long curPrice = gCurCommPrice[TSMCIdxNo];
 
-                printf("TSMC: %ld    ", gCurCommPrice[MTXIdxNo]);
-
                 long TotalBid = gBest5BidOffer[TSMCIdxNo][0].second +
                                 gBest5BidOffer[TSMCIdxNo][1].second +
                                 gBest5BidOffer[TSMCIdxNo][2].second +
@@ -387,59 +385,64 @@ void thread_main()
                                   gBest5BidOffer[TSMCIdxNo][6].second +
                                   gBest5BidOffer[TSMCIdxNo][5].second;
 
-                printf("Total Offer: [%ld]\n", TotalOffer);
+                string Offer1Deal = "", Offer2Deal = "", Offer3Deal = "", Offer4Deal = "", Offer5Deal = "";
+                string Bid1Deal = "", Bid2Deal = "", Bid3Deal = "", Bid4Deal = "", Bid5Deal = "";
 
-                printf("Ask5: [%ld]: [%ld]", gBest5BidOffer[TSMCIdxNo][9].first, gBest5BidOffer[TSMCIdxNo][9].second);
                 if (curPrice == gBest5BidOffer[TSMCIdxNo][9].first)
                 {
-                    printf("*\n");
+                    Offer5Deal = "*";
                 }
-                printf("Ask4: [%ld]: [%ld]", gBest5BidOffer[TSMCIdxNo][8].first, gBest5BidOffer[TSMCIdxNo][8].second);
-                if (curPrice == gBest5BidOffer[TSMCIdxNo][8].first)
+                else if (curPrice == gBest5BidOffer[TSMCIdxNo][8].first)
                 {
-                    printf("*\n");
+                    Offer4Deal = "*";
                 }
-                printf("Ask3: [%ld]: [%ld]", gBest5BidOffer[TSMCIdxNo][7].first, gBest5BidOffer[TSMCIdxNo][7].second);
-                if (curPrice == gBest5BidOffer[TSMCIdxNo][7].first)
+                else if (curPrice == gBest5BidOffer[TSMCIdxNo][7].first)
                 {
-                    printf("*\n");
+                    Offer3Deal = "*";
                 }
-                printf("Ask2: [%ld]: [%ld]", gBest5BidOffer[TSMCIdxNo][6].first, gBest5BidOffer[TSMCIdxNo][6].second);
-                if (curPrice == gBest5BidOffer[TSMCIdxNo][6].first)
+                else if (curPrice == gBest5BidOffer[TSMCIdxNo][6].first)
                 {
-                    printf("*\n");
+                    Offer2Deal = "*";
                 }
-                printf("Ask1: [%ld]: [%ld]", gBest5BidOffer[TSMCIdxNo][5].first, gBest5BidOffer[TSMCIdxNo][5].second);
-                if (curPrice = gBest5BidOffer[TSMCIdxNo][5].first)
+                else if (curPrice == gBest5BidOffer[TSMCIdxNo][5].first)
                 {
-                    printf("*\n");
+                    Offer1Deal = "*";
                 }
+                else if (curPrice == gBest5BidOffer[TSMCIdxNo][0].first)
+                {
+                    Bid1Deal = "*";
+                }
+                else if (curPrice == gBest5BidOffer[TSMCIdxNo][1].first)
+                {
+                    Bid2Deal = "*";
+                }
+                else if (curPrice == gBest5BidOffer[TSMCIdxNo][2].first)
+                {
+                    Bid3Deal = "*";
+                }
+                else if (curPrice == gBest5BidOffer[TSMCIdxNo][3].first)
+                {
+                    Bid4Deal = "*";
+                }
+                else if (curPrice == gBest5BidOffer[TSMCIdxNo][4].first)
+                {
+                    Bid5Deal = "*";
+                }
+
+                printf("TSMC: %ld\n\n", curPrice);
+                printf("Total Offer: [%ld]\n", TotalOffer);
+
+                printf("Ask5: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][9].first, gBest5BidOffer[TSMCIdxNo][9].second, Offer5Deal.c_str());
+                printf("Ask4: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][8].first, gBest5BidOffer[TSMCIdxNo][8].second, Offer4Deal.c_str());
+                printf("Ask3: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][7].first, gBest5BidOffer[TSMCIdxNo][7].second, Offer3Deal.c_str());
+                printf("Ask2: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][6].first, gBest5BidOffer[TSMCIdxNo][6].second, Offer2Deal.c_str());
+                printf("Ask1: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][5].first, gBest5BidOffer[TSMCIdxNo][5].second, Offer1Deal.c_str());
                 printf("=========================================\n");
-                printf("Bid1: [%ld]: [%ld]", gBest5BidOffer[TSMCIdxNo][0].first, gBest5BidOffer[TSMCIdxNo][0].second);
-                if (curPrice == gBest5BidOffer[TSMCIdxNo][0].first)
-                {
-                    printf("*\n");
-                }
-                printf("Bid2: [%ld]: [%ld]", gBest5BidOffer[TSMCIdxNo][1].first, gBest5BidOffer[TSMCIdxNo][1].second);
-                if (curPrice == gBest5BidOffer[TSMCIdxNo][1].first)
-                {
-                    printf("*\n");
-                }
-                printf("Bid3: [%ld]: [%ld]", gBest5BidOffer[TSMCIdxNo][2].first, gBest5BidOffer[TSMCIdxNo][2].second);
-                if (curPrice == gBest5BidOffer[TSMCIdxNo][2].first)
-                {
-                    printf("*\n");
-                }
-                printf("Bid4: [%ld]: [%ld]", gBest5BidOffer[TSMCIdxNo][3].first, gBest5BidOffer[TSMCIdxNo][3].second);
-                if (curPrice == gBest5BidOffer[TSMCIdxNo][3].first)
-                {
-                    printf("*\n");
-                }
-                printf("Bid5: [%ld]: [%ld]", gBest5BidOffer[TSMCIdxNo][4].first, gBest5BidOffer[TSMCIdxNo][4].second);
-                if (curPrice == gBest5BidOffer[TSMCIdxNo][4].first)
-                {
-                    printf("*\n");
-                }
+                printf("Bid1: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][0].first, gBest5BidOffer[TSMCIdxNo][0].second, Bid1Deal.c_str());
+                printf("Bid2: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][1].first, gBest5BidOffer[TSMCIdxNo][1].second, Bid2Deal.c_str());
+                printf("Bid3: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][2].first, gBest5BidOffer[TSMCIdxNo][2].second, Bid3Deal.c_str());
+                printf("Bid4: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][3].first, gBest5BidOffer[TSMCIdxNo][3].second, Bid4Deal.c_str());
+                printf("Bid5: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][4].first, gBest5BidOffer[TSMCIdxNo][4].second, Bid5Deal.c_str());
 
                 printf("Total Bid:   [%ld]\n", TotalBid);
 
