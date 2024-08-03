@@ -197,6 +197,8 @@ long CSKOrderLib::SendFutureOrder(string strLogInID, bool bAsyncOrder, string st
 
 long CSKOrderLib::SendFutureStop(string strLogInID, bool bAsyncOrder, string strStockNo, short sTradeType, short sBuySell, short sDayTrade, short sNewClose, string strPrice, long nQty, short sReserved)
 {
+    DEBUG(DEBUG_LEVEL_INFO, "Start");
+
     string strFullAccount_TF = "";
 
     if (vec_strFullAccount_TF.size() > 0)
@@ -206,6 +208,8 @@ long CSKOrderLib::SendFutureStop(string strLogInID, bool bAsyncOrder, string str
         cout << "SendFutureStop Error : No Future Account.";
         return -1;
     }
+
+    DEBUG(DEBUG_LEVEL_INFO, "Consturt FUTUREORDER");
 
     SKCOMLib::FUTUREORDER pFutures;
     pFutures.bstrFullAccount = _bstr_t(strFullAccount_TF.c_str()).Detach();
@@ -218,6 +222,8 @@ long CSKOrderLib::SendFutureStop(string strLogInID, bool bAsyncOrder, string str
     pFutures.nQty = nQty;
     pFutures.sReserved = sReserved;
 
+    DEBUG(DEBUG_LEVEL_INFO, "SendFutureSTPOrderV1");
+
     BSTR bstrMessage;
     long m_nCode = m_pSKOrderLib->SendFutureSTPOrderV1(_bstr_t(strLogInID.c_str()), VARIANT_BOOL(bAsyncOrder), &pFutures, &bstrMessage);
 
@@ -227,6 +233,8 @@ long CSKOrderLib::SendFutureStop(string strLogInID, bool bAsyncOrder, string str
     DEBUG(DEBUG_LEVEL_INFO, "SendFutureStop : %s", StrMessage);
 
     ::SysFreeString(bstrMessage);
+
+    DEBUG(DEBUG_LEVEL_INFO, "End");
 
     return m_nCode;
 }

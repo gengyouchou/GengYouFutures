@@ -66,6 +66,7 @@ void AutoStopMTX()
                                           "P",
                                           1,
                                           0);
+    // cash here
     pSKCenterLib->PrintfCodeMessage("AutoStopMTX", "SendFutureStop", g_nCode);
 
     DEBUG(DEBUG_LEVEL_INFO, "res = %d", g_nCode);
