@@ -145,15 +145,17 @@ void AutoGetFutureRights()
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
-void AutoQuote(IN string ProductNum, short sPageNo)
+LONG AutoQuote(IN string ProductNum, short sPageNo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
     g_nCode = pSKQuoteLib->RequestStocks(&sPageNo, ProductNum);
     pSKCenterLib->PrintfCodeMessage("Quote", "RequestStocks", g_nCode);
-    DEBUG(DEBUG_LEVEL_DEBUG, "g_nCode= %d", g_nCode);
+    DEBUG(DEBUG_LEVEL_INFO, "g_nCode= %d", g_nCode);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
+
+    return g_nCode;
 }
 
 void AutoQuoteTicks(IN string ProductNum, short sPageNo)
@@ -164,7 +166,7 @@ void AutoQuoteTicks(IN string ProductNum, short sPageNo)
 
     pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "g_nCode= %d", g_nCode);
+    DEBUG(DEBUG_LEVEL_INFO, "g_nCode= %d", g_nCode);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
@@ -289,17 +291,27 @@ void thread_main()
 
     DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
 
-    res = pSKQuoteLib->RequestStockIndexMap("2454", &skStock);
+    res = pSKQuoteLib->RequestStockIndexMap("TSEA", &skStock);
 
     DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+
+    long TSEAIdxNo = skStock.nStockIdx;
+
+    // res = pSKQuoteLib->RequestStockIndexMap("2454", &skStock);
+
+    // DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
 
     // 设置定期清屏的时间间隔（以毫秒为单位）
     const int refreshInterval = 1000; // 1000毫秒
     auto lastClearTime = std::chrono::steady_clock::now();
 
-    AutoQuoteTicks("2330", 1);
+    // if (AutoQuote("TSEA,TX00", 2) != 0)
+    // {
+    AutoQuoteTicks("TSEA", 3);
+    AutoQuoteTicks("MTX00", 4);
+    // }
 
-    AutoQuoteTicks("MTX00", 2);
+    AutoQuoteTicks("2330", 1);
 
     while (true)
     {
@@ -318,8 +330,8 @@ void thread_main()
 
             printf("CurMtxPrice: %ld    ", gCurCommPrice[MTXIdxNo]);
             printf("ServerTime: %d: %d: %d\n", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
-            printf("Time: %ld: Valume: %ld: Buy: %ld Sell: %ld\n",
-                   gCurTaiexInfo[0][0], gCurTaiexInfo[0][1], gCurTaiexInfo[0][2], gCurTaiexInfo[0][3]);
+            printf("Time: %ld: TSEA prices: %ld Valume: %ld: Buy: %ld Sell: %ld\n",
+                   gCurTaiexInfo[0][0], gCurCommPrice[TSEAIdxNo], gCurTaiexInfo[0][1], gCurTaiexInfo[0][2], gCurTaiexInfo[0][3]);
 
             printf("=========================================\n");
 

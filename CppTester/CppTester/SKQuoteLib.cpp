@@ -429,13 +429,62 @@ void CSKQuoteLib::OnConnection(long nKind, long nCode)
     }
 }
 
+// struct SKSTOCKLONG
+// {
+//     LONG nStockidx; // 商品自定索引代號
+//     SHORT sDecimal; // 小數位數
+//     SHORT sTypeNo;  //  EX: (證券)類股別 1 水泥 , 2 食品…etc.
+
+//     BSTR bstrMarketNo;  // 市埸代碼　　　　　　　　　　　　　　　　　
+//     BSTR bstrStockNo;   // 商品代碼EX: 1101 台泥, TX12 台指期12月…etc.
+//     BSTR bstrStockName; // 商品名稱
+
+//     LONG nHigh;  // 最高價
+//     LONG nOpen;  // 開盤價
+//     LONG nLow;   // 最低價
+//     LONG nClose; // 成交價
+
+//     LONG nTickQty; // 單量
+
+//     LONG nRef; // 昨收、參考價
+
+//     LONG nBid; // 買價
+//     LONG nBc;  // 買量
+//     LONG nAsk; // 賣價
+//     LONG nAc;  // 賣量
+
+//     LONG nTBc; // 買盤量(即外盤量)
+//     LONG nTAc; // 賣盤量(即內盤量)
+
+//     LONG nFutureOI; // 期貨未平倉 OI
+
+//     LONG nTQty; // 總量
+//     LONG nYQty; // 昨量
+
+//     LONG nUp;       // 漲停價
+//     LONG nDown;     // 跌停價
+//     LONG nSimulate; // 揭示 0:一般 1:試算　＊
+//     　　　　　　　　 // [證券逐筆]盤中出現『1:試算』代表行情劇動，
+// 　　　　　　　　　　　　　觸發價格穩定措施狀態
+
+//     LONG nDayTrade // [限證券整股商品]可否當沖
+// 0:一般
+// 1:可先買後賣現股當沖
+// 2 : 可先買後賣和先賣後買現股當沖
+//                                    LONG nTradingDay // 交易日(YYYYMMDD)
+//                                        備註 : 當日非交易日時,
+//                                               資料為前一交易日
+//                                                   LONG nDealTime // 成交時間 (hhmmss)
+// };
+
 void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "sMarketNo= ", sMarketNo);
+    DEBUG(DEBUG_LEVEL_DEBUG, "sMarketNo= %d, nStockIndex=%d", sMarketNo, nStockIndex);
 
     SKCOMLib::SKSTOCKLONG skStock;
+
     long nResult = GetStockByIndexLONG(sMarketNo, nStockIndex, &skStock);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "GetStockByIndexLONG res = ", nResult);
@@ -456,13 +505,7 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
           skStock.nClose,
           skStock.nTQty);
 
-    // printf("OnNotifyQuoteLONG : %s %s bid:%d ask:%d last:%d volume:%d\n",
-    //        szStockNo,
-    //        szStockName,
-    //        skStock.nBid,
-    //        skStock.nAsk,
-    //        skStock.nClose,
-    //        skStock.nTQty);
+    GetCurPrice(nStockIndex, skStock.nClose, skStock.nSimulate);
 
     delete[] szStockName;
     delete[] szStockNo;
