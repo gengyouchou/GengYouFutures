@@ -195,6 +195,42 @@ long CSKOrderLib::SendFutureOrder(string strLogInID, bool bAsyncOrder, string st
     return m_nCode;
 }
 
+long CSKOrderLib::SendFutureStop(string strLogInID, bool bAsyncOrder, string strStockNo, short sTradeType, short sBuySell, short sDayTrade, short sNewClose, string strPrice, long nQty, short sReserved)
+{
+    string strFullAccount_TF = "";
+
+    if (vec_strFullAccount_TF.size() > 0)
+        strFullAccount_TF = vec_strFullAccount_TF[0];
+    else
+    {
+        cout << "SendFutureStop Error : No Future Account.";
+        return -1;
+    }
+
+    SKCOMLib::FUTUREORDER pFutures;
+    pFutures.bstrFullAccount = _bstr_t(strFullAccount_TF.c_str()).Detach();
+    pFutures.bstrStockNo = _bstr_t(strStockNo.c_str()).Detach();
+    pFutures.sTradeType = sTradeType;
+    pFutures.sBuySell = sBuySell;
+    pFutures.sDayTrade = sDayTrade;
+    pFutures.sNewClose = sNewClose;
+    pFutures.bstrPrice = _bstr_t(strPrice.c_str()).Detach();
+    pFutures.nQty = nQty;
+    pFutures.sReserved = sReserved;
+
+    BSTR bstrMessage;
+    long m_nCode = m_pSKOrderLib->SendFutureSTPOrderV1(_bstr_t(strLogInID.c_str()), VARIANT_BOOL(bAsyncOrder), &pFutures, &bstrMessage);
+
+    string StrMessage = string(_bstr_t(bstrMessage));
+    cout << "SendFutureStop : " << StrMessage << endl;
+
+    DEBUG(DEBUG_LEVEL_INFO, "SendFutureStop : %s", StrMessage);
+
+    ::SysFreeString(bstrMessage);
+
+    return m_nCode;
+}
+
 long CSKOrderLib::SendOptionOrder(string strLogInID, bool bAsyncOrder, string strStockNo, short sTradeType, short sBuySell, short sDayTrade, short sNewClose, string strPrice, long nQty, short sReserved)
 {
     string strFullAccount_TF = "";

@@ -52,6 +52,27 @@ void AutoLogIn()
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
+void AutoStopMTX()
+{
+    DEBUG(DEBUG_LEVEL_INFO, "Started");
+
+    g_nCode = pSKOrderLib->SendFutureStop(g_strUserId,
+                                          false, // bAsyncOrder 是否為非同步委託。
+                                          "TM0000",
+                                          1, // IOC
+                                          1, // sell
+                                          0, // DayTrade
+                                          1, // NewClose
+                                          "P",
+                                          1,
+                                          0);
+    pSKCenterLib->PrintfCodeMessage("AutoStopMTX", "SendFutureStop", g_nCode);
+
+    DEBUG(DEBUG_LEVEL_INFO, "res = %d", g_nCode);
+
+    DEBUG(DEBUG_LEVEL_INFO, "end");
+}
+
 /**
  * @brief
  *
@@ -89,8 +110,8 @@ void AutoOrderMTX()
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
     g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
-                                           false,
-                                           "MTX00",
+                                           false, // bAsyncOrder 是否為非同步委託。
+                                           "TM0000",
                                            1, // IOC
                                            1, // sell
                                            0, // DayTrade
@@ -237,6 +258,9 @@ void thread_main()
     AutoLogIn();
 
     AutoConnect();
+
+    AutoOrderMTX();
+    AutoStopMTX();
 
     AutoKLineData("TX00");
 
