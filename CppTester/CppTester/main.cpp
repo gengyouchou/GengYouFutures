@@ -204,7 +204,7 @@ extern std::deque<long> gDaysKlineDiff;
 extern bool gEatOffer;
 extern std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
 extern SHORT gCurServerTime[3];
-extern std::unordered_map<long, long> gCurMtxPrice;
+extern std::unordered_map<long, long> gCurCommPrice;
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 
@@ -316,7 +316,7 @@ void thread_main()
             // 更新最后清屏时间
             lastClearTime = now;
 
-            printf("CurMtxPrice: %ld    ", gCurMtxPrice[MTXIdxNo]);
+            printf("CurMtxPrice: %ld    ", gCurCommPrice[MTXIdxNo]);
             printf("ServerTime: %d: %d: %d\n", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
             printf("Time: %ld: Valume: %ld: Buy: %ld Sell: %ld\n",
                    gCurTaiexInfo[0][0], gCurTaiexInfo[0][1], gCurTaiexInfo[0][2], gCurTaiexInfo[0][3]);

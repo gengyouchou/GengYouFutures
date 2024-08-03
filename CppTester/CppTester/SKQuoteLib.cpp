@@ -16,7 +16,7 @@ std::deque<long> gDaysKlineDiff;
 std::map<string, pair<double, double>> gDaysCommHighLowPoint;
 std::map<string, pair<pair<double, double>, pair<double, double>>> gNightCommHighLowPoint;
 
-std::unordered_map<long, long> gCurMtxPrice;
+std::unordered_map<long, long> gCurCommPrice;
 std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 
@@ -709,7 +709,7 @@ void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate)
         return;
     }
 
-    gCurMtxPrice[nStockIndex] = nClose / 100;
+    gCurCommPrice[nStockIndex] = nClose / 100;
 }
 
 /**
