@@ -135,5 +135,5 @@ void CSKReplyLib::OnReplyMessage(string strMessage, string strLoginID, short *sC
 
 void CSKReplyLib::OnNewData(string strData)
 {
-	cout << "iOnNewDataj" << strData << endl;
+	cout << "OnNewData" << strData << endl;
 }

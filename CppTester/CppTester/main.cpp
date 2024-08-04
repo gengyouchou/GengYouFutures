@@ -52,18 +52,19 @@ void AutoLogIn()
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
-void AutoStopMTX()
+void AutoStopMTX(string strTrigger)
 {
     DEBUG(DEBUG_LEVEL_INFO, "Started");
 
     g_nCode = pSKOrderLib->SendFutureStop(g_strUserId,
                                           false, // bAsyncOrder 是否為非同步委託。
-                                          "TM0000",
+                                          "MTX00",
                                           1, // IOC
                                           1, // sell
                                           0, // DayTrade
                                           1, // NewClose
                                           "P",
+                                          strTrigger,
                                           1,
                                           0);
     // cash here
@@ -106,17 +107,17 @@ void AutoStopMTX()
  * @exception
  */
 
-void AutoOrderMTX()
+void AutoOrderMTX(IN SHORT NewClose)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
     g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
                                            false, // bAsyncOrder 是否為非同步委託。
                                            "TM0000",
-                                           1, // IOC
-                                           1, // sell
-                                           0, // DayTrade
-                                           2, // NewClose
+                                           1,        // IOC
+                                           1,        // sell
+                                           0,        // DayTrade
+                                           NewClose, // NewClose ////新平倉，0:新倉 1:平倉 2:自動{新期貨、選擇權使用}
                                            "P",
                                            1,
                                            0);
@@ -125,10 +126,10 @@ void AutoOrderMTX()
     g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
                                            false,
                                            "MTX00",
-                                           1, // IOC
-                                           1, // sell
-                                           0, // DayTrade
-                                           2, // NewClose
+                                           1,        // IOC
+                                           1,        // sell
+                                           0,        // DayTrade
+                                           NewClose, // NewClose
                                            "P",
                                            1,
                                            0);
@@ -139,10 +140,10 @@ void AutoOrderMTX()
     g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
                                            false,
                                            "MTX00",
-                                           1, // IOC
-                                           0, // buy
-                                           0, // DayTrade
-                                           2, // NewClose
+                                           1,        // IOC
+                                           0,        // buy
+                                           0,        // DayTrade
+                                           NewClose, // NewClose
                                            "P",
                                            1,
                                            0);
@@ -260,8 +261,10 @@ void thread_main()
 
     AutoConnect();
 
-    AutoOrderMTX();
-    AutoStopMTX();
+    AutoOrderMTX(0); // new
+    AutoOrderMTX(1); // close
+
+    // AutoStopMTX("20000");
 
     AutoKLineData("TX00");
 
