@@ -137,6 +137,7 @@ private:
 };
 
 extern Logger logger;
+extern Logger StrategyLog;
 
 // Macro to simplify logging calls
 template <int Level, typename... Args>
@@ -153,7 +154,7 @@ inline void log_with_time_if_enabled(int level, const std::string &functionName,
 {
     if constexpr (Level <= DEBUG_LEVEL)
     {
-        logger.log_with_time(level, functionName, format, args...);
+        StrategyLog.log_with_time(level, functionName, format, args...);
     }
 }
 

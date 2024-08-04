@@ -12,6 +12,8 @@
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 
+#include "Strategy.h"
+
 // Define the global logger instance
 Logger logger("debug.log");
 
@@ -265,7 +267,7 @@ void thread_main()
     AutoOrderMTX(0); // new
     AutoOrderMTX(1); // close
 
-    // AutoStopMTX("20000");
+    StrategyStopFuturesLoss();
 
     AutoKLineData("TX00");
 
