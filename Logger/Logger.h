@@ -1,6 +1,8 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include <chrono> // for current time
+#include <ctime>  // for std::localtime
 #include <fstream>
 #include <iomanip> // for std::hex, std::setprecision
 #include <sstream>
@@ -35,6 +37,22 @@ public:
         if (logFile.is_open())
         {
             std::ostringstream oss;
+            format_string(oss, format, args...);
+            logFile << "[" << functionName << "] " << oss.str() << std::endl;
+        }
+    }
+
+    template <typename... Args>
+    void log_with_time(int level, const std::string &functionName, const char *format, Args... args)
+    {
+        if (logFile.is_open())
+        {
+            auto now = std::chrono::system_clock::now();
+            std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+            std::tm local_tm = *std::localtime(&now_time);
+
+            std::ostringstream oss;
+            oss << std::put_time(&local_tm, "%Y-%m-%d %H:%M:%S") << " ";
             format_string(oss, format, args...);
             logFile << "[" << functionName << "] " << oss.str() << std::endl;
         }
@@ -130,14 +148,29 @@ inline void log_if_enabled(int level, const std::string &functionName, const cha
     }
 }
 
+template <int Level, typename... Args>
+inline void log_with_time_if_enabled(int level, const std::string &functionName, const char *format, Args... args)
+{
+    if constexpr (Level <= DEBUG_LEVEL)
+    {
+        logger.log_with_time(level, functionName, format, args...);
+    }
+}
+
 #ifdef ENABLE_DEBUG
 
 #define DEBUG(level, ...) log_if_enabled<level>(level, __func__, __VA_ARGS__)
+#define LOG(level, ...) log_with_time_if_enabled<level>(level, __func__, __VA_ARGS__)
 
 #else
 #define DEBUG(level, ...) \
     do                    \
     {                     \
+    } while (0)
+
+#define LOG(level, ...) \
+    do                  \
+    {                   \
     } while (0)
 #endif
 

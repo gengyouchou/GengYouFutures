@@ -151,6 +151,7 @@ void AutoOrderMTX(IN SHORT NewClose)
     pSKCenterLib->PrintfCodeMessage("AutoOrderMTX", "SendFutureOrder", g_nCode);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "SendFutureOrder res = %d", g_nCode);
+    LOG(DEBUG_LEVEL_INFO, "SendFutureOrder res = %d", g_nCode);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
