@@ -32,14 +32,12 @@ public:
     template <typename... Args>
     void log(int level, const std::string &functionName, const char *format, Args... args)
     {
-#ifdef LOGGING_ENABLED
-        if (logFile.is_open() && level <= DEBUG_LEVEL)
+        if (logFile.is_open())
         {
             std::ostringstream oss;
             format_string(oss, format, args...);
             logFile << "[" << functionName << "] " << oss.str() << std::endl;
         }
-#endif
     }
 
 private:
@@ -120,16 +118,30 @@ private:
     }
 };
 
-// Macro to simplify logging calls
-#define DEBUG(level, ...)                             \
-    do                                                \
-    {                                                 \
-        if (level <= DEBUG_LEVEL)                     \
-        {                                             \
-            logger.log(level, __func__, __VA_ARGS__); \
-        }                                             \
-    } while (0)
-
 extern Logger logger;
+
+// Macro to simplify logging calls
+template <int Level>
+inline void log_if_enabled(int level, const std::string &functionName, const char *format, ...)
+{
+    if constexpr (Level <= DEBUG_LEVEL)
+    {
+        va_list args;
+        va_start(args, format);
+        logger.log(level, functionName, format, args);
+        va_end(args);
+    }
+}
+
+#ifdef ENABLE_DEBUG
+
+#define DEBUG(level, ...) log_if_enabled<level>(level, __func__, __VA_ARGS__)
+
+#else
+#define DEBUG(level, ...) \
+    do                    \
+    {                     \
+    } while (0)
+#endif
 
 #endif // LOGGER_H
