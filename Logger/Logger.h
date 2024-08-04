@@ -121,15 +121,12 @@ private:
 extern Logger logger;
 
 // Macro to simplify logging calls
-template <int Level>
-inline void log_if_enabled(int level, const std::string &functionName, const char *format, ...)
+template <int Level, typename... Args>
+inline void log_if_enabled(int level, const std::string &functionName, const char *format, Args... args)
 {
     if constexpr (Level <= DEBUG_LEVEL)
     {
-        va_list args;
-        va_start(args, format);
-        logger.log(level, functionName, format, args);
-        va_end(args);
+        logger.log(level, functionName, format, args...);
     }
 }
 
