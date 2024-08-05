@@ -14,6 +14,14 @@
 
 #include "Strategy.h"
 
+extern std::deque<long> gDaysKlineDiff;
+extern bool gEatOffer;
+extern std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
+extern SHORT gCurServerTime[3];
+extern std::unordered_map<long, long> gCurCommPrice;
+extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
+extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
+
 // Define the global logger instance
 Logger logger("debug.log");
 
@@ -210,6 +218,92 @@ void AutoKLineData(IN string ProductNum)
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
+void AutoBest5Long(LONG ProductIdxNo, string ProductName)
+{
+    if (gBest5BidOffer[ProductIdxNo].size() >= 10)
+    {
+        long curPrice = gCurCommPrice[ProductIdxNo];
+
+        long TotalBid = gBest5BidOffer[ProductIdxNo][0].second +
+                        gBest5BidOffer[ProductIdxNo][1].second +
+                        gBest5BidOffer[ProductIdxNo][2].second +
+                        gBest5BidOffer[ProductIdxNo][3].second +
+                        gBest5BidOffer[ProductIdxNo][4].second;
+        long TotalOffer = gBest5BidOffer[ProductIdxNo][9].second +
+                          gBest5BidOffer[ProductIdxNo][8].second +
+                          gBest5BidOffer[ProductIdxNo][7].second +
+                          gBest5BidOffer[ProductIdxNo][6].second +
+                          gBest5BidOffer[ProductIdxNo][5].second;
+
+        string Offer1Deal = "", Offer2Deal = "", Offer3Deal = "", Offer4Deal = "", Offer5Deal = "";
+        string Bid1Deal = "", Bid2Deal = "", Bid3Deal = "", Bid4Deal = "", Bid5Deal = "";
+
+        if (curPrice == gBest5BidOffer[ProductIdxNo][9].first)
+        {
+            Offer5Deal = "*";
+        }
+        else if (curPrice == gBest5BidOffer[ProductIdxNo][8].first)
+        {
+            Offer4Deal = "*";
+        }
+        else if (curPrice == gBest5BidOffer[ProductIdxNo][7].first)
+        {
+            Offer3Deal = "*";
+        }
+        else if (curPrice == gBest5BidOffer[ProductIdxNo][6].first)
+        {
+            Offer2Deal = "*";
+        }
+        else if (curPrice == gBest5BidOffer[ProductIdxNo][5].first)
+        {
+            Offer1Deal = "*";
+        }
+        else if (curPrice == gBest5BidOffer[ProductIdxNo][0].first)
+        {
+            Bid1Deal = "*";
+        }
+        else if (curPrice == gBest5BidOffer[ProductIdxNo][1].first)
+        {
+            Bid2Deal = "*";
+        }
+        else if (curPrice == gBest5BidOffer[ProductIdxNo][2].first)
+        {
+            Bid3Deal = "*";
+        }
+        else if (curPrice == gBest5BidOffer[ProductIdxNo][3].first)
+        {
+            Bid4Deal = "*";
+        }
+        else if (curPrice == gBest5BidOffer[ProductIdxNo][4].first)
+        {
+            Bid5Deal = "*";
+        }
+
+        printf("%s : %ld\n\n", ProductName.c_str(), curPrice);
+        printf("Total Offer: [%ld]\n", TotalOffer);
+
+        printf("Ask5: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][9].first, gBest5BidOffer[ProductIdxNo][9].second, Offer5Deal.c_str());
+        printf("Ask4: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][8].first, gBest5BidOffer[ProductIdxNo][8].second, Offer4Deal.c_str());
+        printf("Ask3: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][7].first, gBest5BidOffer[ProductIdxNo][7].second, Offer3Deal.c_str());
+        printf("Ask2: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][6].first, gBest5BidOffer[ProductIdxNo][6].second, Offer2Deal.c_str());
+        printf("Ask1: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][5].first, gBest5BidOffer[ProductIdxNo][5].second, Offer1Deal.c_str());
+        printf("=========================================\n");
+        printf("Bid1: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][0].first, gBest5BidOffer[ProductIdxNo][0].second, Bid1Deal.c_str());
+        printf("Bid2: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][1].first, gBest5BidOffer[ProductIdxNo][1].second, Bid2Deal.c_str());
+        printf("Bid3: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][2].first, gBest5BidOffer[ProductIdxNo][2].second, Bid3Deal.c_str());
+        printf("Bid4: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][3].first, gBest5BidOffer[ProductIdxNo][3].second, Bid4Deal.c_str());
+        printf("Bid5: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][4].first, gBest5BidOffer[ProductIdxNo][4].second, Bid5Deal.c_str());
+
+        printf("Total Bid:   [%ld]\n", TotalBid);
+
+        printf("=========================================\n");
+    }
+    else
+    {
+        DEBUG(DEBUG_LEVEL_INFO, "gBest5BidOffer[ProductIdxNo].size() < 10");
+    }
+}
+
 void init()
 {
     pSKCenterLib = new CSKCenterLib;
@@ -227,14 +321,6 @@ void release()
 
     CoUninitialize();
 }
-
-extern std::deque<long> gDaysKlineDiff;
-extern bool gEatOffer;
-extern std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
-extern SHORT gCurServerTime[3];
-extern std::unordered_map<long, long> gCurCommPrice;
-extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
-extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 
 // To do list:
 // 日夜盤都要算振福關卡價 (done)
@@ -308,7 +394,7 @@ void thread_main()
 
     SKCOMLib::SKSTOCKLONG skStock;
 
-    res = pSKQuoteLib->RequestStockIndexMap("MTX00", &skStock);
+    res = pSKQuoteLib->RequestStockIndexMap("TX00", &skStock);
 
     DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
 
@@ -323,6 +409,8 @@ void thread_main()
     res = pSKQuoteLib->RequestStockIndexMap("2317", &skStock);
 
     DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+
+    long HHIdxNo = skStock.nStockIdx;
 
     res = pSKQuoteLib->RequestStockIndexMap("TSEA", &skStock);
 
@@ -341,10 +429,11 @@ void thread_main()
     // if (AutoQuote("TSEA,TX00", 2) != 0)
     // {
     AutoQuoteTicks("TSEA", 3);
-    AutoQuoteTicks("MTX00", 4);
+    AutoQuoteTicks("TX00", 4);
     // }
 
     AutoQuoteTicks("2330", 1);
+    AutoQuoteTicks("2317", 2);
 
     while (true)
     {
@@ -415,88 +504,8 @@ void thread_main()
                 printf("TSMCIdxNo : CurHigh: %ld, CurLow: %ld\n\n", CurHigh, CurLow);
             }
 
-            if (gBest5BidOffer[TSMCIdxNo].size() >= 10)
-            {
-                long curPrice = gCurCommPrice[TSMCIdxNo];
-
-                long TotalBid = gBest5BidOffer[TSMCIdxNo][0].second +
-                                gBest5BidOffer[TSMCIdxNo][1].second +
-                                gBest5BidOffer[TSMCIdxNo][2].second +
-                                gBest5BidOffer[TSMCIdxNo][3].second +
-                                gBest5BidOffer[TSMCIdxNo][4].second;
-                long TotalOffer = gBest5BidOffer[TSMCIdxNo][9].second +
-                                  gBest5BidOffer[TSMCIdxNo][8].second +
-                                  gBest5BidOffer[TSMCIdxNo][7].second +
-                                  gBest5BidOffer[TSMCIdxNo][6].second +
-                                  gBest5BidOffer[TSMCIdxNo][5].second;
-
-                string Offer1Deal = "", Offer2Deal = "", Offer3Deal = "", Offer4Deal = "", Offer5Deal = "";
-                string Bid1Deal = "", Bid2Deal = "", Bid3Deal = "", Bid4Deal = "", Bid5Deal = "";
-
-                if (curPrice == gBest5BidOffer[TSMCIdxNo][9].first)
-                {
-                    Offer5Deal = "*";
-                }
-                else if (curPrice == gBest5BidOffer[TSMCIdxNo][8].first)
-                {
-                    Offer4Deal = "*";
-                }
-                else if (curPrice == gBest5BidOffer[TSMCIdxNo][7].first)
-                {
-                    Offer3Deal = "*";
-                }
-                else if (curPrice == gBest5BidOffer[TSMCIdxNo][6].first)
-                {
-                    Offer2Deal = "*";
-                }
-                else if (curPrice == gBest5BidOffer[TSMCIdxNo][5].first)
-                {
-                    Offer1Deal = "*";
-                }
-                else if (curPrice == gBest5BidOffer[TSMCIdxNo][0].first)
-                {
-                    Bid1Deal = "*";
-                }
-                else if (curPrice == gBest5BidOffer[TSMCIdxNo][1].first)
-                {
-                    Bid2Deal = "*";
-                }
-                else if (curPrice == gBest5BidOffer[TSMCIdxNo][2].first)
-                {
-                    Bid3Deal = "*";
-                }
-                else if (curPrice == gBest5BidOffer[TSMCIdxNo][3].first)
-                {
-                    Bid4Deal = "*";
-                }
-                else if (curPrice == gBest5BidOffer[TSMCIdxNo][4].first)
-                {
-                    Bid5Deal = "*";
-                }
-
-                printf("TSMC: %ld\n\n", curPrice);
-                printf("Total Offer: [%ld]\n", TotalOffer);
-
-                printf("Ask5: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][9].first, gBest5BidOffer[TSMCIdxNo][9].second, Offer5Deal.c_str());
-                printf("Ask4: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][8].first, gBest5BidOffer[TSMCIdxNo][8].second, Offer4Deal.c_str());
-                printf("Ask3: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][7].first, gBest5BidOffer[TSMCIdxNo][7].second, Offer3Deal.c_str());
-                printf("Ask2: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][6].first, gBest5BidOffer[TSMCIdxNo][6].second, Offer2Deal.c_str());
-                printf("Ask1: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][5].first, gBest5BidOffer[TSMCIdxNo][5].second, Offer1Deal.c_str());
-                printf("=========================================\n");
-                printf("Bid1: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][0].first, gBest5BidOffer[TSMCIdxNo][0].second, Bid1Deal.c_str());
-                printf("Bid2: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][1].first, gBest5BidOffer[TSMCIdxNo][1].second, Bid2Deal.c_str());
-                printf("Bid3: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][2].first, gBest5BidOffer[TSMCIdxNo][2].second, Bid3Deal.c_str());
-                printf("Bid4: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][3].first, gBest5BidOffer[TSMCIdxNo][3].second, Bid4Deal.c_str());
-                printf("Bid5: [%ld]: [%ld]%s\n", gBest5BidOffer[TSMCIdxNo][4].first, gBest5BidOffer[TSMCIdxNo][4].second, Bid5Deal.c_str());
-
-                printf("Total Bid:   [%ld]\n", TotalBid);
-
-                printf("=========================================\n");
-            }
-            else
-            {
-                DEBUG(DEBUG_LEVEL_INFO, "gBest5BidOffer[TSMCIdxNo].size() < 10");
-            }
+            AutoBest5Long(TSMCIdxNo, "TSMC");
+            AutoBest5Long(HHIdxNo, "HHP");
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 短暂休眠，避免过度占用 CPU
