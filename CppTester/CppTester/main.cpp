@@ -267,6 +267,8 @@ void thread_main()
     // AutoOrderMTX(0); // new
     // AutoOrderMTX(1); // close
 
+    pSKOrderLib->GetOpenInterest(g_strUserId, 1);
+
     StrategyStopFuturesLoss();
 
     AutoKLineData("TX00");

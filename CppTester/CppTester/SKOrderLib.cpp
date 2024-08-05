@@ -43,7 +43,7 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
     VariantInit(&varlValue);
     VariantClear(&varlValue);
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "dispidMember == %d", dispidMember);
+    DEBUG(DEBUG_LEVEL_INFO, "dispidMember == %d", dispidMember);
 
     switch (dispidMember)
     {
@@ -75,6 +75,15 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
         {
             BSTR bstrData = pdispparams->rgvarg[0].bstrVal;
             OnFutureRights(bstrData);
+        }
+        break;
+    }
+    case 4:
+    {
+        if (pdispparams->cArgs == 1)
+        {
+            BSTR bstrData = pdispparams->rgvarg[0].bstrVal;
+            OnOpenInterest(bstrData);
         }
         break;
     }
@@ -255,7 +264,7 @@ long CSKOrderLib::SendFutureStop(string strLogInID,
     pFutures.sBuySell = sBuySell;
     pFutures.sDayTrade = sDayTrade;
     pFutures.sNewClose = sNewClose;
-    //pFutures.bstrPrice = _bstr_t(strPrice.c_str()).Detach();
+    // pFutures.bstrPrice = _bstr_t(strPrice.c_str()).Detach();
     pFutures.bstrTrigger = _bstr_t(strTrigger.c_str()).Detach(); // For stop
     pFutures.nQty = nQty;
     pFutures.sReserved = sReserved;
@@ -308,6 +317,32 @@ long CSKOrderLib::SendOptionOrder(string strLogInID, bool bAsyncOrder, string st
     cout << "SendOptionOrder : " << string(_bstr_t(bstrMessage)) << endl;
 
     ::SysFreeString(bstrMessage);
+
+    return m_nCode;
+}
+
+long CSKOrderLib::GetOpenInterest(
+    string strLogInID,
+    long nFormat)
+{
+    DEBUG(DEBUG_LEVEL_INFO, "Start");
+
+    string strFullAccount_TF = "";
+
+    if (vec_strFullAccount_TF.size() > 0)
+        strFullAccount_TF = vec_strFullAccount_TF[0];
+    else
+    {
+        cout << "GetOpenInterest Error : No Future Account.";
+        return -1;
+    }
+
+    BSTR bstrLogInID = _bstr_t(strLogInID.c_str());
+    BSTR bstrAccount = _bstr_t(strFullAccount_TF.c_str());
+
+    long m_nCode = m_pSKOrderLib->GetOpenInterestGW(bstrLogInID, bstrAccount, nFormat);
+
+    DEBUG(DEBUG_LEVEL_INFO, "End");
 
     return m_nCode;
 }
@@ -505,4 +540,15 @@ void CSKOrderLib::OnAsyncOrder(long nThreadID, long nCode, string strMessage)
 {
     cout << "On AsyncOrder ThreadID : " << nThreadID << ", nCode : " << nCode << ", Message : " << strMessage;
     cout << endl;
+}
+
+void CSKOrderLib::OnOpenInterest(IN BSTR bstrData)
+{
+    DEBUG(DEBUG_LEVEL_INFO, "start");
+
+    string strMessage = string(_bstr_t(bstrData));
+
+    DEBUG(DEBUG_LEVEL_INFO, "strMessage=%s", strMessage);
+
+    DEBUG(DEBUG_LEVEL_INFO, "end");
 }
