@@ -792,7 +792,7 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             entry.second = min(entry.second, lowPrice);
         }
     }
-    else if (hour >= 15 || hour <= 5)
+    // else if (hour >= 15 || hour <= 5)
     {
         // Night session
 
@@ -800,55 +800,58 @@ void processTradingData(const string &datetime, double openPrice, double highPri
         //               Day       Day+1
         //           [fir, sec]  [fir, sec]
 
-        if (hour >= 15)
+        // if (hour >= 15)
+        // {
+        // 處理夜盤的邏輯
+        if (gNightCommHighLowPoint.count(date) == 0)
         {
-            // 處理夜盤的邏輯
-            if (gNightCommHighLowPoint.count(date) == 0)
-            {
-                gNightCommHighLowPoint[date] = {{highPrice, lowPrice}, {DBL_MIN, DBL_MAX}};
-            }
-
-            auto &entry = gNightCommHighLowPoint[date].first;
-            entry.first = max(entry.first, highPrice);
-            entry.second = min(entry.second, lowPrice);
-
-            DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
-
-            DEBUG(DEBUG_LEVEL_DEBUG, "Date15_00: %s, High: %f, Low: %f",
-                  date, entry.first, entry.second);
+            gNightCommHighLowPoint[date] = {{DBL_MIN, DBL_MAX}, {highPrice, lowPrice}};
         }
-        else if (hour <= 5)
-        {
-            if (gNightCommHighLowPoint.count(date) == 0)
-            {
-                gNightCommHighLowPoint[date] = {{DBL_MIN, DBL_MAX}, {highPrice, lowPrice}};
-            }
-            auto &entry = gNightCommHighLowPoint[date].second;
-            entry.first = max(entry.first, highPrice);
-            entry.second = min(entry.second, lowPrice);
 
-            string prevDate = date;
+        auto &entry = gNightCommHighLowPoint[date].second;
+        entry.first = max(entry.first, highPrice);
+        entry.second = min(entry.second, lowPrice);
 
-            // 如果時間是00:00到05:00，則視為前一天的夜盤
-            auto it = gNightCommHighLowPoint.find(date);
+        DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
 
-            if (it != gNightCommHighLowPoint.begin())
-            {
-                --it;
-                prevDate = it->first;
-                DEBUG(DEBUG_LEVEL_DEBUG, "prevDate=%s", prevDate);
-            }
+        DEBUG(DEBUG_LEVEL_INFO, "Date15_00: %s, High: %f, Low: %f",
+              date, entry.first, entry.second);
+        // }
+        // else if (hour <= 5)
+        // {
+        //     if (gNightCommHighLowPoint.count(date) == 0)
+        //     {
+        //         gNightCommHighLowPoint[date] = {{DBL_MIN, DBL_MAX}, {highPrice, lowPrice}};
+        //     }
+        //     auto &entry = gNightCommHighLowPoint[date].second;
+        //     entry.first = max(entry.first, highPrice);
+        //     entry.second = min(entry.second, lowPrice);
 
-            // 更新當前 second
-            auto &prevEntry = gNightCommHighLowPoint[prevDate].first;
-            entry.first = max(entry.first, prevEntry.first);
-            entry.second = min(entry.second, prevEntry.second);
+        //     string prevDate = "";
 
-            DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
+        //     // 如果時間是00:00到05:00，則視為前一天的夜盤
+        //     auto it = gNightCommHighLowPoint.find(date);
 
-            DEBUG(DEBUG_LEVEL_DEBUG, "Date0_5: %s, High: %f, Low: %f",
-                  date, entry.first, entry.second);
-        }
+        //     if (it != gNightCommHighLowPoint.begin())
+        //     {
+        //         --it;
+        //         prevDate = it->first;
+        //         DEBUG(DEBUG_LEVEL_INFO, "prevDate=%s", prevDate);
+        //     }
+
+        //     if (prevDate != "")
+        //     {
+        //         // 更新當前 second
+        //         auto &prevEntry = gNightCommHighLowPoint[prevDate].first;
+        //         entry.first = max(entry.first, prevEntry.first);
+        //         entry.second = min(entry.second, prevEntry.second);
+
+        //         DEBUG(DEBUG_LEVEL_INFO, "prevDate datetime: %s, highPrice: %f, lowPrice: %f", prevDate, prevEntry.first, prevEntry.second);
+        //     }
+
+        //     DEBUG(DEBUG_LEVEL_INFO, "Date0_5: %s, High: %f, Low: %f",
+        //           date, entry.first, entry.second);
+        // }
     }
 }
 
