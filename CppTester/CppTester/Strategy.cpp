@@ -23,7 +23,14 @@ extern std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
 extern std::unordered_map<long, long> gCurCommPrice;
 extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 
-VOID StrategyStopFuturesLoss()
+VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId)
 {
-    LOG(DEBUG_LEVEL_INFO, "Start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    SKOrderLib->GetOpenInterest(strUserId, 1);
+
+    // AutoOrderMTX(0); // new
+    // AutoOrderMTX(1); // close
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }

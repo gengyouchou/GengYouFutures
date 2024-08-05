@@ -12,4 +12,4 @@
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 
-VOID StrategyStopFuturesLoss();
+VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId);
