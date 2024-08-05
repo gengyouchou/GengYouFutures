@@ -812,9 +812,9 @@ void processTradingData(const string &datetime, double openPrice, double highPri
         entry.first = max(entry.first, highPrice);
         entry.second = min(entry.second, lowPrice);
 
-        DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
+        DEBUG(DEBUG_LEVEL_ERROR, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
 
-        DEBUG(DEBUG_LEVEL_INFO, "Date15_00: %s, High: %f, Low: %f",
+        DEBUG(DEBUG_LEVEL_ERROR, "Date15_00: %s, High: %f, Low: %f",
               date, entry.first, entry.second);
         // }
         // else if (hour <= 5)
