@@ -264,8 +264,8 @@ void thread_main()
 
     AutoConnect();
 
-    AutoOrderMTX(0); // new
-    AutoOrderMTX(1); // close
+    // AutoOrderMTX(0); // new
+    // AutoOrderMTX(1); // close
 
     StrategyStopFuturesLoss();
 
