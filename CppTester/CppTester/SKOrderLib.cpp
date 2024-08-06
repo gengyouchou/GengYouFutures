@@ -7,6 +7,8 @@
 
 using namespace std;
 
+// 3
+//  商品
 // 4
 //  買賣別
 // 5
@@ -16,7 +18,7 @@ using namespace std;
 // 7
 //  平均成本(小數部分已處理)
 
-LONG gOpenInterest[4] = {0, 0, 0, 0};
+LONG gOpenInterest[5] = {0, 0, 0, 0, 0};
 
 CSKOrderLib::CSKOrderLib()
 {
