@@ -350,14 +350,13 @@ void thread_main()
 
     AutoConnect();
 
-    // AutoOrderMTX(0); // new
-    // AutoOrderMTX(1); // close
-
-    StrategyStopFuturesLoss(pSKOrderLib, g_strUserId);
+    AutoGetFutureRights();
 
     AutoKLineData("TX00");
 
     pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
+
+    StrategyStopFuturesLoss(pSKOrderLib, g_strUserId);
 
     long long accu = 0;
     long AvgAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;
