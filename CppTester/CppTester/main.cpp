@@ -438,6 +438,14 @@ void thread_main()
         auto now = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClearTime);
 
+        {
+            // Strategy start:
+
+            StrategyStopFuturesLoss(pSKOrderLib, g_strUserId);
+
+            // Strategy End:
+        }
+
         // 检查是否需要清屏
         if (elapsed.count() >= refreshInterval)
         {

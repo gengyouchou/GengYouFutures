@@ -7,6 +7,17 @@
 
 using namespace std;
 
+// 4
+//  買賣別
+// 5
+//  未平倉部位
+// 6
+//  當沖未平倉部位
+// 7
+//  平均成本(小數部分已處理)
+
+LONG gOpenInterest[4] = {0, 0, 0, 0};
+
 CSKOrderLib::CSKOrderLib()
 {
     m_pSKOrderLib.CreateInstance(__uuidof(SKCOMLib::SKOrderLib));
@@ -542,13 +553,36 @@ void CSKOrderLib::OnAsyncOrder(long nThreadID, long nCode, string strMessage)
     cout << endl;
 }
 
+// 每一筆資料以「,」分隔每一個欄位，欄位依序為：
+// 格式1:
+// 1
+// 市場別
+// 2
+//  帳號
+// 3
+//  商品
+// 4
+//  買賣別
+// 5
+//  未平倉部位
+// 6
+//  當沖未平倉部位
+// 7
+//  平均成本(小數部分已處理)
+// 8
+//  單口手續費
+// 9
+//  交易稅(萬分之X)
+// 10
+//  LOGIN_ID
+
 void CSKOrderLib::OnOpenInterest(IN BSTR bstrData)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     string strMessage = string(_bstr_t(bstrData));
 
     DEBUG(DEBUG_LEVEL_INFO, "strMessage=%s", strMessage);
 
-    DEBUG(DEBUG_LEVEL_INFO, "end");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }

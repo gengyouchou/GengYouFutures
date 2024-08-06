@@ -32,5 +32,9 @@ VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId)
     // AutoOrderMTX(0); // new
     // AutoOrderMTX(1); // close
 
+    // if over loss then do GetOpenInterest again in order to make sure 
+    // AutoOrderMTX(1) won’t place a closing order with the wrong amount
+    // else continue to calculate profit and loss and update to global variables
+
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
