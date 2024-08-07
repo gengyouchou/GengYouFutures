@@ -1,3 +1,4 @@
+#include "Strategy.h"
 #include "SKCenterLib.h"
 #include "SKOrderLib.h"
 #include "SKQuoteLib.h"
@@ -11,7 +12,6 @@
 #include <iostream>
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
-#include "Strategy.h"
 
 // Define the global logger instance
 Logger StrategyLog("Strategy.log");
@@ -36,6 +36,8 @@ extern OpenInterestInfo gOpenInterestInfo;
 extern string g_strUserId;
 
 extern COMMODITY_INFO gCommodtyInfo;
+
+DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
 
 /**
  * @brief

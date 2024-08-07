@@ -409,7 +409,7 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
 {
     SKCOMLib::SKSTOCKLONG skStock;
 
-    long res = RequestStockIndexMap("TX00", &skStock);
+    long res = RequestStockIndexMap(COMMODITY_MAIN, &skStock);
 
     DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d", res);
 

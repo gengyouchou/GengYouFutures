@@ -3,6 +3,10 @@
 #include "SKCOM_reference.h"
 #include "TEventHandler.h"
 
+#define COMMODITY_MAIN "MTX00"
+#define COMMODITY_OTHER "TM0000"
+#define COMMODITY_TX_MAIN "TX00"
+
 #define DayMA 20
 
 struct COMMODITY_INFO

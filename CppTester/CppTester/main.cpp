@@ -22,6 +22,7 @@ extern std::unordered_map<long, long> gCurCommPrice;
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 extern COMMODITY_INFO gCommodtyInfo;
+extern DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice;
 
 // Define the global logger instance
 Logger logger("debug.log");
@@ -224,6 +225,43 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
     }
 }
 
+void AutoCalcuKeyPrices()
+{
+    AutoKLineData(COMMODITY_TX_MAIN);
+
+    pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
+
+    long long accu = 0;
+    long AvgAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;
+
+    for (int i = 0; i < gDaysKlineDiff.size(); ++i)
+    {
+        DEBUG(DEBUG_LEVEL_INFO, "Diff = %ld ", gDaysKlineDiff[i]);
+
+        accu += gDaysKlineDiff[i];
+
+        LargestAmp = max(LargestAmp, gDaysKlineDiff[i]);
+        SmallestAmp = min(SmallestAmp, gDaysKlineDiff[i]);
+    }
+
+    AvgAmp = accu / DayMA;
+
+    LargerAmp = (AvgAmp + LargestAmp) / 2;
+    SmallAmp = (AvgAmp + SmallestAmp) / 2;
+
+    DEBUG(DEBUG_LEVEL_INFO, "SmallestAmp : %ld", SmallestAmp);
+    DEBUG(DEBUG_LEVEL_INFO, "SmallAmp : %ld", SmallAmp);
+    DEBUG(DEBUG_LEVEL_INFO, "AvgAmp : %ld", AvgAmp);
+    DEBUG(DEBUG_LEVEL_INFO, "LargerAmp : %ld", LargerAmp);
+    DEBUG(DEBUG_LEVEL_INFO, "LargestAmp : %ld", LargestAmp);
+
+    gDayAmpAndKeyPrice.SmallestAmp = SmallestAmp;
+    gDayAmpAndKeyPrice.SmallAmp = SmallAmp;
+    gDayAmpAndKeyPrice.AvgAmp = AvgAmp;
+    gDayAmpAndKeyPrice.LargerAmp = LargerAmp;
+    gDayAmpAndKeyPrice.LargestAmp = LargestAmp;
+}
+
 void init()
 {
     pSKCenterLib = new CSKCenterLib;
@@ -271,35 +309,7 @@ void thread_main()
 
     AutoGetFutureRights();
 
-    AutoKLineData("TX00");
-
-    pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
-
-    StrategyStopFuturesLoss(pSKOrderLib, g_strUserId);
-
-    long long accu = 0;
-    long AvgAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;
-
-    for (int i = 0; i < gDaysKlineDiff.size(); ++i)
-    {
-        DEBUG(DEBUG_LEVEL_INFO, "Diff = %ld ", gDaysKlineDiff[i]);
-
-        accu += gDaysKlineDiff[i];
-
-        LargestAmp = max(LargestAmp, gDaysKlineDiff[i]);
-        SmallestAmp = min(SmallestAmp, gDaysKlineDiff[i]);
-    }
-
-    AvgAmp = accu / DayMA;
-
-    LargerAmp = (AvgAmp + LargestAmp) / 2;
-    SmallAmp = (AvgAmp + SmallestAmp) / 2;
-
-    DEBUG(DEBUG_LEVEL_INFO, "SmallestAmp : %ld", SmallestAmp);
-    DEBUG(DEBUG_LEVEL_INFO, "SmallAmp : %ld", SmallAmp);
-    DEBUG(DEBUG_LEVEL_INFO, "AvgAmp : %ld", AvgAmp);
-    DEBUG(DEBUG_LEVEL_INFO, "LargerAmp : %ld", LargerAmp);
-    DEBUG(DEBUG_LEVEL_INFO, "LargestAmp : %ld", LargestAmp);
+    AutoCalcuKeyPrices();
 
     long res = pSKQuoteLib->RequestServerTime();
 
@@ -315,7 +325,7 @@ void thread_main()
     auto lastClearTime = std::chrono::steady_clock::now();
 
     AutoQuoteTicks("TSEA", 3);
-    AutoQuoteTicks("TX00", 4);
+    AutoQuoteTicks(COMMODITY_MAIN, 4);
 
     AutoQuoteTicks("2330", 1);
     AutoQuoteTicks("2317", 2);
@@ -361,17 +371,17 @@ void thread_main()
 
                 printf("=========================================\n");
 
-                printf("Long Key 5: %ld\n", CurLow + LargestAmp);
-                printf("Long Key 4: %ld\n", CurLow + LargerAmp);
-                printf("Long Key 3: %ld\n", CurLow + AvgAmp);
-                printf("Long Key 2: %ld\n", CurLow + SmallAmp);
-                printf("Long Key 1: %ld\n", CurLow + SmallestAmp);
+                printf("Long Key 5: %ld\n", CurLow + gDayAmpAndKeyPrice.LargestAmp);
+                printf("Long Key 4: %ld\n", CurLow + gDayAmpAndKeyPrice.LargerAmp);
+                printf("Long Key 3: %ld\n", CurLow + gDayAmpAndKeyPrice.AvgAmp);
+                printf("Long Key 2: %ld\n", CurLow + gDayAmpAndKeyPrice.SmallAmp);
+                printf("Long Key 1: %ld\n", CurLow + gDayAmpAndKeyPrice.SmallestAmp);
                 printf("=========================================\n");
-                printf("Short Key 1: %ld\n", CurHigh - SmallestAmp);
-                printf("Short Key 2: %ld\n", CurHigh - SmallAmp);
-                printf("Short Key 3: %ld\n", CurHigh - AvgAmp);
-                printf("Short Key 4: %ld\n", CurHigh - LargerAmp);
-                printf("Short Key 5: %ld\n", CurHigh - LargestAmp);
+                printf("Short Key 1: %ld\n", CurHigh - gDayAmpAndKeyPrice.SmallestAmp);
+                printf("Short Key 2: %ld\n", CurHigh - gDayAmpAndKeyPrice.SmallAmp);
+                printf("Short Key 3: %ld\n", CurHigh - gDayAmpAndKeyPrice.AvgAmp);
+                printf("Short Key 4: %ld\n", CurHigh - gDayAmpAndKeyPrice.LargerAmp);
+                printf("Short Key 5: %ld\n", CurHigh - gDayAmpAndKeyPrice.LargestAmp);
 
                 printf("\n");
                 printf("CurAmp : %d\n", CurHigh - CurLow);
@@ -379,11 +389,11 @@ void thread_main()
                 printf("=========================================\n");
             }
 
-            printf("SmallestAmp : %ld\n", SmallestAmp);
-            printf("SmallAmp : %ld\n", SmallAmp);
-            printf("AvgAmp : %ld\n", AvgAmp);
-            printf("LargerAmp : %ld\n", LargerAmp);
-            printf("LargestAmp : %ld\n", LargestAmp);
+            printf("SmallestAmp : %ld\n", gDayAmpAndKeyPrice.SmallestAmp);
+            printf("SmallAmp : %ld\n", gDayAmpAndKeyPrice.SmallAmp);
+            printf("AvgAmp : %ld\n", gDayAmpAndKeyPrice.AvgAmp);
+            printf("LargerAmp : %ld\n", gDayAmpAndKeyPrice.LargerAmp);
+            printf("LargestAmp : %ld\n", gDayAmpAndKeyPrice.LargestAmp);
 
             printf("=========================================\n");
 

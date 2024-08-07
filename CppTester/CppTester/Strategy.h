@@ -12,9 +12,30 @@
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 
+struct DAY_AMP_AND_KEY_PRICE
+{
+    long AvgAmp;
+    long LargestAmp;
+    long SmallestAmp;
+    long LargerAmp;
+    long SmallAmp;
+
+    long LongKey1;
+    long LongKey2;
+    long LongKey3;
+    long LongKey4;
+    long LongKey5;
+
+    long ShortKey1;
+    long ShortKey2;
+    long ShortKey3;
+    long ShortKey4;
+    long ShortKey5;
+};
+
+
 VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId);
-void AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);
+VOID AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);
 
 #define MAXIMUM_LOSS 5000
-#define COMMODITY_MAIN "MTX00"
-#define COMMODITY_OTHER "TM0000"
+
