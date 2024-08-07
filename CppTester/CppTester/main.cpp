@@ -438,9 +438,9 @@ void thread_main()
         {
             DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");
 
-            AutoConnect();
-            // release();
-            // exit(0);
+            // AutoConnect();
+            release();
+            exit(0);
         }
     }
 }
