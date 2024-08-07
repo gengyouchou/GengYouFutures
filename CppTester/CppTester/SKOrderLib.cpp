@@ -75,7 +75,7 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
     VariantInit(&varlValue);
     VariantClear(&varlValue);
 
-    DEBUG(DEBUG_LEVEL_INFO, "dispidMember == %d", dispidMember);
+    DEBUG(DEBUG_LEVEL_DEBUG, "dispidMember == %d", dispidMember);
 
     switch (dispidMember)
     {
@@ -603,7 +603,7 @@ void CSKOrderLib::OnOpenInterest(IN BSTR bstrData)
 
     string strMessage = string(_bstr_t(bstrData));
 
-    DEBUG(DEBUG_LEVEL_INFO, "strMessage=%s", strMessage);
+    DEBUG(DEBUG_LEVEL_DEBUG, "strMessage=%s", strMessage);
 
     ParseOpenInterestMessage(strMessage);
 

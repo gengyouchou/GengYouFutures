@@ -64,29 +64,6 @@ void AutoLogIn()
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
-void AutoStopMTX(string strTrigger)
-{
-    DEBUG(DEBUG_LEVEL_INFO, "Started");
-
-    g_nCode = pSKOrderLib->SendFutureStop(g_strUserId,
-                                          false, // bAsyncOrder 是否為非同步委託。
-                                          COMMODITY_MAIN,
-                                          1, // IOC
-                                          1, // sell
-                                          0, // DayTrade
-                                          1, // NewClose
-                                          "P",
-                                          strTrigger,
-                                          1,
-                                          0);
-    // cash here
-    pSKCenterLib->PrintfCodeMessage("AutoStopMTX", "SendFutureStop", g_nCode);
-
-    DEBUG(DEBUG_LEVEL_INFO, "res = %d", g_nCode);
-
-    DEBUG(DEBUG_LEVEL_INFO, "end");
-}
-
 void AutoGetFutureRights()
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
