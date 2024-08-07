@@ -10,6 +10,11 @@
 
 using namespace std;
 
+// 1
+// 市場別
+// 2
+// 帳號
+
 // 3
 //  商品
 // 4
@@ -20,11 +25,6 @@ using namespace std;
 //  當沖未平倉部位
 // 7
 //  平均成本(小數部分已處理)
-
-// [OnEventFiringObjectInvoke] dispidMember == 4
-// [OnOpenInterest] strMessage=TF,F0200006358844,TM08,S,1,0,21236.00,,,F129305651
-// [OnEventFiringObjectInvoke] dispidMember == 4
-// [OnOpenInterest] strMessage=##,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 // 全局变量
 OpenInterestInfo gOpenInterestInfo = {
@@ -615,9 +615,19 @@ void ParseOpenInterestMessage(const std::string &strMessage)
     std::stringstream ss(message);
     std::string item;
 
+    // [OnEventFiringObjectInvoke] dispidMember == 4
+    // [OnOpenInterest] strMessage=TF,F0200006358844,TM08,S,1,0,21236.00,,,F129305651
+    // [OnEventFiringObjectInvoke] dispidMember == 4
+    // [OnOpenInterest] strMessage=##,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
     while (std::getline(ss, item, ','))
     {
         items.push_back(item);
+    }
+
+    if (item.size() > 0 && item[0] == "##")
+    {
+        return;
     }
 
     if (items.size() >= 7)
