@@ -27,7 +27,13 @@ using namespace std;
 // [OnOpenInterest] strMessage=##,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 // 全局变量
-OpenInterestInfo gOpenInterestInfo;
+OpenInterestInfo gOpenInterestInfo = {
+    "", // product 默认为空字符串
+    "", // buySell 默认为空字符串
+    0,  // openPosition 默认为0
+    0,  // dayTradePosition 默认为0
+    0.0 // avgCost 默认为0.0
+};
 
 void ParseOpenInterestMessage(const std::string &strMessage);
 

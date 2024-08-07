@@ -14,4 +14,7 @@
 
 VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId);
 
-extern OpenInterestInfo gOpenInterestInfo;
+extern CSKCenterLib *pSKCenterLib;
+extern CSKQuoteLib *pSKQuoteLib;
+extern CSKReplyLib *pSKReplyLib;
+extern CSKOrderLib *pSKOrderLib;
