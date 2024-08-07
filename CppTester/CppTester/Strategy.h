@@ -13,3 +13,5 @@
 #include <unordered_map>
 
 VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId);
+
+extern OpenInterestInfo gOpenInterestInfo;

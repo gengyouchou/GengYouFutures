@@ -71,6 +71,15 @@ private:
     vector<string> vec_strFullAccount_OF;
 };
 
+struct OpenInterestInfo
+{
+    std::string product;   // 商品
+    std::string buySell;   // 買賣別
+    long openPosition;     // 未平倉部位
+    long dayTradePosition; // 當沖未平倉部位
+    double avgCost;        // 平均成本 (小數部分已處理)
+};
+
 // struct FUTUREORDER
 // {
 //     BSTR bstrFullAccount;
