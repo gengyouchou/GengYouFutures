@@ -5,6 +5,9 @@
 #include <string>
 #include <vector>
 
+#include <iostream>
+#include <sstream>
+
 using namespace std;
 
 // 3
@@ -18,7 +21,24 @@ using namespace std;
 // 7
 //  平均成本(小數部分已處理)
 
-LONG gOpenInterest[5] = {0, 0, 0, 0, 0};
+// [OnEventFiringObjectInvoke] dispidMember == 4
+// [OnOpenInterest] strMessage=TF,F0200006358844,TM08,S,1,0,21236.00,,,F129305651
+// [OnEventFiringObjectInvoke] dispidMember == 4
+// [OnOpenInterest] strMessage=##,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
+struct gOpenInterestInfo
+{
+    std::string product;   // 商品
+    std::string buySell;   // 買賣別
+    long openPosition;     // 未平倉部位
+    long dayTradePosition; // 當沖未平倉部位
+    double avgCost;        // 平均成本 (小數部分已處理)
+};
+
+// 全局变量
+gOpenInterestInfo gOpenInterestInfo;
+
+void ParseOpenInterestMessage(const std::string &strMessage);
 
 CSKOrderLib::CSKOrderLib()
 {
@@ -586,5 +606,39 @@ void CSKOrderLib::OnOpenInterest(IN BSTR bstrData)
 
     DEBUG(DEBUG_LEVEL_INFO, "strMessage=%s", strMessage);
 
+    ParseOpenInterestMessage(strMessage);
+
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
+}
+
+void ParseOpenInterestMessage(const std::string &strMessage)
+{
+    std::string message = strMessage.substr(strMessage.find('=') + 1); // 去掉 [OnOpenInterest] strMessage=
+    std::vector<std::string> items;
+    std::stringstream ss(message);
+    std::string item;
+
+    while (std::getline(ss, item, ','))
+    {
+        items.push_back(item);
+    }
+
+    if (items.size() >= 7)
+    {
+        gOpenInterestInfo.product = items[2];                     // 第3項目 商品
+        gOpenInterestInfo.buySell = items[3];                     // 第4項目 買賣別
+        gOpenInterestInfo.openPosition = std::stol(items[4]);     // 第5項目 未平倉部位
+        gOpenInterestInfo.dayTradePosition = std::stol(items[5]); // 第6項目 當沖未平倉部位
+        gOpenInterestInfo.avgCost = std::stod(items[6]);          // 第7項目 平均成本
+
+        LOG(DEBUG_LEVEL_INFO, "product: %s", gOpenInterestInfo.product);
+        LOG(DEBUG_LEVEL_INFO, "buySell: %s", gOpenInterestInfo.buySell);
+        LOG(DEBUG_LEVEL_INFO, "openPosition: %ld", gOpenInterestInfo.openPosition);
+        LOG(DEBUG_LEVEL_INFO, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
+        LOG(DEBUG_LEVEL_INFO, "avgCost: %f", gOpenInterestInfo.avgCost);
+    }
+    else
+    {
+        std::cerr << "Message does not contain enough items" << std::endl;
+    }
 }
