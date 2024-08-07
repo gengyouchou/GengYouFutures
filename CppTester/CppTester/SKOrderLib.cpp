@@ -357,7 +357,7 @@ long CSKOrderLib::GetOpenInterest(
     string strLogInID,
     long nFormat)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "Start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
     string strFullAccount_TF = "";
 
@@ -374,7 +374,7 @@ long CSKOrderLib::GetOpenInterest(
 
     long m_nCode = m_pSKOrderLib->GetOpenInterestGW(bstrLogInID, bstrAccount, nFormat);
 
-    DEBUG(DEBUG_LEVEL_INFO, "End");
+    DEBUG(DEBUG_LEVEL_DEBUG, "End");
 
     return m_nCode;
 }
