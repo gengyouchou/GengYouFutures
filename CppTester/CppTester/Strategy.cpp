@@ -100,7 +100,7 @@ VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId)
     // AutoOrder won’t place a closing order with the wrong amount
     // else continue to calculate profit and loss and update to global variables
 
-    // if (gOpenInterestInfo.product != "")
+    if (gOpenInterestInfo.product != "")
     {
         LOG(DEBUG_LEVEL_INFO, "product: %s", gOpenInterestInfo.product);
         LOG(DEBUG_LEVEL_INFO, "buySell: %s", gOpenInterestInfo.buySell);
@@ -122,7 +122,7 @@ VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId)
         LOG(DEBUG_LEVEL_INFO, "gCurCommPrice[IdxNo]= %ld, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
             gCurCommPrice[gCommodtyInfo.MTXIdxNo], gOpenInterestInfo.avgCost, profitAndLoss);
 
-        // if (profitAndLoss >= MAXIMUM_LOSS)
+        if (profitAndLoss >= MAXIMUM_LOSS)
         {
 
             vector<string> vec = {COMMODITY_MAIN, COMMODITY_OTHER};
@@ -148,7 +148,7 @@ VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId)
             SKOrderLib->GetOpenInterest(strUserId, 1);
         }
     }
-    // else
+    else
     {
         SKOrderLib->GetOpenInterest(strUserId, 1);
     }
