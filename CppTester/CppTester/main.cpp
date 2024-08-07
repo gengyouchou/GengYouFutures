@@ -21,6 +21,7 @@ extern SHORT gCurServerTime[3];
 extern std::unordered_map<long, long> gCurCommPrice;
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
+extern COMMODITY_INFO gCommodtyInfo;
 
 // Define the global logger instance
 Logger logger("debug.log");
@@ -68,7 +69,7 @@ void AutoStopMTX(string strTrigger)
 
     g_nCode = pSKOrderLib->SendFutureStop(g_strUserId,
                                           false, // bAsyncOrder 是否為非同步委託。
-                                          "MTX00",
+                                          COMMODITY_MAIN,
                                           1, // IOC
                                           1, // sell
                                           0, // DayTrade
@@ -307,45 +308,14 @@ void thread_main()
     res = pSKQuoteLib->GetMarketBuySellUpDown();
     DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
 
-    SKCOMLib::SKSTOCKLONG skStock;
-
-    res = pSKQuoteLib->RequestStockIndexMap("TX00", &skStock);
-
-    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
-
-    long MTXIdxNo = skStock.nStockIdx;
-
-    res = pSKQuoteLib->RequestStockIndexMap("2330", &skStock);
-
-    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
-
-    long TSMCIdxNo = skStock.nStockIdx;
-
-    res = pSKQuoteLib->RequestStockIndexMap("2317", &skStock);
-
-    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
-
-    long HHIdxNo = skStock.nStockIdx;
-
-    res = pSKQuoteLib->RequestStockIndexMap("TSEA", &skStock);
-
-    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
-
-    long TSEAIdxNo = skStock.nStockIdx;
-
-    // res = pSKQuoteLib->RequestStockIndexMap("2454", &skStock);
-
-    // DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestStockIndexMap()=%d", res);
+    pSKQuoteLib->GetCommodityIdx();
 
     // 设置定期清屏的时间间隔（以毫秒为单位）
     const int refreshInterval = 1000; // 1000毫秒
     auto lastClearTime = std::chrono::steady_clock::now();
 
-    // if (AutoQuote("TSEA,TX00", 2) != 0)
-    // {
     AutoQuoteTicks("TSEA", 3);
     AutoQuoteTicks("TX00", 4);
-    // }
 
     AutoQuoteTicks("2330", 1);
     AutoQuoteTicks("2317", 2);
@@ -373,19 +343,19 @@ void thread_main()
             // 更新最后清屏时间
             lastClearTime = now;
 
-            printf("CurMtxPrice: %ld    ", gCurCommPrice[MTXIdxNo]);
+            printf("CurMtxPrice: %ld    ", gCurCommPrice[gCommodtyInfo.MTXIdxNo]);
             printf("ServerTime: %d: %d: %d\n", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
             printf("Time: %ld: TSEA prices: %ld Valume: %ld: Buy: %ld Sell: %ld\n",
-                   gCurTaiexInfo[0][0], gCurCommPrice[TSEAIdxNo], gCurTaiexInfo[0][1], gCurTaiexInfo[0][2], gCurTaiexInfo[0][3]);
+                   gCurTaiexInfo[0][0], gCurCommPrice[gCommodtyInfo.TSEAIdxNo], gCurTaiexInfo[0][1], gCurTaiexInfo[0][2], gCurTaiexInfo[0][3]);
 
             printf("=========================================\n");
 
-            if (gCurCommHighLowPoint.count(MTXIdxNo) > 0)
+            if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) > 0)
             {
-                long CurHigh = gCurCommHighLowPoint[MTXIdxNo][0] / 100;
-                long CurLow = gCurCommHighLowPoint[MTXIdxNo][1] / 100;
+                long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0] / 100;
+                long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1] / 100;
 
-                DEBUG(DEBUG_LEVEL_DEBUG, "MTXIdxNo: %ld. High: %ld, Low: %ld", MTXIdxNo, CurHigh, CurLow);
+                DEBUG(DEBUG_LEVEL_DEBUG, "MTXIdxNo: %ld. High: %ld, Low: %ld", gCommodtyInfo.MTXIdxNo, CurHigh, CurLow);
 
                 printf("CurHigh: %ld, CurLow: %ld\n\n", CurHigh, CurLow);
 
@@ -417,18 +387,18 @@ void thread_main()
 
             printf("=========================================\n");
 
-            if (gCurCommHighLowPoint.count(TSMCIdxNo) > 0)
+            if (gCurCommHighLowPoint.count(gCommodtyInfo.TSMCIdxNo) > 0)
             {
-                long CurHigh = gCurCommHighLowPoint[TSMCIdxNo][0] / 100;
-                long CurLow = gCurCommHighLowPoint[TSMCIdxNo][1] / 100;
+                long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.TSMCIdxNo][0] / 100;
+                long CurLow = gCurCommHighLowPoint[gCommodtyInfo.TSMCIdxNo][1] / 100;
 
-                DEBUG(DEBUG_LEVEL_DEBUG, "TSMCIdxNo: %ld. High: %ld, Low: %ld", TSMCIdxNo, CurHigh, CurLow);
+                DEBUG(DEBUG_LEVEL_DEBUG, "TSMCIdxNo: %ld. High: %ld, Low: %ld", gCommodtyInfo.TSMCIdxNo, CurHigh, CurLow);
 
                 printf("TSMCIdxNo : CurHigh: %ld, CurLow: %ld\n\n", CurHigh, CurLow);
             }
 
-            AutoBest5Long(TSMCIdxNo, "TSMC");
-            AutoBest5Long(HHIdxNo, "HHP");
+            AutoBest5Long(gCommodtyInfo.TSMCIdxNo, "TSMC");
+            AutoBest5Long(gCommodtyInfo.HHIdxNo, "HHP");
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 短暂休眠，避免过度占用 CPU

@@ -5,6 +5,14 @@
 
 #define DayMA 20
 
+struct COMMODITY_INFO
+{
+    long MTXIdxNo;
+    long TSMCIdxNo;
+    long HHIdxNo;
+    long TSEAIdxNo;
+};
+
 class CSKQuoteLib
 {
 public:
@@ -26,6 +34,7 @@ public:
     long RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKSTOCKLONG *pSKStock);
     long GetMarketBuySellUpDown(VOID);
     void ProcessDaysOrNightCommHighLowPoint();
+    VOID GetCommodityIdx(VOID);
 
     // Events
     void OnConnection(long nKind, long nCode);
@@ -69,3 +78,5 @@ private:
     SKCOMLib::ISKQuoteLibPtr m_pSKQuoteLib;
     ISKQuoteLibEventHandler *m_pSKQuoteLibEventHandler;
 };
+
+VOID GetCommodityIdx(VOID);

@@ -22,6 +22,8 @@ std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 
 SHORT gCurServerTime[3] = {-1, -1, -1};
 
+COMMODITY_INFO gCommodtyInfo = {0, 0, 0, 0};
+
 long CalculateDiff(const std::string &data);
 void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate, IN long lTimehms);
 void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate);
@@ -401,6 +403,40 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
             }
         }
     }
+}
+
+VOID CSKQuoteLib::GetCommodityIdx(VOID)
+{
+    SKCOMLib::SKSTOCKLONG skStock;
+
+    long res = RequestStockIndexMap("TX00", &skStock);
+
+    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d", res);
+
+    long MTXIdxNo = skStock.nStockIdx;
+
+    res = RequestStockIndexMap("2330", &skStock);
+
+    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d", res);
+
+    long TSMCIdxNo = skStock.nStockIdx;
+
+    res = RequestStockIndexMap("2317", &skStock);
+
+    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d", res);
+
+    long HHIdxNo = skStock.nStockIdx;
+
+    res = RequestStockIndexMap("TSEA", &skStock);
+
+    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d", res);
+
+    long TSEAIdxNo = skStock.nStockIdx;
+
+    gCommodtyInfo.HHIdxNo = HHIdxNo;
+    gCommodtyInfo.MTXIdxNo = MTXIdxNo;
+    gCommodtyInfo.TSEAIdxNo = TSEAIdxNo;
+    gCommodtyInfo.TSMCIdxNo = TSMCIdxNo;
 }
 
 // Events
