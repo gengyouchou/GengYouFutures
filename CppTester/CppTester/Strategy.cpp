@@ -35,8 +35,6 @@ extern OpenInterestInfo gOpenInterestInfo;
 
 extern string g_strUserId;
 
-double gMaximumLoss = 5000;
-
 /**
  * @brief
  *
@@ -130,22 +128,27 @@ VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId)
         LOG(DEBUG_LEVEL_INFO, "gCurCommPrice[IdxNo]= %ld, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
             gCurCommPrice[IdxNo], gOpenInterestInfo.avgCost, profitAndLoss);
 
-        if (profitAndLoss >= gMaximumLoss)
+        if (profitAndLoss >= MAXIMUM_LOSS)
         {
 
-            if (gOpenInterestInfo.buySell == "S")
+            vector<string> vec = {COMMODITY_MAIN, COMMODITY_OTHER};
+
+            for (auto &x : vec)
             {
-                AutoOrder(gOpenInterestInfo.product,
-                          1, // Close
-                          0  // Buy
-                );
-            }
-            else
-            {
-                AutoOrder(gOpenInterestInfo.product,
-                          1, // Close
-                          1  // Sell
-                );
+                if (gOpenInterestInfo.buySell == "S")
+                {
+                    AutoOrder(x,
+                              1, // Close
+                              0  // Buy
+                    );
+                }
+                else
+                {
+                    AutoOrder(x,
+                              1, // Close
+                              1  // Sell
+                    );
+                }
             }
 
             SKOrderLib->GetOpenInterest(strUserId, 1);

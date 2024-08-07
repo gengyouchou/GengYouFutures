@@ -246,7 +246,6 @@ void release()
 // Estimated trading volume
 // need VIX index
 // current time (done)
-// Estimated trading volume
 // Instant profit and loss
 // Add open position query.
 // Add stop loss and profit stop mechanism

@@ -14,3 +14,7 @@
 
 VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId);
 void AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);
+
+#define MAXIMUM_LOSS 5000
+#define COMMODITY_MAIN "MTX00"
+#define COMMODITY_OTHER "TM0000"
