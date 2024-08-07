@@ -147,6 +147,8 @@ VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId)
                           1  // Sell
                 );
             }
+
+            SKOrderLib->GetOpenInterest(strUserId, 1);
         }
     }
     else
