@@ -118,9 +118,24 @@ void AutoKLineData(IN string ProductNum)
 
 void AutoBest5Long(LONG ProductIdxNo, string ProductName)
 {
+    long curPrice = 0;
+
+    if (gCurCommHighLowPoint.count(gCommodtyInfo.TSMCIdxNo) > 0)
+    {
+        long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.TSMCIdxNo][0] / 100;
+        long CurLow = gCurCommHighLowPoint[gCommodtyInfo.TSMCIdxNo][1] / 100;
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "IdxNo: %ld. High: %ld, Low: %ld", gCommodtyInfo.TSMCIdxNo, CurHigh, CurLow);
+
+        curPrice = gCurCommPrice[ProductIdxNo];
+
+        printf("%s : %ld, ", ProductName.c_str(), curPrice);
+
+        printf("CurHigh: %ld, CurLow: %ld\n", CurHigh, CurLow);
+    }
+
     if (gBest5BidOffer[ProductIdxNo].size() >= 10)
     {
-        long curPrice = gCurCommPrice[ProductIdxNo];
 
         long TotalBid = gBest5BidOffer[ProductIdxNo][0].second +
                         gBest5BidOffer[ProductIdxNo][1].second +
@@ -177,7 +192,6 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
             Bid5Deal = "*";
         }
 
-        printf("%s : %ld\n\n", ProductName.c_str(), curPrice);
         printf("Total Offer: [%ld]\n", TotalOffer);
 
         printf("Ask5: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][9].first, gBest5BidOffer[ProductIdxNo][9].second, Offer5Deal.c_str());
@@ -331,7 +345,7 @@ void thread_main()
             lastClearTime = now;
 
             printf("CurMtxPrice: %ld    ", gCurCommPrice[gCommodtyInfo.MTXIdxNo]);
-            printf("ServerTime: %d: %d: %d\n", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+            printf("ServerTime: %d: %d: %d  ", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
             printf("Time: %ld: TSEA prices: %ld Valume: %ld: Buy: %ld Sell: %ld\n",
                    gCurTaiexInfo[0][0], gCurCommPrice[gCommodtyInfo.TSEAIdxNo], gCurTaiexInfo[0][1], gCurTaiexInfo[0][2], gCurTaiexInfo[0][3]);
 
@@ -366,23 +380,13 @@ void thread_main()
                 printf("=========================================\n");
             }
 
-            printf("SmallestAmp : %ld\n", gDayAmpAndKeyPrice.SmallestAmp);
-            printf("SmallAmp : %ld\n", gDayAmpAndKeyPrice.SmallAmp);
-            printf("AvgAmp : %ld\n", gDayAmpAndKeyPrice.AvgAmp);
-            printf("LargerAmp : %ld\n", gDayAmpAndKeyPrice.LargerAmp);
+            printf("SmallestAmp : %ld, ", gDayAmpAndKeyPrice.SmallestAmp);
+            printf("SmallAmp : %ld, ", gDayAmpAndKeyPrice.SmallAmp);
+            printf("AvgAmp : %ld, ", gDayAmpAndKeyPrice.AvgAmp);
+            printf("LargerAmp : %ld, ", gDayAmpAndKeyPrice.LargerAmp);
             printf("LargestAmp : %ld\n", gDayAmpAndKeyPrice.LargestAmp);
 
             printf("=========================================\n");
-
-            if (gCurCommHighLowPoint.count(gCommodtyInfo.TSMCIdxNo) > 0)
-            {
-                long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.TSMCIdxNo][0] / 100;
-                long CurLow = gCurCommHighLowPoint[gCommodtyInfo.TSMCIdxNo][1] / 100;
-
-                DEBUG(DEBUG_LEVEL_DEBUG, "TSMCIdxNo: %ld. High: %ld, Low: %ld", gCommodtyInfo.TSMCIdxNo, CurHigh, CurLow);
-
-                printf("TSMCIdxNo : CurHigh: %ld, CurLow: %ld\n\n", CurHigh, CurLow);
-            }
 
             AutoBest5Long(gCommodtyInfo.TSMCIdxNo, "TSMC");
             AutoBest5Long(gCommodtyInfo.HHIdxNo, "HHP");
