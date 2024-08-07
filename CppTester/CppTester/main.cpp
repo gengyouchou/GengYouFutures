@@ -31,7 +31,7 @@ CSKReplyLib *pSKReplyLib;
 CSKOrderLib *pSKOrderLib;
 
 long g_nCode = 0;
-string g_strUserId;
+extern string g_strUserId;
 
 void AutoConnect()
 {
@@ -83,87 +83,6 @@ void AutoStopMTX(string strTrigger)
     DEBUG(DEBUG_LEVEL_INFO, "res = %d", g_nCode);
 
     DEBUG(DEBUG_LEVEL_INFO, "end");
-}
-
-/**
- * @brief
- *
- *  struct FUTUREORDER
- * {
- *  BSTR bstrFullAccount; // 期貨帳號，分公司代碼＋帳號7碼
- *  BSTR bstrStockNo;     // 委託期權代號
- *  SHORT sTradeType;     // 0:ROD  1:IOC  2:FOK
- *  SHORT sBuySell;       // 0:買進 1:賣出
- *  SHORT sDayTrade;      // 當沖0:否 1:是，可當沖商品請參考交易所規定。
- *  SHORT sNewClose;      // 新平倉，0:新倉 1:平倉 2:自動{新期貨、選擇權使用}
- *  BSTR bstrPrice;       // 委託價格(IOC and FOK，可用「M」表示市價，「P」表示範圍市價)　　　　　　　　　　　　
- *  LONG nQty;            // 交易口數
- *  SHORT sReserved;      //{期貨委託SendFutureOrderCLR適用}盤別，0:盤中(T盤及T+1盤)；1:T盤預約
- * };
- * long CSKOrderLib::SendFutureOrder(
- * string strLogInID,
- * bool bAsyncOrder,
- * string strStockNo,
- * short sTradeType,
- * short sBuySell,
- * short sDayTrade,
- * short sNewClose,
- * string strPrice,
- * long nQty,
- * short sReserved)
- * @param[in]
- * @param[in]
- * @return
- * @exception
- */
-
-void AutoOrderMTX(IN SHORT NewClose)
-{
-    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
-
-    g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
-                                           false, // bAsyncOrder 是否為非同步委託。
-                                           "TM0000",
-                                           1,        // IOC
-                                           1,        // sell
-                                           0,        // DayTrade
-                                           NewClose, // NewClose ////新平倉，0:新倉 1:平倉 2:自動{新期貨、選擇權使用}
-                                           "P",
-                                           1,
-                                           0);
-    pSKCenterLib->PrintfCodeMessage("AutoOrderMTX", "SendFutureOrder", g_nCode);
-
-    g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
-                                           false,
-                                           "MTX00",
-                                           1,        // IOC
-                                           1,        // sell
-                                           0,        // DayTrade
-                                           NewClose, // NewClose
-                                           "P",
-                                           1,
-                                           0);
-    pSKCenterLib->PrintfCodeMessage("AutoOrderMTX", "SendFutureOrder", g_nCode);
-
-    DEBUG(DEBUG_LEVEL_DEBUG, "SendFutureOrder res = %d", g_nCode);
-
-    g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
-                                           false,
-                                           "MTX00",
-                                           1,        // IOC
-                                           0,        // buy
-                                           0,        // DayTrade
-                                           NewClose, // NewClose
-                                           "P",
-                                           1,
-                                           0);
-
-    pSKCenterLib->PrintfCodeMessage("AutoOrderMTX", "SendFutureOrder", g_nCode);
-
-    DEBUG(DEBUG_LEVEL_DEBUG, "SendFutureOrder res = %d", g_nCode);
-    LOG(DEBUG_LEVEL_INFO, "SendFutureOrder res = %d", g_nCode);
-
-    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
 void AutoGetFutureRights()

@@ -13,8 +13,4 @@
 #include <unordered_map>
 
 VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId);
-
-extern CSKCenterLib *pSKCenterLib;
-extern CSKQuoteLib *pSKQuoteLib;
-extern CSKReplyLib *pSKReplyLib;
-extern CSKOrderLib *pSKOrderLib;
+void AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);

@@ -35,6 +35,8 @@ OpenInterestInfo gOpenInterestInfo = {
     0.0 // avgCost 默认为0.0
 };
 
+string g_strUserId = "";
+
 void ParseOpenInterestMessage(const std::string &strMessage);
 
 CSKOrderLib::CSKOrderLib()
@@ -625,7 +627,9 @@ void ParseOpenInterestMessage(const std::string &strMessage)
         items.push_back(item);
     }
 
-    if (item.size() > 0 && item[0] == "##")
+    std::string UnKnowMarket = "##";
+
+    if (!items.empty() && items[0] == UnKnowMarket)
     {
         return;
     }
