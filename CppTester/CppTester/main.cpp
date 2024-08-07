@@ -120,16 +120,16 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
 {
     long curPrice = 0;
 
-    if (gCurCommHighLowPoint.count(gCommodtyInfo.TSMCIdxNo) > 0)
+    if (gCurCommHighLowPoint.count(ProductIdxNo) > 0)
     {
-        long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.TSMCIdxNo][0] / 100;
-        long CurLow = gCurCommHighLowPoint[gCommodtyInfo.TSMCIdxNo][1] / 100;
+        long CurHigh = gCurCommHighLowPoint[ProductIdxNo][0] / 100;
+        long CurLow = gCurCommHighLowPoint[ProductIdxNo][1] / 100;
 
-        DEBUG(DEBUG_LEVEL_DEBUG, "IdxNo: %ld. High: %ld, Low: %ld", gCommodtyInfo.TSMCIdxNo, CurHigh, CurLow);
+        DEBUG(DEBUG_LEVEL_DEBUG, "IdxNo: %ld. High: %ld, Low: %ld", ProductIdxNo, CurHigh, CurLow);
 
-        curPrice = gCurCommPrice[ProductIdxNo];
+        curPrice = gCurCommPrice[ProductIdxNo] * 100;
 
-        printf("%s : %ld, ", ProductName.c_str(), curPrice);
+        printf("%s : %ld, ", ProductName.c_str(), gCurCommPrice[ProductIdxNo]);
 
         printf("CurHigh: %ld, CurLow: %ld\n", CurHigh, CurLow);
     }
