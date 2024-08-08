@@ -104,11 +104,11 @@ void AutoCalcuKeyPrices()
         gDayAmpAndKeyPrice.LongKey2 = CurLow + gDayAmpAndKeyPrice.SmallAmp;
         gDayAmpAndKeyPrice.LongKey1 = CurLow + gDayAmpAndKeyPrice.SmallestAmp;
 
-        gDayAmpAndKeyPrice.ShortKey1 = CurHigh + gDayAmpAndKeyPrice.LargestAmp;
-        gDayAmpAndKeyPrice.ShortKey2 = CurHigh + gDayAmpAndKeyPrice.LargerAmp;
-        gDayAmpAndKeyPrice.ShortKey3 = CurHigh + gDayAmpAndKeyPrice.AvgAmp;
-        gDayAmpAndKeyPrice.ShortKey4 = CurHigh + gDayAmpAndKeyPrice.SmallAmp;
-        gDayAmpAndKeyPrice.ShortKey5 = CurHigh + gDayAmpAndKeyPrice.SmallestAmp;
+        gDayAmpAndKeyPrice.ShortKey5 = CurHigh - gDayAmpAndKeyPrice.LargestAmp;
+        gDayAmpAndKeyPrice.ShortKey4 = CurHigh - gDayAmpAndKeyPrice.LargerAmp;
+        gDayAmpAndKeyPrice.ShortKey3 = CurHigh - gDayAmpAndKeyPrice.AvgAmp;
+        gDayAmpAndKeyPrice.ShortKey2 = CurHigh - gDayAmpAndKeyPrice.SmallAmp;
+        gDayAmpAndKeyPrice.ShortKey1 = CurHigh - gDayAmpAndKeyPrice.SmallestAmp;
     }
 }
 
