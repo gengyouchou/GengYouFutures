@@ -101,6 +101,16 @@ VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId)
     // if over loss then do GetOpenInterest again in order to make sure
     // AutoOrder wont place a closing order with the wrong amount
     // else continue to calculate profit and loss and update to global variables
+    double profitAndLoss = 0;
+    double curPrice = 0;
+
+    if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
+    {
+        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100;
+    }
+
+    LOG(DEBUG_LEVEL_INFO, "curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
+        curPrice, gOpenInterestInfo.avgCost, profitAndLoss);
 
     if (gOpenInterestInfo.product != "")
     {
@@ -109,10 +119,6 @@ VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId)
         LOG(DEBUG_LEVEL_INFO, "openPosition: %ld", gOpenInterestInfo.openPosition);
         LOG(DEBUG_LEVEL_INFO, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
         LOG(DEBUG_LEVEL_INFO, "avgCost: %f", gOpenInterestInfo.avgCost);
-
-        double profitAndLoss = 0;
-
-        double curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]);
 
         if (gOpenInterestInfo.buySell == "S")
         {
@@ -124,7 +130,7 @@ VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId)
         }
 
         LOG(DEBUG_LEVEL_INFO, "gCurCommPrice[IdxNo]= %ld, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
-            gCurCommPrice[gCommodtyInfo.MTXIdxNo], gOpenInterestInfo.avgCost, profitAndLoss);
+            curPrice, gOpenInterestInfo.avgCost, profitAndLoss);
 
         if (profitAndLoss >= MAXIMUM_LOSS)
         {

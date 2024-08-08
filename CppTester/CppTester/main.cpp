@@ -127,7 +127,7 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
 
         DEBUG(DEBUG_LEVEL_DEBUG, "IdxNo: %ld. High: %ld, Low: %ld", ProductIdxNo, CurHigh, CurLow);
 
-        curPrice = gCurCommPrice[ProductIdxNo] * 100;
+        curPrice = gCurCommPrice[ProductIdxNo];
 
         printf("%s : %ld, ", ProductName.c_str(), gCurCommPrice[ProductIdxNo]);
 
