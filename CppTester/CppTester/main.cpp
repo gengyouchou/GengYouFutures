@@ -265,11 +265,16 @@ void thread_main()
 
     AutoCalcuKeyPrices();
 
-    AutoQuoteTicks("TSEA", 3);
-    AutoQuote(COMMODITY_MAIN, 4);
+    std::string CommList;
 
-    AutoQuoteTicks("2330", 1);
-    AutoQuoteTicks("2317", 2);
+    std::ostringstream oss;
+    oss << COMMODITY_MAIN << "," << "TSEA";
+    CommList = oss.str();
+
+    AutoQuote(CommList, 1);
+
+    AutoQuoteTicks("2330", 2);
+    AutoQuoteTicks("2317", 3);
 
     while (true)
     {
