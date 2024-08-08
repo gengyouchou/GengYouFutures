@@ -109,10 +109,7 @@ VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId)
         curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100;
     }
 
-    LOG(DEBUG_LEVEL_INFO, "curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
-        curPrice, gOpenInterestInfo.avgCost, profitAndLoss);
-
-    if (gOpenInterestInfo.product != "")
+    if (gOpenInterestInfo.product != "" && gOpenInterestInfo.avgCost != 0 && curPrice > 0)
     {
         LOG(DEBUG_LEVEL_INFO, "product: %s", gOpenInterestInfo.product);
         LOG(DEBUG_LEVEL_INFO, "buySell: %s", gOpenInterestInfo.buySell);
@@ -129,7 +126,7 @@ VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId)
             profitAndLoss = curPrice - gOpenInterestInfo.avgCost;
         }
 
-        LOG(DEBUG_LEVEL_INFO, "gCurCommPrice[IdxNo]= %ld, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
+        LOG(DEBUG_LEVEL_INFO, "curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
             curPrice, gOpenInterestInfo.avgCost, profitAndLoss);
 
         if (profitAndLoss >= MAXIMUM_LOSS)
