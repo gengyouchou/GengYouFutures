@@ -13,19 +13,19 @@ namespace WindowsFormsApp1
 {
     public partial class ReplyForm : Form
     {
-        // 關閉標誌，關閉From後，不讓事件將訊息傳遞至控件上
+        // ，From，
         bool isClosing = false;
-        // 宣告物件
-        SKCenterLib m_pSKCenter = new SKCenterLib(); // 登入&環境設定物件
-        SKReplyLib m_pSKReply = new SKReplyLib(); // 回報物件
-        SKOrderLib m_pSKOrder = new SKOrderLib(); //下單物件
-        // 存[UserID]對應 交易帳號
+        // 
+        SKCenterLib m_pSKCenter = new SKCenterLib(); // &
+        SKReplyLib m_pSKReply = new SKReplyLib(); // 
+        SKOrderLib m_pSKOrder = new SKOrderLib(); //
+        // [UserID] 
         Dictionary<string, List<string>> m_dictUserID = new Dictionary<string, List<string>>();
         List<string> allkeys; // UserID
         static void AddUserID(Dictionary<string, List<string>> dictUserID, string UserID, string AccountData)
         {
             string[] values = AccountData.Split(',');
-            string Account = values[1] + values[3]; // broker ID (IB)4碼 + 帳號7碼
+            string Account = values[1] + values[3]; // broker ID (IB)4 + 7
             if (dictUserID.ContainsKey(UserID))
             {
                 dictUserID[UserID].Add(Account);
@@ -42,1360 +42,1360 @@ namespace WindowsFormsApp1
                 InitializeComponent();
                 //dataGridView
                 {
-                    // 一般回報
+                    // 
                     {
                         //dataGridViewTS
                         {
-                            dataGridViewTS.Columns.Add("Column1", "原始13碼委託序號");
-                            dataGridViewTS.Columns.Add("Column2", "種類(N:委託 C:取消 U:改量 P:改價D:成交 B:改價改量S:動態退單)");
-                            dataGridViewTS.Columns.Add("Column3", "OrderErr(Y:失敗 T:逾時 N:正常)");
-                            dataGridViewTS.Columns.Add("Column4", "Broker(TS,TA,TL,TP: 分公司代號 unit noTF,TO: IB 代號 broker id)");
-                            dataGridViewTS.Columns.Add("Column5", "交易帳號");
-                            dataGridViewTS.Columns.Add("Column6", "證逐筆");
-                            dataGridViewTS.Columns.Add("Column7", "商品代碼");
-                            dataGridViewTS.Columns.Add("Column8", "委託書號");
-                            dataGridViewTS.Columns.Add("Column9", "價格(N:「委託」為委託價；D:「成交」為成交價)");
-                            dataGridViewTS.Columns.Add("Column10", "股數/口數");
+                            dataGridViewTS.Columns.Add("Column1", "13");
+                            dataGridViewTS.Columns.Add("Column2", "(N: C: U: P:D: B:S:)");
+                            dataGridViewTS.Columns.Add("Column3", "OrderErr(Y: T: N:)");
+                            dataGridViewTS.Columns.Add("Column4", "Broker(TS,TA,TL,TP:  unit noTF,TO: IB  broker id)");
+                            dataGridViewTS.Columns.Add("Column5", "");
+                            dataGridViewTS.Columns.Add("Column6", "");
+                            dataGridViewTS.Columns.Add("Column7", "");
+                            dataGridViewTS.Columns.Add("Column8", "");
+                            dataGridViewTS.Columns.Add("Column9", "(N:「」；D:「」)");
+                            dataGridViewTS.Columns.Add("Column10", "/");
 
-                            dataGridViewTS.Columns.Add("Column11", "異動前量");
-                            dataGridViewTS.Columns.Add("Column12", "異動後量");
-                            dataGridViewTS.Columns.Add("Column13", "交易日");
-                            dataGridViewTS.Columns.Add("Column14", "交易時間");
-                            dataGridViewTS.Columns.Add("Column15", "子帳帳號");
-                            dataGridViewTS.Columns.Add("Column16", "營業員編號");
-                            dataGridViewTS.Columns.Add("Column17", "委託介面");
-                            dataGridViewTS.Columns.Add("Column18", "回報流水號");
-                            dataGridViewTS.Columns.Add("Column19", "成交序號");
-                            dataGridViewTS.Columns.Add("Column20", "有效委託日");
+                            dataGridViewTS.Columns.Add("Column11", "");
+                            dataGridViewTS.Columns.Add("Column12", "");
+                            dataGridViewTS.Columns.Add("Column13", "");
+                            dataGridViewTS.Columns.Add("Column14", "");
+                            dataGridViewTS.Columns.Add("Column15", "");
+                            dataGridViewTS.Columns.Add("Column16", "");
+                            dataGridViewTS.Columns.Add("Column17", "");
+                            dataGridViewTS.Columns.Add("Column18", "");
+                            dataGridViewTS.Columns.Add("Column19", "");
+                            dataGridViewTS.Columns.Add("Column20", "");
 
-                            dataGridViewTS.Columns.Add("Column21", "委託單錯誤訊息");
-                            dataGridViewTS.Columns.Add("Column22", "交易所動態退單代碼(E:交易所動態退單)");
-                            dataGridViewTS.Columns.Add("Column23", "交易所或後台退單訊息([00]:2碼數字,交易所回應代碼及訊息;[000]:3碼數字,交易後台代碼及訊息;[D]委託成功後,由交易所主動退單及退單原因)");
-                            dataGridViewTS.Columns.Add("Column24", "13碼序號(成交單含IOC/FOK產生取消單)");
+                            dataGridViewTS.Columns.Add("Column21", "");
+                            dataGridViewTS.Columns.Add("Column22", "(E:)");
+                            dataGridViewTS.Columns.Add("Column23", "([00]:2,;[000]:3,;[D],)");
+                            dataGridViewTS.Columns.Add("Column24", "13(IOC/FOK)");
                         }
                         //dataGridViewTA
                         {
-                            dataGridViewTA.Columns.Add("Column1", "原始13碼委託序號");
-                            dataGridViewTA.Columns.Add("Column2", "種類(N:委託 C:取消 U:改量 P:改價D:成交 B:改價改量S:動態退單)");
-                            dataGridViewTA.Columns.Add("Column3", "OrderErr(Y:失敗 T:逾時 N:正常)");
-                            dataGridViewTA.Columns.Add("Column4", "Broker(TS,TA,TL,TP: 分公司代號 unit noTF,TO: IB 代號 broker id)");
-                            dataGridViewTA.Columns.Add("Column5", "交易帳號");
-                            dataGridViewTA.Columns.Add("Column6", "證逐筆");
-                            dataGridViewTA.Columns.Add("Column7", "商品代碼");
-                            dataGridViewTA.Columns.Add("Column8", "委託書號");
-                            dataGridViewTA.Columns.Add("Column9", "價格(N:「委託」為委託價；D:「成交」為成交價)");
-                            dataGridViewTA.Columns.Add("Column10", "股數/口數");
+                            dataGridViewTA.Columns.Add("Column1", "13");
+                            dataGridViewTA.Columns.Add("Column2", "(N: C: U: P:D: B:S:)");
+                            dataGridViewTA.Columns.Add("Column3", "OrderErr(Y: T: N:)");
+                            dataGridViewTA.Columns.Add("Column4", "Broker(TS,TA,TL,TP:  unit noTF,TO: IB  broker id)");
+                            dataGridViewTA.Columns.Add("Column5", "");
+                            dataGridViewTA.Columns.Add("Column6", "");
+                            dataGridViewTA.Columns.Add("Column7", "");
+                            dataGridViewTA.Columns.Add("Column8", "");
+                            dataGridViewTA.Columns.Add("Column9", "(N:「」；D:「」)");
+                            dataGridViewTA.Columns.Add("Column10", "/");
 
-                            dataGridViewTA.Columns.Add("Column11", "交易日");
-                            dataGridViewTA.Columns.Add("Column12", "交易時間");
-                            dataGridViewTA.Columns.Add("Column13", "子帳帳號");
-                            dataGridViewTA.Columns.Add("Column14", "營業員編號");
-                            dataGridViewTA.Columns.Add("Column15", "委託介面");
-                            dataGridViewTA.Columns.Add("Column16", "回報流水號");
-                            dataGridViewTA.Columns.Add("Column17", "成交序號");
-                            dataGridViewTA.Columns.Add("Column18", "有效委託日");
-                            dataGridViewTA.Columns.Add("Column19", "委託單錯誤訊息");
-                            dataGridViewTA.Columns.Add("Column20", "交易所動態退單代碼(E:交易所動態退單)");
+                            dataGridViewTA.Columns.Add("Column11", "");
+                            dataGridViewTA.Columns.Add("Column12", "");
+                            dataGridViewTA.Columns.Add("Column13", "");
+                            dataGridViewTA.Columns.Add("Column14", "");
+                            dataGridViewTA.Columns.Add("Column15", "");
+                            dataGridViewTA.Columns.Add("Column16", "");
+                            dataGridViewTA.Columns.Add("Column17", "");
+                            dataGridViewTA.Columns.Add("Column18", "");
+                            dataGridViewTA.Columns.Add("Column19", "");
+                            dataGridViewTA.Columns.Add("Column20", "(E:)");
 
-                            dataGridViewTA.Columns.Add("Column21", "交易所或後台退單訊息([00]:2碼數字,交易所回應代碼及訊息;[000]:3碼數字,交易後台代碼及訊息;[D]委託成功後,由交易所主動退單及退單原因)");
-                            dataGridViewTA.Columns.Add("Column22", "13碼序號(成交單含IOC/FOK產生取消單)");
+                            dataGridViewTA.Columns.Add("Column21", "([00]:2,;[000]:3,;[D],)");
+                            dataGridViewTA.Columns.Add("Column22", "13(IOC/FOK)");
                         }
                         //dataGridViewTL
                         {
-                            dataGridViewTL.Columns.Add("Column1", "原始13碼委託序號");
-                            dataGridViewTL.Columns.Add("Column2", "種類(N:委託 C:取消 U:改量 P:改價D:成交 B:改價改量S:動態退單)");
-                            dataGridViewTL.Columns.Add("Column3", "OrderErr(Y:失敗 T:逾時 N:正常)");
-                            dataGridViewTL.Columns.Add("Column4", "Broker(TS,TA,TL,TP: 分公司代號 unit noTF,TO: IB 代號 broker id)");
-                            dataGridViewTL.Columns.Add("Column5", "交易帳號");
-                            dataGridViewTL.Columns.Add("Column6", "證逐筆");
-                            dataGridViewTL.Columns.Add("Column7", "商品代碼");
-                            dataGridViewTL.Columns.Add("Column8", "委託書號");
-                            dataGridViewTL.Columns.Add("Column9", "價格(N:「委託」為委託價；D:「成交」為成交價)");
-                            dataGridViewTL.Columns.Add("Column10", "股數/口數");
+                            dataGridViewTL.Columns.Add("Column1", "13");
+                            dataGridViewTL.Columns.Add("Column2", "(N: C: U: P:D: B:S:)");
+                            dataGridViewTL.Columns.Add("Column3", "OrderErr(Y: T: N:)");
+                            dataGridViewTL.Columns.Add("Column4", "Broker(TS,TA,TL,TP:  unit noTF,TO: IB  broker id)");
+                            dataGridViewTL.Columns.Add("Column5", "");
+                            dataGridViewTL.Columns.Add("Column6", "");
+                            dataGridViewTL.Columns.Add("Column7", "");
+                            dataGridViewTL.Columns.Add("Column8", "");
+                            dataGridViewTL.Columns.Add("Column9", "(N:「」；D:「」)");
+                            dataGridViewTL.Columns.Add("Column10", "/");
 
-                            dataGridViewTL.Columns.Add("Column11", "交易日");
-                            dataGridViewTL.Columns.Add("Column12", "交易時間");
-                            dataGridViewTL.Columns.Add("Column13", "子帳帳號");
-                            dataGridViewTL.Columns.Add("Column14", "營業員編號");
-                            dataGridViewTL.Columns.Add("Column15", "委託介面");
-                            dataGridViewTL.Columns.Add("Column16", "回報流水號");
-                            dataGridViewTL.Columns.Add("Column17", "成交序號");
-                            dataGridViewTL.Columns.Add("Column18", "有效委託日");
-                            dataGridViewTL.Columns.Add("Column19", "委託單錯誤訊息");
-                            dataGridViewTL.Columns.Add("Column20", "交易所動態退單代碼(E:交易所動態退單)");
+                            dataGridViewTL.Columns.Add("Column11", "");
+                            dataGridViewTL.Columns.Add("Column12", "");
+                            dataGridViewTL.Columns.Add("Column13", "");
+                            dataGridViewTL.Columns.Add("Column14", "");
+                            dataGridViewTL.Columns.Add("Column15", "");
+                            dataGridViewTL.Columns.Add("Column16", "");
+                            dataGridViewTL.Columns.Add("Column17", "");
+                            dataGridViewTL.Columns.Add("Column18", "");
+                            dataGridViewTL.Columns.Add("Column19", "");
+                            dataGridViewTL.Columns.Add("Column20", "(E:)");
 
-                            dataGridViewTL.Columns.Add("Column21", "交易所或後台退單訊息([00]:2碼數字,交易所回應代碼及訊息;[000]:3碼數字,交易後台代碼及訊息;[D]委託成功後,由交易所主動退單及退單原因)");
-                            dataGridViewTL.Columns.Add("Column22", "13碼序號(成交單含IOC/FOK產生取消單)");
+                            dataGridViewTL.Columns.Add("Column21", "([00]:2,;[000]:3,;[D],)");
+                            dataGridViewTL.Columns.Add("Column22", "13(IOC/FOK)");
                         }
                         //dataGridViewTP
                         {
-                            dataGridViewTP.Columns.Add("Column1", "原始13碼委託序號");
-                            dataGridViewTP.Columns.Add("Column2", "種類(N:委託 C:取消 U:改量 P:改價D:成交 B:改價改量S:動態退單)");
-                            dataGridViewTP.Columns.Add("Column3", "OrderErr(Y:失敗 T:逾時 N:正常)");
-                            dataGridViewTP.Columns.Add("Column4", "Broker(TS,TA,TL,TP: 分公司代號 unit noTF,TO: IB 代號 broker id)");
-                            dataGridViewTP.Columns.Add("Column5", "交易帳號");
-                            dataGridViewTP.Columns.Add("Column6", "證逐筆");
-                            dataGridViewTP.Columns.Add("Column7", "商品代碼");
-                            dataGridViewTP.Columns.Add("Column8", "委託書號");
-                            dataGridViewTP.Columns.Add("Column9", "價格(N:「委託」為委託價；D:「成交」為成交價)");
-                            dataGridViewTP.Columns.Add("Column10", "股數/口數");
+                            dataGridViewTP.Columns.Add("Column1", "13");
+                            dataGridViewTP.Columns.Add("Column2", "(N: C: U: P:D: B:S:)");
+                            dataGridViewTP.Columns.Add("Column3", "OrderErr(Y: T: N:)");
+                            dataGridViewTP.Columns.Add("Column4", "Broker(TS,TA,TL,TP:  unit noTF,TO: IB  broker id)");
+                            dataGridViewTP.Columns.Add("Column5", "");
+                            dataGridViewTP.Columns.Add("Column6", "");
+                            dataGridViewTP.Columns.Add("Column7", "");
+                            dataGridViewTP.Columns.Add("Column8", "");
+                            dataGridViewTP.Columns.Add("Column9", "(N:「」；D:「」)");
+                            dataGridViewTP.Columns.Add("Column10", "/");
 
-                            dataGridViewTP.Columns.Add("Column11", "交易日");
-                            dataGridViewTP.Columns.Add("Column12", "交易時間");
-                            dataGridViewTP.Columns.Add("Column13", "子帳帳號");
-                            dataGridViewTP.Columns.Add("Column14", "營業員編號");
-                            dataGridViewTP.Columns.Add("Column15", "委託介面");
-                            dataGridViewTP.Columns.Add("Column16", "回報流水號");
-                            dataGridViewTP.Columns.Add("Column17", "成交序號");
-                            dataGridViewTP.Columns.Add("Column18", "有效委託日");
-                            dataGridViewTP.Columns.Add("Column19", "委託單錯誤訊息");
-                            dataGridViewTP.Columns.Add("Column20", "交易所動態退單代碼(E:交易所動態退單)");
+                            dataGridViewTP.Columns.Add("Column11", "");
+                            dataGridViewTP.Columns.Add("Column12", "");
+                            dataGridViewTP.Columns.Add("Column13", "");
+                            dataGridViewTP.Columns.Add("Column14", "");
+                            dataGridViewTP.Columns.Add("Column15", "");
+                            dataGridViewTP.Columns.Add("Column16", "");
+                            dataGridViewTP.Columns.Add("Column17", "");
+                            dataGridViewTP.Columns.Add("Column18", "");
+                            dataGridViewTP.Columns.Add("Column19", "");
+                            dataGridViewTP.Columns.Add("Column20", "(E:)");
 
-                            dataGridViewTP.Columns.Add("Column21", "交易所或後台退單訊息([00]:2碼數字,交易所回應代碼及訊息;[000]:3碼數字,交易後台代碼及訊息;[D]委託成功後,由交易所主動退單及退單原因)");
-                            dataGridViewTP.Columns.Add("Column22", "13碼序號(成交單含IOC/FOK產生取消單)");
+                            dataGridViewTP.Columns.Add("Column21", "([00]:2,;[000]:3,;[D],)");
+                            dataGridViewTP.Columns.Add("Column22", "13(IOC/FOK)");
                         }
                         //dataGridViewTC
                         {
-                            dataGridViewTC.Columns.Add("Column1", "原始13碼委託序號");
-                            dataGridViewTC.Columns.Add("Column2", "種類(N:委託 C:取消 U:改量 P:改價D:成交 B:改價改量S:動態退單)");
-                            dataGridViewTC.Columns.Add("Column3", "OrderErr(Y:失敗 T:逾時 N:正常)");
-                            dataGridViewTC.Columns.Add("Column4", "Broker(TS,TA,TL,TP: 分公司代號 unit noTF,TO: IB 代號 broker id)");
-                            dataGridViewTC.Columns.Add("Column5", "交易帳號");
-                            dataGridViewTC.Columns.Add("Column6", "證逐筆");
-                            dataGridViewTC.Columns.Add("Column7", "商品代碼");
-                            dataGridViewTC.Columns.Add("Column8", "委託書號");
-                            dataGridViewTC.Columns.Add("Column9", "價格(N:「委託」為委託價；D:「成交」為成交價)");
-                            dataGridViewTC.Columns.Add("Column10", "股數/口數");
+                            dataGridViewTC.Columns.Add("Column1", "13");
+                            dataGridViewTC.Columns.Add("Column2", "(N: C: U: P:D: B:S:)");
+                            dataGridViewTC.Columns.Add("Column3", "OrderErr(Y: T: N:)");
+                            dataGridViewTC.Columns.Add("Column4", "Broker(TS,TA,TL,TP:  unit noTF,TO: IB  broker id)");
+                            dataGridViewTC.Columns.Add("Column5", "");
+                            dataGridViewTC.Columns.Add("Column6", "");
+                            dataGridViewTC.Columns.Add("Column7", "");
+                            dataGridViewTC.Columns.Add("Column8", "");
+                            dataGridViewTC.Columns.Add("Column9", "(N:「」；D:「」)");
+                            dataGridViewTC.Columns.Add("Column10", "/");
 
-                            dataGridViewTC.Columns.Add("Column11", "交易日");
-                            dataGridViewTC.Columns.Add("Column12", "交易時間");
-                            dataGridViewTC.Columns.Add("Column13", "子帳帳號");
-                            dataGridViewTC.Columns.Add("Column14", "營業員編號");
-                            dataGridViewTC.Columns.Add("Column15", "委託介面");
-                            dataGridViewTC.Columns.Add("Column16", "回報流水號");
-                            dataGridViewTC.Columns.Add("Column17", "成交序號");
-                            dataGridViewTC.Columns.Add("Column18", "有效委託日");
-                            dataGridViewTC.Columns.Add("Column19", "委託單錯誤訊息");
-                            dataGridViewTC.Columns.Add("Column20", "交易所動態退單代碼(E:交易所動態退單)");
+                            dataGridViewTC.Columns.Add("Column11", "");
+                            dataGridViewTC.Columns.Add("Column12", "");
+                            dataGridViewTC.Columns.Add("Column13", "");
+                            dataGridViewTC.Columns.Add("Column14", "");
+                            dataGridViewTC.Columns.Add("Column15", "");
+                            dataGridViewTC.Columns.Add("Column16", "");
+                            dataGridViewTC.Columns.Add("Column17", "");
+                            dataGridViewTC.Columns.Add("Column18", "");
+                            dataGridViewTC.Columns.Add("Column19", "");
+                            dataGridViewTC.Columns.Add("Column20", "(E:)");
 
-                            dataGridViewTC.Columns.Add("Column21", "交易所或後台退單訊息([00]:2碼數字,交易所回應代碼及訊息;[000]:3碼數字,交易後台代碼及訊息;[D]委託成功後,由交易所主動退單及退單原因)");
-                            dataGridViewTC.Columns.Add("Column22", "13碼序號(成交單含IOC/FOK產生取消單)");
+                            dataGridViewTC.Columns.Add("Column21", "([00]:2,;[000]:3,;[D],)");
+                            dataGridViewTC.Columns.Add("Column22", "13(IOC/FOK)");
                         }
                         //dataGridViewTF
                         {
-                            dataGridViewTF.Columns.Add("Column1", "原始13碼委託序號");
-                            dataGridViewTF.Columns.Add("Column2", "種類(N:委託 C:取消 U:改量 P:改價D:成交 B:改價改量S:動態退單)");
-                            dataGridViewTF.Columns.Add("Column3", "OrderErr(Y:失敗 T:逾時 N:正常)");
-                            dataGridViewTF.Columns.Add("Column4", "Broker(TS,TA,TL,TP: 分公司代號 unit noTF,TO: IB 代號 broker id)");
-                            dataGridViewTF.Columns.Add("Column5", "交易帳號");
-                            dataGridViewTF.Columns.Add("Column6", "證逐筆");
-                            dataGridViewTF.Columns.Add("Column7", "商品代碼");
-                            dataGridViewTF.Columns.Add("Column8", "委託書號");
-                            dataGridViewTF.Columns.Add("Column9", "價格(N:「委託」為委託價；D:「成交」為成交價)");
-                            dataGridViewTF.Columns.Add("Column10", "第一腳成交價");
+                            dataGridViewTF.Columns.Add("Column1", "13");
+                            dataGridViewTF.Columns.Add("Column2", "(N: C: U: P:D: B:S:)");
+                            dataGridViewTF.Columns.Add("Column3", "OrderErr(Y: T: N:)");
+                            dataGridViewTF.Columns.Add("Column4", "Broker(TS,TA,TL,TP:  unit noTF,TO: IB  broker id)");
+                            dataGridViewTF.Columns.Add("Column5", "");
+                            dataGridViewTF.Columns.Add("Column6", "");
+                            dataGridViewTF.Columns.Add("Column7", "");
+                            dataGridViewTF.Columns.Add("Column8", "");
+                            dataGridViewTF.Columns.Add("Column9", "(N:「」；D:「」)");
+                            dataGridViewTF.Columns.Add("Column10", "");
 
-                            dataGridViewTF.Columns.Add("Column11", "第二腳成交價");
-                            dataGridViewTF.Columns.Add("Column12", "第二腳觸發價分子");
-                            dataGridViewTF.Columns.Add("Column13", "第二腳觸發價分母");
-                            dataGridViewTF.Columns.Add("Column14", "股數/口數");
-                            dataGridViewTF.Columns.Add("Column15", "交易日");
-                            dataGridViewTF.Columns.Add("Column16", "交易時間");
-                            dataGridViewTF.Columns.Add("Column17", "子帳帳號");
-                            dataGridViewTF.Columns.Add("Column18", "營業員編號");
-                            dataGridViewTF.Columns.Add("Column19", "委託介面");
-                            dataGridViewTF.Columns.Add("Column20", "回報流水號");
+                            dataGridViewTF.Columns.Add("Column11", "");
+                            dataGridViewTF.Columns.Add("Column12", "");
+                            dataGridViewTF.Columns.Add("Column13", "");
+                            dataGridViewTF.Columns.Add("Column14", "/");
+                            dataGridViewTF.Columns.Add("Column15", "");
+                            dataGridViewTF.Columns.Add("Column16", "");
+                            dataGridViewTF.Columns.Add("Column17", "");
+                            dataGridViewTF.Columns.Add("Column18", "");
+                            dataGridViewTF.Columns.Add("Column19", "");
+                            dataGridViewTF.Columns.Add("Column20", "");
 
-                            dataGridViewTF.Columns.Add("Column21", "A:盤中單 B:預約單");
-                            dataGridViewTF.Columns.Add("Column22", "第一腳商品代碼");
-                            dataGridViewTF.Columns.Add("Column23", "第一腳商品結算年月");
-                            dataGridViewTF.Columns.Add("Column24", "第二腳商品代碼");
-                            dataGridViewTF.Columns.Add("Column25", "第二腳商品結算年月");
-                            dataGridViewTF.Columns.Add("Column26", "成交序號");
-                            dataGridViewTF.Columns.Add("Column27", "下單期標");
-                            dataGridViewTF.Columns.Add("Column28", "盤別A：T盤  B：T+1盤");
-                            dataGridViewTF.Columns.Add("Column29", "有效委託日");
-                            dataGridViewTF.Columns.Add("Column30", "委託單錯誤訊息");
+                            dataGridViewTF.Columns.Add("Column21", "A: B:");
+                            dataGridViewTF.Columns.Add("Column22", "");
+                            dataGridViewTF.Columns.Add("Column23", "");
+                            dataGridViewTF.Columns.Add("Column24", "");
+                            dataGridViewTF.Columns.Add("Column25", "");
+                            dataGridViewTF.Columns.Add("Column26", "");
+                            dataGridViewTF.Columns.Add("Column27", "");
+                            dataGridViewTF.Columns.Add("Column28", "A：T  B：T+1");
+                            dataGridViewTF.Columns.Add("Column29", "");
+                            dataGridViewTF.Columns.Add("Column30", "");
 
-                            dataGridViewTF.Columns.Add("Column31", "交易所動態退單代碼(E:交易所動態退單)");
-                            dataGridViewTF.Columns.Add("Column32", "交易所或後台退單訊息([00]:2碼數字,交易所回應代碼及訊息;[000]:3碼數字,交易後台代碼及訊息;[D]委託成功後,由交易所主動退單及退單原因)");
-                            dataGridViewTF.Columns.Add("Column33", "13碼序號(成交單含IOC/FOK產生取消單)");
+                            dataGridViewTF.Columns.Add("Column31", "(E:)");
+                            dataGridViewTF.Columns.Add("Column32", "([00]:2,;[000]:3,;[D],)");
+                            dataGridViewTF.Columns.Add("Column33", "13(IOC/FOK)");
                         }
                         //dataGridViewTO
                         {
-                            dataGridViewTO.Columns.Add("Column1", "原始13碼委託序號");
-                            dataGridViewTO.Columns.Add("Column2", "種類(N:委託 C:取消 U:改量 P:改價D:成交 B:改價改量S:動態退單)");
-                            dataGridViewTO.Columns.Add("Column3", "OrderErr(Y:失敗 T:逾時 N:正常)");
-                            dataGridViewTO.Columns.Add("Column4", "Broker(TS,TA,TL,TP: 分公司代號 unit noTF,TO: IB 代號 broker id)");
-                            dataGridViewTO.Columns.Add("Column5", "交易帳號");
-                            dataGridViewTO.Columns.Add("Column6", "證逐筆");
-                            dataGridViewTO.Columns.Add("Column7", "商品代碼");
-                            dataGridViewTO.Columns.Add("Column8", "履約價");
-                            dataGridViewTO.Columns.Add("Column9", "委託書號");
-                            dataGridViewTO.Columns.Add("Column10", "價格(N:「委託」為委託價；D:「成交」為成交價)");
+                            dataGridViewTO.Columns.Add("Column1", "13");
+                            dataGridViewTO.Columns.Add("Column2", "(N: C: U: P:D: B:S:)");
+                            dataGridViewTO.Columns.Add("Column3", "OrderErr(Y: T: N:)");
+                            dataGridViewTO.Columns.Add("Column4", "Broker(TS,TA,TL,TP:  unit noTF,TO: IB  broker id)");
+                            dataGridViewTO.Columns.Add("Column5", "");
+                            dataGridViewTO.Columns.Add("Column6", "");
+                            dataGridViewTO.Columns.Add("Column7", "");
+                            dataGridViewTO.Columns.Add("Column8", "");
+                            dataGridViewTO.Columns.Add("Column9", "");
+                            dataGridViewTO.Columns.Add("Column10", "(N:「」；D:「」)");
 
-                            dataGridViewTO.Columns.Add("Column11", "第一腳成交價");
-                            dataGridViewTO.Columns.Add("Column12", "第二腳成交價");
-                            dataGridViewTO.Columns.Add("Column13", "第二腳觸發價分子");
-                            dataGridViewTO.Columns.Add("Column14", "第二腳觸發價分母");
-                            dataGridViewTO.Columns.Add("Column15", "股數/口數");
-                            dataGridViewTO.Columns.Add("Column16", "交易日");
-                            dataGridViewTO.Columns.Add("Column17", "交易時間");
-                            dataGridViewTO.Columns.Add("Column18", "子帳帳號");
-                            dataGridViewTO.Columns.Add("Column19", "營業員編號");
-                            dataGridViewTO.Columns.Add("Column20", "委託介面");
+                            dataGridViewTO.Columns.Add("Column11", "");
+                            dataGridViewTO.Columns.Add("Column12", "");
+                            dataGridViewTO.Columns.Add("Column13", "");
+                            dataGridViewTO.Columns.Add("Column14", "");
+                            dataGridViewTO.Columns.Add("Column15", "/");
+                            dataGridViewTO.Columns.Add("Column16", "");
+                            dataGridViewTO.Columns.Add("Column17", "");
+                            dataGridViewTO.Columns.Add("Column18", "");
+                            dataGridViewTO.Columns.Add("Column19", "");
+                            dataGridViewTO.Columns.Add("Column20", "");
 
-                            dataGridViewTO.Columns.Add("Column21", "回報流水號");
-                            dataGridViewTO.Columns.Add("Column22", "A:盤中單 B:預約單");
-                            dataGridViewTO.Columns.Add("Column23", "第一腳商品代碼");
-                            dataGridViewTO.Columns.Add("Column24", "第一腳商品結算年月");
-                            dataGridViewTO.Columns.Add("Column25", "第一腳商品履約價");
-                            dataGridViewTO.Columns.Add("Column26", "第二腳商品代碼");
-                            dataGridViewTO.Columns.Add("Column27", "第二腳商品結算年月");
-                            dataGridViewTO.Columns.Add("Column28", "第二腳商品履約價");
-                            dataGridViewTO.Columns.Add("Column29", "成交序號");
-                            dataGridViewTO.Columns.Add("Column30", "下單期標");
+                            dataGridViewTO.Columns.Add("Column21", "");
+                            dataGridViewTO.Columns.Add("Column22", "A: B:");
+                            dataGridViewTO.Columns.Add("Column23", "");
+                            dataGridViewTO.Columns.Add("Column24", "");
+                            dataGridViewTO.Columns.Add("Column25", "");
+                            dataGridViewTO.Columns.Add("Column26", "");
+                            dataGridViewTO.Columns.Add("Column27", "");
+                            dataGridViewTO.Columns.Add("Column28", "");
+                            dataGridViewTO.Columns.Add("Column29", "");
+                            dataGridViewTO.Columns.Add("Column30", "");
 
-                            dataGridViewTO.Columns.Add("Column31", "盤別A：T盤  B：T+1盤");
-                            dataGridViewTO.Columns.Add("Column32", "有效委託日");
-                            dataGridViewTO.Columns.Add("Column33", "選擇權類型C：Call　P：Put");
-                            dataGridViewTO.Columns.Add("Column34", "委託單錯誤訊息");
-                            dataGridViewTO.Columns.Add("Column35", "交易所動態退單代碼(E:交易所動態退單)");
-                            dataGridViewTO.Columns.Add("Column36", "交易所或後台退單訊息([00]:2碼數字,交易所回應代碼及訊息;[000]:3碼數字,交易後台代碼及訊息;[D]委託成功後,由交易所主動退單及退單原因)");
-                            dataGridViewTO.Columns.Add("Column37", "13碼序號(成交單含IOC/FOK產生取消單)");
+                            dataGridViewTO.Columns.Add("Column31", "A：T  B：T+1");
+                            dataGridViewTO.Columns.Add("Column32", "");
+                            dataGridViewTO.Columns.Add("Column33", "C：Call　P：Put");
+                            dataGridViewTO.Columns.Add("Column34", "");
+                            dataGridViewTO.Columns.Add("Column35", "(E:)");
+                            dataGridViewTO.Columns.Add("Column36", "([00]:2,;[000]:3,;[D],)");
+                            dataGridViewTO.Columns.Add("Column37", "13(IOC/FOK)");
                         }
                         //dataGridViewOF
                         {
-                            dataGridViewOF.Columns.Add("Column1", "原始13碼委託序號");
-                            dataGridViewOF.Columns.Add("Column2", "種類(N:委託 C:取消 U:改量 P:改價D:成交 B:改價改量S:動態退單)");
-                            dataGridViewOF.Columns.Add("Column3", "OrderErr(Y:失敗 T:逾時 N:正常)");
-                            dataGridViewOF.Columns.Add("Column4", "Broker(TS,TA,TL,TP: 分公司代號 unit noTF,TO: IB 代號 broker id)");
-                            dataGridViewOF.Columns.Add("Column5", "交易帳號");
-                            dataGridViewOF.Columns.Add("Column6", "證逐筆");
-                            dataGridViewOF.Columns.Add("Column7", "商品代碼");
-                            dataGridViewOF.Columns.Add("Column8", "委託書號");
-                            dataGridViewOF.Columns.Add("Column9", "價格(N:「委託」為委託價；D:「成交」為成交價)");
-                            dataGridViewOF.Columns.Add("Column10", "分子");
+                            dataGridViewOF.Columns.Add("Column1", "13");
+                            dataGridViewOF.Columns.Add("Column2", "(N: C: U: P:D: B:S:)");
+                            dataGridViewOF.Columns.Add("Column3", "OrderErr(Y: T: N:)");
+                            dataGridViewOF.Columns.Add("Column4", "Broker(TS,TA,TL,TP:  unit noTF,TO: IB  broker id)");
+                            dataGridViewOF.Columns.Add("Column5", "");
+                            dataGridViewOF.Columns.Add("Column6", "");
+                            dataGridViewOF.Columns.Add("Column7", "");
+                            dataGridViewOF.Columns.Add("Column8", "");
+                            dataGridViewOF.Columns.Add("Column9", "(N:「」；D:「」)");
+                            dataGridViewOF.Columns.Add("Column10", "");
 
-                            dataGridViewOF.Columns.Add("Column11", "分母");
-                            dataGridViewOF.Columns.Add("Column12", "觸發價格");
-                            dataGridViewOF.Columns.Add("Column13", "第一腳觸發價格分子");
-                            dataGridViewOF.Columns.Add("Column14", "觸發價格分母");
-                            dataGridViewOF.Columns.Add("Column15", "第二腳成交價");
-                            dataGridViewOF.Columns.Add("Column16", "第二腳觸發價分子");
-                            dataGridViewOF.Columns.Add("Column17", "第二腳觸發價分母");
-                            dataGridViewOF.Columns.Add("Column18", "股數/口數");
-                            dataGridViewOF.Columns.Add("Column19", "交易日");
-                            dataGridViewOF.Columns.Add("Column20", "交易時間");
+                            dataGridViewOF.Columns.Add("Column11", "");
+                            dataGridViewOF.Columns.Add("Column12", "");
+                            dataGridViewOF.Columns.Add("Column13", "");
+                            dataGridViewOF.Columns.Add("Column14", "");
+                            dataGridViewOF.Columns.Add("Column15", "");
+                            dataGridViewOF.Columns.Add("Column16", "");
+                            dataGridViewOF.Columns.Add("Column17", "");
+                            dataGridViewOF.Columns.Add("Column18", "/");
+                            dataGridViewOF.Columns.Add("Column19", "");
+                            dataGridViewOF.Columns.Add("Column20", "");
 
-                            dataGridViewOF.Columns.Add("Column21", "子帳帳號");
-                            dataGridViewOF.Columns.Add("Column22", "營業員編號");
-                            dataGridViewOF.Columns.Add("Column23", "委託介面");
-                            dataGridViewOF.Columns.Add("Column24", "回報流水號");
-                            dataGridViewOF.Columns.Add("Column25", "第一腳商品代碼");
-                            dataGridViewOF.Columns.Add("Column26", "第一腳商品結算年月");
-                            dataGridViewOF.Columns.Add("Column27", "第二腳商品代碼");
-                            dataGridViewOF.Columns.Add("Column28", "第二腳商品結算年月");
-                            dataGridViewOF.Columns.Add("Column29", "成交序號");
-                            dataGridViewOF.Columns.Add("Column30", "下單期標");
+                            dataGridViewOF.Columns.Add("Column21", "");
+                            dataGridViewOF.Columns.Add("Column22", "");
+                            dataGridViewOF.Columns.Add("Column23", "");
+                            dataGridViewOF.Columns.Add("Column24", "");
+                            dataGridViewOF.Columns.Add("Column25", "");
+                            dataGridViewOF.Columns.Add("Column26", "");
+                            dataGridViewOF.Columns.Add("Column27", "");
+                            dataGridViewOF.Columns.Add("Column28", "");
+                            dataGridViewOF.Columns.Add("Column29", "");
+                            dataGridViewOF.Columns.Add("Column30", "");
 
-                            dataGridViewOF.Columns.Add("Column31", "有效委託日");
-                            dataGridViewOF.Columns.Add("Column32", "上手單號");
-                            dataGridViewOF.Columns.Add("Column33", "委託單錯誤訊息");
-                            dataGridViewOF.Columns.Add("Column34", "交易所動態退單代碼(E:交易所動態退單)");
-                            dataGridViewOF.Columns.Add("Column35", "交易所或後台退單訊息([00]:2碼數字,交易所回應代碼及訊息;[000]:3碼數字,交易後台代碼及訊息;[D]委託成功後,由交易所主動退單及退單原因)");
-                            dataGridViewOF.Columns.Add("Column36", "13碼序號(成交單含IOC/FOK產生取消單)");
+                            dataGridViewOF.Columns.Add("Column31", "");
+                            dataGridViewOF.Columns.Add("Column32", "");
+                            dataGridViewOF.Columns.Add("Column33", "");
+                            dataGridViewOF.Columns.Add("Column34", "(E:)");
+                            dataGridViewOF.Columns.Add("Column35", "([00]:2,;[000]:3,;[D],)");
+                            dataGridViewOF.Columns.Add("Column36", "13(IOC/FOK)");
                         }
                         //dataGridViewOO
                         {
-                            dataGridViewOO.Columns.Add("Column1", "原始13碼委託序號");
-                            dataGridViewOO.Columns.Add("Column2", "種類(N:委託 C:取消 U:改量 P:改價D:成交 B:改價改量S:動態退單)");
-                            dataGridViewOO.Columns.Add("Column3", "OrderErr(Y:失敗 T:逾時 N:正常)");
-                            dataGridViewOO.Columns.Add("Column4", "Broker(TS,TA,TL,TP: 分公司代號 unit noTF,TO: IB 代號 broker id)");
-                            dataGridViewOO.Columns.Add("Column5", "交易帳號");
-                            dataGridViewOO.Columns.Add("Column6", "證逐筆");
-                            dataGridViewOO.Columns.Add("Column7", "商品代碼");
-                            dataGridViewOO.Columns.Add("Column8", "履約價");
-                            dataGridViewOO.Columns.Add("Column9", "委託書號");
-                            dataGridViewOO.Columns.Add("Column10", "價格(N:「委託」為委託價；D:「成交」為成交價)");
+                            dataGridViewOO.Columns.Add("Column1", "13");
+                            dataGridViewOO.Columns.Add("Column2", "(N: C: U: P:D: B:S:)");
+                            dataGridViewOO.Columns.Add("Column3", "OrderErr(Y: T: N:)");
+                            dataGridViewOO.Columns.Add("Column4", "Broker(TS,TA,TL,TP:  unit noTF,TO: IB  broker id)");
+                            dataGridViewOO.Columns.Add("Column5", "");
+                            dataGridViewOO.Columns.Add("Column6", "");
+                            dataGridViewOO.Columns.Add("Column7", "");
+                            dataGridViewOO.Columns.Add("Column8", "");
+                            dataGridViewOO.Columns.Add("Column9", "");
+                            dataGridViewOO.Columns.Add("Column10", "(N:「」；D:「」)");
 
-                            dataGridViewOO.Columns.Add("Column11", "分子");
-                            dataGridViewOO.Columns.Add("Column12", "分母");
-                            dataGridViewOO.Columns.Add("Column13", "觸發價格");
-                            dataGridViewOO.Columns.Add("Column14", "第一腳觸發價格分子");
-                            dataGridViewOO.Columns.Add("Column15", "觸發價格分母");
-                            dataGridViewOO.Columns.Add("Column16", "第二腳成交價");
-                            dataGridViewOO.Columns.Add("Column17", "第二腳觸發價分子");
-                            dataGridViewOO.Columns.Add("Column18", "第二腳觸發價分母");
-                            dataGridViewOO.Columns.Add("Column19", "股數/口數");
-                            dataGridViewOO.Columns.Add("Column20", "交易日");
+                            dataGridViewOO.Columns.Add("Column11", "");
+                            dataGridViewOO.Columns.Add("Column12", "");
+                            dataGridViewOO.Columns.Add("Column13", "");
+                            dataGridViewOO.Columns.Add("Column14", "");
+                            dataGridViewOO.Columns.Add("Column15", "");
+                            dataGridViewOO.Columns.Add("Column16", "");
+                            dataGridViewOO.Columns.Add("Column17", "");
+                            dataGridViewOO.Columns.Add("Column18", "");
+                            dataGridViewOO.Columns.Add("Column19", "/");
+                            dataGridViewOO.Columns.Add("Column20", "");
 
-                            dataGridViewOO.Columns.Add("Column21", "交易時間");
-                            dataGridViewOO.Columns.Add("Column22", "子帳帳號");
-                            dataGridViewOO.Columns.Add("Column23", "營業員編號");
-                            dataGridViewOO.Columns.Add("Column24", "委託介面");
-                            dataGridViewOO.Columns.Add("Column25", "回報流水號");
-                            dataGridViewOO.Columns.Add("Column26", "第一腳商品代碼");
-                            dataGridViewOO.Columns.Add("Column27", "第一腳商品結算年月");
-                            dataGridViewOO.Columns.Add("Column28", "第一腳商品履約價");
-                            dataGridViewOO.Columns.Add("Column29", "第二腳商品代碼");
-                            dataGridViewOO.Columns.Add("Column30", "第二腳商品結算年月");
+                            dataGridViewOO.Columns.Add("Column21", "");
+                            dataGridViewOO.Columns.Add("Column22", "");
+                            dataGridViewOO.Columns.Add("Column23", "");
+                            dataGridViewOO.Columns.Add("Column24", "");
+                            dataGridViewOO.Columns.Add("Column25", "");
+                            dataGridViewOO.Columns.Add("Column26", "");
+                            dataGridViewOO.Columns.Add("Column27", "");
+                            dataGridViewOO.Columns.Add("Column28", "");
+                            dataGridViewOO.Columns.Add("Column29", "");
+                            dataGridViewOO.Columns.Add("Column30", "");
 
-                            dataGridViewOO.Columns.Add("Column31", "第二腳商品履約價");
-                            dataGridViewOO.Columns.Add("Column32", "成交序號");
-                            dataGridViewOO.Columns.Add("Column33", "下單期標");
-                            dataGridViewOO.Columns.Add("Column34", "有效委託日");
-                            dataGridViewOO.Columns.Add("Column35", "選擇權類型C：Call　P：Put");
-                            dataGridViewOO.Columns.Add("Column36", "上手單號");
-                            dataGridViewOO.Columns.Add("Column37", "委託單錯誤訊息");
-                            dataGridViewOO.Columns.Add("Column38", "交易所動態退單代碼(E:交易所動態退單)");
-                            dataGridViewOO.Columns.Add("Column39", "交易所或後台退單訊息([00]:2碼數字,交易所回應代碼及訊息;[000]:3碼數字,交易後台代碼及訊息;[D]委託成功後,由交易所主動退單及退單原因)");
-                            dataGridViewOO.Columns.Add("Column40", "13碼序號(成交單含IOC/FOK產生取消單)");
+                            dataGridViewOO.Columns.Add("Column31", "");
+                            dataGridViewOO.Columns.Add("Column32", "");
+                            dataGridViewOO.Columns.Add("Column33", "");
+                            dataGridViewOO.Columns.Add("Column34", "");
+                            dataGridViewOO.Columns.Add("Column35", "C：Call　P：Put");
+                            dataGridViewOO.Columns.Add("Column36", "");
+                            dataGridViewOO.Columns.Add("Column37", "");
+                            dataGridViewOO.Columns.Add("Column38", "(E:)");
+                            dataGridViewOO.Columns.Add("Column39", "([00]:2,;[000]:3,;[D],)");
+                            dataGridViewOO.Columns.Add("Column40", "13(IOC/FOK)");
                         }
                         //dataGridViewOS
                         {
-                            dataGridViewOS.Columns.Add("Column1", "原始13碼委託序號");
-                            dataGridViewOS.Columns.Add("Column2", "種類(N:委託 C:取消 U:改量 P:改價D:成交 B:改價改量S:動態退單)");
-                            dataGridViewOS.Columns.Add("Column3", "OrderErr(Y:失敗 T:逾時 N:正常)");
-                            dataGridViewOS.Columns.Add("Column4", "Broker(TS,TA,TL,TP: 分公司代號 unit noTF,TO: IB 代號 broker id)");
-                            dataGridViewOS.Columns.Add("Column5", "交易帳號");
-                            dataGridViewOS.Columns.Add("Column6", "證逐筆");
-                            dataGridViewOS.Columns.Add("Column7", "商品代碼");
-                            dataGridViewOS.Columns.Add("Column8", "委託書號");
-                            dataGridViewOS.Columns.Add("Column9", "價格(N:「委託」為委託價；D:「成交」為成交價)");
-                            dataGridViewOS.Columns.Add("Column10", "股數/口數");
+                            dataGridViewOS.Columns.Add("Column1", "13");
+                            dataGridViewOS.Columns.Add("Column2", "(N: C: U: P:D: B:S:)");
+                            dataGridViewOS.Columns.Add("Column3", "OrderErr(Y: T: N:)");
+                            dataGridViewOS.Columns.Add("Column4", "Broker(TS,TA,TL,TP:  unit noTF,TO: IB  broker id)");
+                            dataGridViewOS.Columns.Add("Column5", "");
+                            dataGridViewOS.Columns.Add("Column6", "");
+                            dataGridViewOS.Columns.Add("Column7", "");
+                            dataGridViewOS.Columns.Add("Column8", "");
+                            dataGridViewOS.Columns.Add("Column9", "(N:「」；D:「」)");
+                            dataGridViewOS.Columns.Add("Column10", "/");
 
-                            dataGridViewOS.Columns.Add("Column11", "異動前量");
-                            dataGridViewOS.Columns.Add("Column12", "異動後量");
-                            dataGridViewOS.Columns.Add("Column13", "交易日");
-                            dataGridViewOS.Columns.Add("Column14", "交易時間");
-                            dataGridViewOS.Columns.Add("Column15", "子帳帳號");
-                            dataGridViewOS.Columns.Add("Column16", "營業員編號");
-                            dataGridViewOS.Columns.Add("Column17", "委託介面");
-                            dataGridViewOS.Columns.Add("Column18", "回報流水號");
-                            dataGridViewOS.Columns.Add("Column19", "成交序號");
-                            dataGridViewOS.Columns.Add("Column20", "有效委託日");
+                            dataGridViewOS.Columns.Add("Column11", "");
+                            dataGridViewOS.Columns.Add("Column12", "");
+                            dataGridViewOS.Columns.Add("Column13", "");
+                            dataGridViewOS.Columns.Add("Column14", "");
+                            dataGridViewOS.Columns.Add("Column15", "");
+                            dataGridViewOS.Columns.Add("Column16", "");
+                            dataGridViewOS.Columns.Add("Column17", "");
+                            dataGridViewOS.Columns.Add("Column18", "");
+                            dataGridViewOS.Columns.Add("Column19", "");
+                            dataGridViewOS.Columns.Add("Column20", "");
 
-                            dataGridViewOS.Columns.Add("Column21", "委託單錯誤訊息");
-                            dataGridViewOS.Columns.Add("Column22", "交易所動態退單代碼(E:交易所動態退單)");
-                            dataGridViewOS.Columns.Add("Column23", "交易所或後台退單訊息([00]:2碼數字,交易所回應代碼及訊息;[000]:3碼數字,交易後台代碼及訊息;[D]委託成功後,由交易所主動退單及退單原因)");
-                            dataGridViewOS.Columns.Add("Column24", "13碼序號(成交單含IOC/FOK產生取消單)");
+                            dataGridViewOS.Columns.Add("Column21", "");
+                            dataGridViewOS.Columns.Add("Column22", "(E:)");
+                            dataGridViewOS.Columns.Add("Column23", "([00]:2,;[000]:3,;[D],)");
+                            dataGridViewOS.Columns.Add("Column24", "13(IOC/FOK)");
                         }
                         //dataGridViewNoClass
                         {
-                            dataGridViewNoClass.Columns.Add("Column1", "原始13碼委託序號");
-                            dataGridViewNoClass.Columns.Add("Column2", "市場種類(TS:證券 TA:盤後 TL:零股 TP:興櫃TC: 盤中零股TF:期貨 TO:選擇權OF:海期OO:海選 OS:複委託)");
-                            dataGridViewNoClass.Columns.Add("Column3", "種類(N:委託 C:取消 U:改量 P:改價D:成交 B:改價改量S:動態退單)");
-                            dataGridViewNoClass.Columns.Add("Column4", "OrderErr(Y:失敗 T:逾時 N:正常)");
-                            dataGridViewNoClass.Columns.Add("Column5", "Broker(TS,TA,TL,TP: 分公司代號 unit noTF,TO: IB 代號 broker id)");
-                            dataGridViewNoClass.Columns.Add("Column6", "交易帳號");
-                            dataGridViewNoClass.Columns.Add("Column7", "證逐筆");
-                            dataGridViewNoClass.Columns.Add("Column8", "交易所");
-                            dataGridViewNoClass.Columns.Add("Column9", "商品代碼");
-                            dataGridViewNoClass.Columns.Add("Column10", "履約價");
+                            dataGridViewNoClass.Columns.Add("Column1", "13");
+                            dataGridViewNoClass.Columns.Add("Column2", "(TS: TA: TL: TP:TC: TF: TO:OF:OO: OS:)");
+                            dataGridViewNoClass.Columns.Add("Column3", "(N: C: U: P:D: B:S:)");
+                            dataGridViewNoClass.Columns.Add("Column4", "OrderErr(Y: T: N:)");
+                            dataGridViewNoClass.Columns.Add("Column5", "Broker(TS,TA,TL,TP:  unit noTF,TO: IB  broker id)");
+                            dataGridViewNoClass.Columns.Add("Column6", "");
+                            dataGridViewNoClass.Columns.Add("Column7", "");
+                            dataGridViewNoClass.Columns.Add("Column8", "");
+                            dataGridViewNoClass.Columns.Add("Column9", "");
+                            dataGridViewNoClass.Columns.Add("Column10", "");
 
-                            dataGridViewNoClass.Columns.Add("Column11", "委託書號");
-                            dataGridViewNoClass.Columns.Add("Column12", "價格(N:「委託」為委託價；D:「成交」為成交價)");
-                            dataGridViewNoClass.Columns.Add("Column13", "海期(分子)");
-                            dataGridViewNoClass.Columns.Add("Column14", "海期(分母)");
-                            dataGridViewNoClass.Columns.Add("Column15", "海期(觸發價)/第一腳成交價");
-                            dataGridViewNoClass.Columns.Add("Column16", "海期(第一腳觸發價分子)");
-                            dataGridViewNoClass.Columns.Add("Column17", "海期(第一腳觸發價分母)");
-                            dataGridViewNoClass.Columns.Add("Column18", "期選(第二腳成交價)");
-                            dataGridViewNoClass.Columns.Add("Column19", "第二腳觸發價分子");
-                            dataGridViewNoClass.Columns.Add("Column20", "第二腳觸發價分母");
+                            dataGridViewNoClass.Columns.Add("Column11", "");
+                            dataGridViewNoClass.Columns.Add("Column12", "(N:「」；D:「」)");
+                            dataGridViewNoClass.Columns.Add("Column13", "()");
+                            dataGridViewNoClass.Columns.Add("Column14", "()");
+                            dataGridViewNoClass.Columns.Add("Column15", "()/");
+                            dataGridViewNoClass.Columns.Add("Column16", "()");
+                            dataGridViewNoClass.Columns.Add("Column17", "()");
+                            dataGridViewNoClass.Columns.Add("Column18", "()");
+                            dataGridViewNoClass.Columns.Add("Column19", "");
+                            dataGridViewNoClass.Columns.Add("Column20", "");
 
-                            dataGridViewNoClass.Columns.Add("Column21", "股數/口數");
-                            dataGridViewNoClass.Columns.Add("Column22", "異動前量");
-                            dataGridViewNoClass.Columns.Add("Column23", "異動後量");
-                            dataGridViewNoClass.Columns.Add("Column24", "交易日");
-                            dataGridViewNoClass.Columns.Add("Column25", "交易時間");
-                            dataGridViewNoClass.Columns.Add("Column26", "成交序號(請以ExecutionNo為主)");
-                            dataGridViewNoClass.Columns.Add("Column27", "子帳帳號");
-                            dataGridViewNoClass.Columns.Add("Column28", "營業員編號");
-                            dataGridViewNoClass.Columns.Add("Column29", "委託介面");
-                            dataGridViewNoClass.Columns.Add("Column30", "委託日期");
+                            dataGridViewNoClass.Columns.Add("Column21", "/");
+                            dataGridViewNoClass.Columns.Add("Column22", "");
+                            dataGridViewNoClass.Columns.Add("Column23", "");
+                            dataGridViewNoClass.Columns.Add("Column24", "");
+                            dataGridViewNoClass.Columns.Add("Column25", "");
+                            dataGridViewNoClass.Columns.Add("Column26", "(ExecutionNo)");
+                            dataGridViewNoClass.Columns.Add("Column27", "");
+                            dataGridViewNoClass.Columns.Add("Column28", "");
+                            dataGridViewNoClass.Columns.Add("Column29", "");
+                            dataGridViewNoClass.Columns.Add("Column30", "");
 
-                            dataGridViewNoClass.Columns.Add("Column31", "回報流水號");
-                            dataGridViewNoClass.Columns.Add("Column32", "A:盤中單 B:預約單");
-                            dataGridViewNoClass.Columns.Add("Column33", "第一腳商品代碼");
-                            dataGridViewNoClass.Columns.Add("Column34", "第一腳商品結算年月");
-                            dataGridViewNoClass.Columns.Add("Column35", "第一腳商品履約價");
-                            dataGridViewNoClass.Columns.Add("Column36", "第二腳商品代碼");
-                            dataGridViewNoClass.Columns.Add("Column37", "第二腳商品結算年月");
-                            dataGridViewNoClass.Columns.Add("Column38", "第二腳商品履約價");
-                            dataGridViewNoClass.Columns.Add("Column39", "成交序號(ExecutionNo)");
-                            dataGridViewNoClass.Columns.Add("Column40", "下單期標");
+                            dataGridViewNoClass.Columns.Add("Column31", "");
+                            dataGridViewNoClass.Columns.Add("Column32", "A: B:");
+                            dataGridViewNoClass.Columns.Add("Column33", "");
+                            dataGridViewNoClass.Columns.Add("Column34", "");
+                            dataGridViewNoClass.Columns.Add("Column35", "");
+                            dataGridViewNoClass.Columns.Add("Column36", "");
+                            dataGridViewNoClass.Columns.Add("Column37", "");
+                            dataGridViewNoClass.Columns.Add("Column38", "");
+                            dataGridViewNoClass.Columns.Add("Column39", "(ExecutionNo)");
+                            dataGridViewNoClass.Columns.Add("Column40", "");
 
-                            dataGridViewNoClass.Columns.Add("Column41", "盤別A：T盤  B：T+1盤");
-                            dataGridViewNoClass.Columns.Add("Column42", "有效委託日");
-                            dataGridViewNoClass.Columns.Add("Column43", "選擇權類型C：Call　P：Put");
-                            dataGridViewNoClass.Columns.Add("Column44", "上手單號");
-                            dataGridViewNoClass.Columns.Add("Column45", "委託單錯誤訊息");
-                            dataGridViewNoClass.Columns.Add("Column46", "交易所動態退單代碼(E:交易所動態退單)");
-                            dataGridViewNoClass.Columns.Add("Column47", "交易所或後台退單訊息([00]:2碼數字,交易所回應代碼及訊息;[000]:3碼數字,交易後台代碼及訊息;[D]委託成功後,由交易所主動退單及退單原因)");
-                            dataGridViewNoClass.Columns.Add("Column48", "13碼序號(成交單含IOC/FOK產生取消單)");
-                            dataGridViewNoClass.Columns.Add("Column49", "[海期][停損限價/停損市價][已觸發][委託回報]海期停損單觸發註記 :Y");
+                            dataGridViewNoClass.Columns.Add("Column41", "A：T  B：T+1");
+                            dataGridViewNoClass.Columns.Add("Column42", "");
+                            dataGridViewNoClass.Columns.Add("Column43", "C：Call　P：Put");
+                            dataGridViewNoClass.Columns.Add("Column44", "");
+                            dataGridViewNoClass.Columns.Add("Column45", "");
+                            dataGridViewNoClass.Columns.Add("Column46", "(E:)");
+                            dataGridViewNoClass.Columns.Add("Column47", "([00]:2,;[000]:3,;[D],)");
+                            dataGridViewNoClass.Columns.Add("Column48", "13(IOC/FOK)");
+                            dataGridViewNoClass.Columns.Add("Column49", "[][/][][] :Y");
                         }
                     }
-                    // 智慧單回報
+                    // 
                     {
-                        // 證券
+                        // 
                         {
                             //dataGridViewTSMST
                             {
-                                //dataGridViewTSMST 證券(共用欄位)
+                                //dataGridViewTSMST ()
                                 {
-                                    dataGridViewTSMST.Columns.Add("Column1", "1:新增  2:刪除");
-                                    dataGridViewTSMST.Columns.Add("Column2", "0: 一般 1:零股 2:盤後");
-                                    dataGridViewTSMST.Columns.Add("Column3", "智慧單(母單)序號");
-                                    dataGridViewTSMST.Columns.Add("Column4", "委託單順序(判斷每筆回報順序使用)");
-                                    dataGridViewTSMST.Columns.Add("Column5", "分公司代碼");
-                                    dataGridViewTSMST.Columns.Add("Column6", "交易帳號");
-                                    dataGridViewTSMST.Columns.Add("Column7", "子帳帳號");
-                                    dataGridViewTSMST.Columns.Add("Column8", "交易所名稱");
-                                    dataGridViewTSMST.Columns.Add("Column9", "13碼序號");
-                                    dataGridViewTSMST.Columns.Add("Column10", "原始13碼序號");
+                                    dataGridViewTSMST.Columns.Add("Column1", "1:  2:");
+                                    dataGridViewTSMST.Columns.Add("Column2", "0:  1: 2:");
+                                    dataGridViewTSMST.Columns.Add("Column3", "()");
+                                    dataGridViewTSMST.Columns.Add("Column4", "()");
+                                    dataGridViewTSMST.Columns.Add("Column5", "");
+                                    dataGridViewTSMST.Columns.Add("Column6", "");
+                                    dataGridViewTSMST.Columns.Add("Column7", "");
+                                    dataGridViewTSMST.Columns.Add("Column8", "");
+                                    dataGridViewTSMST.Columns.Add("Column9", "13");
+                                    dataGridViewTSMST.Columns.Add("Column10", "13");
 
-                                    dataGridViewTSMST.Columns.Add("Column11", "委託書號");
-                                    dataGridViewTSMST.Columns.Add("Column12", "商品代碼");
-                                    dataGridViewTSMST.Columns.Add("Column13", "B: 買 S:賣");
-                                    dataGridViewTSMST.Columns.Add("Column14", "委託種類別0：現股 3：自)融資4：自)融券 8：無券普賣");
-                                    dataGridViewTSMST.Columns.Add("Column15", "0=前日收盤價 (平盤價);1:漲停價 ;2:跌停價;7:使用者輸入價");
-                                    dataGridViewTSMST.Columns.Add("Column16", "委託價格");
-                                    dataGridViewTSMST.Columns.Add("Column17", "1市價;2限價;3:範圍市價");
+                                    dataGridViewTSMST.Columns.Add("Column11", "");
+                                    dataGridViewTSMST.Columns.Add("Column12", "");
+                                    dataGridViewTSMST.Columns.Add("Column13", "B:  S:");
+                                    dataGridViewTSMST.Columns.Add("Column14", "0： 3：)4：) 8：");
+                                    dataGridViewTSMST.Columns.Add("Column15", "0= ();1: ;2:;7:");
+                                    dataGridViewTSMST.Columns.Add("Column16", "");
+                                    dataGridViewTSMST.Columns.Add("Column17", "1;2;3:");
                                     dataGridViewTSMST.Columns.Add("Column18", "0：ROD 3：IOC  4：FOK");
-                                    dataGridViewTSMST.Columns.Add("Column19", "TS:張數; TF:口數");
-                                    dataGridViewTSMST.Columns.Add("Column20", "觸發價");
+                                    dataGridViewTSMST.Columns.Add("Column19", "TS:; TF:");
+                                    dataGridViewTSMST.Columns.Add("Column20", "");
 
-                                    dataGridViewTSMST.Columns.Add("Column21", "觸發時間");
-                                    dataGridViewTSMST.Columns.Add("Column22", "觸發價方向0: None;1:GTE(大於等於); 2:LTE(小於等於)");
-                                    dataGridViewTSMST.Columns.Add("Column23", "是否當沖 證券：(目前此欄無資料) 期貨：非當沖:空值；當沖:Y");
-                                    dataGridViewTSMST.Columns.Add("Column24", "下單時間");
-                                    dataGridViewTSMST.Columns.Add("Column25", "營業員代碼");
+                                    dataGridViewTSMST.Columns.Add("Column21", "");
+                                    dataGridViewTSMST.Columns.Add("Column22", "0: None;1:GTE(); 2:LTE()");
+                                    dataGridViewTSMST.Columns.Add("Column23", " ：() ：:；:Y");
+                                    dataGridViewTSMST.Columns.Add("Column24", "");
+                                    dataGridViewTSMST.Columns.Add("Column25", "");
                                     dataGridViewTSMST.Columns.Add("Column26", "USER PC IP");
-                                    dataGridViewTSMST.Columns.Add("Column27", "來源別");
-                                    dataGridViewTSMST.Columns.Add("Column28", "32：中台收單成功 33：中台收單失敗 34：洗價中 35：洗價中-觸發價更新(移動停損單) 36：洗價失敗  37：洗價觸發 38：觸發下單 39：下單失敗 40：使用者刪單 999:萬用狀態,請同時確認UniversalMsg萬用訊息");
-                                    dataGridViewTSMST.Columns.Add("Column29", "錯誤訊息註記(Y失敗;N成功)");
-                                    dataGridViewTSMST.Columns.Add("Column30", "訊息EX:[智慧單號][商品代碼]訊息內容");
+                                    dataGridViewTSMST.Columns.Add("Column27", "");
+                                    dataGridViewTSMST.Columns.Add("Column28", "32： 33： 34： 35：-() 36：  37： 38： 39： 40： 999:,UniversalMsg");
+                                    dataGridViewTSMST.Columns.Add("Column29", "(Y;N)");
+                                    dataGridViewTSMST.Columns.Add("Column30", "EX:[][]");
 
-                                    dataGridViewTSMST.Columns.Add("Column31", "更新時間");
-                                    dataGridViewTSMST.Columns.Add("Column32", "萬用訊息 適用於智慧單狀態Sataus為999情況");
+                                    dataGridViewTSMST.Columns.Add("Column31", "");
+                                    dataGridViewTSMST.Columns.Add("Column32", " Sataus999");
                                 }
                                 //dataGridViewTSMST ONLY
                                 {
-                                    dataGridViewTSMST2.Columns.Add("Column33", "MST:移動點數"); // 接續共用欄位 33
-                                    dataGridViewTSMST2.Columns.Add("Column34", "MST:觸價基準");
-                                    dataGridViewTSMST2.Columns.Add("Column35", "MST:當前市價");
-                                    dataGridViewTSMST2.Columns.Add("Column36", "前一個觸發價格");
-                                    dataGridViewTSMST2.Columns.Add("Column37", "啟動方式[0:由市價啟動 1: 自訂價格啟動]");
-                                    dataGridViewTSMST2.Columns.Add("Column38", "[自訂適用]啟動價格");
-                                    dataGridViewTSMST2.Columns.Add("Column39", "[自訂適用]觸價方向 0:none 1: 大於等於 2:小於等於");
-                                    dataGridViewTSMST2.Columns.Add("Column40", "長效單註記");
-                                    dataGridViewTSMST2.Columns.Add("Column41", "長效單序號");
+                                    dataGridViewTSMST2.Columns.Add("Column33", "MST:"); //  33
+                                    dataGridViewTSMST2.Columns.Add("Column34", "MST:");
+                                    dataGridViewTSMST2.Columns.Add("Column35", "MST:");
+                                    dataGridViewTSMST2.Columns.Add("Column36", "");
+                                    dataGridViewTSMST2.Columns.Add("Column37", "[0: 1: ]");
+                                    dataGridViewTSMST2.Columns.Add("Column38", "[]");
+                                    dataGridViewTSMST2.Columns.Add("Column39", "[] 0:none 1:  2:");
+                                    dataGridViewTSMST2.Columns.Add("Column40", "");
+                                    dataGridViewTSMST2.Columns.Add("Column41", "");
 
-                                    dataGridViewTSMST2.Columns.Add("Column42", "長效單結束日期");
-                                    dataGridViewTSMST2.Columns.Add("Column43", "是否觸發即停止(預設為true)0:條件觸發後，該筆長效單功能即失效 1:不管有無觸發，每日都送一次條件單，直到長效單結束日後才失效");
-                                    dataGridViewTSMST2.Columns.Add("Column44", "長效單類別 0：None 1：效期內觸發即失效 2：[停用]長效單結束日失效 3：效期內完全成交即失效");
-                                    dataGridViewTSMST2.Columns.Add("Column45", "長效單委託總量");
-                                    dataGridViewTSMST2.Columns.Add("Column46", "長效單成交總量");
+                                    dataGridViewTSMST2.Columns.Add("Column42", "");
+                                    dataGridViewTSMST2.Columns.Add("Column43", "(true)0:， 1:，，");
+                                    dataGridViewTSMST2.Columns.Add("Column44", " 0：None 1： 2：[] 3：");
+                                    dataGridViewTSMST2.Columns.Add("Column45", "");
+                                    dataGridViewTSMST2.Columns.Add("Column46", "");
                                 }
                             }
                             //dataGridViewTSMIOC
                             {
-                                //dataGridViewTSMIOC 證券(共用欄位)
+                                //dataGridViewTSMIOC ()
                                 {
-                                    dataGridViewTSMIOC.Columns.Add("Column1", "1:新增  2:刪除");
-                                    dataGridViewTSMIOC.Columns.Add("Column2", "0: 一般 1:零股 2:盤後");
-                                    dataGridViewTSMIOC.Columns.Add("Column3", "智慧單(母單)序號");
-                                    dataGridViewTSMIOC.Columns.Add("Column4", "委託單順序(判斷每筆回報順序使用)");
-                                    dataGridViewTSMIOC.Columns.Add("Column5", "分公司代碼");
-                                    dataGridViewTSMIOC.Columns.Add("Column6", "交易帳號");
-                                    dataGridViewTSMIOC.Columns.Add("Column7", "子帳帳號");
-                                    dataGridViewTSMIOC.Columns.Add("Column8", "交易所名稱");
-                                    dataGridViewTSMIOC.Columns.Add("Column9", "13碼序號");
-                                    dataGridViewTSMIOC.Columns.Add("Column10", "原始13碼序號");
+                                    dataGridViewTSMIOC.Columns.Add("Column1", "1:  2:");
+                                    dataGridViewTSMIOC.Columns.Add("Column2", "0:  1: 2:");
+                                    dataGridViewTSMIOC.Columns.Add("Column3", "()");
+                                    dataGridViewTSMIOC.Columns.Add("Column4", "()");
+                                    dataGridViewTSMIOC.Columns.Add("Column5", "");
+                                    dataGridViewTSMIOC.Columns.Add("Column6", "");
+                                    dataGridViewTSMIOC.Columns.Add("Column7", "");
+                                    dataGridViewTSMIOC.Columns.Add("Column8", "");
+                                    dataGridViewTSMIOC.Columns.Add("Column9", "13");
+                                    dataGridViewTSMIOC.Columns.Add("Column10", "13");
 
-                                    dataGridViewTSMIOC.Columns.Add("Column11", "委託書號");
-                                    dataGridViewTSMIOC.Columns.Add("Column12", "商品代碼");
-                                    dataGridViewTSMIOC.Columns.Add("Column13", "B: 買 S:賣");
-                                    dataGridViewTSMIOC.Columns.Add("Column14", "委託種類別0：現股 3：自)融資4：自)融券 8：無券普賣");
-                                    dataGridViewTSMIOC.Columns.Add("Column15", "0=前日收盤價 (平盤價);1:漲停價 ;2:跌停價;7:使用者輸入價");
-                                    dataGridViewTSMIOC.Columns.Add("Column16", "委託價格");
-                                    dataGridViewTSMIOC.Columns.Add("Column17", "1市價;2限價;3:範圍市價");
+                                    dataGridViewTSMIOC.Columns.Add("Column11", "");
+                                    dataGridViewTSMIOC.Columns.Add("Column12", "");
+                                    dataGridViewTSMIOC.Columns.Add("Column13", "B:  S:");
+                                    dataGridViewTSMIOC.Columns.Add("Column14", "0： 3：)4：) 8：");
+                                    dataGridViewTSMIOC.Columns.Add("Column15", "0= ();1: ;2:;7:");
+                                    dataGridViewTSMIOC.Columns.Add("Column16", "");
+                                    dataGridViewTSMIOC.Columns.Add("Column17", "1;2;3:");
                                     dataGridViewTSMIOC.Columns.Add("Column18", "0：ROD 3：IOC  4：FOK");
-                                    dataGridViewTSMIOC.Columns.Add("Column19", "TS:張數; TF:口數");
-                                    dataGridViewTSMIOC.Columns.Add("Column20", "觸發價");
+                                    dataGridViewTSMIOC.Columns.Add("Column19", "TS:; TF:");
+                                    dataGridViewTSMIOC.Columns.Add("Column20", "");
 
-                                    dataGridViewTSMIOC.Columns.Add("Column21", "觸發時間");
-                                    dataGridViewTSMIOC.Columns.Add("Column22", "觸發價方向0: None;1:GTE(大於等於); 2:LTE(小於等於)");
-                                    dataGridViewTSMIOC.Columns.Add("Column23", "是否當沖 證券：(目前此欄無資料) 期貨：非當沖:空值；當沖:Y");
-                                    dataGridViewTSMIOC.Columns.Add("Column24", "下單時間");
-                                    dataGridViewTSMIOC.Columns.Add("Column25", "營業員代碼");
+                                    dataGridViewTSMIOC.Columns.Add("Column21", "");
+                                    dataGridViewTSMIOC.Columns.Add("Column22", "0: None;1:GTE(); 2:LTE()");
+                                    dataGridViewTSMIOC.Columns.Add("Column23", " ：() ：:；:Y");
+                                    dataGridViewTSMIOC.Columns.Add("Column24", "");
+                                    dataGridViewTSMIOC.Columns.Add("Column25", "");
                                     dataGridViewTSMIOC.Columns.Add("Column26", "USER PC IP");
-                                    dataGridViewTSMIOC.Columns.Add("Column27", "來源別");
-                                    dataGridViewTSMIOC.Columns.Add("Column28", "32：中台收單成功 33：中台收單失敗 34：洗價中 35：洗價中-觸發價更新(移動停損單) 36：洗價失敗  37：洗價觸發 38：觸發下單 39：下單失敗 40：使用者刪單 999:萬用狀態,請同時確認UniversalMsg萬用訊息");
-                                    dataGridViewTSMIOC.Columns.Add("Column29", "錯誤訊息註記(Y失敗;N成功)");
-                                    dataGridViewTSMIOC.Columns.Add("Column30", "訊息EX:[智慧單號][商品代碼]訊息內容");
+                                    dataGridViewTSMIOC.Columns.Add("Column27", "");
+                                    dataGridViewTSMIOC.Columns.Add("Column28", "32： 33： 34： 35：-() 36：  37： 38： 39： 40： 999:,UniversalMsg");
+                                    dataGridViewTSMIOC.Columns.Add("Column29", "(Y;N)");
+                                    dataGridViewTSMIOC.Columns.Add("Column30", "EX:[][]");
 
-                                    dataGridViewTSMIOC.Columns.Add("Column31", "更新時間");
-                                    dataGridViewTSMIOC.Columns.Add("Column32", "萬用訊息 適用於智慧單狀態Sataus為999情況");
+                                    dataGridViewTSMIOC.Columns.Add("Column31", "");
+                                    dataGridViewTSMIOC.Columns.Add("Column32", " Sataus999");
                                 }
                                 //dataGridViewTSMIOC ONLY
                                 {
-                                    dataGridViewTSMIOC2.Columns.Add("Column33", "委託價上限"); // 接續共用欄位 33
-                                    dataGridViewTSMIOC2.Columns.Add("Column34", "委託價下限");
-                                    dataGridViewTSMIOC2.Columns.Add("Column35", "成交數量");
-                                    dataGridViewTSMIOC2.Columns.Add("Column36", "單次委託量上限");
-                                    dataGridViewTSMIOC2.Columns.Add("Column37", "總委託量");
-                                    dataGridViewTSMIOC2.Columns.Add("Column38", "開始時間");
+                                    dataGridViewTSMIOC2.Columns.Add("Column33", ""); //  33
+                                    dataGridViewTSMIOC2.Columns.Add("Column34", "");
+                                    dataGridViewTSMIOC2.Columns.Add("Column35", "");
+                                    dataGridViewTSMIOC2.Columns.Add("Column36", "");
+                                    dataGridViewTSMIOC2.Columns.Add("Column37", "");
+                                    dataGridViewTSMIOC2.Columns.Add("Column38", "");
                                 }
                             }
                             //dataGridViewTSMIT
                             {
-                                //dataGridViewTSMIT 證券(共用欄位)
+                                //dataGridViewTSMIT ()
                                 {
-                                    dataGridViewTSMIT.Columns.Add("Column1", "1:新增  2:刪除");
-                                    dataGridViewTSMIT.Columns.Add("Column2", "0: 一般 1:零股 2:盤後");
-                                    dataGridViewTSMIT.Columns.Add("Column3", "智慧單(母單)序號");
-                                    dataGridViewTSMIT.Columns.Add("Column4", "委託單順序(判斷每筆回報順序使用)");
-                                    dataGridViewTSMIT.Columns.Add("Column5", "分公司代碼");
-                                    dataGridViewTSMIT.Columns.Add("Column6", "交易帳號");
-                                    dataGridViewTSMIT.Columns.Add("Column7", "子帳帳號");
-                                    dataGridViewTSMIT.Columns.Add("Column8", "交易所名稱");
-                                    dataGridViewTSMIT.Columns.Add("Column9", "13碼序號");
-                                    dataGridViewTSMIT.Columns.Add("Column10", "原始13碼序號");
+                                    dataGridViewTSMIT.Columns.Add("Column1", "1:  2:");
+                                    dataGridViewTSMIT.Columns.Add("Column2", "0:  1: 2:");
+                                    dataGridViewTSMIT.Columns.Add("Column3", "()");
+                                    dataGridViewTSMIT.Columns.Add("Column4", "()");
+                                    dataGridViewTSMIT.Columns.Add("Column5", "");
+                                    dataGridViewTSMIT.Columns.Add("Column6", "");
+                                    dataGridViewTSMIT.Columns.Add("Column7", "");
+                                    dataGridViewTSMIT.Columns.Add("Column8", "");
+                                    dataGridViewTSMIT.Columns.Add("Column9", "13");
+                                    dataGridViewTSMIT.Columns.Add("Column10", "13");
 
-                                    dataGridViewTSMIT.Columns.Add("Column11", "委託書號");
-                                    dataGridViewTSMIT.Columns.Add("Column12", "商品代碼");
-                                    dataGridViewTSMIT.Columns.Add("Column13", "B: 買 S:賣");
-                                    dataGridViewTSMIT.Columns.Add("Column14", "委託種類別0：現股 3：自)融資4：自)融券 8：無券普賣");
-                                    dataGridViewTSMIT.Columns.Add("Column15", "0=前日收盤價 (平盤價);1:漲停價 ;2:跌停價;7:使用者輸入價");
-                                    dataGridViewTSMIT.Columns.Add("Column16", "委託價格");
-                                    dataGridViewTSMIT.Columns.Add("Column17", "1市價;2限價;3:範圍市價");
+                                    dataGridViewTSMIT.Columns.Add("Column11", "");
+                                    dataGridViewTSMIT.Columns.Add("Column12", "");
+                                    dataGridViewTSMIT.Columns.Add("Column13", "B:  S:");
+                                    dataGridViewTSMIT.Columns.Add("Column14", "0： 3：)4：) 8：");
+                                    dataGridViewTSMIT.Columns.Add("Column15", "0= ();1: ;2:;7:");
+                                    dataGridViewTSMIT.Columns.Add("Column16", "");
+                                    dataGridViewTSMIT.Columns.Add("Column17", "1;2;3:");
                                     dataGridViewTSMIT.Columns.Add("Column18", "0：ROD 3：IOC  4：FOK");
-                                    dataGridViewTSMIT.Columns.Add("Column19", "TS:張數; TF:口數");
-                                    dataGridViewTSMIT.Columns.Add("Column20", "觸發價");
+                                    dataGridViewTSMIT.Columns.Add("Column19", "TS:; TF:");
+                                    dataGridViewTSMIT.Columns.Add("Column20", "");
 
-                                    dataGridViewTSMIT.Columns.Add("Column21", "觸發時間");
-                                    dataGridViewTSMIT.Columns.Add("Column22", "觸發價方向0: None;1:GTE(大於等於); 2:LTE(小於等於)");
-                                    dataGridViewTSMIT.Columns.Add("Column23", "是否當沖 證券：(目前此欄無資料) 期貨：非當沖:空值；當沖:Y");
-                                    dataGridViewTSMIT.Columns.Add("Column24", "下單時間");
-                                    dataGridViewTSMIT.Columns.Add("Column25", "營業員代碼");
+                                    dataGridViewTSMIT.Columns.Add("Column21", "");
+                                    dataGridViewTSMIT.Columns.Add("Column22", "0: None;1:GTE(); 2:LTE()");
+                                    dataGridViewTSMIT.Columns.Add("Column23", " ：() ：:；:Y");
+                                    dataGridViewTSMIT.Columns.Add("Column24", "");
+                                    dataGridViewTSMIT.Columns.Add("Column25", "");
                                     dataGridViewTSMIT.Columns.Add("Column26", "USER PC IP");
-                                    dataGridViewTSMIT.Columns.Add("Column27", "來源別");
-                                    dataGridViewTSMIT.Columns.Add("Column28", "32：中台收單成功 33：中台收單失敗 34：洗價中 35：洗價中-觸發價更新(移動停損單) 36：洗價失敗  37：洗價觸發 38：觸發下單 39：下單失敗 40：使用者刪單 999:萬用狀態,請同時確認UniversalMsg萬用訊息");
-                                    dataGridViewTSMIT.Columns.Add("Column29", "錯誤訊息註記(Y失敗;N成功)");
-                                    dataGridViewTSMIT.Columns.Add("Column30", "訊息EX:[智慧單號][商品代碼]訊息內容");
+                                    dataGridViewTSMIT.Columns.Add("Column27", "");
+                                    dataGridViewTSMIT.Columns.Add("Column28", "32： 33： 34： 35：-() 36：  37： 38： 39： 40： 999:,UniversalMsg");
+                                    dataGridViewTSMIT.Columns.Add("Column29", "(Y;N)");
+                                    dataGridViewTSMIT.Columns.Add("Column30", "EX:[][]");
 
-                                    dataGridViewTSMIT.Columns.Add("Column31", "更新時間");
-                                    dataGridViewTSMIT.Columns.Add("Column32", "萬用訊息 適用於智慧單狀態Sataus為999情況");
+                                    dataGridViewTSMIT.Columns.Add("Column31", "");
+                                    dataGridViewTSMIT.Columns.Add("Column32", " Sataus999");
                                 }
                                 //dataGridViewTSMIT ONLY
                                 {
-                                    dataGridViewTSMIT2.Columns.Add("Column33", "當前市價，若下單未填則為0"); // 接續共用欄位 33
-                                    dataGridViewTSMIT2.Columns.Add("Column34", "成交價觸發價格");
-                                    dataGridViewTSMIT2.Columns.Add("Column35", "預風控註記");
-                                    dataGridViewTSMIT2.Columns.Add("Column36", "拆單註記");
-                                    dataGridViewTSMIT2.Columns.Add("Column37", "長效單註記");
-                                    dataGridViewTSMIT2.Columns.Add("Column38", "長效單序號");
-                                    dataGridViewTSMIT2.Columns.Add("Column39", "長效單結束日期");
+                                    dataGridViewTSMIT2.Columns.Add("Column33", "，0"); //  33
+                                    dataGridViewTSMIT2.Columns.Add("Column34", "");
+                                    dataGridViewTSMIT2.Columns.Add("Column35", "");
+                                    dataGridViewTSMIT2.Columns.Add("Column36", "");
+                                    dataGridViewTSMIT2.Columns.Add("Column37", "");
+                                    dataGridViewTSMIT2.Columns.Add("Column38", "");
+                                    dataGridViewTSMIT2.Columns.Add("Column39", "");
 
-                                    dataGridViewTSMIT2.Columns.Add("Column40", "是否觸發即停止(預設為true)0:條件觸發後，該筆長效單功能即失效 1:不管有無觸發，每日都送一次條件單，直到長效單結束日後才失效");
-                                    dataGridViewTSMIT2.Columns.Add("Column41", "長效單類別 0：None 1：效期內觸發即失效 2：[停用]長效單結束日失效 3：效期內完全成交即失效");
-                                    dataGridViewTSMIT2.Columns.Add("Column42", "長效單委託總量");
-                                    dataGridViewTSMIT2.Columns.Add("Column43", "長效單成交總量");
+                                    dataGridViewTSMIT2.Columns.Add("Column40", "(true)0:， 1:，，");
+                                    dataGridViewTSMIT2.Columns.Add("Column41", " 0：None 1： 2：[] 3：");
+                                    dataGridViewTSMIT2.Columns.Add("Column42", "");
+                                    dataGridViewTSMIT2.Columns.Add("Column43", "");
                                 }
                             }
                             //dataGridViewTSDayTrading
                             {
-                                //dataGridViewTSDayTrading 證券(共用欄位)
+                                //dataGridViewTSDayTrading ()
                                 {
-                                    dataGridViewTSDayTrading.Columns.Add("Column1", "1:新增  2:刪除");
-                                    dataGridViewTSDayTrading.Columns.Add("Column2", "0: 一般 1:零股 2:盤後");
-                                    dataGridViewTSDayTrading.Columns.Add("Column3", "智慧單(母單)序號");
-                                    dataGridViewTSDayTrading.Columns.Add("Column4", "委託單順序(判斷每筆回報順序使用)");
-                                    dataGridViewTSDayTrading.Columns.Add("Column5", "分公司代碼");
-                                    dataGridViewTSDayTrading.Columns.Add("Column6", "交易帳號");
-                                    dataGridViewTSDayTrading.Columns.Add("Column7", "子帳帳號");
-                                    dataGridViewTSDayTrading.Columns.Add("Column8", "交易所名稱");
-                                    dataGridViewTSDayTrading.Columns.Add("Column9", "13碼序號");
-                                    dataGridViewTSDayTrading.Columns.Add("Column10", "原始13碼序號");
+                                    dataGridViewTSDayTrading.Columns.Add("Column1", "1:  2:");
+                                    dataGridViewTSDayTrading.Columns.Add("Column2", "0:  1: 2:");
+                                    dataGridViewTSDayTrading.Columns.Add("Column3", "()");
+                                    dataGridViewTSDayTrading.Columns.Add("Column4", "()");
+                                    dataGridViewTSDayTrading.Columns.Add("Column5", "");
+                                    dataGridViewTSDayTrading.Columns.Add("Column6", "");
+                                    dataGridViewTSDayTrading.Columns.Add("Column7", "");
+                                    dataGridViewTSDayTrading.Columns.Add("Column8", "");
+                                    dataGridViewTSDayTrading.Columns.Add("Column9", "13");
+                                    dataGridViewTSDayTrading.Columns.Add("Column10", "13");
 
-                                    dataGridViewTSDayTrading.Columns.Add("Column11", "委託書號");
-                                    dataGridViewTSDayTrading.Columns.Add("Column12", "商品代碼");
-                                    dataGridViewTSDayTrading.Columns.Add("Column13", "B: 買 S:賣");
-                                    dataGridViewTSDayTrading.Columns.Add("Column14", "委託種類別0：現股 3：自)融資4：自)融券 8：無券普賣");
-                                    dataGridViewTSDayTrading.Columns.Add("Column15", "0=前日收盤價 (平盤價);1:漲停價 ;2:跌停價;7:使用者輸入價");
-                                    dataGridViewTSDayTrading.Columns.Add("Column16", "委託價格");
-                                    dataGridViewTSDayTrading.Columns.Add("Column17", "1市價;2限價;3:範圍市價");
+                                    dataGridViewTSDayTrading.Columns.Add("Column11", "");
+                                    dataGridViewTSDayTrading.Columns.Add("Column12", "");
+                                    dataGridViewTSDayTrading.Columns.Add("Column13", "B:  S:");
+                                    dataGridViewTSDayTrading.Columns.Add("Column14", "0： 3：)4：) 8：");
+                                    dataGridViewTSDayTrading.Columns.Add("Column15", "0= ();1: ;2:;7:");
+                                    dataGridViewTSDayTrading.Columns.Add("Column16", "");
+                                    dataGridViewTSDayTrading.Columns.Add("Column17", "1;2;3:");
                                     dataGridViewTSDayTrading.Columns.Add("Column18", "0：ROD 3：IOC  4：FOK");
-                                    dataGridViewTSDayTrading.Columns.Add("Column19", "TS:張數; TF:口數");
-                                    dataGridViewTSDayTrading.Columns.Add("Column20", "觸發價");
+                                    dataGridViewTSDayTrading.Columns.Add("Column19", "TS:; TF:");
+                                    dataGridViewTSDayTrading.Columns.Add("Column20", "");
 
-                                    dataGridViewTSDayTrading.Columns.Add("Column21", "觸發時間");
-                                    dataGridViewTSDayTrading.Columns.Add("Column22", "觸發價方向0: None;1:GTE(大於等於); 2:LTE(小於等於)");
-                                    dataGridViewTSDayTrading.Columns.Add("Column23", "是否當沖 證券：(目前此欄無資料) 期貨：非當沖:空值；當沖:Y");
-                                    dataGridViewTSDayTrading.Columns.Add("Column24", "下單時間");
-                                    dataGridViewTSDayTrading.Columns.Add("Column25", "營業員代碼");
+                                    dataGridViewTSDayTrading.Columns.Add("Column21", "");
+                                    dataGridViewTSDayTrading.Columns.Add("Column22", "0: None;1:GTE(); 2:LTE()");
+                                    dataGridViewTSDayTrading.Columns.Add("Column23", " ：() ：:；:Y");
+                                    dataGridViewTSDayTrading.Columns.Add("Column24", "");
+                                    dataGridViewTSDayTrading.Columns.Add("Column25", "");
                                     dataGridViewTSDayTrading.Columns.Add("Column26", "USER PC IP");
-                                    dataGridViewTSDayTrading.Columns.Add("Column27", "來源別");
-                                    dataGridViewTSDayTrading.Columns.Add("Column28", "32：中台收單成功 33：中台收單失敗 34：洗價中 35：洗價中-觸發價更新(移動停損單) 36：洗價失敗  37：洗價觸發 38：觸發下單 39：下單失敗 40：使用者刪單 999:萬用狀態,請同時確認UniversalMsg萬用訊息");
-                                    dataGridViewTSDayTrading.Columns.Add("Column29", "錯誤訊息註記(Y失敗;N成功)");
-                                    dataGridViewTSDayTrading.Columns.Add("Column30", "訊息EX:[智慧單號][商品代碼]訊息內容");
+                                    dataGridViewTSDayTrading.Columns.Add("Column27", "");
+                                    dataGridViewTSDayTrading.Columns.Add("Column28", "32： 33： 34： 35：-() 36：  37： 38： 39： 40： 999:,UniversalMsg");
+                                    dataGridViewTSDayTrading.Columns.Add("Column29", "(Y;N)");
+                                    dataGridViewTSDayTrading.Columns.Add("Column30", "EX:[][]");
 
-                                    dataGridViewTSDayTrading.Columns.Add("Column31", "更新時間");
-                                    dataGridViewTSDayTrading.Columns.Add("Column32", "萬用訊息 適用於智慧單狀態Sataus為999情況");
+                                    dataGridViewTSDayTrading.Columns.Add("Column31", "");
+                                    dataGridViewTSDayTrading.Columns.Add("Column32", " Sataus999");
                                 }
                                 //dataGridViewTSDayTrading ONLY
                                 {
-                                    dataGridViewTSDayTrading2.Columns.Add("Column33", "是否啟用MIT進場 0:否;1:是"); // 接續共用欄位 33
-                                    dataGridViewTSDayTrading2.Columns.Add("Column34", "當下市價");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column35", "出清方式17:只勾選時間出清條件18:GTE(條件一)19:LTE(條件二)20:GTE_LTE(條件一+條件二)");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column36", "停利洗價模式1:指定價格;2:指定漲跌幅(%)");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column37", "停利指定漲跌幅");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column38", "停利觸發價");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column39", "停利委託方式1:市價 ;2:限價");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column40", "停利委託價");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column33", "MIT 0:;1:"); //  33
+                                    dataGridViewTSDayTrading2.Columns.Add("Column34", "");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column35", "17:18:GTE()19:LTE()20:GTE_LTE(+)");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column36", "1:;2:(%)");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column37", "");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column38", "");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column39", "1: ;2:");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column40", "");
 
-                                    dataGridViewTSDayTrading2.Columns.Add("Column41", "停利委託時效 0:ROD當日有效 3:IOC 4:FOK");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column42", "停損洗價模式1:指定價格 ;2:指定漲跌幅(%)");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column43", "停損指定漲跌幅");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column44", "停損觸發價");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column45", "停損委託時效 0:ROD當日有效 3:IOC 4:FOK");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column46", "是否執行時間出清 0:否;1:是");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column47", "指定出清時間");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column48", "時間出清委託方式 1:市價;2:限價");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column49", "時間出清委託價");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column50", "時間出清委託時效 0:當日有效 3:IOC(立即成交否則取消) 4:FOK(全部成交否則取消)");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column41", " 0:ROD 3:IOC 4:FOK");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column42", "1: ;2:(%)");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column43", "");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column44", "");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column45", " 0:ROD 3:IOC 4:FOK");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column46", " 0:;1:");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column47", "");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column48", " 1:;2:");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column49", "");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column50", " 0: 3:IOC() 4:FOK()");
 
-                                    dataGridViewTSDayTrading2.Columns.Add("Column51", "是否執行盤後定價0:否;1:是");
-                                    dataGridViewTSDayTrading2.Columns.Add("Column52", "盤後定價執行時間");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column51", "0:;1:");
+                                    dataGridViewTSDayTrading2.Columns.Add("Column52", "");
                                 }
                             }
                             //dataGridViewTSClearOut
                             {
-                                //dataGridViewTSClearOut 證券(共用欄位)
+                                //dataGridViewTSClearOut ()
                                 {
-                                    dataGridViewTSClearOut.Columns.Add("Column1", "1:新增  2:刪除");
-                                    dataGridViewTSClearOut.Columns.Add("Column2", "0: 一般 1:零股 2:盤後");
-                                    dataGridViewTSClearOut.Columns.Add("Column3", "智慧單(母單)序號");
-                                    dataGridViewTSClearOut.Columns.Add("Column4", "委託單順序(判斷每筆回報順序使用)");
-                                    dataGridViewTSClearOut.Columns.Add("Column5", "分公司代碼");
-                                    dataGridViewTSClearOut.Columns.Add("Column6", "交易帳號");
-                                    dataGridViewTSClearOut.Columns.Add("Column7", "子帳帳號");
-                                    dataGridViewTSClearOut.Columns.Add("Column8", "交易所名稱");
-                                    dataGridViewTSClearOut.Columns.Add("Column9", "13碼序號");
-                                    dataGridViewTSClearOut.Columns.Add("Column10", "原始13碼序號");
+                                    dataGridViewTSClearOut.Columns.Add("Column1", "1:  2:");
+                                    dataGridViewTSClearOut.Columns.Add("Column2", "0:  1: 2:");
+                                    dataGridViewTSClearOut.Columns.Add("Column3", "()");
+                                    dataGridViewTSClearOut.Columns.Add("Column4", "()");
+                                    dataGridViewTSClearOut.Columns.Add("Column5", "");
+                                    dataGridViewTSClearOut.Columns.Add("Column6", "");
+                                    dataGridViewTSClearOut.Columns.Add("Column7", "");
+                                    dataGridViewTSClearOut.Columns.Add("Column8", "");
+                                    dataGridViewTSClearOut.Columns.Add("Column9", "13");
+                                    dataGridViewTSClearOut.Columns.Add("Column10", "13");
 
-                                    dataGridViewTSClearOut.Columns.Add("Column11", "委託書號");
-                                    dataGridViewTSClearOut.Columns.Add("Column12", "商品代碼");
-                                    dataGridViewTSClearOut.Columns.Add("Column13", "B: 買 S:賣");
-                                    dataGridViewTSClearOut.Columns.Add("Column14", "委託種類別0：現股 3：自)融資4：自)融券 8：無券普賣");
-                                    dataGridViewTSClearOut.Columns.Add("Column15", "0=前日收盤價 (平盤價);1:漲停價 ;2:跌停價;7:使用者輸入價");
-                                    dataGridViewTSClearOut.Columns.Add("Column16", "委託價格");
-                                    dataGridViewTSClearOut.Columns.Add("Column17", "1市價;2限價;3:範圍市價");
+                                    dataGridViewTSClearOut.Columns.Add("Column11", "");
+                                    dataGridViewTSClearOut.Columns.Add("Column12", "");
+                                    dataGridViewTSClearOut.Columns.Add("Column13", "B:  S:");
+                                    dataGridViewTSClearOut.Columns.Add("Column14", "0： 3：)4：) 8：");
+                                    dataGridViewTSClearOut.Columns.Add("Column15", "0= ();1: ;2:;7:");
+                                    dataGridViewTSClearOut.Columns.Add("Column16", "");
+                                    dataGridViewTSClearOut.Columns.Add("Column17", "1;2;3:");
                                     dataGridViewTSClearOut.Columns.Add("Column18", "0：ROD 3：IOC  4：FOK");
-                                    dataGridViewTSClearOut.Columns.Add("Column19", "TS:張數; TF:口數");
-                                    dataGridViewTSClearOut.Columns.Add("Column20", "觸發價");
+                                    dataGridViewTSClearOut.Columns.Add("Column19", "TS:; TF:");
+                                    dataGridViewTSClearOut.Columns.Add("Column20", "");
 
-                                    dataGridViewTSClearOut.Columns.Add("Column21", "觸發時間");
-                                    dataGridViewTSClearOut.Columns.Add("Column22", "觸發價方向0: None;1:GTE(大於等於); 2:LTE(小於等於)");
-                                    dataGridViewTSClearOut.Columns.Add("Column23", "是否當沖 證券：(目前此欄無資料) 期貨：非當沖:空值；當沖:Y");
-                                    dataGridViewTSClearOut.Columns.Add("Column24", "下單時間");
-                                    dataGridViewTSClearOut.Columns.Add("Column25", "營業員代碼");
+                                    dataGridViewTSClearOut.Columns.Add("Column21", "");
+                                    dataGridViewTSClearOut.Columns.Add("Column22", "0: None;1:GTE(); 2:LTE()");
+                                    dataGridViewTSClearOut.Columns.Add("Column23", " ：() ：:；:Y");
+                                    dataGridViewTSClearOut.Columns.Add("Column24", "");
+                                    dataGridViewTSClearOut.Columns.Add("Column25", "");
                                     dataGridViewTSClearOut.Columns.Add("Column26", "USER PC IP");
-                                    dataGridViewTSClearOut.Columns.Add("Column27", "來源別");
-                                    dataGridViewTSClearOut.Columns.Add("Column28", "32：中台收單成功 33：中台收單失敗 34：洗價中 35：洗價中-觸發價更新(移動停損單) 36：洗價失敗  37：洗價觸發 38：觸發下單 39：下單失敗 40：使用者刪單 999:萬用狀態,請同時確認UniversalMsg萬用訊息");
-                                    dataGridViewTSClearOut.Columns.Add("Column29", "錯誤訊息註記(Y失敗;N成功)");
-                                    dataGridViewTSClearOut.Columns.Add("Column30", "訊息EX:[智慧單號][商品代碼]訊息內容");
+                                    dataGridViewTSClearOut.Columns.Add("Column27", "");
+                                    dataGridViewTSClearOut.Columns.Add("Column28", "32： 33： 34： 35：-() 36：  37： 38： 39： 40： 999:,UniversalMsg");
+                                    dataGridViewTSClearOut.Columns.Add("Column29", "(Y;N)");
+                                    dataGridViewTSClearOut.Columns.Add("Column30", "EX:[][]");
 
-                                    dataGridViewTSClearOut.Columns.Add("Column31", "更新時間");
-                                    dataGridViewTSClearOut.Columns.Add("Column32", "萬用訊息 適用於智慧單狀態Sataus為999情況");
+                                    dataGridViewTSClearOut.Columns.Add("Column31", "");
+                                    dataGridViewTSClearOut.Columns.Add("Column32", " Sataus999");
                                 }
                                 //dataGridViewTSClearOut ONLY
                                 {
-                                    dataGridViewTSClearOut2.Columns.Add("Column33", "17:只勾選時間出清條件 18:GTE(條件一) 19:LTE(條件二) 20:GTE_LTE(條件一+條件二)"); // 接續共用欄位 33
-                                    dataGridViewTSClearOut2.Columns.Add("Column34", "條件一觸發價");
-                                    dataGridViewTSClearOut2.Columns.Add("Column35", "條件一委託方式 1:市價; 2:限價");
-                                    dataGridViewTSClearOut2.Columns.Add("Column36", "條件一委託價");
-                                    dataGridViewTSClearOut2.Columns.Add("Column37", "條件一委託時效 0:ROD;3:IOC;4:FOK");
-                                    dataGridViewTSClearOut2.Columns.Add("Column38", "條件二觸發價");
-                                    dataGridViewTSClearOut2.Columns.Add("Column39", "條件二委託方式 1:市價; 2:限價");
-                                    dataGridViewTSClearOut2.Columns.Add("Column40", "條件二委託價");
+                                    dataGridViewTSClearOut2.Columns.Add("Column33", "17: 18:GTE() 19:LTE() 20:GTE_LTE(+)"); //  33
+                                    dataGridViewTSClearOut2.Columns.Add("Column34", "");
+                                    dataGridViewTSClearOut2.Columns.Add("Column35", " 1:; 2:");
+                                    dataGridViewTSClearOut2.Columns.Add("Column36", "");
+                                    dataGridViewTSClearOut2.Columns.Add("Column37", " 0:ROD;3:IOC;4:FOK");
+                                    dataGridViewTSClearOut2.Columns.Add("Column38", "");
+                                    dataGridViewTSClearOut2.Columns.Add("Column39", " 1:; 2:");
+                                    dataGridViewTSClearOut2.Columns.Add("Column40", "");
 
-                                    dataGridViewTSClearOut2.Columns.Add("Column41", "條件二委託時效 0:ROD;3:IOC;4:FOK");
-                                    dataGridViewTSClearOut2.Columns.Add("Column42", "是否執行時間出清 0:否;1:是");
-                                    dataGridViewTSClearOut2.Columns.Add("Column43", "指定出清時間");
-                                    dataGridViewTSClearOut2.Columns.Add("Column44", "時間出清委託方式 1:市價; 2:限價");
-                                    dataGridViewTSClearOut2.Columns.Add("Column45", "時間出清委託價");
-                                    dataGridViewTSClearOut2.Columns.Add("Column46", "時間出清委託時效 0:ROD;3:IOC;4:FOK");
-                                    dataGridViewTSClearOut2.Columns.Add("Column47", "是否執行盤後定價 0:否;1:是");
-                                    dataGridViewTSClearOut2.Columns.Add("Column48", "盤後定價執行時間");
-                                    dataGridViewTSClearOut2.Columns.Add("Column49", "條件一是否有觸發");
-                                    dataGridViewTSClearOut2.Columns.Add("Column50", "條件一觸發價格");
+                                    dataGridViewTSClearOut2.Columns.Add("Column41", " 0:ROD;3:IOC;4:FOK");
+                                    dataGridViewTSClearOut2.Columns.Add("Column42", " 0:;1:");
+                                    dataGridViewTSClearOut2.Columns.Add("Column43", "");
+                                    dataGridViewTSClearOut2.Columns.Add("Column44", " 1:; 2:");
+                                    dataGridViewTSClearOut2.Columns.Add("Column45", "");
+                                    dataGridViewTSClearOut2.Columns.Add("Column46", " 0:ROD;3:IOC;4:FOK");
+                                    dataGridViewTSClearOut2.Columns.Add("Column47", " 0:;1:");
+                                    dataGridViewTSClearOut2.Columns.Add("Column48", "");
+                                    dataGridViewTSClearOut2.Columns.Add("Column49", "");
+                                    dataGridViewTSClearOut2.Columns.Add("Column50", "");
 
-                                    dataGridViewTSClearOut2.Columns.Add("Column51", "條件二是否有觸發");
-                                    dataGridViewTSClearOut2.Columns.Add("Column52", "條件二觸發價格");
-                                    dataGridViewTSClearOut2.Columns.Add("Column53", "時間出清是否有觸發");
-                                    dataGridViewTSClearOut2.Columns.Add("Column54", "盤後定價是否有觸發");
-                                    dataGridViewTSClearOut2.Columns.Add("Column55", "總委託量");
-                                    dataGridViewTSClearOut2.Columns.Add("Column56", "已成交量");
-                                    dataGridViewTSClearOut2.Columns.Add("Column57", "進場成交價");
+                                    dataGridViewTSClearOut2.Columns.Add("Column51", "");
+                                    dataGridViewTSClearOut2.Columns.Add("Column52", "");
+                                    dataGridViewTSClearOut2.Columns.Add("Column53", "");
+                                    dataGridViewTSClearOut2.Columns.Add("Column54", "");
+                                    dataGridViewTSClearOut2.Columns.Add("Column55", "");
+                                    dataGridViewTSClearOut2.Columns.Add("Column56", "");
+                                    dataGridViewTSClearOut2.Columns.Add("Column57", "");
                                 }
                             }
                             //dataGridViewTSOCO
                             {
-                                //dataGridViewTSOCO 證券(共用欄位)
+                                //dataGridViewTSOCO ()
                                 {
-                                    dataGridViewTSOCO.Columns.Add("Column1", "1:新增  2:刪除");
-                                    dataGridViewTSOCO.Columns.Add("Column2", "0: 一般 1:零股 2:盤後");
-                                    dataGridViewTSOCO.Columns.Add("Column3", "智慧單(母單)序號");
-                                    dataGridViewTSOCO.Columns.Add("Column4", "委託單順序(判斷每筆回報順序使用)");
-                                    dataGridViewTSOCO.Columns.Add("Column5", "分公司代碼");
-                                    dataGridViewTSOCO.Columns.Add("Column6", "交易帳號");
-                                    dataGridViewTSOCO.Columns.Add("Column7", "子帳帳號");
-                                    dataGridViewTSOCO.Columns.Add("Column8", "交易所名稱");
-                                    dataGridViewTSOCO.Columns.Add("Column9", "13碼序號");
-                                    dataGridViewTSOCO.Columns.Add("Column10", "原始13碼序號");
+                                    dataGridViewTSOCO.Columns.Add("Column1", "1:  2:");
+                                    dataGridViewTSOCO.Columns.Add("Column2", "0:  1: 2:");
+                                    dataGridViewTSOCO.Columns.Add("Column3", "()");
+                                    dataGridViewTSOCO.Columns.Add("Column4", "()");
+                                    dataGridViewTSOCO.Columns.Add("Column5", "");
+                                    dataGridViewTSOCO.Columns.Add("Column6", "");
+                                    dataGridViewTSOCO.Columns.Add("Column7", "");
+                                    dataGridViewTSOCO.Columns.Add("Column8", "");
+                                    dataGridViewTSOCO.Columns.Add("Column9", "13");
+                                    dataGridViewTSOCO.Columns.Add("Column10", "13");
 
-                                    dataGridViewTSOCO.Columns.Add("Column11", "委託書號");
-                                    dataGridViewTSOCO.Columns.Add("Column12", "商品代碼");
-                                    dataGridViewTSOCO.Columns.Add("Column13", "B: 買 S:賣");
-                                    dataGridViewTSOCO.Columns.Add("Column14", "委託種類別0：現股 3：自)融資4：自)融券 8：無券普賣");
-                                    dataGridViewTSOCO.Columns.Add("Column15", "0=前日收盤價 (平盤價);1:漲停價 ;2:跌停價;7:使用者輸入價");
-                                    dataGridViewTSOCO.Columns.Add("Column16", "委託價格");
-                                    dataGridViewTSOCO.Columns.Add("Column17", "1市價;2限價;3:範圍市價");
+                                    dataGridViewTSOCO.Columns.Add("Column11", "");
+                                    dataGridViewTSOCO.Columns.Add("Column12", "");
+                                    dataGridViewTSOCO.Columns.Add("Column13", "B:  S:");
+                                    dataGridViewTSOCO.Columns.Add("Column14", "0： 3：)4：) 8：");
+                                    dataGridViewTSOCO.Columns.Add("Column15", "0= ();1: ;2:;7:");
+                                    dataGridViewTSOCO.Columns.Add("Column16", "");
+                                    dataGridViewTSOCO.Columns.Add("Column17", "1;2;3:");
                                     dataGridViewTSOCO.Columns.Add("Column18", "0：ROD 3：IOC  4：FOK");
-                                    dataGridViewTSOCO.Columns.Add("Column19", "TS:張數; TF:口數");
-                                    dataGridViewTSOCO.Columns.Add("Column20", "觸發價");
+                                    dataGridViewTSOCO.Columns.Add("Column19", "TS:; TF:");
+                                    dataGridViewTSOCO.Columns.Add("Column20", "");
 
-                                    dataGridViewTSOCO.Columns.Add("Column21", "觸發時間");
-                                    dataGridViewTSOCO.Columns.Add("Column22", "觸發價方向0: None;1:GTE(大於等於); 2:LTE(小於等於)");
-                                    dataGridViewTSOCO.Columns.Add("Column23", "是否當沖 證券：(目前此欄無資料) 期貨：非當沖:空值；當沖:Y");
-                                    dataGridViewTSOCO.Columns.Add("Column24", "下單時間");
-                                    dataGridViewTSOCO.Columns.Add("Column25", "營業員代碼");
+                                    dataGridViewTSOCO.Columns.Add("Column21", "");
+                                    dataGridViewTSOCO.Columns.Add("Column22", "0: None;1:GTE(); 2:LTE()");
+                                    dataGridViewTSOCO.Columns.Add("Column23", " ：() ：:；:Y");
+                                    dataGridViewTSOCO.Columns.Add("Column24", "");
+                                    dataGridViewTSOCO.Columns.Add("Column25", "");
                                     dataGridViewTSOCO.Columns.Add("Column26", "USER PC IP");
-                                    dataGridViewTSOCO.Columns.Add("Column27", "來源別");
-                                    dataGridViewTSOCO.Columns.Add("Column28", "32：中台收單成功 33：中台收單失敗 34：洗價中 35：洗價中-觸發價更新(移動停損單) 36：洗價失敗  37：洗價觸發 38：觸發下單 39：下單失敗 40：使用者刪單 999:萬用狀態,請同時確認UniversalMsg萬用訊息");
-                                    dataGridViewTSOCO.Columns.Add("Column29", "錯誤訊息註記(Y失敗;N成功)");
-                                    dataGridViewTSOCO.Columns.Add("Column30", "訊息EX:[智慧單號][商品代碼]訊息內容");
+                                    dataGridViewTSOCO.Columns.Add("Column27", "");
+                                    dataGridViewTSOCO.Columns.Add("Column28", "32： 33： 34： 35：-() 36：  37： 38： 39： 40： 999:,UniversalMsg");
+                                    dataGridViewTSOCO.Columns.Add("Column29", "(Y;N)");
+                                    dataGridViewTSOCO.Columns.Add("Column30", "EX:[][]");
 
-                                    dataGridViewTSOCO.Columns.Add("Column31", "更新時間");
-                                    dataGridViewTSOCO.Columns.Add("Column32", "萬用訊息 適用於智慧單狀態Sataus為999情況");
+                                    dataGridViewTSOCO.Columns.Add("Column31", "");
+                                    dataGridViewTSOCO.Columns.Add("Column32", " Sataus999");
                                 }
                                 //dataGridViewTSOCO ONLY
                                 {
-                                    dataGridViewTSOCO2.Columns.Add("Column33", "第一腳觸發價"); // 接續共用欄位 33
-                                    dataGridViewTSOCO2.Columns.Add("Column34", "第二腳觸發價");
-                                    dataGridViewTSOCO2.Columns.Add("Column35", "第二腳委託價");
-                                    dataGridViewTSOCO2.Columns.Add("Column36", "第二腳委託價格類別 1：市價 2：限價");
-                                    dataGridViewTSOCO2.Columns.Add("Column37", "第二腳委託時效 0:ROD;3:IOC;4:FOK");
-                                    dataGridViewTSOCO2.Columns.Add("Column38", "[限證券]第二腳委託種類別 0：現股 3：(融)自資 4：(融)自券 8：無券普賣");
-                                    dataGridViewTSOCO2.Columns.Add("Column39", "第二腳委託價格別");
-                                    dataGridViewTSOCO2.Columns.Add("Column40", "0:前日收盤價 1:漲停價 2:跌停價 7使用者輸入價");
+                                    dataGridViewTSOCO2.Columns.Add("Column33", ""); //  33
+                                    dataGridViewTSOCO2.Columns.Add("Column34", "");
+                                    dataGridViewTSOCO2.Columns.Add("Column35", "");
+                                    dataGridViewTSOCO2.Columns.Add("Column36", " 1： 2：");
+                                    dataGridViewTSOCO2.Columns.Add("Column37", " 0:ROD;3:IOC;4:FOK");
+                                    dataGridViewTSOCO2.Columns.Add("Column38", "[] 0： 3：() 4：() 8：");
+                                    dataGridViewTSOCO2.Columns.Add("Column39", "");
+                                    dataGridViewTSOCO2.Columns.Add("Column40", "0: 1: 2: 7");
                                 }
                             }
                             //dataGridViewTSAB
                             {
-                                //dataGridViewTSAB 證券(共用欄位)
+                                //dataGridViewTSAB ()
                                 {
-                                    dataGridViewTSAB.Columns.Add("Column1", "1:新增  2:刪除");
-                                    dataGridViewTSAB.Columns.Add("Column2", "0: 一般 1:零股 2:盤後");
-                                    dataGridViewTSAB.Columns.Add("Column3", "智慧單(母單)序號");
-                                    dataGridViewTSAB.Columns.Add("Column4", "委託單順序(判斷每筆回報順序使用)");
-                                    dataGridViewTSAB.Columns.Add("Column5", "分公司代碼");
-                                    dataGridViewTSAB.Columns.Add("Column6", "交易帳號");
-                                    dataGridViewTSAB.Columns.Add("Column7", "子帳帳號");
-                                    dataGridViewTSAB.Columns.Add("Column8", "交易所名稱");
-                                    dataGridViewTSAB.Columns.Add("Column9", "13碼序號");
-                                    dataGridViewTSAB.Columns.Add("Column10", "原始13碼序號");
+                                    dataGridViewTSAB.Columns.Add("Column1", "1:  2:");
+                                    dataGridViewTSAB.Columns.Add("Column2", "0:  1: 2:");
+                                    dataGridViewTSAB.Columns.Add("Column3", "()");
+                                    dataGridViewTSAB.Columns.Add("Column4", "()");
+                                    dataGridViewTSAB.Columns.Add("Column5", "");
+                                    dataGridViewTSAB.Columns.Add("Column6", "");
+                                    dataGridViewTSAB.Columns.Add("Column7", "");
+                                    dataGridViewTSAB.Columns.Add("Column8", "");
+                                    dataGridViewTSAB.Columns.Add("Column9", "13");
+                                    dataGridViewTSAB.Columns.Add("Column10", "13");
 
-                                    dataGridViewTSAB.Columns.Add("Column11", "委託書號");
-                                    dataGridViewTSAB.Columns.Add("Column12", "商品代碼");
-                                    dataGridViewTSAB.Columns.Add("Column13", "B: 買 S:賣");
-                                    dataGridViewTSAB.Columns.Add("Column14", "委託種類別0：現股 3：自)融資4：自)融券 8：無券普賣");
-                                    dataGridViewTSAB.Columns.Add("Column15", "0=前日收盤價 (平盤價);1:漲停價 ;2:跌停價;7:使用者輸入價");
-                                    dataGridViewTSAB.Columns.Add("Column16", "委託價格");
-                                    dataGridViewTSAB.Columns.Add("Column17", "1市價;2限價;3:範圍市價");
+                                    dataGridViewTSAB.Columns.Add("Column11", "");
+                                    dataGridViewTSAB.Columns.Add("Column12", "");
+                                    dataGridViewTSAB.Columns.Add("Column13", "B:  S:");
+                                    dataGridViewTSAB.Columns.Add("Column14", "0： 3：)4：) 8：");
+                                    dataGridViewTSAB.Columns.Add("Column15", "0= ();1: ;2:;7:");
+                                    dataGridViewTSAB.Columns.Add("Column16", "");
+                                    dataGridViewTSAB.Columns.Add("Column17", "1;2;3:");
                                     dataGridViewTSAB.Columns.Add("Column18", "0：ROD 3：IOC  4：FOK");
-                                    dataGridViewTSAB.Columns.Add("Column19", "TS:張數; TF:口數");
-                                    dataGridViewTSAB.Columns.Add("Column20", "觸發價");
+                                    dataGridViewTSAB.Columns.Add("Column19", "TS:; TF:");
+                                    dataGridViewTSAB.Columns.Add("Column20", "");
 
-                                    dataGridViewTSAB.Columns.Add("Column21", "觸發時間");
-                                    dataGridViewTSAB.Columns.Add("Column22", "觸發價方向0: None;1:GTE(大於等於); 2:LTE(小於等於)");
-                                    dataGridViewTSAB.Columns.Add("Column23", "是否當沖 證券：(目前此欄無資料) 期貨：非當沖:空值；當沖:Y");
-                                    dataGridViewTSAB.Columns.Add("Column24", "下單時間");
-                                    dataGridViewTSAB.Columns.Add("Column25", "營業員代碼");
+                                    dataGridViewTSAB.Columns.Add("Column21", "");
+                                    dataGridViewTSAB.Columns.Add("Column22", "0: None;1:GTE(); 2:LTE()");
+                                    dataGridViewTSAB.Columns.Add("Column23", " ：() ：:；:Y");
+                                    dataGridViewTSAB.Columns.Add("Column24", "");
+                                    dataGridViewTSAB.Columns.Add("Column25", "");
                                     dataGridViewTSAB.Columns.Add("Column26", "USER PC IP");
-                                    dataGridViewTSAB.Columns.Add("Column27", "來源別");
-                                    dataGridViewTSAB.Columns.Add("Column28", "32：中台收單成功 33：中台收單失敗 34：洗價中 35：洗價中-觸發價更新(移動停損單) 36：洗價失敗  37：洗價觸發 38：觸發下單 39：下單失敗 40：使用者刪單 999:萬用狀態,請同時確認UniversalMsg萬用訊息");
-                                    dataGridViewTSAB.Columns.Add("Column29", "錯誤訊息註記(Y失敗;N成功)");
-                                    dataGridViewTSAB.Columns.Add("Column30", "訊息EX:[智慧單號][商品代碼]訊息內容");
+                                    dataGridViewTSAB.Columns.Add("Column27", "");
+                                    dataGridViewTSAB.Columns.Add("Column28", "32： 33： 34： 35：-() 36：  37： 38： 39： 40： 999:,UniversalMsg");
+                                    dataGridViewTSAB.Columns.Add("Column29", "(Y;N)");
+                                    dataGridViewTSAB.Columns.Add("Column30", "EX:[][]");
 
-                                    dataGridViewTSAB.Columns.Add("Column31", "更新時間");
-                                    dataGridViewTSAB.Columns.Add("Column32", "萬用訊息 適用於智慧單狀態Sataus為999情況");
+                                    dataGridViewTSAB.Columns.Add("Column31", "");
+                                    dataGridViewTSAB.Columns.Add("Column32", " Sataus999");
                                 }
                                 //dataGridViewTSAB ONLY
                                 {
-                                    dataGridViewTSAB2.Columns.Add("Column33", "成交價觸發價格"); // 接續共用欄位 33
+                                    dataGridViewTSAB2.Columns.Add("Column33", ""); //  33
                                 }
                             }
                             //dataGridViewTSCB
                             {
-                                //dataGridViewTSCB 證券(共用欄位)
+                                //dataGridViewTSCB ()
                                 {
-                                    dataGridViewTSCB.Columns.Add("Column1", "1:新增  2:刪除");
-                                    dataGridViewTSCB.Columns.Add("Column2", "0: 一般 1:零股 2:盤後");
-                                    dataGridViewTSCB.Columns.Add("Column3", "智慧單(母單)序號");
-                                    dataGridViewTSCB.Columns.Add("Column4", "委託單順序(判斷每筆回報順序使用)");
-                                    dataGridViewTSCB.Columns.Add("Column5", "分公司代碼");
-                                    dataGridViewTSCB.Columns.Add("Column6", "交易帳號");
-                                    dataGridViewTSCB.Columns.Add("Column7", "子帳帳號");
-                                    dataGridViewTSCB.Columns.Add("Column8", "交易所名稱");
-                                    dataGridViewTSCB.Columns.Add("Column9", "13碼序號");
-                                    dataGridViewTSCB.Columns.Add("Column10", "原始13碼序號");
+                                    dataGridViewTSCB.Columns.Add("Column1", "1:  2:");
+                                    dataGridViewTSCB.Columns.Add("Column2", "0:  1: 2:");
+                                    dataGridViewTSCB.Columns.Add("Column3", "()");
+                                    dataGridViewTSCB.Columns.Add("Column4", "()");
+                                    dataGridViewTSCB.Columns.Add("Column5", "");
+                                    dataGridViewTSCB.Columns.Add("Column6", "");
+                                    dataGridViewTSCB.Columns.Add("Column7", "");
+                                    dataGridViewTSCB.Columns.Add("Column8", "");
+                                    dataGridViewTSCB.Columns.Add("Column9", "13");
+                                    dataGridViewTSCB.Columns.Add("Column10", "13");
 
-                                    dataGridViewTSCB.Columns.Add("Column11", "委託書號");
-                                    dataGridViewTSCB.Columns.Add("Column12", "商品代碼");
-                                    dataGridViewTSCB.Columns.Add("Column13", "B: 買 S:賣");
-                                    dataGridViewTSCB.Columns.Add("Column14", "委託種類別0：現股 3：自)融資4：自)融券 8：無券普賣");
-                                    dataGridViewTSCB.Columns.Add("Column15", "0=前日收盤價 (平盤價);1:漲停價 ;2:跌停價;7:使用者輸入價");
-                                    dataGridViewTSCB.Columns.Add("Column16", "委託價格");
-                                    dataGridViewTSCB.Columns.Add("Column17", "1市價;2限價;3:範圍市價");
+                                    dataGridViewTSCB.Columns.Add("Column11", "");
+                                    dataGridViewTSCB.Columns.Add("Column12", "");
+                                    dataGridViewTSCB.Columns.Add("Column13", "B:  S:");
+                                    dataGridViewTSCB.Columns.Add("Column14", "0： 3：)4：) 8：");
+                                    dataGridViewTSCB.Columns.Add("Column15", "0= ();1: ;2:;7:");
+                                    dataGridViewTSCB.Columns.Add("Column16", "");
+                                    dataGridViewTSCB.Columns.Add("Column17", "1;2;3:");
                                     dataGridViewTSCB.Columns.Add("Column18", "0：ROD 3：IOC  4：FOK");
-                                    dataGridViewTSCB.Columns.Add("Column19", "TS:張數; TF:口數");
-                                    dataGridViewTSCB.Columns.Add("Column20", "觸發價");
+                                    dataGridViewTSCB.Columns.Add("Column19", "TS:; TF:");
+                                    dataGridViewTSCB.Columns.Add("Column20", "");
 
-                                    dataGridViewTSCB.Columns.Add("Column21", "觸發時間");
-                                    dataGridViewTSCB.Columns.Add("Column22", "觸發價方向0: None;1:GTE(大於等於); 2:LTE(小於等於)");
-                                    dataGridViewTSCB.Columns.Add("Column23", "是否當沖 證券：(目前此欄無資料) 期貨：非當沖:空值；當沖:Y");
-                                    dataGridViewTSCB.Columns.Add("Column24", "下單時間");
-                                    dataGridViewTSCB.Columns.Add("Column25", "營業員代碼");
+                                    dataGridViewTSCB.Columns.Add("Column21", "");
+                                    dataGridViewTSCB.Columns.Add("Column22", "0: None;1:GTE(); 2:LTE()");
+                                    dataGridViewTSCB.Columns.Add("Column23", " ：() ：:；:Y");
+                                    dataGridViewTSCB.Columns.Add("Column24", "");
+                                    dataGridViewTSCB.Columns.Add("Column25", "");
                                     dataGridViewTSCB.Columns.Add("Column26", "USER PC IP");
-                                    dataGridViewTSCB.Columns.Add("Column27", "來源別");
-                                    dataGridViewTSCB.Columns.Add("Column28", "32：中台收單成功 33：中台收單失敗 34：洗價中 35：洗價中-觸發價更新(移動停損單) 36：洗價失敗  37：洗價觸發 38：觸發下單 39：下單失敗 40：使用者刪單 999:萬用狀態,請同時確認UniversalMsg萬用訊息");
-                                    dataGridViewTSCB.Columns.Add("Column29", "錯誤訊息註記(Y失敗;N成功)");
-                                    dataGridViewTSCB.Columns.Add("Column30", "訊息EX:[智慧單號][商品代碼]訊息內容");
+                                    dataGridViewTSCB.Columns.Add("Column27", "");
+                                    dataGridViewTSCB.Columns.Add("Column28", "32： 33： 34： 35：-() 36：  37： 38： 39： 40： 999:,UniversalMsg");
+                                    dataGridViewTSCB.Columns.Add("Column29", "(Y;N)");
+                                    dataGridViewTSCB.Columns.Add("Column30", "EX:[][]");
 
-                                    dataGridViewTSCB.Columns.Add("Column31", "更新時間");
-                                    dataGridViewTSCB.Columns.Add("Column32", "萬用訊息 適用於智慧單狀態Sataus為999情況");
+                                    dataGridViewTSCB.Columns.Add("Column31", "");
+                                    dataGridViewTSCB.Columns.Add("Column32", " Sataus999");
                                 }
                                 //dataGridViewTSCB ONLY
                                 {
-                                    dataGridViewTSCB2.Columns.Add("Column33", "是否為條件全部成立 AND: true OR: flase"); // 接續共用欄位 33
-                                    dataGridViewTSCB2.Columns.Add("Column34", "是否為自訂啟動時間");
-                                    dataGridViewTSCB2.Columns.Add("Column35", "自訂啟動時間");
-                                    dataGridViewTSCB2.Columns.Add("Column36", "是否執行成交價");
-                                    dataGridViewTSCB2.Columns.Add("Column37", "成交價");
-                                    dataGridViewTSCB2.Columns.Add("Column38", "成交價的觸價方向 0：None 1：GTE 2：LTE");
-                                    dataGridViewTSCB2.Columns.Add("Column39", "是否執行委買價");
-                                    dataGridViewTSCB2.Columns.Add("Column40", "委買價");
+                                    dataGridViewTSCB2.Columns.Add("Column33", " AND: true OR: flase"); //  33
+                                    dataGridViewTSCB2.Columns.Add("Column34", "");
+                                    dataGridViewTSCB2.Columns.Add("Column35", "");
+                                    dataGridViewTSCB2.Columns.Add("Column36", "");
+                                    dataGridViewTSCB2.Columns.Add("Column37", "");
+                                    dataGridViewTSCB2.Columns.Add("Column38", " 0：None 1：GTE 2：LTE");
+                                    dataGridViewTSCB2.Columns.Add("Column39", "");
+                                    dataGridViewTSCB2.Columns.Add("Column40", "");
 
-                                    dataGridViewTSCB2.Columns.Add("Column41", "委買價的觸價方向 0：None 1：GTE 2：LTE");
-                                    dataGridViewTSCB2.Columns.Add("Column42", "是否執行委賣價");
-                                    dataGridViewTSCB2.Columns.Add("Column43", "委賣價");
-                                    dataGridViewTSCB2.Columns.Add("Column44", "委賣價的觸價方向 0：None 1：GTE 2：LTE");
-                                    dataGridViewTSCB2.Columns.Add("Column45", "是否執行漲跌tick");
-                                    dataGridViewTSCB2.Columns.Add("Column46", "Tick數");
-                                    dataGridViewTSCB2.Columns.Add("Column47", "漲跌tick的觸價方向 0：None 1：GTE 2：LTE");
-                                    dataGridViewTSCB2.Columns.Add("Column48", "是否執行漲跌幅(%)");
-                                    dataGridViewTSCB2.Columns.Add("Column49", "漲跌幅(%)");
-                                    dataGridViewTSCB2.Columns.Add("Column50", "漲跌幅的觸價方向 0：None 1：GTE 2：LTE");
+                                    dataGridViewTSCB2.Columns.Add("Column41", " 0：None 1：GTE 2：LTE");
+                                    dataGridViewTSCB2.Columns.Add("Column42", "");
+                                    dataGridViewTSCB2.Columns.Add("Column43", "");
+                                    dataGridViewTSCB2.Columns.Add("Column44", " 0：None 1：GTE 2：LTE");
+                                    dataGridViewTSCB2.Columns.Add("Column45", "tick");
+                                    dataGridViewTSCB2.Columns.Add("Column46", "Tick");
+                                    dataGridViewTSCB2.Columns.Add("Column47", "tick 0：None 1：GTE 2：LTE");
+                                    dataGridViewTSCB2.Columns.Add("Column48", "(%)");
+                                    dataGridViewTSCB2.Columns.Add("Column49", "(%)");
+                                    dataGridViewTSCB2.Columns.Add("Column50", " 0：None 1：GTE 2：LTE");
                                     
-                                    dataGridViewTSCB2.Columns.Add("Column51", "是否執行總量");
-                                    dataGridViewTSCB2.Columns.Add("Column52", "總量");
-                                    dataGridViewTSCB2.Columns.Add("Column53", "總量的觸價方向 0：None 1：GTE 2：LTE");
-                                    dataGridViewTSCB2.Columns.Add("Column54", "成交價觸發記號 0：未觸發 1：觸發");
-                                    dataGridViewTSCB2.Columns.Add("Column55", "委買價觸發記號 0：未觸發 1：觸發");
-                                    dataGridViewTSCB2.Columns.Add("Column56", "委賣價觸發記號 0：未觸發 1：觸發");
-                                    dataGridViewTSCB2.Columns.Add("Column57", "漲跌tick觸發記號 0：未觸發 1：觸發");
-                                    dataGridViewTSCB2.Columns.Add("Column58", "漲跌幅觸發記號 0：未觸發 1：觸發");
-                                    dataGridViewTSCB2.Columns.Add("Column59", "總量觸發記號 0：未觸發 1：觸發");
-                                    dataGridViewTSCB2.Columns.Add("Column60", "成交價觸發價格");
+                                    dataGridViewTSCB2.Columns.Add("Column51", "");
+                                    dataGridViewTSCB2.Columns.Add("Column52", "");
+                                    dataGridViewTSCB2.Columns.Add("Column53", " 0：None 1：GTE 2：LTE");
+                                    dataGridViewTSCB2.Columns.Add("Column54", " 0： 1：");
+                                    dataGridViewTSCB2.Columns.Add("Column55", " 0： 1：");
+                                    dataGridViewTSCB2.Columns.Add("Column56", " 0： 1：");
+                                    dataGridViewTSCB2.Columns.Add("Column57", "tick 0： 1：");
+                                    dataGridViewTSCB2.Columns.Add("Column58", " 0： 1：");
+                                    dataGridViewTSCB2.Columns.Add("Column59", " 0： 1：");
+                                    dataGridViewTSCB2.Columns.Add("Column60", "");
 
-                                    dataGridViewTSCB2.Columns.Add("Column61", "委買價觸發價格");
-                                    dataGridViewTSCB2.Columns.Add("Column62", "委賣價觸發價格");
-                                    dataGridViewTSCB2.Columns.Add("Column63", "漲跌tick觸發tick");
-                                    dataGridViewTSCB2.Columns.Add("Column64", "漲跌幅觸發幅度");
-                                    dataGridViewTSCB2.Columns.Add("Column65", "總量觸發數量");
-                                    dataGridViewTSCB2.Columns.Add("Column66", "是否執行單量");
-                                    dataGridViewTSCB2.Columns.Add("Column67", "單量");
-                                    dataGridViewTSCB2.Columns.Add("Column68", "單量的觸價方向 0：None 1：GTE 2：LTE");
-                                    dataGridViewTSCB2.Columns.Add("Column69", "單量觸發記號 0：未觸發 1：觸發");
-                                    dataGridViewTSCB2.Columns.Add("Column70", "單量觸發數量");
+                                    dataGridViewTSCB2.Columns.Add("Column61", "");
+                                    dataGridViewTSCB2.Columns.Add("Column62", "");
+                                    dataGridViewTSCB2.Columns.Add("Column63", "ticktick");
+                                    dataGridViewTSCB2.Columns.Add("Column64", "");
+                                    dataGridViewTSCB2.Columns.Add("Column65", "");
+                                    dataGridViewTSCB2.Columns.Add("Column66", "");
+                                    dataGridViewTSCB2.Columns.Add("Column67", "");
+                                    dataGridViewTSCB2.Columns.Add("Column68", " 0：None 1：GTE 2：LTE");
+                                    dataGridViewTSCB2.Columns.Add("Column69", " 0： 1：");
+                                    dataGridViewTSCB2.Columns.Add("Column70", "");
                                 }
                             }
                             
                         }
-                        // 期貨
+                        // 
                         {
                             //dataGridViewTFSTP
                             {
-                                //dataGridViewTFSTP 期貨(共用欄位)
+                                //dataGridViewTFSTP ()
                                 {
-                                    dataGridViewTFSTP.Columns.Add("Column1", "1:新增  2:刪除");
-                                    dataGridViewTFSTP.Columns.Add("Column2", "智慧單(母單)序號");
-                                    dataGridViewTFSTP.Columns.Add("Column3", "委託單順序(判斷每筆回報順序使用)");
-                                    dataGridViewTFSTP.Columns.Add("Column4", "分公司代碼");
-                                    dataGridViewTFSTP.Columns.Add("Column5", "交易帳號");
-                                    dataGridViewTFSTP.Columns.Add("Column6", "子帳帳號");
-                                    dataGridViewTFSTP.Columns.Add("Column7", "交易所名稱");
-                                    dataGridViewTFSTP.Columns.Add("Column8", "13碼序號");
-                                    dataGridViewTFSTP.Columns.Add("Column9", "原始13碼序號");
-                                    dataGridViewTFSTP.Columns.Add("Column10", "委託書號");
+                                    dataGridViewTFSTP.Columns.Add("Column1", "1:  2:");
+                                    dataGridViewTFSTP.Columns.Add("Column2", "()");
+                                    dataGridViewTFSTP.Columns.Add("Column3", "()");
+                                    dataGridViewTFSTP.Columns.Add("Column4", "");
+                                    dataGridViewTFSTP.Columns.Add("Column5", "");
+                                    dataGridViewTFSTP.Columns.Add("Column6", "");
+                                    dataGridViewTFSTP.Columns.Add("Column7", "");
+                                    dataGridViewTFSTP.Columns.Add("Column8", "13");
+                                    dataGridViewTFSTP.Columns.Add("Column9", "13");
+                                    dataGridViewTFSTP.Columns.Add("Column10", "");
 
-                                    dataGridViewTFSTP.Columns.Add("Column11", "商品代碼");
-                                    dataGridViewTFSTP.Columns.Add("Column12", "B: 買 S:賣");
-                                    dataGridViewTFSTP.Columns.Add("Column13", "0=前日收盤價 (平盤價);1:漲停價 ;2:跌停價;7:使用者輸入價");
-                                    dataGridViewTFSTP.Columns.Add("Column14", "委託價格");
-                                    dataGridViewTFSTP.Columns.Add("Column15", "1市價;2限價;3:範圍市價 期貨:不支援市價單");
+                                    dataGridViewTFSTP.Columns.Add("Column11", "");
+                                    dataGridViewTFSTP.Columns.Add("Column12", "B:  S:");
+                                    dataGridViewTFSTP.Columns.Add("Column13", "0= ();1: ;2:;7:");
+                                    dataGridViewTFSTP.Columns.Add("Column14", "");
+                                    dataGridViewTFSTP.Columns.Add("Column15", "1;2;3: :");
                                     dataGridViewTFSTP.Columns.Add("Column16", "0：ROD 3：IOC  4：FOK");
-                                    dataGridViewTFSTP.Columns.Add("Column17", "TS:張數; TF:口數");
-                                    dataGridViewTFSTP.Columns.Add("Column18", "觸發價");
-                                    dataGridViewTFSTP.Columns.Add("Column19", "觸發時間");
-                                    dataGridViewTFSTP.Columns.Add("Column20", "觸發價方向0: None;1:GTE(大於等於); 2:LTE(小於等於)");
+                                    dataGridViewTFSTP.Columns.Add("Column17", "TS:; TF:");
+                                    dataGridViewTFSTP.Columns.Add("Column18", "");
+                                    dataGridViewTFSTP.Columns.Add("Column19", "");
+                                    dataGridViewTFSTP.Columns.Add("Column20", "0: None;1:GTE(); 2:LTE()");
 
-                                    dataGridViewTFSTP.Columns.Add("Column21", "是否當沖 期貨：非當沖:空值；當沖:Y");
-                                    dataGridViewTFSTP.Columns.Add("Column22", "下單時間");
-                                    dataGridViewTFSTP.Columns.Add("Column23", "營業員代碼");
+                                    dataGridViewTFSTP.Columns.Add("Column21", " ：:；:Y");
+                                    dataGridViewTFSTP.Columns.Add("Column22", "");
+                                    dataGridViewTFSTP.Columns.Add("Column23", "");
                                     dataGridViewTFSTP.Columns.Add("Column24", "USER PC IP");
-                                    dataGridViewTFSTP.Columns.Add("Column25", "來源別");
-                                    dataGridViewTFSTP.Columns.Add("Column26", "32：中台收單成功 33：中台收單失敗 34：洗價中 35：洗價中-觸發價更新(移動停損單) 36：洗價失敗  37：洗價觸發 38：觸發下單 39：下單失敗 40：使用者刪單 999:萬用狀態,請同時確認UniversalMsg萬用訊息");
-                                    dataGridViewTFSTP.Columns.Add("Column27", "錯誤訊息註記(Y失敗;N成功)");
-                                    dataGridViewTFSTP.Columns.Add("Column28", "訊息EX:[智慧單號][商品代碼]訊息內容");
-                                    dataGridViewTFSTP.Columns.Add("Column29", "更新時間");
-                                    dataGridViewTFSTP.Columns.Add("Column30", "[國內期選]倉位 0:新倉;1:平倉; 2:自動");
+                                    dataGridViewTFSTP.Columns.Add("Column25", "");
+                                    dataGridViewTFSTP.Columns.Add("Column26", "32： 33： 34： 35：-() 36：  37： 38： 39： 40： 999:,UniversalMsg");
+                                    dataGridViewTFSTP.Columns.Add("Column27", "(Y;N)");
+                                    dataGridViewTFSTP.Columns.Add("Column28", "EX:[][]");
+                                    dataGridViewTFSTP.Columns.Add("Column29", "");
+                                    dataGridViewTFSTP.Columns.Add("Column30", "[] 0:;1:; 2:");
 
-                                    dataGridViewTFSTP.Columns.Add("Column31", "[國內期選]商品契約年月EX: 202212");
-                                    dataGridViewTFSTP.Columns.Add("Column32", "[國內期選]履約價");
-                                    dataGridViewTFSTP.Columns.Add("Column33", "[國內期選]是否為價差商品0:否 ;1:是");
-                                    dataGridViewTFSTP.Columns.Add("Column34", "[國內期選]N:非買權及賣權 C:買權Call或P:賣權Put ");
-                                    dataGridViewTFSTP.Columns.Add("Column35", "[國內期選]是否為選擇權0:否;1:是 ");
-                                    dataGridViewTFSTP.Columns.Add("Column36", "[國內期選]是否為預約單0:否;1:是");
-                                    dataGridViewTFSTP.Columns.Add("Column37", "[國內期選]預約單序號 非預約單為0");
-                                    dataGridViewTFSTP.Columns.Add("Column38", "[國內期選]交易日");
-                                    dataGridViewTFSTP.Columns.Add("Column39", "[國內期選]原始下單商品市場EX:TF");
+                                    dataGridViewTFSTP.Columns.Add("Column31", "[]EX: 202212");
+                                    dataGridViewTFSTP.Columns.Add("Column32", "[]");
+                                    dataGridViewTFSTP.Columns.Add("Column33", "[]0: ;1:");
+                                    dataGridViewTFSTP.Columns.Add("Column34", "[]N: C:CallP:Put ");
+                                    dataGridViewTFSTP.Columns.Add("Column35", "[]0:;1: ");
+                                    dataGridViewTFSTP.Columns.Add("Column36", "[]0:;1:");
+                                    dataGridViewTFSTP.Columns.Add("Column37", "[] 0");
+                                    dataGridViewTFSTP.Columns.Add("Column38", "[]");
+                                    dataGridViewTFSTP.Columns.Add("Column39", "[]EX:TF");
 
-                                    dataGridViewTFSTP.Columns.Add("Column40", "[國內期選]下單交易所EX: TAIFEX");
-                                    dataGridViewTFSTP.Columns.Add("Column41", "[國內期選]第一腳後台商品代碼EX:FITX");
-                                    dataGridViewTFSTP.Columns.Add("Column42", "[國內期選]第二腳後台商品代碼");
-                                    dataGridViewTFSTP.Columns.Add("Column43", "[國內期選]第二腳商品契約年月");
-                                    dataGridViewTFSTP.Columns.Add("Column44", "[國內期選]第二腳履約價");
-                                    dataGridViewTFSTP.Columns.Add("Column45", "萬用訊息 適用於智慧單狀態Sataus為999情況");
+                                    dataGridViewTFSTP.Columns.Add("Column40", "[]EX: TAIFEX");
+                                    dataGridViewTFSTP.Columns.Add("Column41", "[]EX:FITX");
+                                    dataGridViewTFSTP.Columns.Add("Column42", "[]");
+                                    dataGridViewTFSTP.Columns.Add("Column43", "[]");
+                                    dataGridViewTFSTP.Columns.Add("Column44", "[]");
+                                    dataGridViewTFSTP.Columns.Add("Column45", " Sataus999");
                                 }
                                 //dataGridViewTFSTP ONLY
                                 {
-                                    dataGridViewTFSTP2.Columns.Add("Column46", "長效單註記"); // 接續共用欄位 46
-                                    dataGridViewTFSTP2.Columns.Add("Column47", "長效單序號");
-                                    dataGridViewTFSTP2.Columns.Add("Column48", "長效單結束日期");
-                                    dataGridViewTFSTP2.Columns.Add("Column49", "是否觸發即停止(預設為true) 0:條件觸發後，該筆長效單功能即失效 1:不管有無觸發，每日都送一次條件單，直到長效單結束日後才失效");
+                                    dataGridViewTFSTP2.Columns.Add("Column46", ""); //  46
+                                    dataGridViewTFSTP2.Columns.Add("Column47", "");
+                                    dataGridViewTFSTP2.Columns.Add("Column48", "");
+                                    dataGridViewTFSTP2.Columns.Add("Column49", "(true) 0:， 1:，，");
 
-                                    dataGridViewTFSTP2.Columns.Add("Column50", "長效單類別 0：None 1：效期內觸發即失效 2：[停用]長效單結束日失效 3：效期內完全成交即失效");
-                                    dataGridViewTFSTP2.Columns.Add("Column51", "長效單委託總量");
-                                    dataGridViewTFSTP2.Columns.Add("Column52", "長效單成交總量");
+                                    dataGridViewTFSTP2.Columns.Add("Column50", " 0：None 1： 2：[] 3：");
+                                    dataGridViewTFSTP2.Columns.Add("Column51", "");
+                                    dataGridViewTFSTP2.Columns.Add("Column52", "");
                                 }
                             }
                             //dataGridViewTFMST
                             {
-                                //dataGridViewTFMST 期貨(共用欄位)
+                                //dataGridViewTFMST ()
                                 {
-                                    dataGridViewTFMST.Columns.Add("Column1", "1:新增  2:刪除");
-                                    dataGridViewTFMST.Columns.Add("Column2", "智慧單(母單)序號");
-                                    dataGridViewTFMST.Columns.Add("Column3", "委託單順序(判斷每筆回報順序使用)");
-                                    dataGridViewTFMST.Columns.Add("Column4", "分公司代碼");
-                                    dataGridViewTFMST.Columns.Add("Column5", "交易帳號");
-                                    dataGridViewTFMST.Columns.Add("Column6", "子帳帳號");
-                                    dataGridViewTFMST.Columns.Add("Column7", "交易所名稱");
-                                    dataGridViewTFMST.Columns.Add("Column8", "13碼序號");
-                                    dataGridViewTFMST.Columns.Add("Column9", "原始13碼序號");
-                                    dataGridViewTFMST.Columns.Add("Column10", "委託書號");
+                                    dataGridViewTFMST.Columns.Add("Column1", "1:  2:");
+                                    dataGridViewTFMST.Columns.Add("Column2", "()");
+                                    dataGridViewTFMST.Columns.Add("Column3", "()");
+                                    dataGridViewTFMST.Columns.Add("Column4", "");
+                                    dataGridViewTFMST.Columns.Add("Column5", "");
+                                    dataGridViewTFMST.Columns.Add("Column6", "");
+                                    dataGridViewTFMST.Columns.Add("Column7", "");
+                                    dataGridViewTFMST.Columns.Add("Column8", "13");
+                                    dataGridViewTFMST.Columns.Add("Column9", "13");
+                                    dataGridViewTFMST.Columns.Add("Column10", "");
 
-                                    dataGridViewTFMST.Columns.Add("Column11", "商品代碼");
-                                    dataGridViewTFMST.Columns.Add("Column12", "B: 買 S:賣");
-                                    dataGridViewTFMST.Columns.Add("Column13", "0=前日收盤價 (平盤價);1:漲停價 ;2:跌停價;7:使用者輸入價");
-                                    dataGridViewTFMST.Columns.Add("Column14", "委託價格");
-                                    dataGridViewTFMST.Columns.Add("Column15", "1市價;2限價;3:範圍市價 期貨:不支援市價單");
+                                    dataGridViewTFMST.Columns.Add("Column11", "");
+                                    dataGridViewTFMST.Columns.Add("Column12", "B:  S:");
+                                    dataGridViewTFMST.Columns.Add("Column13", "0= ();1: ;2:;7:");
+                                    dataGridViewTFMST.Columns.Add("Column14", "");
+                                    dataGridViewTFMST.Columns.Add("Column15", "1;2;3: :");
                                     dataGridViewTFMST.Columns.Add("Column16", "0：ROD 3：IOC  4：FOK");
-                                    dataGridViewTFMST.Columns.Add("Column17", "TS:張數; TF:口數");
-                                    dataGridViewTFMST.Columns.Add("Column18", "觸發價");
-                                    dataGridViewTFMST.Columns.Add("Column19", "觸發時間");
-                                    dataGridViewTFMST.Columns.Add("Column20", "觸發價方向0: None;1:GTE(大於等於); 2:LTE(小於等於)");
+                                    dataGridViewTFMST.Columns.Add("Column17", "TS:; TF:");
+                                    dataGridViewTFMST.Columns.Add("Column18", "");
+                                    dataGridViewTFMST.Columns.Add("Column19", "");
+                                    dataGridViewTFMST.Columns.Add("Column20", "0: None;1:GTE(); 2:LTE()");
 
-                                    dataGridViewTFMST.Columns.Add("Column21", "是否當沖 期貨：非當沖:空值；當沖:Y");
-                                    dataGridViewTFMST.Columns.Add("Column22", "下單時間");
-                                    dataGridViewTFMST.Columns.Add("Column23", "營業員代碼");
+                                    dataGridViewTFMST.Columns.Add("Column21", " ：:；:Y");
+                                    dataGridViewTFMST.Columns.Add("Column22", "");
+                                    dataGridViewTFMST.Columns.Add("Column23", "");
                                     dataGridViewTFMST.Columns.Add("Column24", "USER PC IP");
-                                    dataGridViewTFMST.Columns.Add("Column25", "來源別");
-                                    dataGridViewTFMST.Columns.Add("Column26", "32：中台收單成功 33：中台收單失敗 34：洗價中 35：洗價中-觸發價更新(移動停損單) 36：洗價失敗  37：洗價觸發 38：觸發下單 39：下單失敗 40：使用者刪單 999:萬用狀態,請同時確認UniversalMsg萬用訊息");
-                                    dataGridViewTFMST.Columns.Add("Column27", "錯誤訊息註記(Y失敗;N成功)");
-                                    dataGridViewTFMST.Columns.Add("Column28", "訊息EX:[智慧單號][商品代碼]訊息內容");
-                                    dataGridViewTFMST.Columns.Add("Column29", "更新時間");
-                                    dataGridViewTFMST.Columns.Add("Column30", "[國內期選]倉位 0:新倉;1:平倉; 2:自動");
+                                    dataGridViewTFMST.Columns.Add("Column25", "");
+                                    dataGridViewTFMST.Columns.Add("Column26", "32： 33： 34： 35：-() 36：  37： 38： 39： 40： 999:,UniversalMsg");
+                                    dataGridViewTFMST.Columns.Add("Column27", "(Y;N)");
+                                    dataGridViewTFMST.Columns.Add("Column28", "EX:[][]");
+                                    dataGridViewTFMST.Columns.Add("Column29", "");
+                                    dataGridViewTFMST.Columns.Add("Column30", "[] 0:;1:; 2:");
 
-                                    dataGridViewTFMST.Columns.Add("Column31", "[國內期選]商品契約年月EX: 202212");
-                                    dataGridViewTFMST.Columns.Add("Column32", "[國內期選]履約價");
-                                    dataGridViewTFMST.Columns.Add("Column33", "[國內期選]是否為價差商品0:否 ;1:是");
-                                    dataGridViewTFMST.Columns.Add("Column34", "[國內期選]N:非買權及賣權 C:買權Call或P:賣權Put ");
-                                    dataGridViewTFMST.Columns.Add("Column35", "[國內期選]是否為選擇權0:否;1:是 ");
-                                    dataGridViewTFMST.Columns.Add("Column36", "[國內期選]是否為預約單0:否;1:是");
-                                    dataGridViewTFMST.Columns.Add("Column37", "[國內期選]預約單序號 非預約單為0");
-                                    dataGridViewTFMST.Columns.Add("Column38", "[國內期選]交易日");
-                                    dataGridViewTFMST.Columns.Add("Column39", "[國內期選]原始下單商品市場EX:TF");
+                                    dataGridViewTFMST.Columns.Add("Column31", "[]EX: 202212");
+                                    dataGridViewTFMST.Columns.Add("Column32", "[]");
+                                    dataGridViewTFMST.Columns.Add("Column33", "[]0: ;1:");
+                                    dataGridViewTFMST.Columns.Add("Column34", "[]N: C:CallP:Put ");
+                                    dataGridViewTFMST.Columns.Add("Column35", "[]0:;1: ");
+                                    dataGridViewTFMST.Columns.Add("Column36", "[]0:;1:");
+                                    dataGridViewTFMST.Columns.Add("Column37", "[] 0");
+                                    dataGridViewTFMST.Columns.Add("Column38", "[]");
+                                    dataGridViewTFMST.Columns.Add("Column39", "[]EX:TF");
 
-                                    dataGridViewTFMST.Columns.Add("Column40", "[國內期選]下單交易所EX: TAIFEX");
-                                    dataGridViewTFMST.Columns.Add("Column41", "[國內期選]第一腳後台商品代碼EX:FITX");
-                                    dataGridViewTFMST.Columns.Add("Column42", "[國內期選]第二腳後台商品代碼");
-                                    dataGridViewTFMST.Columns.Add("Column43", "[國內期選]第二腳商品契約年月");
-                                    dataGridViewTFMST.Columns.Add("Column44", "[國內期選]第二腳履約價");
-                                    dataGridViewTFMST.Columns.Add("Column45", "萬用訊息 適用於智慧單狀態Sataus為999情況");
+                                    dataGridViewTFMST.Columns.Add("Column40", "[]EX: TAIFEX");
+                                    dataGridViewTFMST.Columns.Add("Column41", "[]EX:FITX");
+                                    dataGridViewTFMST.Columns.Add("Column42", "[]");
+                                    dataGridViewTFMST.Columns.Add("Column43", "[]");
+                                    dataGridViewTFMST.Columns.Add("Column44", "[]");
+                                    dataGridViewTFMST.Columns.Add("Column45", " Sataus999");
                                 }
                                 //dataGridViewTFMST ONLY
                                 {
-                                    dataGridViewTFMST2.Columns.Add("Column46", "MST:移動點數"); // 接續共用欄位 46
-                                    dataGridViewTFMST2.Columns.Add("Column47", "MST:觸價基準");
-                                    dataGridViewTFMST2.Columns.Add("Column48", "MST:當前市價");
-                                    dataGridViewTFMST2.Columns.Add("Column49", "前一個觸發價格");
+                                    dataGridViewTFMST2.Columns.Add("Column46", "MST:"); //  46
+                                    dataGridViewTFMST2.Columns.Add("Column47", "MST:");
+                                    dataGridViewTFMST2.Columns.Add("Column48", "MST:");
+                                    dataGridViewTFMST2.Columns.Add("Column49", "");
                                 }
                             }
                             //dataGridViewTFMIT
                             {
-                                //dataGridViewTFMIT 期貨(共用欄位)
+                                //dataGridViewTFMIT ()
                                 {
-                                    dataGridViewTFMIT.Columns.Add("Column1", "1:新增  2:刪除");
-                                    dataGridViewTFMIT.Columns.Add("Column2", "智慧單(母單)序號");
-                                    dataGridViewTFMIT.Columns.Add("Column3", "委託單順序(判斷每筆回報順序使用)");
-                                    dataGridViewTFMIT.Columns.Add("Column4", "分公司代碼");
-                                    dataGridViewTFMIT.Columns.Add("Column5", "交易帳號");
-                                    dataGridViewTFMIT.Columns.Add("Column6", "子帳帳號");
-                                    dataGridViewTFMIT.Columns.Add("Column7", "交易所名稱");
-                                    dataGridViewTFMIT.Columns.Add("Column8", "13碼序號");
-                                    dataGridViewTFMIT.Columns.Add("Column9", "原始13碼序號");
-                                    dataGridViewTFMIT.Columns.Add("Column10", "委託書號");
+                                    dataGridViewTFMIT.Columns.Add("Column1", "1:  2:");
+                                    dataGridViewTFMIT.Columns.Add("Column2", "()");
+                                    dataGridViewTFMIT.Columns.Add("Column3", "()");
+                                    dataGridViewTFMIT.Columns.Add("Column4", "");
+                                    dataGridViewTFMIT.Columns.Add("Column5", "");
+                                    dataGridViewTFMIT.Columns.Add("Column6", "");
+                                    dataGridViewTFMIT.Columns.Add("Column7", "");
+                                    dataGridViewTFMIT.Columns.Add("Column8", "13");
+                                    dataGridViewTFMIT.Columns.Add("Column9", "13");
+                                    dataGridViewTFMIT.Columns.Add("Column10", "");
 
-                                    dataGridViewTFMIT.Columns.Add("Column11", "商品代碼");
-                                    dataGridViewTFMIT.Columns.Add("Column12", "B: 買 S:賣");
-                                    dataGridViewTFMIT.Columns.Add("Column13", "0=前日收盤價 (平盤價);1:漲停價 ;2:跌停價;7:使用者輸入價");
-                                    dataGridViewTFMIT.Columns.Add("Column14", "委託價格");
-                                    dataGridViewTFMIT.Columns.Add("Column15", "1市價;2限價;3:範圍市價 期貨:不支援市價單");
+                                    dataGridViewTFMIT.Columns.Add("Column11", "");
+                                    dataGridViewTFMIT.Columns.Add("Column12", "B:  S:");
+                                    dataGridViewTFMIT.Columns.Add("Column13", "0= ();1: ;2:;7:");
+                                    dataGridViewTFMIT.Columns.Add("Column14", "");
+                                    dataGridViewTFMIT.Columns.Add("Column15", "1;2;3: :");
                                     dataGridViewTFMIT.Columns.Add("Column16", "0：ROD 3：IOC  4：FOK");
-                                    dataGridViewTFMIT.Columns.Add("Column17", "TS:張數; TF:口數");
-                                    dataGridViewTFMIT.Columns.Add("Column18", "觸發價");
-                                    dataGridViewTFMIT.Columns.Add("Column19", "觸發時間");
-                                    dataGridViewTFMIT.Columns.Add("Column20", "觸發價方向0: None;1:GTE(大於等於); 2:LTE(小於等於)");
+                                    dataGridViewTFMIT.Columns.Add("Column17", "TS:; TF:");
+                                    dataGridViewTFMIT.Columns.Add("Column18", "");
+                                    dataGridViewTFMIT.Columns.Add("Column19", "");
+                                    dataGridViewTFMIT.Columns.Add("Column20", "0: None;1:GTE(); 2:LTE()");
 
-                                    dataGridViewTFMIT.Columns.Add("Column21", "是否當沖 期貨：非當沖:空值；當沖:Y");
-                                    dataGridViewTFMIT.Columns.Add("Column22", "下單時間");
-                                    dataGridViewTFMIT.Columns.Add("Column23", "營業員代碼");
+                                    dataGridViewTFMIT.Columns.Add("Column21", " ：:；:Y");
+                                    dataGridViewTFMIT.Columns.Add("Column22", "");
+                                    dataGridViewTFMIT.Columns.Add("Column23", "");
                                     dataGridViewTFMIT.Columns.Add("Column24", "USER PC IP");
-                                    dataGridViewTFMIT.Columns.Add("Column25", "來源別");
-                                    dataGridViewTFMIT.Columns.Add("Column26", "32：中台收單成功 33：中台收單失敗 34：洗價中 35：洗價中-觸發價更新(移動停損單) 36：洗價失敗  37：洗價觸發 38：觸發下單 39：下單失敗 40：使用者刪單 999:萬用狀態,請同時確認UniversalMsg萬用訊息");
-                                    dataGridViewTFMIT.Columns.Add("Column27", "錯誤訊息註記(Y失敗;N成功)");
-                                    dataGridViewTFMIT.Columns.Add("Column28", "訊息EX:[智慧單號][商品代碼]訊息內容");
-                                    dataGridViewTFMIT.Columns.Add("Column29", "更新時間");
-                                    dataGridViewTFMIT.Columns.Add("Column30", "[國內期選]倉位 0:新倉;1:平倉; 2:自動");
+                                    dataGridViewTFMIT.Columns.Add("Column25", "");
+                                    dataGridViewTFMIT.Columns.Add("Column26", "32： 33： 34： 35：-() 36：  37： 38： 39： 40： 999:,UniversalMsg");
+                                    dataGridViewTFMIT.Columns.Add("Column27", "(Y;N)");
+                                    dataGridViewTFMIT.Columns.Add("Column28", "EX:[][]");
+                                    dataGridViewTFMIT.Columns.Add("Column29", "");
+                                    dataGridViewTFMIT.Columns.Add("Column30", "[] 0:;1:; 2:");
 
-                                    dataGridViewTFMIT.Columns.Add("Column31", "[國內期選]商品契約年月EX: 202212");
-                                    dataGridViewTFMIT.Columns.Add("Column32", "[國內期選]履約價");
-                                    dataGridViewTFMIT.Columns.Add("Column33", "[國內期選]是否為價差商品0:否 ;1:是");
-                                    dataGridViewTFMIT.Columns.Add("Column34", "[國內期選]N:非買權及賣權 C:買權Call或P:賣權Put ");
-                                    dataGridViewTFMIT.Columns.Add("Column35", "[國內期選]是否為選擇權0:否;1:是 ");
-                                    dataGridViewTFMIT.Columns.Add("Column36", "[國內期選]是否為預約單0:否;1:是");
-                                    dataGridViewTFMIT.Columns.Add("Column37", "[國內期選]預約單序號 非預約單為0");
-                                    dataGridViewTFMIT.Columns.Add("Column38", "[國內期選]交易日");
+                                    dataGridViewTFMIT.Columns.Add("Column31", "[]EX: 202212");
+                                    dataGridViewTFMIT.Columns.Add("Column32", "[]");
+                                    dataGridViewTFMIT.Columns.Add("Column33", "[]0: ;1:");
+                                    dataGridViewTFMIT.Columns.Add("Column34", "[]N: C:CallP:Put ");
+                                    dataGridViewTFMIT.Columns.Add("Column35", "[]0:;1: ");
+                                    dataGridViewTFMIT.Columns.Add("Column36", "[]0:;1:");
+                                    dataGridViewTFMIT.Columns.Add("Column37", "[] 0");
+                                    dataGridViewTFMIT.Columns.Add("Column38", "[]");
                                     
-                                    dataGridViewTFMIT.Columns.Add("Column39", "[國內期選]原始下單商品市場EX:TF");
+                                    dataGridViewTFMIT.Columns.Add("Column39", "[]EX:TF");
 
-                                    dataGridViewTFMIT.Columns.Add("Column40", "[國內期選]下單交易所EX: TAIFEX");
-                                    dataGridViewTFMIT.Columns.Add("Column41", "[國內期選]第一腳後台商品代碼EX:FITX");
-                                    dataGridViewTFMIT.Columns.Add("Column42", "[國內期選]第二腳後台商品代碼");
-                                    dataGridViewTFMIT.Columns.Add("Column43", "[國內期選]第二腳商品契約年月");
-                                    dataGridViewTFMIT.Columns.Add("Column44", "[國內期選]第二腳履約價");
-                                    dataGridViewTFMIT.Columns.Add("Column45", "萬用訊息 適用於智慧單狀態Sataus為999情況");
+                                    dataGridViewTFMIT.Columns.Add("Column40", "[]EX: TAIFEX");
+                                    dataGridViewTFMIT.Columns.Add("Column41", "[]EX:FITX");
+                                    dataGridViewTFMIT.Columns.Add("Column42", "[]");
+                                    dataGridViewTFMIT.Columns.Add("Column43", "[]");
+                                    dataGridViewTFMIT.Columns.Add("Column44", "[]");
+                                    dataGridViewTFMIT.Columns.Add("Column45", " Sataus999");
                                 }
                                 //dataGridViewTFMIT ONLY
                                 {
-                                    dataGridViewTFMIT2.Columns.Add("Column46", "當前市價，若下單未填則為0"); // 接續共用欄位 46
-                                    dataGridViewTFMIT2.Columns.Add("Column47", "成交價觸發價格");
+                                    dataGridViewTFMIT2.Columns.Add("Column46", "，0"); //  46
+                                    dataGridViewTFMIT2.Columns.Add("Column47", "");
                                 }
                             }
                             //dataGridViewTFOCO
                             {
-                                //dataGridViewTFOCO 期貨(共用欄位)
+                                //dataGridViewTFOCO ()
                                 {
-                                    dataGridViewTFOCO.Columns.Add("Column1", "1:新增  2:刪除");
-                                    dataGridViewTFOCO.Columns.Add("Column2", "智慧單(母單)序號");
-                                    dataGridViewTFOCO.Columns.Add("Column3", "委託單順序(判斷每筆回報順序使用)");
-                                    dataGridViewTFOCO.Columns.Add("Column4", "分公司代碼");
-                                    dataGridViewTFOCO.Columns.Add("Column5", "交易帳號");
-                                    dataGridViewTFOCO.Columns.Add("Column6", "子帳帳號");
-                                    dataGridViewTFOCO.Columns.Add("Column7", "交易所名稱");
-                                    dataGridViewTFOCO.Columns.Add("Column8", "13碼序號");
-                                    dataGridViewTFOCO.Columns.Add("Column9", "原始13碼序號");
-                                    dataGridViewTFOCO.Columns.Add("Column10", "委託書號");
+                                    dataGridViewTFOCO.Columns.Add("Column1", "1:  2:");
+                                    dataGridViewTFOCO.Columns.Add("Column2", "()");
+                                    dataGridViewTFOCO.Columns.Add("Column3", "()");
+                                    dataGridViewTFOCO.Columns.Add("Column4", "");
+                                    dataGridViewTFOCO.Columns.Add("Column5", "");
+                                    dataGridViewTFOCO.Columns.Add("Column6", "");
+                                    dataGridViewTFOCO.Columns.Add("Column7", "");
+                                    dataGridViewTFOCO.Columns.Add("Column8", "13");
+                                    dataGridViewTFOCO.Columns.Add("Column9", "13");
+                                    dataGridViewTFOCO.Columns.Add("Column10", "");
 
-                                    dataGridViewTFOCO.Columns.Add("Column11", "商品代碼");
-                                    dataGridViewTFOCO.Columns.Add("Column12", "B: 買 S:賣");
-                                    dataGridViewTFOCO.Columns.Add("Column13", "0=前日收盤價 (平盤價);1:漲停價 ;2:跌停價;7:使用者輸入價");
-                                    dataGridViewTFOCO.Columns.Add("Column14", "委託價格");
-                                    dataGridViewTFOCO.Columns.Add("Column15", "1市價;2限價;3:範圍市價 期貨:不支援市價單");
+                                    dataGridViewTFOCO.Columns.Add("Column11", "");
+                                    dataGridViewTFOCO.Columns.Add("Column12", "B:  S:");
+                                    dataGridViewTFOCO.Columns.Add("Column13", "0= ();1: ;2:;7:");
+                                    dataGridViewTFOCO.Columns.Add("Column14", "");
+                                    dataGridViewTFOCO.Columns.Add("Column15", "1;2;3: :");
                                     dataGridViewTFOCO.Columns.Add("Column16", "0：ROD 3：IOC  4：FOK");
-                                    dataGridViewTFOCO.Columns.Add("Column17", "TS:張數; TF:口數");
-                                    dataGridViewTFOCO.Columns.Add("Column18", "觸發價");
-                                    dataGridViewTFOCO.Columns.Add("Column19", "觸發時間");
-                                    dataGridViewTFOCO.Columns.Add("Column20", "觸發價方向0: None;1:GTE(大於等於); 2:LTE(小於等於)");
+                                    dataGridViewTFOCO.Columns.Add("Column17", "TS:; TF:");
+                                    dataGridViewTFOCO.Columns.Add("Column18", "");
+                                    dataGridViewTFOCO.Columns.Add("Column19", "");
+                                    dataGridViewTFOCO.Columns.Add("Column20", "0: None;1:GTE(); 2:LTE()");
 
-                                    dataGridViewTFOCO.Columns.Add("Column21", "是否當沖 期貨：非當沖:空值；當沖:Y");
-                                    dataGridViewTFOCO.Columns.Add("Column22", "下單時間");
-                                    dataGridViewTFOCO.Columns.Add("Column23", "營業員代碼");
+                                    dataGridViewTFOCO.Columns.Add("Column21", " ：:；:Y");
+                                    dataGridViewTFOCO.Columns.Add("Column22", "");
+                                    dataGridViewTFOCO.Columns.Add("Column23", "");
                                     dataGridViewTFOCO.Columns.Add("Column24", "USER PC IP");
-                                    dataGridViewTFOCO.Columns.Add("Column25", "來源別");
-                                    dataGridViewTFOCO.Columns.Add("Column26", "32：中台收單成功 33：中台收單失敗 34：洗價中 35：洗價中-觸發價更新(移動停損單) 36：洗價失敗  37：洗價觸發 38：觸發下單 39：下單失敗 40：使用者刪單 999:萬用狀態,請同時確認UniversalMsg萬用訊息");
-                                    dataGridViewTFOCO.Columns.Add("Column27", "錯誤訊息註記(Y失敗;N成功)");
-                                    dataGridViewTFOCO.Columns.Add("Column28", "訊息EX:[智慧單號][商品代碼]訊息內容");
-                                    dataGridViewTFOCO.Columns.Add("Column29", "更新時間");
-                                    dataGridViewTFOCO.Columns.Add("Column30", "[國內期選]倉位 0:新倉;1:平倉; 2:自動");
+                                    dataGridViewTFOCO.Columns.Add("Column25", "");
+                                    dataGridViewTFOCO.Columns.Add("Column26", "32： 33： 34： 35：-() 36：  37： 38： 39： 40： 999:,UniversalMsg");
+                                    dataGridViewTFOCO.Columns.Add("Column27", "(Y;N)");
+                                    dataGridViewTFOCO.Columns.Add("Column28", "EX:[][]");
+                                    dataGridViewTFOCO.Columns.Add("Column29", "");
+                                    dataGridViewTFOCO.Columns.Add("Column30", "[] 0:;1:; 2:");
 
-                                    dataGridViewTFOCO.Columns.Add("Column31", "[國內期選]商品契約年月EX: 202212");
-                                    dataGridViewTFOCO.Columns.Add("Column32", "[國內期選]履約價");
-                                    dataGridViewTFOCO.Columns.Add("Column33", "[國內期選]是否為價差商品0:否 ;1:是");
-                                    dataGridViewTFOCO.Columns.Add("Column34", "[國內期選]N:非買權及賣權 C:買權Call或P:賣權Put ");
-                                    dataGridViewTFOCO.Columns.Add("Column35", "[國內期選]是否為選擇權0:否;1:是 ");
-                                    dataGridViewTFOCO.Columns.Add("Column36", "[國內期選]是否為預約單0:否;1:是");
-                                    dataGridViewTFOCO.Columns.Add("Column37", "[國內期選]預約單序號 非預約單為0");
-                                    dataGridViewTFOCO.Columns.Add("Column38", "[國內期選]交易日");
+                                    dataGridViewTFOCO.Columns.Add("Column31", "[]EX: 202212");
+                                    dataGridViewTFOCO.Columns.Add("Column32", "[]");
+                                    dataGridViewTFOCO.Columns.Add("Column33", "[]0: ;1:");
+                                    dataGridViewTFOCO.Columns.Add("Column34", "[]N: C:CallP:Put ");
+                                    dataGridViewTFOCO.Columns.Add("Column35", "[]0:;1: ");
+                                    dataGridViewTFOCO.Columns.Add("Column36", "[]0:;1:");
+                                    dataGridViewTFOCO.Columns.Add("Column37", "[] 0");
+                                    dataGridViewTFOCO.Columns.Add("Column38", "[]");
                                     
-                                    dataGridViewTFOCO.Columns.Add("Column39", "[國內期選]原始下單商品市場EX:TF");
+                                    dataGridViewTFOCO.Columns.Add("Column39", "[]EX:TF");
 
-                                    dataGridViewTFOCO.Columns.Add("Column40", "[國內期選]下單交易所EX: TAIFEX");
-                                    dataGridViewTFOCO.Columns.Add("Column41", "[國內期選]第一腳後台商品代碼EX:FITX");
-                                    dataGridViewTFOCO.Columns.Add("Column42", "[國內期選]第二腳後台商品代碼");
-                                    dataGridViewTFOCO.Columns.Add("Column43", "[國內期選]第二腳商品契約年月");
-                                    dataGridViewTFOCO.Columns.Add("Column44", "[國內期選]第二腳履約價");
-                                    dataGridViewTFOCO.Columns.Add("Column45", "萬用訊息 適用於智慧單狀態Sataus為999情況");
+                                    dataGridViewTFOCO.Columns.Add("Column40", "[]EX: TAIFEX");
+                                    dataGridViewTFOCO.Columns.Add("Column41", "[]EX:FITX");
+                                    dataGridViewTFOCO.Columns.Add("Column42", "[]");
+                                    dataGridViewTFOCO.Columns.Add("Column43", "[]");
+                                    dataGridViewTFOCO.Columns.Add("Column44", "[]");
+                                    dataGridViewTFOCO.Columns.Add("Column45", " Sataus999");
                                 }
                                 //dataGridViewTFOCO ONLY
                                 {
-                                    dataGridViewTFOCO2.Columns.Add("Column46", "第一腳觸發價"); // 接續共用欄位 46
-                                    dataGridViewTFOCO2.Columns.Add("Column47", "第二腳觸發價");
-                                    dataGridViewTFOCO2.Columns.Add("Column48", "第二腳委託價");
-                                    dataGridViewTFOCO2.Columns.Add("Column49", "第二腳委託價格類別 1：市價 2：限價");
+                                    dataGridViewTFOCO2.Columns.Add("Column46", ""); //  46
+                                    dataGridViewTFOCO2.Columns.Add("Column47", "");
+                                    dataGridViewTFOCO2.Columns.Add("Column48", "");
+                                    dataGridViewTFOCO2.Columns.Add("Column49", " 1： 2：");
 
-                                    dataGridViewTFOCO2.Columns.Add("Column50", "第二腳委託時效 0:ROD;3:IOC;4:FOK");
-                                    dataGridViewTFOCO2.Columns.Add("Column51", "第二腳買賣別");
-                                    dataGridViewTFOCO2.Columns.Add("Column52", "第二腳委託價格別 0:前日收盤價 1:漲停價 2:跌停價 7使用者輸入價");
-                                    dataGridViewTFOCO2.Columns.Add("Column53", "[限期貨選擇權]第二腳倉位");
-                                    dataGridViewTFOCO2.Columns.Add("Column54", "長效單註記");
-                                    dataGridViewTFOCO2.Columns.Add("Column55", "長效單序號");
-                                    dataGridViewTFOCO2.Columns.Add("Column56", "長效單結束日期");
-                                    dataGridViewTFOCO2.Columns.Add("Column57", "是否觸發即停止(預設為true) 0:條件觸發後，該筆長效單功能即失效 1:不管有無觸發，每日都送一次條件單，直到長效單結束日後才失效");
-                                    dataGridViewTFOCO2.Columns.Add("Column58", "長效單類別 0：None 1：效期內觸發即失效 2：[停用]長效單結束日失效 3：效期內完全成交即失效");
-                                    dataGridViewTFOCO2.Columns.Add("Column59", "長效單委託總量");
+                                    dataGridViewTFOCO2.Columns.Add("Column50", " 0:ROD;3:IOC;4:FOK");
+                                    dataGridViewTFOCO2.Columns.Add("Column51", "");
+                                    dataGridViewTFOCO2.Columns.Add("Column52", " 0: 1: 2: 7");
+                                    dataGridViewTFOCO2.Columns.Add("Column53", "[]");
+                                    dataGridViewTFOCO2.Columns.Add("Column54", "");
+                                    dataGridViewTFOCO2.Columns.Add("Column55", "");
+                                    dataGridViewTFOCO2.Columns.Add("Column56", "");
+                                    dataGridViewTFOCO2.Columns.Add("Column57", "(true) 0:， 1:，，");
+                                    dataGridViewTFOCO2.Columns.Add("Column58", " 0：None 1： 2：[] 3：");
+                                    dataGridViewTFOCO2.Columns.Add("Column59", "");
 
-                                    dataGridViewTFOCO2.Columns.Add("Column60", "長效單成交總量");
+                                    dataGridViewTFOCO2.Columns.Add("Column60", "");
                                 }
                             }
                             //dataGridViewTFAB
                             {
-                                //dataGridViewTFAB 期貨(共用欄位)
+                                //dataGridViewTFAB ()
                                 {
-                                    dataGridViewTFAB.Columns.Add("Column1", "1:新增  2:刪除");
-                                    dataGridViewTFAB.Columns.Add("Column2", "智慧單(母單)序號");
-                                    dataGridViewTFAB.Columns.Add("Column3", "委託單順序(判斷每筆回報順序使用)");
-                                    dataGridViewTFAB.Columns.Add("Column4", "分公司代碼");
-                                    dataGridViewTFAB.Columns.Add("Column5", "交易帳號");
-                                    dataGridViewTFAB.Columns.Add("Column6", "子帳帳號");
-                                    dataGridViewTFAB.Columns.Add("Column7", "交易所名稱");
-                                    dataGridViewTFAB.Columns.Add("Column8", "13碼序號");
-                                    dataGridViewTFAB.Columns.Add("Column9", "原始13碼序號");
-                                    dataGridViewTFAB.Columns.Add("Column10", "委託書號");
+                                    dataGridViewTFAB.Columns.Add("Column1", "1:  2:");
+                                    dataGridViewTFAB.Columns.Add("Column2", "()");
+                                    dataGridViewTFAB.Columns.Add("Column3", "()");
+                                    dataGridViewTFAB.Columns.Add("Column4", "");
+                                    dataGridViewTFAB.Columns.Add("Column5", "");
+                                    dataGridViewTFAB.Columns.Add("Column6", "");
+                                    dataGridViewTFAB.Columns.Add("Column7", "");
+                                    dataGridViewTFAB.Columns.Add("Column8", "13");
+                                    dataGridViewTFAB.Columns.Add("Column9", "13");
+                                    dataGridViewTFAB.Columns.Add("Column10", "");
 
-                                    dataGridViewTFAB.Columns.Add("Column11", "商品代碼");
-                                    dataGridViewTFAB.Columns.Add("Column12", "B: 買 S:賣");
-                                    dataGridViewTFAB.Columns.Add("Column13", "0=前日收盤價 (平盤價);1:漲停價 ;2:跌停價;7:使用者輸入價");
-                                    dataGridViewTFAB.Columns.Add("Column14", "委託價格");
-                                    dataGridViewTFAB.Columns.Add("Column15", "1市價;2限價;3:範圍市價 期貨:不支援市價單");
+                                    dataGridViewTFAB.Columns.Add("Column11", "");
+                                    dataGridViewTFAB.Columns.Add("Column12", "B:  S:");
+                                    dataGridViewTFAB.Columns.Add("Column13", "0= ();1: ;2:;7:");
+                                    dataGridViewTFAB.Columns.Add("Column14", "");
+                                    dataGridViewTFAB.Columns.Add("Column15", "1;2;3: :");
                                     dataGridViewTFAB.Columns.Add("Column16", "0：ROD 3：IOC  4：FOK");
-                                    dataGridViewTFAB.Columns.Add("Column17", "TS:張數; TF:口數");
-                                    dataGridViewTFAB.Columns.Add("Column18", "觸發價");
-                                    dataGridViewTFAB.Columns.Add("Column19", "觸發時間");
-                                    dataGridViewTFAB.Columns.Add("Column20", "觸發價方向0: None;1:GTE(大於等於); 2:LTE(小於等於)");
+                                    dataGridViewTFAB.Columns.Add("Column17", "TS:; TF:");
+                                    dataGridViewTFAB.Columns.Add("Column18", "");
+                                    dataGridViewTFAB.Columns.Add("Column19", "");
+                                    dataGridViewTFAB.Columns.Add("Column20", "0: None;1:GTE(); 2:LTE()");
 
-                                    dataGridViewTFAB.Columns.Add("Column21", "是否當沖 期貨：非當沖:空值；當沖:Y");
-                                    dataGridViewTFAB.Columns.Add("Column22", "下單時間");
-                                    dataGridViewTFAB.Columns.Add("Column23", "營業員代碼");
+                                    dataGridViewTFAB.Columns.Add("Column21", " ：:；:Y");
+                                    dataGridViewTFAB.Columns.Add("Column22", "");
+                                    dataGridViewTFAB.Columns.Add("Column23", "");
                                     dataGridViewTFAB.Columns.Add("Column24", "USER PC IP");
-                                    dataGridViewTFAB.Columns.Add("Column25", "來源別");
-                                    dataGridViewTFAB.Columns.Add("Column26", "32：中台收單成功 33：中台收單失敗 34：洗價中 35：洗價中-觸發價更新(移動停損單) 36：洗價失敗  37：洗價觸發 38：觸發下單 39：下單失敗 40：使用者刪單 999:萬用狀態,請同時確認UniversalMsg萬用訊息");
-                                    dataGridViewTFAB.Columns.Add("Column27", "錯誤訊息註記(Y失敗;N成功)");
-                                    dataGridViewTFAB.Columns.Add("Column28", "訊息EX:[智慧單號][商品代碼]訊息內容");
-                                    dataGridViewTFAB.Columns.Add("Column29", "更新時間");
-                                    dataGridViewTFAB.Columns.Add("Column30", "[國內期選]倉位 0:新倉;1:平倉; 2:自動");
+                                    dataGridViewTFAB.Columns.Add("Column25", "");
+                                    dataGridViewTFAB.Columns.Add("Column26", "32： 33： 34： 35：-() 36：  37： 38： 39： 40： 999:,UniversalMsg");
+                                    dataGridViewTFAB.Columns.Add("Column27", "(Y;N)");
+                                    dataGridViewTFAB.Columns.Add("Column28", "EX:[][]");
+                                    dataGridViewTFAB.Columns.Add("Column29", "");
+                                    dataGridViewTFAB.Columns.Add("Column30", "[] 0:;1:; 2:");
 
-                                    dataGridViewTFAB.Columns.Add("Column31", "[國內期選]商品契約年月EX: 202212");
-                                    dataGridViewTFAB.Columns.Add("Column32", "[國內期選]履約價");
-                                    dataGridViewTFAB.Columns.Add("Column33", "[國內期選]是否為價差商品0:否 ;1:是");
-                                    dataGridViewTFAB.Columns.Add("Column34", "[國內期選]N:非買權及賣權 C:買權Call或P:賣權Put ");
-                                    dataGridViewTFAB.Columns.Add("Column35", "[國內期選]是否為選擇權0:否;1:是 ");
-                                    dataGridViewTFAB.Columns.Add("Column36", "[國內期選]是否為預約單0:否;1:是");
-                                    dataGridViewTFAB.Columns.Add("Column37", "[國內期選]預約單序號 非預約單為0");
-                                    dataGridViewTFAB.Columns.Add("Column38", "[國內期選]交易日");
+                                    dataGridViewTFAB.Columns.Add("Column31", "[]EX: 202212");
+                                    dataGridViewTFAB.Columns.Add("Column32", "[]");
+                                    dataGridViewTFAB.Columns.Add("Column33", "[]0: ;1:");
+                                    dataGridViewTFAB.Columns.Add("Column34", "[]N: C:CallP:Put ");
+                                    dataGridViewTFAB.Columns.Add("Column35", "[]0:;1: ");
+                                    dataGridViewTFAB.Columns.Add("Column36", "[]0:;1:");
+                                    dataGridViewTFAB.Columns.Add("Column37", "[] 0");
+                                    dataGridViewTFAB.Columns.Add("Column38", "[]");
                                     
-                                    dataGridViewTFAB.Columns.Add("Column39", "[國內期選]原始下單商品市場EX:TF");
+                                    dataGridViewTFAB.Columns.Add("Column39", "[]EX:TF");
 
-                                    dataGridViewTFAB.Columns.Add("Column40", "[國內期選]下單交易所EX: TAIFEX");
-                                    dataGridViewTFAB.Columns.Add("Column41", "[國內期選]第一腳後台商品代碼EX:FITX");
-                                    dataGridViewTFAB.Columns.Add("Column42", "[國內期選]第二腳後台商品代碼");
-                                    dataGridViewTFAB.Columns.Add("Column43", "[國內期選]第二腳商品契約年月");
-                                    dataGridViewTFAB.Columns.Add("Column44", "[國內期選]第二腳履約價");
-                                    dataGridViewTFAB.Columns.Add("Column45", "萬用訊息 適用於智慧單狀態Sataus為999情況");
+                                    dataGridViewTFAB.Columns.Add("Column40", "[]EX: TAIFEX");
+                                    dataGridViewTFAB.Columns.Add("Column41", "[]EX:FITX");
+                                    dataGridViewTFAB.Columns.Add("Column42", "[]");
+                                    dataGridViewTFAB.Columns.Add("Column43", "[]");
+                                    dataGridViewTFAB.Columns.Add("Column44", "[]");
+                                    dataGridViewTFAB.Columns.Add("Column45", " Sataus999");
                                 }
                                 //dataGridViewTFAB ONLY
                                 {
-                                    dataGridViewTFAB2.Columns.Add("Column46", "成交價觸發價格"); // 接續共用欄位 46
+                                    dataGridViewTFAB2.Columns.Add("Column46", ""); //  46
                                 }
                             }
                         }
-                        // 海期
+                        // 
                         {
                             //dataGridViewOFOCO
                             {
-                                //dataGridViewOFOCO 海期(共用欄位)
+                                //dataGridViewOFOCO ()
                                 {
-                                    dataGridViewOFOCO.Columns.Add("Column1", "1:新增  2:刪除");
-                                    dataGridViewOFOCO.Columns.Add("Column2", "智慧單(母單)序號");
-                                    dataGridViewOFOCO.Columns.Add("Column3", "委託單順序(判斷每筆回報順序使用)");
-                                    dataGridViewOFOCO.Columns.Add("Column4", "分公司代碼");
-                                    dataGridViewOFOCO.Columns.Add("Column5", "交易帳號");
-                                    dataGridViewOFOCO.Columns.Add("Column6", "子帳帳號");
-                                    dataGridViewOFOCO.Columns.Add("Column7", "交易所名稱");
-                                    dataGridViewOFOCO.Columns.Add("Column8", "13碼序號");
-                                    dataGridViewOFOCO.Columns.Add("Column9", "原始13碼序號");
-                                    dataGridViewOFOCO.Columns.Add("Column10", "委託書號");
+                                    dataGridViewOFOCO.Columns.Add("Column1", "1:  2:");
+                                    dataGridViewOFOCO.Columns.Add("Column2", "()");
+                                    dataGridViewOFOCO.Columns.Add("Column3", "()");
+                                    dataGridViewOFOCO.Columns.Add("Column4", "");
+                                    dataGridViewOFOCO.Columns.Add("Column5", "");
+                                    dataGridViewOFOCO.Columns.Add("Column6", "");
+                                    dataGridViewOFOCO.Columns.Add("Column7", "");
+                                    dataGridViewOFOCO.Columns.Add("Column8", "13");
+                                    dataGridViewOFOCO.Columns.Add("Column9", "13");
+                                    dataGridViewOFOCO.Columns.Add("Column10", "");
 
-                                    dataGridViewOFOCO.Columns.Add("Column11", "商品代碼");
-                                    dataGridViewOFOCO.Columns.Add("Column12", "B: 買 S:賣");
-                                    dataGridViewOFOCO.Columns.Add("Column13", "0=前日收盤價 (平盤價);1:漲停價 ;2:跌停價;7:使用者輸入價");
-                                    dataGridViewOFOCO.Columns.Add("Column14", "委託價格");
-                                    dataGridViewOFOCO.Columns.Add("Column15", "1市價;2限價;3:範圍市價 期貨:不支援市價單");
+                                    dataGridViewOFOCO.Columns.Add("Column11", "");
+                                    dataGridViewOFOCO.Columns.Add("Column12", "B:  S:");
+                                    dataGridViewOFOCO.Columns.Add("Column13", "0= ();1: ;2:;7:");
+                                    dataGridViewOFOCO.Columns.Add("Column14", "");
+                                    dataGridViewOFOCO.Columns.Add("Column15", "1;2;3: :");
                                     dataGridViewOFOCO.Columns.Add("Column16", "0：ROD 3：IOC  4：FOK");
-                                    dataGridViewOFOCO.Columns.Add("Column17", "TS:張數; TF:口數");
-                                    dataGridViewOFOCO.Columns.Add("Column18", "觸發價");
-                                    dataGridViewOFOCO.Columns.Add("Column19", "觸發時間");
-                                    dataGridViewOFOCO.Columns.Add("Column20", "觸發價方向0: None;1:GTE(大於等於); 2:LTE(小於等於)");
+                                    dataGridViewOFOCO.Columns.Add("Column17", "TS:; TF:");
+                                    dataGridViewOFOCO.Columns.Add("Column18", "");
+                                    dataGridViewOFOCO.Columns.Add("Column19", "");
+                                    dataGridViewOFOCO.Columns.Add("Column20", "0: None;1:GTE(); 2:LTE()");
 
-                                    dataGridViewOFOCO.Columns.Add("Column21", "是否當沖 期貨：非當沖:空值；當沖:Y");
-                                    dataGridViewOFOCO.Columns.Add("Column22", "下單時間");
-                                    dataGridViewOFOCO.Columns.Add("Column23", "營業員代碼");
+                                    dataGridViewOFOCO.Columns.Add("Column21", " ：:；:Y");
+                                    dataGridViewOFOCO.Columns.Add("Column22", "");
+                                    dataGridViewOFOCO.Columns.Add("Column23", "");
                                     dataGridViewOFOCO.Columns.Add("Column24", "USER PC IP");
-                                    dataGridViewOFOCO.Columns.Add("Column25", "來源別");
-                                    dataGridViewOFOCO.Columns.Add("Column26", "32：中台收單成功 33：中台收單失敗 34：洗價中 35：洗價中-觸發價更新(移動停損單) 36：洗價失敗  37：洗價觸發 38：觸發下單 39：下單失敗 40：使用者刪單 999:萬用狀態,請同時確認UniversalMsg萬用訊息");
-                                    dataGridViewOFOCO.Columns.Add("Column27", "錯誤訊息註記(Y失敗;N成功)");
-                                    dataGridViewOFOCO.Columns.Add("Column28", "訊息EX:[智慧單號][商品代碼]訊息內容");
-                                    dataGridViewOFOCO.Columns.Add("Column29", "更新時間");
-                                    dataGridViewOFOCO.Columns.Add("Column30", "倉位 0:新倉;1:平倉; 2:自動");
+                                    dataGridViewOFOCO.Columns.Add("Column25", "");
+                                    dataGridViewOFOCO.Columns.Add("Column26", "32： 33： 34： 35：-() 36：  37： 38： 39： 40： 999:,UniversalMsg");
+                                    dataGridViewOFOCO.Columns.Add("Column27", "(Y;N)");
+                                    dataGridViewOFOCO.Columns.Add("Column28", "EX:[][]");
+                                    dataGridViewOFOCO.Columns.Add("Column29", "");
+                                    dataGridViewOFOCO.Columns.Add("Column30", " 0:;1:; 2:");
 
-                                    dataGridViewOFOCO.Columns.Add("Column31", "商品契約年月EX: 202212");
-                                    dataGridViewOFOCO.Columns.Add("Column32", "履約價");
-                                    dataGridViewOFOCO.Columns.Add("Column33", "是否為價差商品0:否 ;1:是");
-                                    dataGridViewOFOCO.Columns.Add("Column34", "N:非買權及賣權 C:買權Call或P:賣權Put ");
-                                    dataGridViewOFOCO.Columns.Add("Column35", "是否為選擇權0:否;1:是 ");
-                                    dataGridViewOFOCO.Columns.Add("Column36", "是否為預約單0:否;1:是");
-                                    dataGridViewOFOCO.Columns.Add("Column37", "預約單序號 非預約單為0");
-                                    dataGridViewOFOCO.Columns.Add("Column38", "交易日");
+                                    dataGridViewOFOCO.Columns.Add("Column31", "EX: 202212");
+                                    dataGridViewOFOCO.Columns.Add("Column32", "");
+                                    dataGridViewOFOCO.Columns.Add("Column33", "0: ;1:");
+                                    dataGridViewOFOCO.Columns.Add("Column34", "N: C:CallP:Put ");
+                                    dataGridViewOFOCO.Columns.Add("Column35", "0:;1: ");
+                                    dataGridViewOFOCO.Columns.Add("Column36", "0:;1:");
+                                    dataGridViewOFOCO.Columns.Add("Column37", " 0");
+                                    dataGridViewOFOCO.Columns.Add("Column38", "");
                                     
-                                    dataGridViewOFOCO.Columns.Add("Column39", "原始下單商品市場EX:TF");
+                                    dataGridViewOFOCO.Columns.Add("Column39", "EX:TF");
 
-                                    dataGridViewOFOCO.Columns.Add("Column40", "下單交易所EX: TAIFEX");
-                                    dataGridViewOFOCO.Columns.Add("Column41", "第一腳後台商品代碼EX:FITX");
-                                    dataGridViewOFOCO.Columns.Add("Column42", "第二腳後台商品代碼");
-                                    dataGridViewOFOCO.Columns.Add("Column43", "第二腳商品契約年月");
-                                    dataGridViewOFOCO.Columns.Add("Column44", "第二腳履約價");
-                                    dataGridViewOFOCO.Columns.Add("Column45", "萬用訊息 適用於智慧單狀態Sataus為999情況");
+                                    dataGridViewOFOCO.Columns.Add("Column40", "EX: TAIFEX");
+                                    dataGridViewOFOCO.Columns.Add("Column41", "EX:FITX");
+                                    dataGridViewOFOCO.Columns.Add("Column42", "");
+                                    dataGridViewOFOCO.Columns.Add("Column43", "");
+                                    dataGridViewOFOCO.Columns.Add("Column44", "");
+                                    dataGridViewOFOCO.Columns.Add("Column45", " Sataus999");
                                 }
                                 //dataGridViewOFOCO ONLY
                                 {
-                                    dataGridViewOFOCO2.Columns.Add("Column46", "第一隻腳觸發價"); // 接續共用欄位 46
-                                    dataGridViewOFOCO2.Columns.Add("Column47", "第一隻腳觸發價分子");
-                                    dataGridViewOFOCO2.Columns.Add("Column48", "第一隻腳觸發價分母");
-                                    dataGridViewOFOCO2.Columns.Add("Column49", "第二隻腳觸發價");
-                                    dataGridViewOFOCO2.Columns.Add("Column50", "第二隻腳觸發價分子");
+                                    dataGridViewOFOCO2.Columns.Add("Column46", ""); //  46
+                                    dataGridViewOFOCO2.Columns.Add("Column47", "");
+                                    dataGridViewOFOCO2.Columns.Add("Column48", "");
+                                    dataGridViewOFOCO2.Columns.Add("Column49", "");
+                                    dataGridViewOFOCO2.Columns.Add("Column50", "");
 
-                                    dataGridViewOFOCO2.Columns.Add("Column51", "第二隻腳觸發價分母");
-                                    dataGridViewOFOCO2.Columns.Add("Column52", "第二隻腳委託價");
-                                    dataGridViewOFOCO2.Columns.Add("Column53", "第二隻腳委託價分子");
-                                    dataGridViewOFOCO2.Columns.Add("Column54", "第二隻腳委託價分母");
-                                    dataGridViewOFOCO2.Columns.Add("Column55", "第二隻腳委託價格類別 1：市價 2：限價");
-                                    dataGridViewOFOCO2.Columns.Add("Column56", "第二隻腳委託時效 0：當日有效ROD 3：立即成交IOC 4：立即全部成交FOK");
-                                    dataGridViewOFOCO2.Columns.Add("Column57", "第二隻腳買賣別");
-                                    dataGridViewOFOCO2.Columns.Add("Column58", "第二隻腳新平倉 0：新單 1：平倉 2：自動");
-                                    dataGridViewOFOCO2.Columns.Add("Column59", "長效單註記");
-                                    dataGridViewOFOCO2.Columns.Add("Column60", "長效單序號");
+                                    dataGridViewOFOCO2.Columns.Add("Column51", "");
+                                    dataGridViewOFOCO2.Columns.Add("Column52", "");
+                                    dataGridViewOFOCO2.Columns.Add("Column53", "");
+                                    dataGridViewOFOCO2.Columns.Add("Column54", "");
+                                    dataGridViewOFOCO2.Columns.Add("Column55", " 1： 2：");
+                                    dataGridViewOFOCO2.Columns.Add("Column56", " 0：ROD 3：IOC 4：FOK");
+                                    dataGridViewOFOCO2.Columns.Add("Column57", "");
+                                    dataGridViewOFOCO2.Columns.Add("Column58", " 0： 1： 2：");
+                                    dataGridViewOFOCO2.Columns.Add("Column59", "");
+                                    dataGridViewOFOCO2.Columns.Add("Column60", "");
 
-                                    dataGridViewOFOCO2.Columns.Add("Column61", "長效單結束日期");
-                                    dataGridViewOFOCO2.Columns.Add("Column62", "是否觸發即停止(預設為true) 0:條件觸發後，該筆長效單功能即失效 1:不管有無觸發，每日都送一次條件單，直到長效單結束日後才失效");
-                                    dataGridViewOFOCO2.Columns.Add("Column63", "長效單類別 0：None 1：效期內觸發即失效 2：[停用]長效單結束日失效 3：效期內完全成交即失效");
-                                    dataGridViewOFOCO2.Columns.Add("Column64", "長效單委託總量");
-                                    dataGridViewOFOCO2.Columns.Add("Column65", "長效單成交總量");
+                                    dataGridViewOFOCO2.Columns.Add("Column61", "");
+                                    dataGridViewOFOCO2.Columns.Add("Column62", "(true) 0:， 1:，，");
+                                    dataGridViewOFOCO2.Columns.Add("Column63", " 0：None 1： 2：[] 3：");
+                                    dataGridViewOFOCO2.Columns.Add("Column64", "");
+                                    dataGridViewOFOCO2.Columns.Add("Column65", "");
                                 }
                             }
                             //dataGridViewOFAB
                             {
-                                //dataGridViewOFAB 海期(共用欄位)
+                                //dataGridViewOFAB ()
                                 {
-                                    dataGridViewOFAB.Columns.Add("Column1", "1:新增  2:刪除");
-                                    dataGridViewOFAB.Columns.Add("Column2", "智慧單(母單)序號");
-                                    dataGridViewOFAB.Columns.Add("Column3", "委託單順序(判斷每筆回報順序使用)");
-                                    dataGridViewOFAB.Columns.Add("Column4", "分公司代碼");
-                                    dataGridViewOFAB.Columns.Add("Column5", "交易帳號");
-                                    dataGridViewOFAB.Columns.Add("Column6", "子帳帳號");
-                                    dataGridViewOFAB.Columns.Add("Column7", "交易所名稱");
-                                    dataGridViewOFAB.Columns.Add("Column8", "13碼序號");
-                                    dataGridViewOFAB.Columns.Add("Column9", "原始13碼序號");
-                                    dataGridViewOFAB.Columns.Add("Column10", "委託書號");
+                                    dataGridViewOFAB.Columns.Add("Column1", "1:  2:");
+                                    dataGridViewOFAB.Columns.Add("Column2", "()");
+                                    dataGridViewOFAB.Columns.Add("Column3", "()");
+                                    dataGridViewOFAB.Columns.Add("Column4", "");
+                                    dataGridViewOFAB.Columns.Add("Column5", "");
+                                    dataGridViewOFAB.Columns.Add("Column6", "");
+                                    dataGridViewOFAB.Columns.Add("Column7", "");
+                                    dataGridViewOFAB.Columns.Add("Column8", "13");
+                                    dataGridViewOFAB.Columns.Add("Column9", "13");
+                                    dataGridViewOFAB.Columns.Add("Column10", "");
 
-                                    dataGridViewOFAB.Columns.Add("Column11", "商品代碼");
-                                    dataGridViewOFAB.Columns.Add("Column12", "B: 買 S:賣");
-                                    dataGridViewOFAB.Columns.Add("Column13", "0=前日收盤價 (平盤價);1:漲停價 ;2:跌停價;7:使用者輸入價");
-                                    dataGridViewOFAB.Columns.Add("Column14", "委託價格");
-                                    dataGridViewOFAB.Columns.Add("Column15", "1市價;2限價;3:範圍市價 期貨:不支援市價單");
+                                    dataGridViewOFAB.Columns.Add("Column11", "");
+                                    dataGridViewOFAB.Columns.Add("Column12", "B:  S:");
+                                    dataGridViewOFAB.Columns.Add("Column13", "0= ();1: ;2:;7:");
+                                    dataGridViewOFAB.Columns.Add("Column14", "");
+                                    dataGridViewOFAB.Columns.Add("Column15", "1;2;3: :");
                                     dataGridViewOFAB.Columns.Add("Column16", "0：ROD 3：IOC  4：FOK");
-                                    dataGridViewOFAB.Columns.Add("Column17", "TS:張數; TF:口數");
-                                    dataGridViewOFAB.Columns.Add("Column18", "觸發價");
-                                    dataGridViewOFAB.Columns.Add("Column19", "觸發時間");
-                                    dataGridViewOFAB.Columns.Add("Column20", "觸發價方向0: None;1:GTE(大於等於); 2:LTE(小於等於)");
+                                    dataGridViewOFAB.Columns.Add("Column17", "TS:; TF:");
+                                    dataGridViewOFAB.Columns.Add("Column18", "");
+                                    dataGridViewOFAB.Columns.Add("Column19", "");
+                                    dataGridViewOFAB.Columns.Add("Column20", "0: None;1:GTE(); 2:LTE()");
 
-                                    dataGridViewOFAB.Columns.Add("Column21", "是否當沖 期貨：非當沖:空值；當沖:Y");
-                                    dataGridViewOFAB.Columns.Add("Column22", "下單時間");
-                                    dataGridViewOFAB.Columns.Add("Column23", "營業員代碼");
+                                    dataGridViewOFAB.Columns.Add("Column21", " ：:；:Y");
+                                    dataGridViewOFAB.Columns.Add("Column22", "");
+                                    dataGridViewOFAB.Columns.Add("Column23", "");
                                     dataGridViewOFAB.Columns.Add("Column24", "USER PC IP");
-                                    dataGridViewOFAB.Columns.Add("Column25", "來源別");
-                                    dataGridViewOFAB.Columns.Add("Column26", "32：中台收單成功 33：中台收單失敗 34：洗價中 35：洗價中-觸發價更新(移動停損單) 36：洗價失敗  37：洗價觸發 38：觸發下單 39：下單失敗 40：使用者刪單 999:萬用狀態,請同時確認UniversalMsg萬用訊息");
-                                    dataGridViewOFAB.Columns.Add("Column27", "錯誤訊息註記(Y失敗;N成功)");
-                                    dataGridViewOFAB.Columns.Add("Column28", "訊息EX:[智慧單號][商品代碼]訊息內容");
-                                    dataGridViewOFAB.Columns.Add("Column29", "更新時間");
-                                    dataGridViewOFAB.Columns.Add("Column30", "倉位 0:新倉;1:平倉; 2:自動");
+                                    dataGridViewOFAB.Columns.Add("Column25", "");
+                                    dataGridViewOFAB.Columns.Add("Column26", "32： 33： 34： 35：-() 36：  37： 38： 39： 40： 999:,UniversalMsg");
+                                    dataGridViewOFAB.Columns.Add("Column27", "(Y;N)");
+                                    dataGridViewOFAB.Columns.Add("Column28", "EX:[][]");
+                                    dataGridViewOFAB.Columns.Add("Column29", "");
+                                    dataGridViewOFAB.Columns.Add("Column30", " 0:;1:; 2:");
 
-                                    dataGridViewOFAB.Columns.Add("Column31", "商品契約年月EX: 202212");
-                                    dataGridViewOFAB.Columns.Add("Column32", "履約價");
-                                    dataGridViewOFAB.Columns.Add("Column33", "是否為價差商品0:否 ;1:是");
-                                    dataGridViewOFAB.Columns.Add("Column34", "N:非買權及賣權 C:買權Call或P:賣權Put ");
-                                    dataGridViewOFAB.Columns.Add("Column35", "是否為選擇權0:否;1:是 ");
-                                    dataGridViewOFAB.Columns.Add("Column36", "是否為預約單0:否;1:是");
-                                    dataGridViewOFAB.Columns.Add("Column37", "預約單序號 非預約單為0");
-                                    dataGridViewOFAB.Columns.Add("Column38", "交易日");
+                                    dataGridViewOFAB.Columns.Add("Column31", "EX: 202212");
+                                    dataGridViewOFAB.Columns.Add("Column32", "");
+                                    dataGridViewOFAB.Columns.Add("Column33", "0: ;1:");
+                                    dataGridViewOFAB.Columns.Add("Column34", "N: C:CallP:Put ");
+                                    dataGridViewOFAB.Columns.Add("Column35", "0:;1: ");
+                                    dataGridViewOFAB.Columns.Add("Column36", "0:;1:");
+                                    dataGridViewOFAB.Columns.Add("Column37", " 0");
+                                    dataGridViewOFAB.Columns.Add("Column38", "");
 
-                                    dataGridViewOFAB.Columns.Add("Column39", "原始下單商品市場EX:TF");
+                                    dataGridViewOFAB.Columns.Add("Column39", "EX:TF");
 
-                                    dataGridViewOFAB.Columns.Add("Column40", "下單交易所EX: TAIFEX");
-                                    dataGridViewOFAB.Columns.Add("Column41", "第一腳後台商品代碼EX:FITX");
-                                    dataGridViewOFAB.Columns.Add("Column42", "第二腳後台商品代碼");
-                                    dataGridViewOFAB.Columns.Add("Column43", "第二腳商品契約年月");
-                                    dataGridViewOFAB.Columns.Add("Column44", "第二腳履約價");
-                                    dataGridViewOFAB.Columns.Add("Column45", "萬用訊息 適用於智慧單狀態Sataus為999情況");
+                                    dataGridViewOFAB.Columns.Add("Column40", "EX: TAIFEX");
+                                    dataGridViewOFAB.Columns.Add("Column41", "EX:FITX");
+                                    dataGridViewOFAB.Columns.Add("Column42", "");
+                                    dataGridViewOFAB.Columns.Add("Column43", "");
+                                    dataGridViewOFAB.Columns.Add("Column44", "");
+                                    dataGridViewOFAB.Columns.Add("Column45", " Sataus999");
                                 }
                                 //dataGridViewOFAB ONLY
                                 {
-                                    dataGridViewOFAB2.Columns.Add("Column46", "成交價觸發價格"); // 接續共用欄位 46
+                                    dataGridViewOFAB2.Columns.Add("Column46", ""); //  46
                                 }
                             }
                         }
@@ -1405,14 +1405,14 @@ namespace WindowsFormsApp1
         }
         private void ReplyForm_Load(object sender, EventArgs e)
         {
-            //下單帳號資訊
+            //
             {
                 m_pSKOrder.OnAccount += new _ISKOrderLibEvents_OnAccountEventHandler(OnAccount);
                 void OnAccount(string bstrLogInID, string bstrAccountData)
                 {
                     AddUserID(m_dictUserID, bstrLogInID, bstrAccountData);
 
-                    //獲得所有key
+                    //key
                     if (allkeys != null) allkeys.Clear();
                     allkeys = new List<string>(m_dictUserID.Keys);
 
@@ -1420,14 +1420,14 @@ namespace WindowsFormsApp1
                     comboBoxUserID.DataSource = allkeys;
                 }
             }
-            // 當有回報將主動呼叫函式，並通知委託的狀態。(新格式 包含預約單回報)
+            // ，。( )
             {
                 m_pSKReply.OnNewData += new _ISKReplyLibEvents_OnNewDataEventHandler(OnNewData);
                 void OnNewData(string bstrLogInID, string bstrData)
                 {
                     if (isClosing != true)
                     {
-                        // 宣告bstrData切出來的參數
+                        // bstrData
                         string[] values = new string[48];
 
                         string KeyNo;
@@ -1484,15 +1484,15 @@ namespace WindowsFormsApp1
                         string SeqNo;
                         string OFSTPFlag;
 
-                        // 使用 Split 方法將字串拆分成陣列
+                        //  Split 
                         values = bstrData.Split(',');
-                        if (values[0] == "980") // 980(後台問題)
+                        if (values[0] == "980") // 980()
                         {
                             dataGridViewNoClass.Rows.Add(bstrData);
                         }
                         else
                         {
-                            // 宣告bstrData參數
+                            // bstrData
                             KeyNo = values[0];
                             MarketType = values[1];
                             Type = values[2];
@@ -1561,20 +1561,20 @@ namespace WindowsFormsApp1
                     }
                 }
             }
-            // 回報連線後會進行回報回補，等收到此事件通知後表示回補完成
+            // ，
             {
                 m_pSKReply.OnComplete += new _ISKReplyLibEvents_OnCompleteEventHandler(OnComplete);
                 void OnComplete(string bstrUserID)
                 {
                     if (isClosing != true)
                     {
-                        // 取得回傳訊息
-                        string msg = "【OnComplete】" + bstrUserID + "回報連線&資料正常";
+                        // 
+                        string msg = "【OnComplete】" + bstrUserID + "&";
                         richTextBoxMessage.AppendText(msg + "\n");
                     }
                 }
             }
-            // 當有回報開始清除前日資料時，會發出的通知，表示清除前日回報
+            // ，，
             {
                 m_pSKReply.OnReplyClear += new _ISKReplyLibEvents_OnReplyClearEventHandler(OnReplyClear);
                 void OnReplyClear(string bstrMarket)
@@ -1582,32 +1582,32 @@ namespace WindowsFormsApp1
                     if (isClosing != true)
                     {
                         string msg = "";
-                        // 取得回傳訊息
-                        if (bstrMarket == "R1") msg = "證券";
-                        else if (bstrMarket == "R2") msg = "國內期選";
-                        else if (bstrMarket == "R3") msg = "海外股市";
-                        else if (bstrMarket == "R4") msg = "海外期選";
-                        else if (bstrMarket == "R11") msg = "盤中零股";
-                        else if (bstrMarket == "R20" || bstrMarket == "R21" || bstrMarket == "R22" || bstrMarket == "R23") msg = "智慧單";
-                        msg = "【OnReplyClear】" + msg + "正在清除前日回報!!!";
+                        // 
+                        if (bstrMarket == "R1") msg = "";
+                        else if (bstrMarket == "R2") msg = "";
+                        else if (bstrMarket == "R3") msg = "";
+                        else if (bstrMarket == "R4") msg = "";
+                        else if (bstrMarket == "R11") msg = "";
+                        else if (bstrMarket == "R20" || bstrMarket == "R21" || bstrMarket == "R22" || bstrMarket == "R23") msg = "";
+                        msg = "【OnReplyClear】" + msg + "!!!";
                         richTextBoxMessage.AppendText(msg + "\n");
                     }
                 }
             }
-            // 當公告開始清除前日資料時，會發出的通知
+            // ，
             {
                 m_pSKReply.OnReplyClearMessage += new _ISKReplyLibEvents_OnReplyClearMessageEventHandler(OnReplyClearMessage);
                 void OnReplyClearMessage(string bstrUserID)
                 {
                     if (isClosing != true)
                     {
-                        // 取得回傳訊息
-                        string msg = "【OnReplyClearMessage】" + bstrUserID + "正在清除前日回報!";
+                        // 
+                        string msg = "【OnReplyClearMessage】" + bstrUserID + "!";
                         richTextBoxMessage.AppendText(msg + "\n");
                     }
                 }
             }
-            // 當中斷solace連線，會透過此事件函式告知斷線結果
+            // solace，
             {
                 m_pSKReply.OnSolaceReplyDisconnect += new _ISKReplyLibEvents_OnSolaceReplyDisconnectEventHandler(OnSolaceReplyDisconnect);
                 void OnSolaceReplyDisconnect(string bstrUserID, int nErrorCode)
@@ -1617,24 +1617,24 @@ namespace WindowsFormsApp1
                         string msg;
                         if (nErrorCode == 3002)
                         {
-                            msg = "斷線成功";
+                            msg = "";
                         }
-                        else if (nErrorCode == 3033) //SK_SUBJECT_SOLACE_SESSION_EVENT_ERROR (Solace Session down錯誤 (因AP與主機連線異常，由主機端主動斷線))
+                        else if (nErrorCode == 3033) //SK_SUBJECT_SOLACE_SESSION_EVENT_ERROR (Solace Session down (AP，))
                         {
-                            msg = "連線異常";
-                            timerSolaceReconnect.Enabled = true; // 斷線重連timer啟用，5秒重連一次
+                            msg = "";
+                            timerSolaceReconnect.Enabled = true; // timer，5
                         }
                         else
                         {
-                            msg = "未預期的斷線" + nErrorCode;
+                            msg = "" + nErrorCode;
                         }
-                        // 取得回傳訊息
+                        // 
                         msg = "【OnSolaceReplyDisconnect】" + bstrUserID + "_" + msg;
                         richTextBoxMessage.AppendText(msg + "\n");
                     }
                 }
             }
-            // 當solace連線，會透過此事件函式告知
+            // solace，
             {
                 m_pSKReply.OnSolaceReplyConnection += new _ISKReplyLibEvents_OnSolaceReplyConnectionEventHandler(OnSolaceReplyConnection);
                 void OnSolaceReplyConnection(string bstrUserID, int nErrorCode)
@@ -1642,35 +1642,35 @@ namespace WindowsFormsApp1
                     if (isClosing != true)
                     {
                         string msg;
-                        if (nErrorCode == 0) msg = "連線成功";
-                        else msg = "連線失敗";
-                        // 取得回傳訊息
+                        if (nErrorCode == 0) msg = "";
+                        else msg = "";
+                        // 
                         msg = "【OnSolaceReplyConnection】" + bstrUserID + "_" + msg;
                         richTextBoxMessage.AppendText(msg + "\n");
                     }
                 }
             }
-            // 當有智慧單回報將主動呼叫函式，並通知智慧單的狀態
+            // ，
             {
                 m_pSKReply.OnStrategyData += new _ISKReplyLibEvents_OnStrategyDataEventHandler(OnStrategyData);
                 void OnStrategyData(string bstrLogInID, string bstrData)
                 {
                     if (isClosing != true)
                     {
-                        // 使用 Split 方法將字串拆分成陣列
+                        //  Split 
                         string[] values = bstrData.Split(',');                       
-                        if (values[0] == "980") // 980(後台問題)
+                        if (values[0] == "980") // 980()
                         {
-                            dataGridViewTSMST.Rows.Add(bstrData); // 錯誤顯示在證券-MST 第 0 Row
+                            dataGridViewTSMST.Rows.Add(bstrData); // -MST  0 Row
                         }
                         else
                         {
-                            string TradeKind = values[5]; // 單別
-                            if (values[0] == "TS") // 證券市場
+                            string TradeKind = values[5]; // 
+                            if (values[0] == "TS") // 
                             {
                                 if (TradeKind == "0") // None
                                 {
-                                    // 先不處理
+                                    // 
                                 }
                                 else if (TradeKind == "9") // MST
                                 {
@@ -1713,12 +1713,12 @@ namespace WindowsFormsApp1
                                     dataGridViewTSCB2.Rows.Add(values[34], values[35], values[36], values[37], values[38], values[39], values[40], values[41], values[42], values[43], values[44], values[45], values[46], values[47], values[48], values[49], values[50], values[51], values[52], values[53], values[54], values[55], values[56], values[57], values[58], values[59], values[60], values[61], values[62], values[63], values[64], values[65], values[66], values[67], values[68], values[69], values[70], values[71]);
                                 }
                             }
-                            else if (values[0] == "TF") // 國內期選
+                            else if (values[0] == "TF") // 
                             {
-                                TradeKind = values[5]; // 單別
+                                TradeKind = values[5]; // 
                                 if (TradeKind == "0") // None
                                 {
-                                    // 先不處理
+                                    // 
                                 }
                                 else if (TradeKind == "5") // STP
                                 {
@@ -1746,12 +1746,12 @@ namespace WindowsFormsApp1
                                     dataGridViewTFAB2.Rows.Add(values[49]);
                                 }
                             }
-                            else if (values[0] == "OF")// OF: 海外期貨
+                            else if (values[0] == "OF")// OF: 
                             {
-                                TradeKind = values[4]; // 單別
+                                TradeKind = values[4]; // 
                                 if (TradeKind == "0") // None
                                 {
-                                    // 先不處理
+                                    // 
                                 }
                                 else if (TradeKind == "3") // OCO
                                 {
@@ -1768,17 +1768,17 @@ namespace WindowsFormsApp1
                     }
                 }
             }
-            // 下單物件初始化
+            // 
             {
                 int nCode = m_pSKOrder.SKOrderLib_Initialize();
-                // 取得回傳訊息
+                // 
                 string msg = "【SKOrderLib_Initialize】" + m_pSKCenter.SKCenterLib_GetReturnCodeMessage(nCode);
                 richTextBoxMethodMessage.AppendText(msg + "\n");
             }
-            // 取回可交易的所有帳號
+            // 
             {
                 int nCode = m_pSKOrder.GetUserAccount();
-                // 取得回傳訊息
+                // 
                 string msg = "【GetUserAccount】" + m_pSKCenter.SKCenterLib_GetReturnCodeMessage(nCode);
                 richTextBoxMethodMessage.AppendText(msg + "\n");
             }
@@ -1786,72 +1786,72 @@ namespace WindowsFormsApp1
         private void ReplyForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             isClosing = true;
-            // 中斷指定帳號的連線
+            // 
             m_pSKReply.SKReplyLib_SolaceCloseByID(comboBoxUserID.Text);
         }
         private void comboBoxUserID_DropDown(object sender, EventArgs e)
         {
-            m_dictUserID.Clear(); //清空之前的帳號
+            m_dictUserID.Clear(); //
 
-            // 取回可交易的所有帳號
+            // 
             {
                 int nCode = m_pSKOrder.GetUserAccount();
-                // 取得回傳訊息
+                // 
                 string msg = "【GetUserAccount】" + m_pSKCenter.SKCenterLib_GetReturnCodeMessage(nCode);
                 richTextBoxMethodMessage.AppendText(msg + "\n"); 
             }
         }
         private void timerSolaceReconnect_Tick(object sender, EventArgs e)
         {
-            // 指定回報連線的使用者登入帳號
+            // 
             int nCode = m_pSKReply.SKReplyLib_ConnectByID(comboBoxUserID.Text);
-            string msg = "【自動重連中...】" + m_pSKCenter.SKCenterLib_GetReturnCodeMessage(nCode);
+            string msg = "【...】" + m_pSKCenter.SKCenterLib_GetReturnCodeMessage(nCode);
             richTextBoxMethodMessage.AppendText(msg + "\n");
-            if (nCode == 0) // 連線成功
+            if (nCode == 0) // 
             {
-                // 中斷指定帳號的連線
+                // 
                 m_pSKReply.SKReplyLib_SolaceCloseByID(comboBoxUserID.Text);
-                // 指定回報連線的使用者登入帳號
+                // 
                 nCode = m_pSKReply.SKReplyLib_ConnectByID(comboBoxUserID.Text);
-                if (nCode == 0) // 連線成功
+                if (nCode == 0) // 
                 {
                     msg = "【SKReplyLib_ConnectByID】" + m_pSKCenter.SKCenterLib_GetReturnCodeMessage(nCode);
                     richTextBoxMethodMessage.AppendText(msg + "\n");
 
-                    timerSolaceReconnect.Enabled = false; // 斷線重連timer禁用
+                    timerSolaceReconnect.Enabled = false; // timer
                 }
             }
         }
         private void buttonSKReplyLib_IsConnectedByID_Click(object sender, EventArgs e)
         {
             string msg;
-            // 檢查輸入的帳號目前連線狀態
+            // 
             int nCode = m_pSKReply.SKReplyLib_IsConnectedByID(comboBoxUserID.Text);
 
-            // 取得回傳訊息
+            // 
             switch (nCode)
             {
                 case 0:
-                    msg = "【SKReplyLib_IsConnectedByID】斷線";
+                    msg = "【SKReplyLib_IsConnectedByID】";
                     break;
                 case 1:
-                    msg = "【SKReplyLib_IsConnectedByID】連線中";
+                    msg = "【SKReplyLib_IsConnectedByID】";
                     break;
                 case 2:
-                    msg = "【SKReplyLib_IsConnectedByID】下載中";
+                    msg = "【SKReplyLib_IsConnectedByID】";
                     break;
                 default:
-                    msg = "【SKReplyLib_IsConnectedByID】出錯啦";
+                    msg = "【SKReplyLib_IsConnectedByID】";
                     break;
             }
             richTextBoxMessage.AppendText(msg + "\n");          
         }
         private void buttonSKReplyLib_SolaceCloseByID_Click(object sender, EventArgs e)
         {
-            // 中斷指定帳號的連線
+            // 
             int nCode = m_pSKReply.SKReplyLib_SolaceCloseByID(comboBoxUserID.Text);
 
-            // 取得回傳訊息->由事件來回傳
+            // ->
             string msg = "【SKReplyLib_SolaceCloseByID】" + m_pSKCenter.SKCenterLib_GetReturnCodeMessage(nCode);
             richTextBoxMethodMessage.AppendText(msg + "\n");
         }
@@ -1859,7 +1859,7 @@ namespace WindowsFormsApp1
         {
             // Clear dataGridView
             {
-                // 一般回報
+                // 
                 {
                     dataGridViewTS.Rows.Clear();
                     dataGridViewTA.Rows.Clear();
@@ -1873,9 +1873,9 @@ namespace WindowsFormsApp1
                     dataGridViewOS.Rows.Clear();
                     dataGridViewNoClass.Rows.Clear();
                 }
-                // 智慧單回報
+                // 
                 {
-                    // 證券
+                    // 
                     {
                         dataGridViewTSMST.Rows.Clear();
                         dataGridViewTSMIOC.Rows.Clear();
@@ -1895,7 +1895,7 @@ namespace WindowsFormsApp1
                         dataGridViewTSAB2.Rows.Clear();
                         dataGridViewTSCB2.Rows.Clear();
                     }
-                    // 期選
+                    // 
                     {
                         dataGridViewTFSTP.Rows.Clear();
                         dataGridViewTFMIT.Rows.Clear();
@@ -1909,7 +1909,7 @@ namespace WindowsFormsApp1
                         dataGridViewTFOCO2.Rows.Clear();
                         dataGridViewTFAB2.Rows.Clear();
                     }
-                    // 海期
+                    // 
                     {
                         dataGridViewOFOCO.Rows.Clear();
                         dataGridViewOFAB.Rows.Clear();
@@ -1919,10 +1919,10 @@ namespace WindowsFormsApp1
                     }
                 }
             }
-            // 指定回報連線的使用者登入帳號
+            // 
             int nCode = m_pSKReply.SKReplyLib_ConnectByID(comboBoxUserID.Text);
 
-            // 取得回傳訊息
+            // 
             string msg = "【SKReplyLib_ConnectByID】" + m_pSKCenter.SKCenterLib_GetReturnCodeMessage(nCode);
             richTextBoxMethodMessage.AppendText(msg + "\n");
         }

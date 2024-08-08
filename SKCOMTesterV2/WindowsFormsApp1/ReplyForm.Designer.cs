@@ -264,7 +264,7 @@ namespace WindowsFormsApp1
             this.buttonSKReplyLib_ConnectByID.Name = "buttonSKReplyLib_ConnectByID";
             this.buttonSKReplyLib_ConnectByID.Size = new System.Drawing.Size(165, 30);
             this.buttonSKReplyLib_ConnectByID.TabIndex = 42;
-            this.buttonSKReplyLib_ConnectByID.Text = "連線回報主機";
+            this.buttonSKReplyLib_ConnectByID.Text = "";
             this.buttonSKReplyLib_ConnectByID.UseVisualStyleBackColor = true;
             this.buttonSKReplyLib_ConnectByID.Click += new System.EventHandler(this.buttonSKReplyLib_ConnectByID_Click);
             // 
@@ -285,7 +285,7 @@ namespace WindowsFormsApp1
             this.buttonSKReplyLib_SolaceCloseByID.Name = "buttonSKReplyLib_SolaceCloseByID";
             this.buttonSKReplyLib_SolaceCloseByID.Size = new System.Drawing.Size(165, 30);
             this.buttonSKReplyLib_SolaceCloseByID.TabIndex = 45;
-            this.buttonSKReplyLib_SolaceCloseByID.Text = "斷線Solace主機";
+            this.buttonSKReplyLib_SolaceCloseByID.Text = "Solace";
             this.buttonSKReplyLib_SolaceCloseByID.UseVisualStyleBackColor = true;
             this.buttonSKReplyLib_SolaceCloseByID.Click += new System.EventHandler(this.buttonSKReplyLib_SolaceCloseByID_Click);
             // 
@@ -296,7 +296,7 @@ namespace WindowsFormsApp1
             this.buttonSKReplyLib_IsConnectedByID.Name = "buttonSKReplyLib_IsConnectedByID";
             this.buttonSKReplyLib_IsConnectedByID.Size = new System.Drawing.Size(165, 30);
             this.buttonSKReplyLib_IsConnectedByID.TabIndex = 46;
-            this.buttonSKReplyLib_IsConnectedByID.Text = "檢查連線狀態";
+            this.buttonSKReplyLib_IsConnectedByID.Text = "";
             this.buttonSKReplyLib_IsConnectedByID.UseVisualStyleBackColor = true;
             this.buttonSKReplyLib_IsConnectedByID.Click += new System.EventHandler(this.buttonSKReplyLib_IsConnectedByID_Click);
             // 
@@ -340,7 +340,7 @@ namespace WindowsFormsApp1
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(899, 450);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "證券";
+            this.tabPage1.Text = "";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // tabControlSmartTS
@@ -371,7 +371,7 @@ namespace WindowsFormsApp1
             this.tabPageTSDayTrading.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageTSDayTrading.Size = new System.Drawing.Size(879, 409);
             this.tabPageTSDayTrading.TabIndex = 6;
-            this.tabPageTSDayTrading.Text = "當沖";
+            this.tabPageTSDayTrading.Text = "";
             this.tabPageTSDayTrading.UseVisualStyleBackColor = true;
             // 
             // dataGridViewTSDayTrading2
@@ -443,7 +443,7 @@ namespace WindowsFormsApp1
             this.tabPageTSClearOut.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageTSClearOut.Size = new System.Drawing.Size(879, 409);
             this.tabPageTSClearOut.TabIndex = 9;
-            this.tabPageTSClearOut.Text = "出清";
+            this.tabPageTSClearOut.Text = "";
             this.tabPageTSClearOut.UseVisualStyleBackColor = true;
             // 
             // dataGridViewTSClearOut2
@@ -929,7 +929,7 @@ namespace WindowsFormsApp1
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage6.Size = new System.Drawing.Size(899, 450);
             this.tabPage6.TabIndex = 5;
-            this.tabPage6.Text = "國內期選";
+            this.tabPage6.Text = "";
             this.tabPage6.UseVisualStyleBackColor = true;
             // 
             // tabControlSmartTF
@@ -1297,7 +1297,7 @@ namespace WindowsFormsApp1
             this.tabPage8.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage8.Size = new System.Drawing.Size(899, 450);
             this.tabPage8.TabIndex = 7;
-            this.tabPage8.Text = "海外期貨(A市場)";
+            this.tabPage8.Text = "(A)";
             this.tabPage8.UseVisualStyleBackColor = true;
             // 
             // tabControlSmartOF
@@ -1479,7 +1479,7 @@ namespace WindowsFormsApp1
             this.tabPageTS.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageTS.Size = new System.Drawing.Size(899, 251);
             this.tabPageTS.TabIndex = 0;
-            this.tabPageTS.Text = "證券";
+            this.tabPageTS.Text = "";
             this.tabPageTS.UseVisualStyleBackColor = true;
             // 
             // dataGridViewTS
@@ -1521,7 +1521,7 @@ namespace WindowsFormsApp1
             this.tabPageTA.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageTA.Size = new System.Drawing.Size(899, 251);
             this.tabPageTA.TabIndex = 1;
-            this.tabPageTA.Text = "盤後";
+            this.tabPageTA.Text = "";
             this.tabPageTA.UseVisualStyleBackColor = true;
             // 
             // dataGridViewTA
@@ -1555,7 +1555,7 @@ namespace WindowsFormsApp1
             this.tabPageTL.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageTL.Size = new System.Drawing.Size(899, 251);
             this.tabPageTL.TabIndex = 2;
-            this.tabPageTL.Text = "零股";
+            this.tabPageTL.Text = "";
             this.tabPageTL.UseVisualStyleBackColor = true;
             // 
             // dataGridViewTL
@@ -1589,7 +1589,7 @@ namespace WindowsFormsApp1
             this.tabPageTP.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageTP.Size = new System.Drawing.Size(899, 251);
             this.tabPageTP.TabIndex = 3;
-            this.tabPageTP.Text = "興櫃";
+            this.tabPageTP.Text = "";
             this.tabPageTP.UseVisualStyleBackColor = true;
             // 
             // dataGridViewTP
@@ -1623,7 +1623,7 @@ namespace WindowsFormsApp1
             this.tabPageTC.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageTC.Size = new System.Drawing.Size(899, 251);
             this.tabPageTC.TabIndex = 4;
-            this.tabPageTC.Text = "盤中零股";
+            this.tabPageTC.Text = "";
             this.tabPageTC.UseVisualStyleBackColor = true;
             // 
             // dataGridViewTC
@@ -1657,7 +1657,7 @@ namespace WindowsFormsApp1
             this.tabPageTF.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageTF.Size = new System.Drawing.Size(899, 251);
             this.tabPageTF.TabIndex = 5;
-            this.tabPageTF.Text = "期貨";
+            this.tabPageTF.Text = "";
             this.tabPageTF.UseVisualStyleBackColor = true;
             // 
             // dataGridViewTF
@@ -1691,7 +1691,7 @@ namespace WindowsFormsApp1
             this.tabPageTO.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageTO.Size = new System.Drawing.Size(899, 251);
             this.tabPageTO.TabIndex = 6;
-            this.tabPageTO.Text = "選擇權";
+            this.tabPageTO.Text = "";
             this.tabPageTO.UseVisualStyleBackColor = true;
             // 
             // dataGridViewTO
@@ -1725,7 +1725,7 @@ namespace WindowsFormsApp1
             this.tabPageOF.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageOF.Size = new System.Drawing.Size(899, 251);
             this.tabPageOF.TabIndex = 7;
-            this.tabPageOF.Text = "海期";
+            this.tabPageOF.Text = "";
             this.tabPageOF.UseVisualStyleBackColor = true;
             // 
             // dataGridViewOF
@@ -1759,7 +1759,7 @@ namespace WindowsFormsApp1
             this.tabPageOO.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageOO.Size = new System.Drawing.Size(899, 251);
             this.tabPageOO.TabIndex = 8;
-            this.tabPageOO.Text = "海選";
+            this.tabPageOO.Text = "";
             this.tabPageOO.UseVisualStyleBackColor = true;
             // 
             // dataGridViewOO
@@ -1793,7 +1793,7 @@ namespace WindowsFormsApp1
             this.tabPageOS.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageOS.Size = new System.Drawing.Size(899, 251);
             this.tabPageOS.TabIndex = 9;
-            this.tabPageOS.Text = "複委託";
+            this.tabPageOS.Text = "";
             this.tabPageOS.UseVisualStyleBackColor = true;
             // 
             // dataGridViewOS
@@ -1827,7 +1827,7 @@ namespace WindowsFormsApp1
             this.tabPageNoClass.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageNoClass.Size = new System.Drawing.Size(899, 251);
             this.tabPageNoClass.TabIndex = 10;
-            this.tabPageNoClass.Text = "不分類";
+            this.tabPageNoClass.Text = "";
             this.tabPageNoClass.UseVisualStyleBackColor = true;
             // 
             // dataGridViewNoClass

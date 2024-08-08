@@ -11,28 +11,28 @@
 using namespace std;
 
 // 1
-// 市場別
+//
 // 2
-// 帳號
+//
 
 // 3
-//  商品
+//
 // 4
-//  買賣別
+//
 // 5
-//  未平倉部位
+//
 // 6
-//  當沖未平倉部位
+//
 // 7
-//  平均成本(小數部分已處理)
+//  ()
 
-// 全局变量
+//
 OpenInterestInfo gOpenInterestInfo = {
-    "", // product 默认为空字符串
-    "", // buySell 默认为空字符串
-    0,  // openPosition 默认为0
-    0,  // dayTradePosition 默认为0
-    0.0 // avgCost 默认为0.0
+    "", // product
+    "", // buySell
+    0,  // openPosition 0
+    0,  // dayTradePosition 0
+    0.0 // avgCost 0.0
 };
 
 string g_strUserId = "";
@@ -239,29 +239,29 @@ long CSKOrderLib::SendFutureOrder(string strLogInID, bool bAsyncOrder, string st
 
 // struct FUTUREORDER
 // {
-//     BSTR bstrFullAccount; // 期貨帳號，分公司代碼＋帳號7碼
-//     BSTR bstrStockNo;     // 委託期權商品代號
-//     SHORT sTradeType;     // 0:ROD 3:IOC 4:FOK ,sTradeType為ROD時，nOrderPriceType僅可指定限價
-//     SHORT sBuySell;  // 0:買進 1:賣出
-//     SHORT sDayTrade; // 當沖0:否 1:是，可當沖商品請參考交易所規定。
-//     SHORT sNewClose; // 新平倉，0:新倉 1:平倉 2:自動
-//     BSTR bstrPrice;  // 委託價格，(指定限價時，需填此欄)、[OCO]停利委託價。
-//                      // 請設nOrderPriceType代表範圍市價，不可用特殊價代碼「P」代表範圍市價 ,{移動停損不須填委託價格}
-//     BSTR bstrPrice2; //[OCO]停損委託價。
-//     LONG nQty;           // 交易口數
-//     BSTR bstrTrigger;    // 觸發價，觸發基準價、[OCO]停利觸發價。{期貨停損、移動停損、選擇權停損、MIT、OCO下單使用：不可0、不可給特殊價代碼P}
-//     BSTR bstrTrigger2; //[OCO]停損觸發價。
+//     BSTR bstrFullAccount; // ，＋7
+//     BSTR bstrStockNo;     //
+//     SHORT sTradeType;     // 0:ROD 3:IOC 4:FOK ,sTradeTypeROD，nOrderPriceType
+//     SHORT sBuySell;  // 0: 1:
+//     SHORT sDayTrade; // 0: 1:，。
+//     SHORT sNewClose; // ，0: 1: 2:
+//     BSTR bstrPrice;  // ，(，)、[OCO]。
+//                      // nOrderPriceType，「P」 ,{}
+//     BSTR bstrPrice2; //[OCO]。
+//     LONG nQty;           //
+//     BSTR bstrTrigger;    // ，、[OCO]。{、、、MIT、OCO：0、P}
+//     BSTR bstrTrigger2; //[OCO]。
 
-//     BSTR bstrMovingPoint; //{僅移動停損下單使用}移動點數。
-//     SHORT sReserved;      // 盤別，0:盤中(T盤及T+1盤)；1:T盤預約{MIT 單不須填盤別}
-//     BSTR bstrDealPrice;   // 成交價 {限MIT下單使用：不可0、不可給特殊價代碼, 需自行取得委託當下成交價}
+//     BSTR bstrMovingPoint; //{}。
+//     SHORT sReserved;      // ，0:(TT+1)；1:T{MIT }
+//     BSTR bstrDealPrice;   //  {MIT：0、, }
 
-//     BSTR bstrSettlementMonth; // 委託商品年月，YYYYMM共6碼(EX: 202206)
-//     LONG nOrderPriceType;     // 委託價類別  2: 限價; 3:範圍市價 （不支援市價）
-//                               // sTradeType為ROD時，nOrderPriceType僅可指定限價
-//     LONG nTriggerDirection;   //{限MIT下單使用} 觸發方向1:GTE, 2:LTE
+//     BSTR bstrSettlementMonth; // ，YYYYMM6(EX: 202206)
+//     LONG nOrderPriceType;     //   2: ; 3: （）
+//                               // sTradeTypeROD，nOrderPriceType
+//     LONG nTriggerDirection;   //{MIT} 1:GTE, 2:LTE
 // };
-// 註 : 若委託期貨商品代號為TX00、 MTX00等近月商品，則可忽略bstrSettlementMonth商品年月
+//  : TX00、 MTX00，bstrSettlementMonth
 
 long CSKOrderLib::SendFutureStop(string strLogInID,
                                  bool bAsyncOrder,
@@ -574,26 +574,26 @@ void CSKOrderLib::OnAsyncOrder(long nThreadID, long nCode, string strMessage)
     cout << endl;
 }
 
-// 每一筆資料以「,」分隔每一個欄位，欄位依序為：
-// 格式1:
+// 「,」，：
+// 1:
 // 1
-// 市場別
+//
 // 2
-//  帳號
+//
 // 3
-//  商品
+//
 // 4
-//  買賣別
+//
 // 5
-//  未平倉部位
+//
 // 6
-//  當沖未平倉部位
+//
 // 7
-//  平均成本(小數部分已處理)
+//  ()
 // 8
-//  單口手續費
+//
 // 9
-//  交易稅(萬分之X)
+//  (X)
 // 10
 //  LOGIN_ID
 
@@ -612,7 +612,7 @@ void CSKOrderLib::OnOpenInterest(IN BSTR bstrData)
 
 void ParseOpenInterestMessage(const std::string &strMessage)
 {
-    std::string message = strMessage.substr(strMessage.find('=') + 1); // 去掉 [OnOpenInterest] strMessage=
+    std::string message = strMessage.substr(strMessage.find('=') + 1); //  [OnOpenInterest] strMessage=
     std::vector<std::string> items;
     std::stringstream ss(message);
     std::string item;
@@ -636,11 +636,11 @@ void ParseOpenInterestMessage(const std::string &strMessage)
 
     if (items.size() >= 7)
     {
-        gOpenInterestInfo.product = items[2];                     // 第3項目 商品
-        gOpenInterestInfo.buySell = items[3];                     // 第4項目 買賣別
-        gOpenInterestInfo.openPosition = std::stol(items[4]);     // 第5項目 未平倉部位
-        gOpenInterestInfo.dayTradePosition = std::stol(items[5]); // 第6項目 當沖未平倉部位
-        gOpenInterestInfo.avgCost = std::stod(items[6]);          // 第7項目 平均成本
+        gOpenInterestInfo.product = items[2];                     // 3
+        gOpenInterestInfo.buySell = items[3];                     // 4
+        gOpenInterestInfo.openPosition = std::stol(items[4]);     // 5
+        gOpenInterestInfo.dayTradePosition = std::stol(items[5]); // 6
+        gOpenInterestInfo.avgCost = std::stod(items[6]);          // 7
 
         LOG(DEBUG_LEVEL_INFO, "product: %s", gOpenInterestInfo.product);
         LOG(DEBUG_LEVEL_INFO, "buySell: %s", gOpenInterestInfo.buySell);

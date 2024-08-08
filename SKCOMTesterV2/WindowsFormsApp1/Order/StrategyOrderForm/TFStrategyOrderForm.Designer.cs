@@ -257,7 +257,7 @@ namespace WindowsFormsApp1
             this.labelsReserved.Name = "labelsReserved";
             this.labelsReserved.Size = new System.Drawing.Size(200, 15);
             this.labelsReserved.TabIndex = 69;
-            this.labelsReserved.Text = "盤別，0:盤中(T盤及T+1盤)；1:T盤預約";
+            this.labelsReserved.Text = "，0:(TT+1)；1:T";
             // 
             // textBoxbstrPrice
             // 
@@ -275,7 +275,7 @@ namespace WindowsFormsApp1
             this.labelbstrPrice.Name = "labelbstrPrice";
             this.labelbstrPrice.Size = new System.Drawing.Size(442, 15);
             this.labelbstrPrice.TabIndex = 64;
-            this.labelbstrPrice.Text = "委託價格，(指定限價時，需填此欄) //請設nOrderPriceType代表特殊價格「P」範圍市價";
+            this.labelbstrPrice.Text = "，(，) //nOrderPriceType「P」";
             // 
             // comboBoxsNewClose
             // 
@@ -295,7 +295,7 @@ namespace WindowsFormsApp1
             this.labelsNewClose.Name = "labelsNewClose";
             this.labelsNewClose.Size = new System.Drawing.Size(153, 15);
             this.labelsNewClose.TabIndex = 62;
-            this.labelsNewClose.Text = "新平倉，0:新倉 1:平倉 2:自動";
+            this.labelsNewClose.Text = "，0: 1: 2:";
             // 
             // comboBoxsDayTrade
             // 
@@ -315,7 +315,7 @@ namespace WindowsFormsApp1
             this.labelsDayTrade.Name = "labelsDayTrade";
             this.labelsDayTrade.Size = new System.Drawing.Size(228, 15);
             this.labelsDayTrade.TabIndex = 60;
-            this.labelsDayTrade.Text = "當沖0:否 1:是，可當沖商品請參考交易所規定";
+            this.labelsDayTrade.Text = "0: 1:，";
             // 
             // textBoxnQty
             // 
@@ -333,7 +333,7 @@ namespace WindowsFormsApp1
             this.labelnQty.Name = "labelnQty";
             this.labelnQty.Size = new System.Drawing.Size(51, 15);
             this.labelnQty.TabIndex = 58;
-            this.labelnQty.Text = "交易口數";
+            this.labelnQty.Text = "";
             // 
             // comboBoxsBuySell
             // 
@@ -353,7 +353,7 @@ namespace WindowsFormsApp1
             this.labelsBuySell.Name = "labelsBuySell";
             this.labelsBuySell.Size = new System.Drawing.Size(74, 15);
             this.labelsBuySell.TabIndex = 56;
-            this.labelsBuySell.Text = "0:買進 1:賣出";
+            this.labelsBuySell.Text = "0: 1:";
             // 
             // comboBoxsTradeType
             // 
@@ -391,7 +391,7 @@ namespace WindowsFormsApp1
             this.labelbstrStockNo.Name = "labelbstrStockNo";
             this.labelbstrStockNo.Size = new System.Drawing.Size(73, 15);
             this.labelbstrStockNo.TabIndex = 0;
-            this.labelbstrStockNo.Text = "期權商品代號";
+            this.labelbstrStockNo.Text = "";
             // 
             // checkBoxAsyncOrder
             // 
@@ -401,7 +401,7 @@ namespace WindowsFormsApp1
             this.checkBoxAsyncOrder.Name = "checkBoxAsyncOrder";
             this.checkBoxAsyncOrder.Size = new System.Drawing.Size(81, 19);
             this.checkBoxAsyncOrder.TabIndex = 109;
-            this.checkBoxAsyncOrder.Text = "非同步委託";
+            this.checkBoxAsyncOrder.Text = "";
             this.checkBoxAsyncOrder.UseVisualStyleBackColor = true;
             this.checkBoxAsyncOrder.CheckedChanged += new System.EventHandler(this.checkBoxAsyncOrder_CheckedChanged);
             // 
@@ -453,7 +453,7 @@ namespace WindowsFormsApp1
             this.tabPageSendStrategyOrder.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageSendStrategyOrder.Size = new System.Drawing.Size(1223, 251);
             this.tabPageSendStrategyOrder.TabIndex = 0;
-            this.tabPageSendStrategyOrder.Text = "下單";
+            this.tabPageSendStrategyOrder.Text = "";
             this.tabPageSendStrategyOrder.UseVisualStyleBackColor = true;
             // 
             // tabControlStrategyClass
@@ -518,7 +518,7 @@ namespace WindowsFormsApp1
             this.buttonSendOptionStopLossOrder.Name = "buttonSendOptionStopLossOrder";
             this.buttonSendOptionStopLossOrder.Size = new System.Drawing.Size(121, 23);
             this.buttonSendOptionStopLossOrder.TabIndex = 134;
-            this.buttonSendOptionStopLossOrder.Text = "送出(選擇權)";
+            this.buttonSendOptionStopLossOrder.Text = "()";
             this.buttonSendOptionStopLossOrder.UseVisualStyleBackColor = true;
             this.buttonSendOptionStopLossOrder.Click += new System.EventHandler(this.buttonSendOptionStopLossOrder_Click);
             // 
@@ -540,7 +540,7 @@ namespace WindowsFormsApp1
             this.labelnLAType.Name = "labelnLAType";
             this.labelnLAType.Size = new System.Drawing.Size(305, 15);
             this.labelnLAType.TabIndex = 132;
-            this.labelnLAType.Text = "觸發結束條件(1:效期內觸發即失效, 3:效期內完全成交即失效)";
+            this.labelnLAType.Text = "(1:, 3:)";
             // 
             // textBoxbstrLongEndDate
             // 
@@ -558,7 +558,7 @@ namespace WindowsFormsApp1
             this.labelbstrLongEndDate.Name = "labelbstrLongEndDate";
             this.labelbstrLongEndDate.Size = new System.Drawing.Size(268, 15);
             this.labelbstrLongEndDate.TabIndex = 130;
-            this.labelbstrLongEndDate.Text = "長效單結束日期(YYYYMMDD共8碼, EX: 20240205)";
+            this.labelbstrLongEndDate.Text = "(YYYYMMDD8, EX: 20240205)";
             // 
             // labelnLongActionFlag
             // 
@@ -568,7 +568,7 @@ namespace WindowsFormsApp1
             this.labelnLongActionFlag.Name = "labelnLongActionFlag";
             this.labelnLongActionFlag.Size = new System.Drawing.Size(129, 15);
             this.labelnLongActionFlag.TabIndex = 128;
-            this.labelnLongActionFlag.Text = "是否為長效單(0:否, 1:是)";
+            this.labelnLongActionFlag.Text = "(0:, 1:)";
             // 
             // comboBoxnLongActionFlag
             // 
@@ -598,7 +598,7 @@ namespace WindowsFormsApp1
             this.labelnOrderPriceType.Name = "labelnOrderPriceType";
             this.labelnOrderPriceType.Size = new System.Drawing.Size(182, 15);
             this.labelnOrderPriceType.TabIndex = 106;
-            this.labelnOrderPriceType.Text = "2: 限價; 3:範圍市價 （不支援市價）";
+            this.labelnOrderPriceType.Text = "2: ; 3: （）";
             // 
             // labelbstrTrigger
             // 
@@ -608,7 +608,7 @@ namespace WindowsFormsApp1
             this.labelbstrTrigger.Name = "labelbstrTrigger";
             this.labelbstrTrigger.Size = new System.Drawing.Size(106, 15);
             this.labelbstrTrigger.TabIndex = 102;
-            this.labelbstrTrigger.Text = "觸發價，觸發基準價";
+            this.labelbstrTrigger.Text = "，";
             // 
             // labelbstrSettlementMonth
             // 
@@ -618,7 +618,7 @@ namespace WindowsFormsApp1
             this.labelbstrSettlementMonth.Name = "labelbstrSettlementMonth";
             this.labelbstrSettlementMonth.Size = new System.Drawing.Size(232, 15);
             this.labelbstrSettlementMonth.TabIndex = 104;
-            this.labelbstrSettlementMonth.Text = "委託商品年月，YYYYMM共6碼(EX: 202206)";
+            this.labelbstrSettlementMonth.Text = "，YYYYMM6(EX: 202206)";
             // 
             // buttonSendFutureSTPOrderV1
             // 
@@ -627,7 +627,7 @@ namespace WindowsFormsApp1
             this.buttonSendFutureSTPOrderV1.Name = "buttonSendFutureSTPOrderV1";
             this.buttonSendFutureSTPOrderV1.Size = new System.Drawing.Size(121, 23);
             this.buttonSendFutureSTPOrderV1.TabIndex = 100;
-            this.buttonSendFutureSTPOrderV1.Text = "送出(期貨)";
+            this.buttonSendFutureSTPOrderV1.Text = "()";
             this.buttonSendFutureSTPOrderV1.UseVisualStyleBackColor = true;
             this.buttonSendFutureSTPOrderV1.Click += new System.EventHandler(this.buttonSendFutureSTPOrderV1_Click);
             // 
@@ -689,7 +689,7 @@ namespace WindowsFormsApp1
             this.labelsReservedMST.Name = "labelsReservedMST";
             this.labelsReservedMST.Size = new System.Drawing.Size(200, 15);
             this.labelsReservedMST.TabIndex = 134;
-            this.labelsReservedMST.Text = "盤別，0:盤中(T盤及T+1盤)；1:T盤預約";
+            this.labelsReservedMST.Text = "，0:(TT+1)；1:T";
             // 
             // comboBoxsReservedMST
             // 
@@ -719,7 +719,7 @@ namespace WindowsFormsApp1
             this.labelnOrderPriceTypeMST.Name = "labelnOrderPriceTypeMST";
             this.labelnOrderPriceTypeMST.Size = new System.Drawing.Size(182, 15);
             this.labelnOrderPriceTypeMST.TabIndex = 133;
-            this.labelnOrderPriceTypeMST.Text = "2: 限價; 3:範圍市價 （不支援市價）";
+            this.labelnOrderPriceTypeMST.Text = "2: ; 3: （）";
             // 
             // labelbstrSettlementMonthMST
             // 
@@ -729,7 +729,7 @@ namespace WindowsFormsApp1
             this.labelbstrSettlementMonthMST.Name = "labelbstrSettlementMonthMST";
             this.labelbstrSettlementMonthMST.Size = new System.Drawing.Size(232, 15);
             this.labelbstrSettlementMonthMST.TabIndex = 131;
-            this.labelbstrSettlementMonthMST.Text = "委託商品年月，YYYYMM共6碼(EX: 202206)";
+            this.labelbstrSettlementMonthMST.Text = "，YYYYMM6(EX: 202206)";
             // 
             // textBoxbstrSettlementMonthMST
             // 
@@ -747,7 +747,7 @@ namespace WindowsFormsApp1
             this.labelbstrTriggerMST.Name = "labelbstrTriggerMST";
             this.labelbstrTriggerMST.Size = new System.Drawing.Size(51, 15);
             this.labelbstrTriggerMST.TabIndex = 129;
-            this.labelbstrTriggerMST.Text = "觸價基準";
+            this.labelbstrTriggerMST.Text = "";
             // 
             // textBoxbstrTriggerMST
             // 
@@ -765,7 +765,7 @@ namespace WindowsFormsApp1
             this.labelnQtyMST.Name = "labelnQtyMST";
             this.labelnQtyMST.Size = new System.Drawing.Size(51, 15);
             this.labelnQtyMST.TabIndex = 126;
-            this.labelnQtyMST.Text = "交易口數";
+            this.labelnQtyMST.Text = "";
             // 
             // textBoxnQtyMST
             // 
@@ -783,7 +783,7 @@ namespace WindowsFormsApp1
             this.labelsNewCloseMST.Name = "labelsNewCloseMST";
             this.labelsNewCloseMST.Size = new System.Drawing.Size(153, 15);
             this.labelsNewCloseMST.TabIndex = 124;
-            this.labelsNewCloseMST.Text = "新平倉，0:新倉 1:平倉 2:自動";
+            this.labelsNewCloseMST.Text = "，0: 1: 2:";
             // 
             // comboBoxsNewCloseMST
             // 
@@ -803,7 +803,7 @@ namespace WindowsFormsApp1
             this.labelsDayTradeMST.Name = "labelsDayTradeMST";
             this.labelsDayTradeMST.Size = new System.Drawing.Size(228, 15);
             this.labelsDayTradeMST.TabIndex = 122;
-            this.labelsDayTradeMST.Text = "當沖0:否 1:是，可當沖商品請參考交易所規定";
+            this.labelsDayTradeMST.Text = "0: 1:，";
             // 
             // comboBoxsDayTradeMST
             // 
@@ -833,7 +833,7 @@ namespace WindowsFormsApp1
             this.labelsBuySellMST.Name = "labelsBuySellMST";
             this.labelsBuySellMST.Size = new System.Drawing.Size(74, 15);
             this.labelsBuySellMST.TabIndex = 120;
-            this.labelsBuySellMST.Text = "0:買進 1:賣出";
+            this.labelsBuySellMST.Text = "0: 1:";
             // 
             // labelbstrStockNoMST
             // 
@@ -843,7 +843,7 @@ namespace WindowsFormsApp1
             this.labelbstrStockNoMST.Name = "labelbstrStockNoMST";
             this.labelbstrStockNoMST.Size = new System.Drawing.Size(73, 15);
             this.labelbstrStockNoMST.TabIndex = 118;
-            this.labelbstrStockNoMST.Text = "期權商品代號";
+            this.labelbstrStockNoMST.Text = "";
             // 
             // textBoxbstrStockNoMST
             // 
@@ -889,7 +889,7 @@ namespace WindowsFormsApp1
             this.labelbstrMovingPoint.Name = "labelbstrMovingPoint";
             this.labelbstrMovingPoint.Size = new System.Drawing.Size(51, 15);
             this.labelbstrMovingPoint.TabIndex = 114;
-            this.labelbstrMovingPoint.Text = "移動點數";
+            this.labelbstrMovingPoint.Text = "";
             // 
             // buttonSendFutureMSTOrderV1
             // 
@@ -898,7 +898,7 @@ namespace WindowsFormsApp1
             this.buttonSendFutureMSTOrderV1.Name = "buttonSendFutureMSTOrderV1";
             this.buttonSendFutureMSTOrderV1.Size = new System.Drawing.Size(121, 32);
             this.buttonSendFutureMSTOrderV1.TabIndex = 113;
-            this.buttonSendFutureMSTOrderV1.Text = "送出";
+            this.buttonSendFutureMSTOrderV1.Text = "";
             this.buttonSendFutureMSTOrderV1.UseVisualStyleBackColor = true;
             this.buttonSendFutureMSTOrderV1.Click += new System.EventHandler(this.buttonSendFutureMSTOrderV1_Click);
             // 
@@ -946,7 +946,7 @@ namespace WindowsFormsApp1
             this.buttonSendOptionMITOrder.Name = "buttonSendOptionMITOrder";
             this.buttonSendOptionMITOrder.Size = new System.Drawing.Size(121, 32);
             this.buttonSendOptionMITOrder.TabIndex = 138;
-            this.buttonSendOptionMITOrder.Text = "送出(選擇權)";
+            this.buttonSendOptionMITOrder.Text = "()";
             this.buttonSendOptionMITOrder.UseVisualStyleBackColor = true;
             this.buttonSendOptionMITOrder.Click += new System.EventHandler(this.buttonSendOptionMITOrder_Click);
             // 
@@ -968,7 +968,7 @@ namespace WindowsFormsApp1
             this.labelbstrPriceMIT.Name = "labelbstrPriceMIT";
             this.labelbstrPriceMIT.Size = new System.Drawing.Size(180, 15);
             this.labelbstrPriceMIT.TabIndex = 136;
-            this.labelbstrPriceMIT.Text = "委託價格，(指定限價時，需填此欄)";
+            this.labelbstrPriceMIT.Text = "，(，)";
             // 
             // labelnTriggerDirectionMIT
             // 
@@ -978,7 +978,7 @@ namespace WindowsFormsApp1
             this.labelnTriggerDirectionMIT.Name = "labelnTriggerDirectionMIT";
             this.labelnTriggerDirectionMIT.Size = new System.Drawing.Size(175, 15);
             this.labelnTriggerDirectionMIT.TabIndex = 119;
-            this.labelnTriggerDirectionMIT.Text = "觸發方向1:GTE(大於), 2:LTE(小於)";
+            this.labelnTriggerDirectionMIT.Text = "1:GTE(), 2:LTE()";
             // 
             // labelbstrDealPriceMIT
             // 
@@ -988,7 +988,7 @@ namespace WindowsFormsApp1
             this.labelbstrDealPriceMIT.Name = "labelbstrDealPriceMIT";
             this.labelbstrDealPriceMIT.Size = new System.Drawing.Size(40, 15);
             this.labelbstrDealPriceMIT.TabIndex = 117;
-            this.labelbstrDealPriceMIT.Text = "成交價";
+            this.labelbstrDealPriceMIT.Text = "";
             // 
             // textBoxbstrPriceMIT
             // 
@@ -1024,7 +1024,7 @@ namespace WindowsFormsApp1
             this.labelnOrderPriceTypeMIT.Name = "labelnOrderPriceTypeMIT";
             this.labelnOrderPriceTypeMIT.Size = new System.Drawing.Size(182, 15);
             this.labelnOrderPriceTypeMIT.TabIndex = 135;
-            this.labelnOrderPriceTypeMIT.Text = "2: 限價; 3:範圍市價 （不支援市價）";
+            this.labelnOrderPriceTypeMIT.Text = "2: ; 3: （）";
             // 
             // labelbstrSettlementMonthMIT
             // 
@@ -1034,7 +1034,7 @@ namespace WindowsFormsApp1
             this.labelbstrSettlementMonthMIT.Name = "labelbstrSettlementMonthMIT";
             this.labelbstrSettlementMonthMIT.Size = new System.Drawing.Size(235, 15);
             this.labelbstrSettlementMonthMIT.TabIndex = 133;
-            this.labelbstrSettlementMonthMIT.Text = "委託商品年月，YYYYMM共6碼(EX: 202206):";
+            this.labelbstrSettlementMonthMIT.Text = "，YYYYMM6(EX: 202206):";
             // 
             // textBoxbstrSettlementMonthMIT
             // 
@@ -1052,7 +1052,7 @@ namespace WindowsFormsApp1
             this.labelbstrTriggerMIT.Name = "labelbstrTriggerMIT";
             this.labelbstrTriggerMIT.Size = new System.Drawing.Size(40, 15);
             this.labelbstrTriggerMIT.TabIndex = 131;
-            this.labelbstrTriggerMIT.Text = "觸發價";
+            this.labelbstrTriggerMIT.Text = "";
             // 
             // textBoxbstrTriggerMIT
             // 
@@ -1070,7 +1070,7 @@ namespace WindowsFormsApp1
             this.labelnQtyMIT.Name = "labelnQtyMIT";
             this.labelnQtyMIT.Size = new System.Drawing.Size(51, 15);
             this.labelnQtyMIT.TabIndex = 128;
-            this.labelnQtyMIT.Text = "交易口數";
+            this.labelnQtyMIT.Text = "";
             // 
             // textBoxnQtyMIT
             // 
@@ -1088,7 +1088,7 @@ namespace WindowsFormsApp1
             this.labelsNewCloseMIT.Name = "labelsNewCloseMIT";
             this.labelsNewCloseMIT.Size = new System.Drawing.Size(156, 15);
             this.labelsNewCloseMIT.TabIndex = 126;
-            this.labelsNewCloseMIT.Text = "新平倉，0:新倉 1:平倉 2:自動:";
+            this.labelsNewCloseMIT.Text = "，0: 1: 2::";
             // 
             // comboBoxsNewCloseMIT
             // 
@@ -1108,7 +1108,7 @@ namespace WindowsFormsApp1
             this.labelsDayTradeMIT.Name = "labelsDayTradeMIT";
             this.labelsDayTradeMIT.Size = new System.Drawing.Size(231, 15);
             this.labelsDayTradeMIT.TabIndex = 124;
-            this.labelsDayTradeMIT.Text = "當沖0:否 1:是，可當沖商品請參考交易所規定:";
+            this.labelsDayTradeMIT.Text = "0: 1:，:";
             // 
             // comboBoxsDayTradeMIT
             // 
@@ -1138,7 +1138,7 @@ namespace WindowsFormsApp1
             this.labelsBuySellMIT.Name = "labelsBuySellMIT";
             this.labelsBuySellMIT.Size = new System.Drawing.Size(77, 15);
             this.labelsBuySellMIT.TabIndex = 121;
-            this.labelsBuySellMIT.Text = "0:買進 1:賣出:";
+            this.labelsBuySellMIT.Text = "0: 1::";
             // 
             // labelbstrStockNoMIT
             // 
@@ -1148,7 +1148,7 @@ namespace WindowsFormsApp1
             this.labelbstrStockNoMIT.Name = "labelbstrStockNoMIT";
             this.labelbstrStockNoMIT.Size = new System.Drawing.Size(76, 15);
             this.labelbstrStockNoMIT.TabIndex = 119;
-            this.labelbstrStockNoMIT.Text = "期權商品代號:";
+            this.labelbstrStockNoMIT.Text = ":";
             // 
             // textBoxbstrStockNoMIT
             // 
@@ -1185,7 +1185,7 @@ namespace WindowsFormsApp1
             this.buttonSendFutureMITOrderV1.Name = "buttonSendFutureMITOrderV1";
             this.buttonSendFutureMITOrderV1.Size = new System.Drawing.Size(121, 32);
             this.buttonSendFutureMITOrderV1.TabIndex = 116;
-            this.buttonSendFutureMITOrderV1.Text = "送出(期貨)";
+            this.buttonSendFutureMITOrderV1.Text = "()";
             this.buttonSendFutureMITOrderV1.UseVisualStyleBackColor = true;
             this.buttonSendFutureMITOrderV1.Click += new System.EventHandler(this.buttonSendFutureMITOrderV1_Click);
             // 
@@ -1244,7 +1244,7 @@ namespace WindowsFormsApp1
             this.labelsBuySell2OCO.Name = "labelsBuySell2OCO";
             this.labelsBuySell2OCO.Size = new System.Drawing.Size(74, 15);
             this.labelsBuySell2OCO.TabIndex = 130;
-            this.labelsBuySell2OCO.Text = "0:買進 1:賣出";
+            this.labelsBuySell2OCO.Text = "0: 1:";
             // 
             // comboBoxsBuySell2OCO
             // 
@@ -1274,7 +1274,7 @@ namespace WindowsFormsApp1
             this.labelnLATypeOCO.Name = "labelnLATypeOCO";
             this.labelnLATypeOCO.Size = new System.Drawing.Size(305, 15);
             this.labelnLATypeOCO.TabIndex = 144;
-            this.labelnLATypeOCO.Text = "觸發結束條件(1:效期內觸發即失效, 3:效期內完全成交即失效)";
+            this.labelnLATypeOCO.Text = "(1:, 3:)";
             // 
             // textBoxbstrLongEndDateOCO
             // 
@@ -1292,7 +1292,7 @@ namespace WindowsFormsApp1
             this.labelbstrLongEndDateOCO.Name = "labelbstrLongEndDateOCO";
             this.labelbstrLongEndDateOCO.Size = new System.Drawing.Size(268, 15);
             this.labelbstrLongEndDateOCO.TabIndex = 142;
-            this.labelbstrLongEndDateOCO.Text = "長效單結束日期(YYYYMMDD共8碼, EX: 20240205)";
+            this.labelbstrLongEndDateOCO.Text = "(YYYYMMDD8, EX: 20240205)";
             // 
             // labelnLongActionFlagOCO
             // 
@@ -1302,7 +1302,7 @@ namespace WindowsFormsApp1
             this.labelnLongActionFlagOCO.Name = "labelnLongActionFlagOCO";
             this.labelnLongActionFlagOCO.Size = new System.Drawing.Size(129, 15);
             this.labelnLongActionFlagOCO.TabIndex = 140;
-            this.labelnLongActionFlagOCO.Text = "是否為長效單(0:否, 1:是)";
+            this.labelnLongActionFlagOCO.Text = "單(0:否, 1:是)";
             // 
             // comboBoxnLongActionFlagOCO
             // 

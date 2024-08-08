@@ -140,7 +140,7 @@ namespace WindowsFormsApp1
             this.tabPageStockUpdateOrder.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageStockUpdateOrder.Size = new System.Drawing.Size(366, 413);
             this.tabPageStockUpdateOrder.TabIndex = 0;
-            this.tabPageStockUpdateOrder.Text = "證期選";
+            this.tabPageStockUpdateOrder.Text = "";
             this.tabPageStockUpdateOrder.UseVisualStyleBackColor = true;
             // 
             // buttonCancelOrderByStockNo
@@ -150,7 +150,7 @@ namespace WindowsFormsApp1
             this.buttonCancelOrderByStockNo.Name = "buttonCancelOrderByStockNo";
             this.buttonCancelOrderByStockNo.Size = new System.Drawing.Size(108, 32);
             this.buttonCancelOrderByStockNo.TabIndex = 59;
-            this.buttonCancelOrderByStockNo.Text = "刪單(代號)";
+            this.buttonCancelOrderByStockNo.Text = "()";
             this.buttonCancelOrderByStockNo.UseVisualStyleBackColor = true;
             this.buttonCancelOrderByStockNo.Visible = false;
             this.buttonCancelOrderByStockNo.Click += new System.EventHandler(this.buttonCancelOrderByStockNo_Click);
@@ -180,7 +180,7 @@ namespace WindowsFormsApp1
             this.labelCorrectPriceBySeqNo.Name = "labelCorrectPriceBySeqNo";
             this.labelCorrectPriceBySeqNo.Size = new System.Drawing.Size(148, 24);
             this.labelCorrectPriceBySeqNo.TabIndex = 53;
-            this.labelCorrectPriceBySeqNo.Text = "請輸入修改價格:";
+            this.labelCorrectPriceBySeqNo.Text = ":";
             this.labelCorrectPriceBySeqNo.Visible = false;
             // 
             // buttonDecreaseOrderBySeqNo
@@ -190,7 +190,7 @@ namespace WindowsFormsApp1
             this.buttonDecreaseOrderBySeqNo.Name = "buttonDecreaseOrderBySeqNo";
             this.buttonDecreaseOrderBySeqNo.Size = new System.Drawing.Size(108, 32);
             this.buttonDecreaseOrderBySeqNo.TabIndex = 61;
-            this.buttonDecreaseOrderBySeqNo.Text = "減量(序號)";
+            this.buttonDecreaseOrderBySeqNo.Text = "()";
             this.buttonDecreaseOrderBySeqNo.UseVisualStyleBackColor = true;
             this.buttonDecreaseOrderBySeqNo.Visible = false;
             this.buttonDecreaseOrderBySeqNo.Click += new System.EventHandler(this.buttonDecreaseOrderBySeqNo_Click);
@@ -202,7 +202,7 @@ namespace WindowsFormsApp1
             this.buttonCancelOrderBySeqNo.Name = "buttonCancelOrderBySeqNo";
             this.buttonCancelOrderBySeqNo.Size = new System.Drawing.Size(108, 32);
             this.buttonCancelOrderBySeqNo.TabIndex = 57;
-            this.buttonCancelOrderBySeqNo.Text = "刪單(序號)";
+            this.buttonCancelOrderBySeqNo.Text = "()";
             this.buttonCancelOrderBySeqNo.UseVisualStyleBackColor = true;
             this.buttonCancelOrderBySeqNo.Visible = false;
             this.buttonCancelOrderBySeqNo.Click += new System.EventHandler(this.buttonCancelOrderBySeqNo_Click);
@@ -215,7 +215,7 @@ namespace WindowsFormsApp1
             this.labelCancelOrderBySeqNo.Name = "labelCancelOrderBySeqNo";
             this.labelCancelOrderBySeqNo.Size = new System.Drawing.Size(148, 24);
             this.labelCancelOrderBySeqNo.TabIndex = 47;
-            this.labelCancelOrderBySeqNo.Text = "請輸入委託序號:";
+            this.labelCancelOrderBySeqNo.Text = ":";
             // 
             // textBoxStockDecreaseQty
             // 
@@ -233,7 +233,7 @@ namespace WindowsFormsApp1
             this.buttonCorrectPriceByBookNo.Name = "buttonCorrectPriceByBookNo";
             this.buttonCorrectPriceByBookNo.Size = new System.Drawing.Size(108, 32);
             this.buttonCorrectPriceByBookNo.TabIndex = 64;
-            this.buttonCorrectPriceByBookNo.Text = "改價(書號)";
+            this.buttonCorrectPriceByBookNo.Text = "()";
             this.buttonCorrectPriceByBookNo.UseVisualStyleBackColor = true;
             this.buttonCorrectPriceByBookNo.Visible = false;
             this.buttonCorrectPriceByBookNo.Click += new System.EventHandler(this.buttonCorrectPriceByBookNo_Click);
@@ -245,7 +245,7 @@ namespace WindowsFormsApp1
             this.buttonCorrectPriceBySeqNo.Name = "buttonCorrectPriceBySeqNo";
             this.buttonCorrectPriceBySeqNo.Size = new System.Drawing.Size(108, 32);
             this.buttonCorrectPriceBySeqNo.TabIndex = 63;
-            this.buttonCorrectPriceBySeqNo.Text = "改價(序號)";
+            this.buttonCorrectPriceBySeqNo.Text = "()";
             this.buttonCorrectPriceBySeqNo.UseVisualStyleBackColor = true;
             this.buttonCorrectPriceBySeqNo.Visible = false;
             this.buttonCorrectPriceBySeqNo.Click += new System.EventHandler(this.buttonCorrectPriceBySeqNo_Click);
@@ -258,7 +258,7 @@ namespace WindowsFormsApp1
             this.labelDecreaseOrderBySeqNo.Name = "labelDecreaseOrderBySeqNo";
             this.labelDecreaseOrderBySeqNo.Size = new System.Drawing.Size(148, 24);
             this.labelDecreaseOrderBySeqNo.TabIndex = 52;
-            this.labelDecreaseOrderBySeqNo.Text = "請輸入減少數量:";
+            this.labelDecreaseOrderBySeqNo.Text = ":";
             this.labelDecreaseOrderBySeqNo.Visible = false;
             // 
             // buttonCancelOrderByBookNo
@@ -268,7 +268,7 @@ namespace WindowsFormsApp1
             this.buttonCancelOrderByBookNo.Name = "buttonCancelOrderByBookNo";
             this.buttonCancelOrderByBookNo.Size = new System.Drawing.Size(108, 32);
             this.buttonCancelOrderByBookNo.TabIndex = 58;
-            this.buttonCancelOrderByBookNo.Text = "刪單(書號)";
+            this.buttonCancelOrderByBookNo.Text = "()";
             this.buttonCancelOrderByBookNo.UseVisualStyleBackColor = true;
             this.buttonCancelOrderByBookNo.Visible = false;
             this.buttonCancelOrderByBookNo.Click += new System.EventHandler(this.buttonCancelOrderByBookNo_Click);
@@ -297,7 +297,7 @@ namespace WindowsFormsApp1
             this.labelCancelOrderByStockNo2.Name = "labelCancelOrderByStockNo2";
             this.labelCancelOrderByStockNo2.Size = new System.Drawing.Size(273, 24);
             this.labelCancelOrderByStockNo2.TabIndex = 54;
-            this.labelCancelOrderByStockNo2.Text = "※商品代號空白就刪除所有委託";
+            this.labelCancelOrderByStockNo2.Text = "※";
             this.labelCancelOrderByStockNo2.Visible = false;
             // 
             // labelTradeType
@@ -319,7 +319,7 @@ namespace WindowsFormsApp1
             this.labelCancelOrderByBookNo.Name = "labelCancelOrderByBookNo";
             this.labelCancelOrderByBookNo.Size = new System.Drawing.Size(148, 24);
             this.labelCancelOrderByBookNo.TabIndex = 49;
-            this.labelCancelOrderByBookNo.Text = "請輸入委託書號:";
+            this.labelCancelOrderByBookNo.Text = ":";
             // 
             // comboBoxTradeType
             // 
@@ -340,7 +340,7 @@ namespace WindowsFormsApp1
             this.labelCancelOrderByStockNo.Name = "labelCancelOrderByStockNo";
             this.labelCancelOrderByStockNo.Size = new System.Drawing.Size(148, 24);
             this.labelCancelOrderByStockNo.TabIndex = 41;
-            this.labelCancelOrderByStockNo.Text = "請輸入商品代號:";
+            this.labelCancelOrderByStockNo.Text = ":";
             // 
             // labelCorrectPriceByBookNoMarketSymbol
             // 
@@ -350,7 +350,7 @@ namespace WindowsFormsApp1
             this.labelCorrectPriceByBookNoMarketSymbol.Name = "labelCorrectPriceByBookNoMarketSymbol";
             this.labelCorrectPriceByBookNoMarketSymbol.Size = new System.Drawing.Size(178, 24);
             this.labelCorrectPriceByBookNoMarketSymbol.TabIndex = 39;
-            this.labelCorrectPriceByBookNoMarketSymbol.Text = "請輸入市場(※書號):";
+            this.labelCorrectPriceByBookNoMarketSymbol.Text = "(※):";
             this.labelCorrectPriceByBookNoMarketSymbol.Visible = false;
             // 
             // comboBoxMarketSymbol
@@ -383,7 +383,7 @@ namespace WindowsFormsApp1
             this.checkBoxAsyncOrder.Name = "checkBoxAsyncOrder";
             this.checkBoxAsyncOrder.Size = new System.Drawing.Size(109, 25);
             this.checkBoxAsyncOrder.TabIndex = 111;
-            this.checkBoxAsyncOrder.Text = "非同步委託";
+            this.checkBoxAsyncOrder.Text = "";
             this.checkBoxAsyncOrder.UseVisualStyleBackColor = true;
             this.checkBoxAsyncOrder.CheckedChanged += new System.EventHandler(this.checkBoxAsyncOrder_CheckedChanged);
             // 

@@ -44,15 +44,15 @@ DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
  *
  *  struct FUTUREORDER
  * {
- *  BSTR bstrFullAccount; // 期貨帳號，分公司代碼＋帳號7碼
- *  BSTR bstrStockNo;     // 委託期權代號
+ *  BSTR bstrFullAccount; // ，＋7
+ *  BSTR bstrStockNo;     //
  *  SHORT sTradeType;     // 0:ROD  1:IOC  2:FOK
- *  SHORT sBuySell;       // 0:買進 1:賣出
- *  SHORT sDayTrade;      // 當沖0:否 1:是，可當沖商品請參考交易所規定。
- *  SHORT sNewClose;      // 新平倉，0:新倉 1:平倉 2:自動{新期貨、選擇權使用}
- *  BSTR bstrPrice;       // 委託價格(IOC and FOK，可用「M」表示市價，「P」表示範圍市價)　　　　　　　　　　　　
- *  LONG nQty;            // 交易口數
- *  SHORT sReserved;      //{期貨委託SendFutureOrderCLR適用}盤別，0:盤中(T盤及T+1盤)；1:T盤預約
+ *  SHORT sBuySell;       // 0: 1:
+ *  SHORT sDayTrade;      // 0: 1:，。
+ *  SHORT sNewClose;      // ，0: 1: 2:{、}
+ *  BSTR bstrPrice;       // (IOC and FOK，「M」，「P」)　　　　　　　　　　　　
+ *  LONG nQty;            //
+ *  SHORT sReserved;      //{SendFutureOrderCLR}，0:(TT+1)；1:T
  * };
  * long CSKOrderLib::SendFutureOrder(
  * string strLogInID,
@@ -76,12 +76,12 @@ void AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
     long g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
-                                                false, // bAsyncOrder 是否為非同步委託。
+                                                false, // bAsyncOrder 。
                                                 ProductNum,
                                                 1,        // IOC
                                                 BuySell,  // BuySell
                                                 0,        // DayTrade
-                                                NewClose, // NewClose // 新平倉，0:新倉 1:平倉 2:自動{新期貨、選擇權使用}
+                                                NewClose, // NewClose // ，0: 1: 2:{、}
                                                 "P",
                                                 1,
                                                 0);
@@ -113,7 +113,6 @@ VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId)
         double profitAndLoss = 0;
 
         double curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]);
-
 
         if (gOpenInterestInfo.buySell == "S")
         {

@@ -91,7 +91,7 @@ namespace WindowsFormsApp1
             this.buttonSKOOQuoteLib_EnterMonitorLONG.Name = "buttonSKOOQuoteLib_EnterMonitorLONG";
             this.buttonSKOOQuoteLib_EnterMonitorLONG.Size = new System.Drawing.Size(187, 30);
             this.buttonSKOOQuoteLib_EnterMonitorLONG.TabIndex = 17;
-            this.buttonSKOOQuoteLib_EnterMonitorLONG.Text = "連線報價主機";
+            this.buttonSKOOQuoteLib_EnterMonitorLONG.Text = "";
             this.buttonSKOOQuoteLib_EnterMonitorLONG.UseVisualStyleBackColor = true;
             this.buttonSKOOQuoteLib_EnterMonitorLONG.Click += new System.EventHandler(this.buttonSKOOQuoteLib_EnterMonitorLONG_Click);
             // 
@@ -102,7 +102,7 @@ namespace WindowsFormsApp1
             this.buttonSKOOQuoteLib_RequestProducts.Name = "buttonSKOOQuoteLib_RequestProducts";
             this.buttonSKOOQuoteLib_RequestProducts.Size = new System.Drawing.Size(168, 34);
             this.buttonSKOOQuoteLib_RequestProducts.TabIndex = 22;
-            this.buttonSKOOQuoteLib_RequestProducts.Text = "取得海選商品檔";
+            this.buttonSKOOQuoteLib_RequestProducts.Text = "";
             this.buttonSKOOQuoteLib_RequestProducts.UseVisualStyleBackColor = true;
             this.buttonSKOOQuoteLib_RequestProducts.Click += new System.EventHandler(this.buttonSKOOQuoteLib_RequestProducts_Click);
             // 
@@ -129,7 +129,7 @@ namespace WindowsFormsApp1
             this.buttonSearchKeyWord.Name = "buttonSearchKeyWord";
             this.buttonSearchKeyWord.Size = new System.Drawing.Size(117, 34);
             this.buttonSearchKeyWord.TabIndex = 27;
-            this.buttonSearchKeyWord.Text = "搜尋";
+            this.buttonSearchKeyWord.Text = "";
             this.buttonSearchKeyWord.UseVisualStyleBackColor = true;
             this.buttonSearchKeyWord.Click += new System.EventHandler(this.buttonSearchKeyWord_Click);
             // 
@@ -180,7 +180,7 @@ namespace WindowsFormsApp1
             this.tabPageOverseaOptionList.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageOverseaOptionList.Size = new System.Drawing.Size(1013, 220);
             this.tabPageOverseaOptionList.TabIndex = 3;
-            this.tabPageOverseaOptionList.Text = "商品清單";
+            this.tabPageOverseaOptionList.Text = "";
             this.tabPageOverseaOptionList.UseVisualStyleBackColor = true;
             // 
             // tabPageSKOSQuoteLib_GetStockByNoLONG
@@ -196,7 +196,7 @@ namespace WindowsFormsApp1
             this.tabPageSKOSQuoteLib_GetStockByNoLONG.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageSKOSQuoteLib_GetStockByNoLONG.Size = new System.Drawing.Size(1013, 220);
             this.tabPageSKOSQuoteLib_GetStockByNoLONG.TabIndex = 6;
-            this.tabPageSKOSQuoteLib_GetStockByNoLONG.Text = "海選資訊";
+            this.tabPageSKOSQuoteLib_GetStockByNoLONG.Text = "";
             this.tabPageSKOSQuoteLib_GetStockByNoLONG.UseVisualStyleBackColor = true;
             // 
             // buttonSKOOQuoteLib_GetStockByNoLONG
@@ -206,7 +206,7 @@ namespace WindowsFormsApp1
             this.buttonSKOOQuoteLib_GetStockByNoLONG.Name = "buttonSKOOQuoteLib_GetStockByNoLONG";
             this.buttonSKOOQuoteLib_GetStockByNoLONG.Size = new System.Drawing.Size(105, 30);
             this.buttonSKOOQuoteLib_GetStockByNoLONG.TabIndex = 79;
-            this.buttonSKOOQuoteLib_GetStockByNoLONG.Text = "個選資訊";
+            this.buttonSKOOQuoteLib_GetStockByNoLONG.Text = "";
             this.buttonSKOOQuoteLib_GetStockByNoLONG.UseVisualStyleBackColor = true;
             this.buttonSKOOQuoteLib_GetStockByNoLONG.Click += new System.EventHandler(this.buttonSKOOQuoteLib_GetStockByNoLONG_Click);
             // 
@@ -247,7 +247,7 @@ namespace WindowsFormsApp1
             this.labelSKOOQuoteLib_GetStockByNoLONG.Name = "labelSKOOQuoteLib_GetStockByNoLONG";
             this.labelSKOOQuoteLib_GetStockByNoLONG.Size = new System.Drawing.Size(91, 24);
             this.labelSKOOQuoteLib_GetStockByNoLONG.TabIndex = 138;
-            this.labelSKOOQuoteLib_GetStockByNoLONG.Text = "商品代碼:";
+            this.labelSKOOQuoteLib_GetStockByNoLONG.Text = ":";
             // 
             // tabPageRequest
             // 
@@ -264,7 +264,7 @@ namespace WindowsFormsApp1
             this.tabPageRequest.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageRequest.Size = new System.Drawing.Size(1013, 220);
             this.tabPageRequest.TabIndex = 5;
-            this.tabPageRequest.Text = "即時報價";
+            this.tabPageRequest.Text = "";
             this.tabPageRequest.UseVisualStyleBackColor = true;
             // 
             // textBoxpsPageNo2
@@ -293,7 +293,7 @@ namespace WindowsFormsApp1
             this.buttonSKOOQuoteLib_RequestStocks.Name = "buttonSKOOQuoteLib_RequestStocks";
             this.buttonSKOOQuoteLib_RequestStocks.Size = new System.Drawing.Size(66, 30);
             this.buttonSKOOQuoteLib_RequestStocks.TabIndex = 33;
-            this.buttonSKOOQuoteLib_RequestStocks.Text = "訂閱";
+            this.buttonSKOOQuoteLib_RequestStocks.Text = "";
             this.buttonSKOOQuoteLib_RequestStocks.UseVisualStyleBackColor = true;
             this.buttonSKOOQuoteLib_RequestStocks.Click += new System.EventHandler(this.buttonSKOOQuoteLib_RequestStocks_Click);
             // 
@@ -314,7 +314,7 @@ namespace WindowsFormsApp1
             this.labelRequestStocks.Name = "labelRequestStocks";
             this.labelRequestStocks.Size = new System.Drawing.Size(313, 24);
             this.labelRequestStocks.TabIndex = 31;
-            this.labelRequestStocks.Text = "請輸入商品代號(每檔以\",\"做區隔)：";
+            this.labelRequestStocks.Text = "(\",\")：";
             // 
             // dataGridViewStocks
             // 
@@ -354,7 +354,7 @@ namespace WindowsFormsApp1
             this.tabPageTicks.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageTicks.Size = new System.Drawing.Size(1013, 220);
             this.tabPageTicks.TabIndex = 4;
-            this.tabPageTicks.Text = "十檔&五檔&成交明細";
+            this.tabPageTicks.Text = "&&";
             this.tabPageTicks.UseVisualStyleBackColor = true;
             // 
             // buttonSKOOQuoteLib_RequestMarketDepth
@@ -364,7 +364,7 @@ namespace WindowsFormsApp1
             this.buttonSKOOQuoteLib_RequestMarketDepth.Name = "buttonSKOOQuoteLib_RequestMarketDepth";
             this.buttonSKOOQuoteLib_RequestMarketDepth.Size = new System.Drawing.Size(185, 49);
             this.buttonSKOOQuoteLib_RequestMarketDepth.TabIndex = 123;
-            this.buttonSKOOQuoteLib_RequestMarketDepth.Text = "訂閱(不含成交明細)";
+            this.buttonSKOOQuoteLib_RequestMarketDepth.Text = "()";
             this.buttonSKOOQuoteLib_RequestMarketDepth.UseVisualStyleBackColor = true;
             this.buttonSKOOQuoteLib_RequestMarketDepth.Click += new System.EventHandler(this.buttonSKOOQuoteLib_RequestMarketDepth_Click);
             // 
@@ -443,7 +443,7 @@ namespace WindowsFormsApp1
             this.labelTicks.Name = "labelTicks";
             this.labelTicks.Size = new System.Drawing.Size(192, 24);
             this.labelTicks.TabIndex = 35;
-            this.labelTicks.Text = "輸入商品代碼(僅1檔):";
+            this.labelTicks.Text = "(1):";
             // 
             // buttonSKOOQuoteLib_RequestTicks
             // 
@@ -452,7 +452,7 @@ namespace WindowsFormsApp1
             this.buttonSKOOQuoteLib_RequestTicks.Name = "buttonSKOOQuoteLib_RequestTicks";
             this.buttonSKOOQuoteLib_RequestTicks.Size = new System.Drawing.Size(66, 30);
             this.buttonSKOOQuoteLib_RequestTicks.TabIndex = 37;
-            this.buttonSKOOQuoteLib_RequestTicks.Text = "訂閱";
+            this.buttonSKOOQuoteLib_RequestTicks.Text = "";
             this.buttonSKOOQuoteLib_RequestTicks.UseVisualStyleBackColor = true;
             this.buttonSKOOQuoteLib_RequestTicks.Click += new System.EventHandler(this.buttonSKOOQuoteLib_RequestTicks_Click);
             // 
@@ -497,7 +497,7 @@ namespace WindowsFormsApp1
             this.buttonSKOOQuoteLib_LeaveMonitor.Name = "buttonSKOOQuoteLib_LeaveMonitor";
             this.buttonSKOOQuoteLib_LeaveMonitor.Size = new System.Drawing.Size(187, 30);
             this.buttonSKOOQuoteLib_LeaveMonitor.TabIndex = 55;
-            this.buttonSKOOQuoteLib_LeaveMonitor.Text = "斷線報價主機";
+            this.buttonSKOOQuoteLib_LeaveMonitor.Text = "";
             this.buttonSKOOQuoteLib_LeaveMonitor.UseVisualStyleBackColor = true;
             this.buttonSKOOQuoteLib_LeaveMonitor.Click += new System.EventHandler(this.buttonSKOOQuoteLib_LeaveMonitor_Click);
             // 
@@ -527,7 +527,7 @@ namespace WindowsFormsApp1
             this.buttonSKOOQuoteLib_IsConnected.Name = "buttonSKOOQuoteLib_IsConnected";
             this.buttonSKOOQuoteLib_IsConnected.Size = new System.Drawing.Size(187, 30);
             this.buttonSKOOQuoteLib_IsConnected.TabIndex = 47;
-            this.buttonSKOOQuoteLib_IsConnected.Text = "檢查連線狀態";
+            this.buttonSKOOQuoteLib_IsConnected.Text = "";
             this.buttonSKOOQuoteLib_IsConnected.UseVisualStyleBackColor = true;
             this.buttonSKOOQuoteLib_IsConnected.Click += new System.EventHandler(this.buttonSKOOQuoteLib_IsConnected_Click);
             // 

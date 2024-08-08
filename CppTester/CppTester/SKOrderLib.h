@@ -73,11 +73,11 @@ private:
 
 struct OpenInterestInfo
 {
-    std::string product;        // 商品
-    std::string buySell;        // 買賣別
-    std::LONG openPosition;     // 未平倉部位
-    std::LONG dayTradePosition; // 當沖未平倉部位
-    std::DOUBLE avgCost;        // 平均成本 (小數部分已處理)
+    string product;        //
+    string buySell;        //
+    LONG openPosition;     //
+    LONG dayTradePosition; //
+    DOUBLE avgCost;        //  ()
 };
 
 // struct FUTUREORDER
@@ -95,11 +95,11 @@ struct OpenInterestInfo
 //     short sBuySell;
 //     short sBuySell2;
 //     short sDayTrade;
-//     short sNewClose; // 0:新倉 1:平倉 2:自動{新期貨、選擇權使用}
+//     short sNewClose; // 0: 1: 2:{、}
 //     long nQty;
 //     short sReserved;
 //     long nTimeFlag;
-//     long nOrderPriceType; // 委託價類別  2: 限價; 3:範圍市價 （不支援市價）,sTradeType為ROD時，nOrderPriceType僅可指定限價
+//     long nOrderPriceType; //   2: ; 3: （）,sTradeTypeROD，nOrderPriceType
 //     BSTR bstrCIDTandem;
 //     BSTR bstrOrderSign;
 //     BSTR bstrSettlementMonth;

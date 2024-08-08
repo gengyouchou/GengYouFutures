@@ -113,7 +113,7 @@ namespace WindowsFormsApp1
             this.buttonSKOSQuoteLib_EnterMonitorLONG.Name = "buttonSKOSQuoteLib_EnterMonitorLONG";
             this.buttonSKOSQuoteLib_EnterMonitorLONG.Size = new System.Drawing.Size(187, 30);
             this.buttonSKOSQuoteLib_EnterMonitorLONG.TabIndex = 16;
-            this.buttonSKOSQuoteLib_EnterMonitorLONG.Text = "連線報價主機";
+            this.buttonSKOSQuoteLib_EnterMonitorLONG.Text = "";
             this.buttonSKOSQuoteLib_EnterMonitorLONG.UseVisualStyleBackColor = true;
             this.buttonSKOSQuoteLib_EnterMonitorLONG.Click += new System.EventHandler(this.buttonSKOSQuoteLib_EnterMonitorLONG_Click);
             // 
@@ -134,7 +134,7 @@ namespace WindowsFormsApp1
             this.buttonSKOSQuoteLib_RequestOverseaProducts.Name = "buttonSKOSQuoteLib_RequestOverseaProducts";
             this.buttonSKOSQuoteLib_RequestOverseaProducts.Size = new System.Drawing.Size(168, 34);
             this.buttonSKOSQuoteLib_RequestOverseaProducts.TabIndex = 18;
-            this.buttonSKOSQuoteLib_RequestOverseaProducts.Text = "取得海外商品檔";
+            this.buttonSKOSQuoteLib_RequestOverseaProducts.Text = "";
             this.buttonSKOSQuoteLib_RequestOverseaProducts.UseVisualStyleBackColor = true;
             this.buttonSKOSQuoteLib_RequestOverseaProducts.Click += new System.EventHandler(this.buttonSKOSQuoteLib_RequestOverseaProducts_Click);
             // 
@@ -163,7 +163,7 @@ namespace WindowsFormsApp1
             this.buttonSKOSQuoteLib_GetOverseaProductDetail.Name = "buttonSKOSQuoteLib_GetOverseaProductDetail";
             this.buttonSKOSQuoteLib_GetOverseaProductDetail.Size = new System.Drawing.Size(268, 34);
             this.buttonSKOSQuoteLib_GetOverseaProductDetail.TabIndex = 21;
-            this.buttonSKOSQuoteLib_GetOverseaProductDetail.Text = "取得海期商品檔(含下單代碼)";
+            this.buttonSKOSQuoteLib_GetOverseaProductDetail.Text = "()";
             this.buttonSKOSQuoteLib_GetOverseaProductDetail.UseVisualStyleBackColor = true;
             this.buttonSKOSQuoteLib_GetOverseaProductDetail.Click += new System.EventHandler(this.buttonSKOSQuoteLib_GetOverseaProductDetail_Click);
             // 
@@ -174,7 +174,7 @@ namespace WindowsFormsApp1
             this.buttonSearchKeyword.Name = "buttonSearchKeyword";
             this.buttonSearchKeyword.Size = new System.Drawing.Size(117, 34);
             this.buttonSearchKeyword.TabIndex = 22;
-            this.buttonSearchKeyword.Text = "搜尋";
+            this.buttonSearchKeyword.Text = "";
             this.buttonSearchKeyword.UseVisualStyleBackColor = true;
             this.buttonSearchKeyword.Click += new System.EventHandler(this.buttonSearchKeyword_Click);
             // 
@@ -219,7 +219,7 @@ namespace WindowsFormsApp1
             this.buttonSKOSQuoteLib_Initialize.Name = "buttonSKOSQuoteLib_Initialize";
             this.buttonSKOSQuoteLib_Initialize.Size = new System.Drawing.Size(187, 30);
             this.buttonSKOSQuoteLib_Initialize.TabIndex = 76;
-            this.buttonSKOSQuoteLib_Initialize.Text = "重新初始海期物件";
+            this.buttonSKOSQuoteLib_Initialize.Text = "";
             this.buttonSKOSQuoteLib_Initialize.UseVisualStyleBackColor = true;
             this.buttonSKOSQuoteLib_Initialize.Click += new System.EventHandler(this.buttonSKOSQuoteLib_Initialize_Click);
             // 
@@ -230,7 +230,7 @@ namespace WindowsFormsApp1
             this.buttonSKOSQuoteLib_GetQuoteStatus.Name = "buttonSKOSQuoteLib_GetQuoteStatus";
             this.buttonSKOSQuoteLib_GetQuoteStatus.Size = new System.Drawing.Size(187, 30);
             this.buttonSKOSQuoteLib_GetQuoteStatus.TabIndex = 48;
-            this.buttonSKOSQuoteLib_GetQuoteStatus.Text = "連線數資訊/限制";
+            this.buttonSKOSQuoteLib_GetQuoteStatus.Text = "/";
             this.buttonSKOSQuoteLib_GetQuoteStatus.UseVisualStyleBackColor = true;
             this.buttonSKOSQuoteLib_GetQuoteStatus.Click += new System.EventHandler(this.buttonSKOSQuoteLib_GetQuoteStatus_Click);
             // 
@@ -241,7 +241,7 @@ namespace WindowsFormsApp1
             this.buttonSKOSQuoteLib_SetOSQuoteServer.Name = "buttonSKOSQuoteLib_SetOSQuoteServer";
             this.buttonSKOSQuoteLib_SetOSQuoteServer.Size = new System.Drawing.Size(187, 30);
             this.buttonSKOSQuoteLib_SetOSQuoteServer.TabIndex = 76;
-            this.buttonSKOSQuoteLib_SetOSQuoteServer.Text = "切換資訊源";
+            this.buttonSKOSQuoteLib_SetOSQuoteServer.Text = "";
             this.buttonSKOSQuoteLib_SetOSQuoteServer.UseVisualStyleBackColor = true;
             this.buttonSKOSQuoteLib_SetOSQuoteServer.Click += new System.EventHandler(this.buttonSKOSQuoteLib_SetOSQuoteServer_Click);
             // 
@@ -262,7 +262,7 @@ namespace WindowsFormsApp1
             this.buttonSKOSQuoteLib_IsConnected.Name = "buttonSKOSQuoteLib_IsConnected";
             this.buttonSKOSQuoteLib_IsConnected.Size = new System.Drawing.Size(187, 30);
             this.buttonSKOSQuoteLib_IsConnected.TabIndex = 47;
-            this.buttonSKOSQuoteLib_IsConnected.Text = "檢查連線狀態";
+            this.buttonSKOSQuoteLib_IsConnected.Text = "";
             this.buttonSKOSQuoteLib_IsConnected.UseVisualStyleBackColor = true;
             this.buttonSKOSQuoteLib_IsConnected.Click += new System.EventHandler(this.buttonSKOSQuoteLib_IsConnected_Click);
             // 
@@ -273,7 +273,7 @@ namespace WindowsFormsApp1
             this.buttonSKOSQuoteLib_LeaveMonitor.Name = "buttonSKOSQuoteLib_LeaveMonitor";
             this.buttonSKOSQuoteLib_LeaveMonitor.Size = new System.Drawing.Size(187, 30);
             this.buttonSKOSQuoteLib_LeaveMonitor.TabIndex = 17;
-            this.buttonSKOSQuoteLib_LeaveMonitor.Text = "斷線報價主機";
+            this.buttonSKOSQuoteLib_LeaveMonitor.Text = "";
             this.buttonSKOSQuoteLib_LeaveMonitor.UseVisualStyleBackColor = true;
             this.buttonSKOSQuoteLib_LeaveMonitor.Click += new System.EventHandler(this.buttonSKOSQuoteLib_LeaveMonitor_Click);
             // 
@@ -318,7 +318,7 @@ namespace WindowsFormsApp1
             this.tabPageOverseaFutureList.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageOverseaFutureList.Size = new System.Drawing.Size(1013, 316);
             this.tabPageOverseaFutureList.TabIndex = 3;
-            this.tabPageOverseaFutureList.Text = "商品清單";
+            this.tabPageOverseaFutureList.Text = "";
             this.tabPageOverseaFutureList.UseVisualStyleBackColor = true;
             // 
             // tabPageSKOSQuoteLib_GetStockByNoLONG
@@ -335,7 +335,7 @@ namespace WindowsFormsApp1
             this.tabPageSKOSQuoteLib_GetStockByNoLONG.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageSKOSQuoteLib_GetStockByNoLONG.Size = new System.Drawing.Size(1013, 316);
             this.tabPageSKOSQuoteLib_GetStockByNoLONG.TabIndex = 6;
-            this.tabPageSKOSQuoteLib_GetStockByNoLONG.Text = "個期資訊";
+            this.tabPageSKOSQuoteLib_GetStockByNoLONG.Text = "";
             this.tabPageSKOSQuoteLib_GetStockByNoLONG.UseVisualStyleBackColor = true;
             // 
             // buttonSKOSQuoteLib_GetStockByNoLONG
@@ -345,7 +345,7 @@ namespace WindowsFormsApp1
             this.buttonSKOSQuoteLib_GetStockByNoLONG.Name = "buttonSKOSQuoteLib_GetStockByNoLONG";
             this.buttonSKOSQuoteLib_GetStockByNoLONG.Size = new System.Drawing.Size(105, 30);
             this.buttonSKOSQuoteLib_GetStockByNoLONG.TabIndex = 79;
-            this.buttonSKOSQuoteLib_GetStockByNoLONG.Text = "個期資訊";
+            this.buttonSKOSQuoteLib_GetStockByNoLONG.Text = "";
             this.buttonSKOSQuoteLib_GetStockByNoLONG.UseVisualStyleBackColor = true;
             this.buttonSKOSQuoteLib_GetStockByNoLONG.Click += new System.EventHandler(this.buttonSKOSQuoteLib_GetStockByNoLONG_Click);
             // 
@@ -356,7 +356,7 @@ namespace WindowsFormsApp1
             this.buttonSKOSQuoteLib_GetStockByNoNineDigitLONG.Name = "buttonSKOSQuoteLib_GetStockByNoNineDigitLONG";
             this.buttonSKOSQuoteLib_GetStockByNoNineDigitLONG.Size = new System.Drawing.Size(229, 31);
             this.buttonSKOSQuoteLib_GetStockByNoNineDigitLONG.TabIndex = 77;
-            this.buttonSKOSQuoteLib_GetStockByNoNineDigitLONG.Text = "個期資訊(CME九位擴充)";
+            this.buttonSKOSQuoteLib_GetStockByNoNineDigitLONG.Text = "(CME)";
             this.buttonSKOSQuoteLib_GetStockByNoNineDigitLONG.UseVisualStyleBackColor = true;
             this.buttonSKOSQuoteLib_GetStockByNoNineDigitLONG.Click += new System.EventHandler(this.buttonSKOSQuoteLib_GetStockByNoNineDigitLONG_Click);
             // 
@@ -397,7 +397,7 @@ namespace WindowsFormsApp1
             this.labelSKOSQuoteLib_GetStockByNoLONG.Name = "labelSKOSQuoteLib_GetStockByNoLONG";
             this.labelSKOSQuoteLib_GetStockByNoLONG.Size = new System.Drawing.Size(86, 24);
             this.labelSKOSQuoteLib_GetStockByNoLONG.TabIndex = 138;
-            this.labelSKOSQuoteLib_GetStockByNoLONG.Text = "商品代碼";
+            this.labelSKOSQuoteLib_GetStockByNoLONG.Text = "";
             // 
             // tabPageRequest
             // 
@@ -414,7 +414,7 @@ namespace WindowsFormsApp1
             this.tabPageRequest.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageRequest.Size = new System.Drawing.Size(1013, 316);
             this.tabPageRequest.TabIndex = 5;
-            this.tabPageRequest.Text = "即時報價";
+            this.tabPageRequest.Text = "";
             this.tabPageRequest.UseVisualStyleBackColor = true;
             // 
             // textBoxpsPageNo2
@@ -443,7 +443,7 @@ namespace WindowsFormsApp1
             this.buttonSKOSQuoteLib_RequestStocks.Name = "buttonSKOSQuoteLib_RequestStocks";
             this.buttonSKOSQuoteLib_RequestStocks.Size = new System.Drawing.Size(66, 30);
             this.buttonSKOSQuoteLib_RequestStocks.TabIndex = 33;
-            this.buttonSKOSQuoteLib_RequestStocks.Text = "訂閱";
+            this.buttonSKOSQuoteLib_RequestStocks.Text = "";
             this.buttonSKOSQuoteLib_RequestStocks.UseVisualStyleBackColor = true;
             this.buttonSKOSQuoteLib_RequestStocks.Click += new System.EventHandler(this.buttonSKOSQuoteLib_RequestStocks_Click);
             // 
@@ -464,7 +464,7 @@ namespace WindowsFormsApp1
             this.labelRequestStocks.Name = "labelRequestStocks";
             this.labelRequestStocks.Size = new System.Drawing.Size(294, 24);
             this.labelRequestStocks.TabIndex = 31;
-            this.labelRequestStocks.Text = "請輸入商品代號(每檔以\",\"做區隔)";
+            this.labelRequestStocks.Text = "(\",\")";
             // 
             // dataGridViewStocks
             // 
@@ -504,7 +504,7 @@ namespace WindowsFormsApp1
             this.tabPageTicks.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageTicks.Size = new System.Drawing.Size(1013, 316);
             this.tabPageTicks.TabIndex = 4;
-            this.tabPageTicks.Text = "十檔&五檔&成交明細";
+            this.tabPageTicks.Text = "&&";
             this.tabPageTicks.UseVisualStyleBackColor = true;
             // 
             // buttonSKOSQuoteLib_RequestMarketDepth
@@ -514,7 +514,7 @@ namespace WindowsFormsApp1
             this.buttonSKOSQuoteLib_RequestMarketDepth.Name = "buttonSKOSQuoteLib_RequestMarketDepth";
             this.buttonSKOSQuoteLib_RequestMarketDepth.Size = new System.Drawing.Size(185, 35);
             this.buttonSKOSQuoteLib_RequestMarketDepth.TabIndex = 123;
-            this.buttonSKOSQuoteLib_RequestMarketDepth.Text = "訂閱(不含成交明細)";
+            this.buttonSKOSQuoteLib_RequestMarketDepth.Text = "()";
             this.buttonSKOSQuoteLib_RequestMarketDepth.UseVisualStyleBackColor = true;
             this.buttonSKOSQuoteLib_RequestMarketDepth.Click += new System.EventHandler(this.buttonSKOSQuoteLib_RequestMarketDepth_Click);
             // 
@@ -593,7 +593,7 @@ namespace WindowsFormsApp1
             this.labelTicks.Name = "labelTicks";
             this.labelTicks.Size = new System.Drawing.Size(187, 24);
             this.labelTicks.TabIndex = 35;
-            this.labelTicks.Text = "輸入商品代碼(僅1檔)";
+            this.labelTicks.Text = "(1)";
             // 
             // buttonSKOSQuoteLib_RequestTicks
             // 
@@ -602,7 +602,7 @@ namespace WindowsFormsApp1
             this.buttonSKOSQuoteLib_RequestTicks.Name = "buttonSKOSQuoteLib_RequestTicks";
             this.buttonSKOSQuoteLib_RequestTicks.Size = new System.Drawing.Size(66, 30);
             this.buttonSKOSQuoteLib_RequestTicks.TabIndex = 37;
-            this.buttonSKOSQuoteLib_RequestTicks.Text = "訂閱";
+            this.buttonSKOSQuoteLib_RequestTicks.Text = "";
             this.buttonSKOSQuoteLib_RequestTicks.UseVisualStyleBackColor = true;
             this.buttonSKOSQuoteLib_RequestTicks.Click += new System.EventHandler(this.buttonSKOSQuoteLib_RequestTicks_Click);
             // 
@@ -645,7 +645,7 @@ namespace WindowsFormsApp1
             this.tabPageKLine.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageKLine.Size = new System.Drawing.Size(1013, 316);
             this.tabPageKLine.TabIndex = 2;
-            this.tabPageKLine.Text = "技術分析";
+            this.tabPageKLine.Text = "";
             this.tabPageKLine.UseVisualStyleBackColor = true;
             // 
             // dataGridViewKLine
@@ -677,7 +677,7 @@ namespace WindowsFormsApp1
             this.labelsKLineType.Name = "labelsKLineType";
             this.labelsKLineType.Size = new System.Drawing.Size(79, 24);
             this.labelsKLineType.TabIndex = 118;
-            this.labelsKLineType.Text = "K線種類";
+            this.labelsKLineType.Text = "K";
             // 
             // labelbstrEndDate
             // 
@@ -687,7 +687,7 @@ namespace WindowsFormsApp1
             this.labelbstrEndDate.Name = "labelbstrEndDate";
             this.labelbstrEndDate.Size = new System.Drawing.Size(86, 24);
             this.labelbstrEndDate.TabIndex = 124;
-            this.labelbstrEndDate.Text = "結束日期";
+            this.labelbstrEndDate.Text = "";
             // 
             // labelbstrStartDate
             // 
@@ -697,7 +697,7 @@ namespace WindowsFormsApp1
             this.labelbstrStartDate.Name = "labelbstrStartDate";
             this.labelbstrStartDate.Size = new System.Drawing.Size(86, 24);
             this.labelbstrStartDate.TabIndex = 123;
-            this.labelbstrStartDate.Text = "起始日期";
+            this.labelbstrStartDate.Text = "";
             // 
             // labelsMinuteNumber
             // 
@@ -707,7 +707,7 @@ namespace WindowsFormsApp1
             this.labelsMinuteNumber.Name = "labelsMinuteNumber";
             this.labelsMinuteNumber.Size = new System.Drawing.Size(112, 24);
             this.labelsMinuteNumber.TabIndex = 125;
-            this.labelsMinuteNumber.Text = "幾分K(分線)";
+            this.labelsMinuteNumber.Text = "K()";
             // 
             // buttonSKOSQuoteLib_RequestKLineByDate
             // 
@@ -777,7 +777,7 @@ namespace WindowsFormsApp1
             this.labelbstrStockNo.Name = "labelbstrStockNo";
             this.labelbstrStockNo.Size = new System.Drawing.Size(86, 24);
             this.labelbstrStockNo.TabIndex = 70;
-            this.labelbstrStockNo.Text = "商品代碼";
+            this.labelbstrStockNo.Text = "";
             // 
             // OSQuoteForm
             // 
