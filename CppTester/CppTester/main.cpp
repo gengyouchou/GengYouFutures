@@ -16,7 +16,7 @@
 
 extern std::deque<long> gDaysKlineDiff;
 extern bool gEatOffer;
-extern std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
+extern std::unordered_map<long, std::array<long, 3>> gCurCommHighLowPoint;
 extern SHORT gCurServerTime[3];
 extern std::unordered_map<long, long> gCurCommPrice;
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
@@ -248,7 +248,7 @@ void thread_main()
 
     AutoConnect();
 
-    AutoGetFutureRights();
+    // AutoGetFutureRights();
 
     long res = pSKQuoteLib->RequestServerTime();
 
@@ -266,7 +266,7 @@ void thread_main()
     AutoCalcuKeyPrices();
 
     AutoQuoteTicks("TSEA", 3);
-    AutoQuoteTicks(COMMODITY_MAIN, 4);
+    AutoQuote(COMMODITY_MAIN, 4);
 
     AutoQuoteTicks("2330", 1);
     AutoQuoteTicks("2317", 2);

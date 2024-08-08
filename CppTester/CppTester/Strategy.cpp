@@ -29,7 +29,7 @@ extern CSKOrderLib *pSKOrderLib;
 extern SHORT gCurServerTime[3];
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 extern std::deque<long> gDaysKlineDiff;
-extern std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
+extern std::unordered_map<long, std::array<long, 3>> gCurCommHighLowPoint;
 extern std::unordered_map<long, long> gCurCommPrice;
 extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 

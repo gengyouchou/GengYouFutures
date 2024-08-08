@@ -9,8 +9,7 @@
 #define SK_SUBJECT_CONNECTION_DISCONNECT 3002
 #define SK_SUBJECT_CONNECTION_STOCKS_READY 3003
 
-bool gEatOffer = false;
-std::unordered_map<long, std::array<long, 2>> gCurCommHighLowPoint;
+std::unordered_map<long, std::array<long, 3>> gCurCommHighLowPoint; // {High, Low, Open}
 std::deque<long> gDaysKlineDiff;
 
 std::map<string, pair<double, double>> gDaysCommHighLowPoint;
@@ -530,16 +529,27 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
         return;
     }
 
+    if (skStock.nSimulate == 1)
+    {
+        return;
+    }
+
     char *szStockNo = _com_util::ConvertBSTRToString(skStock.bstrStockNo);
     char *szStockName = _com_util::ConvertBSTRToString(skStock.bstrStockName);
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "szStockNo: %s, szStockName : %s, bid: %d, ask: %d, last: %d, volume: %d",
+    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex= %ld, szStockNo: %s, szStockName : %s, Open: %d, High: %d, Low: %d, Close: %d, Simulate: %d",
+          nStockIndex,
           szStockNo,
           szStockName,
-          skStock.nBid,
-          skStock.nAsk,
+          skStock.nOpen,
+          skStock.nHigh,
+          skStock.nLow,
           skStock.nClose,
-          skStock.nTQty);
+          skStock.nSimulate);
+
+    gCurCommHighLowPoint[nStockIndex][0] = skStock.nHigh;
+    gCurCommHighLowPoint[nStockIndex][1] = skStock.nLow;
+    gCurCommHighLowPoint[nStockIndex][2] = skStock.nOpen;
 
     GetCurPrice(nStockIndex, skStock.nClose, skStock.nSimulate);
 
