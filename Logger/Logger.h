@@ -49,8 +49,12 @@ public:
         {
             auto now = std::chrono::system_clock::now();
             std::time_t now_time = std::chrono::system_clock::to_time_t(now);
-            std::tm local_tm = *std::localtime(&now_time);
-
+            std::tm local_tm;
+            errno_t err = _localtime64_s(&local_tm, &now_time);
+            if (err != 0)
+            {
+                // Handle the error appropriately
+            }
             std::ostringstream oss;
             oss << std::put_time(&local_tm, "%Y-%m-%d %H:%M:%S") << " ";
             format_string(oss, format, args...);
