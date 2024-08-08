@@ -263,6 +263,8 @@ void thread_main()
     const int refreshInterval = 1000; // 1000
     auto lastClearTime = std::chrono::steady_clock::now();
 
+    AutoCalcuKeyPrices();
+
     AutoQuoteTicks("TSEA", 3);
     AutoQuoteTicks(COMMODITY_MAIN, 4);
 
@@ -271,6 +273,11 @@ void thread_main()
 
     while (true)
     {
+        if (gCurServerTime[0] < 0)
+        {
+            continue;
+        }
+
         AutoCalcuKeyPrices();
         //
         auto now = std::chrono::steady_clock::now();
