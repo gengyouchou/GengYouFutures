@@ -92,7 +92,7 @@ LONG AutoQuote(IN string ProductNum, short sPageNo)
 
 void AutoQuoteTicks(IN string ProductNum, short sPageNo)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "Started");
+    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
     g_nCode = pSKQuoteLib->RequestTicks(&sPageNo, ProductNum);
 

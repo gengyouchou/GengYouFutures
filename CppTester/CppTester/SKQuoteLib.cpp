@@ -537,7 +537,7 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
     char *szStockNo = _com_util::ConvertBSTRToString(skStock.bstrStockNo);
     char *szStockName = _com_util::ConvertBSTRToString(skStock.bstrStockName);
 
-    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex= %ld, szStockNo: %s, szStockName : %s, Open: %d, High: %d, Low: %d, Close: %d, Simulate: %d",
+    DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex= %ld, szStockNo: %s, szStockName : %s, Open: %d, High: %d, Low: %d, Close: %d, Simulate: %d",
           nStockIndex,
           szStockNo,
           szStockName,
