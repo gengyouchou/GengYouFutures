@@ -35,6 +35,14 @@ OpenInterestInfo gOpenInterestInfo = {
     0.0 // avgCost 0.0
 };
 
+OpenInterestInfo gLocalOpenInterestInfo = {
+    "", // product
+    "", // buySell
+    0,  // openPosition 0
+    0,  // dayTradePosition 0
+    0.0 // avgCost 0.0
+};
+
 string g_strUserId = "";
 
 void ParseOpenInterestMessage(const std::string &strMessage);
