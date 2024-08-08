@@ -288,6 +288,7 @@ void thread_main()
 
             StrategyStopFuturesLoss(g_strUserId);
             StrategyClosePosition(g_strUserId);
+            StrategyNewPosition(g_strUserId);
 
             // Strategy End:
         }

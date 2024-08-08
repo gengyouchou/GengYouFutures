@@ -37,6 +37,8 @@ struct DAY_AMP_AND_KEY_PRICE
 
 VOID StrategyStopFuturesLoss(string strUserId);
 VOID StrategyClosePosition(string strUserId);
+VOID StrategyNewPosition(string strUserId);
+
 LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);
 VOID AutoCalcuKeyPrices();
 
