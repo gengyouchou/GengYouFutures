@@ -268,7 +268,7 @@ void thread_main()
     std::string CommList;
 
     std::ostringstream oss;
-    oss << COMMODITY_MAIN << "," << "TSEA";
+    oss << COMMODITY_MAIN << "," << "TSEA" << "," << "2330" << "," << "2317";
     CommList = oss.str();
 
     AutoQuote(CommList, 1);
