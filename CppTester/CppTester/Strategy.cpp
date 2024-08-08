@@ -13,6 +13,8 @@
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 
+#define STOP_POINT 50
+
 // Define the global logger instance
 Logger StrategyLog("Strategy.log");
 
@@ -311,26 +313,23 @@ VOID StrategyNewPosition(string strUserId)
         gOpenInterestInfo.dayTradePosition == 0 &&
         curPrice > 0)
     {
-        LOG(DEBUG_LEVEL_INFO, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
-            curPrice, gOpenInterestInfo.avgCost);
+        DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
+              curPrice, gOpenInterestInfo.avgCost);
 
         SHORT BuySell = -1;
 
-        if (gOpenInterestInfo.buySell == "S")
+        if (gDayAmpAndKeyPrice.LongKey1 > 0 && curPrice >= gDayAmpAndKeyPrice.LongKey1 && curPrice <= gDayAmpAndKeyPrice.LongKey1 + STOP_POINT)
         {
-            BuySell = 1; // short position
-        }
-        else
-        {
-            BuySell = 0; // long position
-        }
+            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gDayAmpAndKeyPrice.LongKey1= %ld",
+                curPrice, gDayAmpAndKeyPrice.LongKey1);
 
-        if (gDayAmpAndKeyPrice.LongKey1 > 0 && curPrice >= gDayAmpAndKeyPrice.LongKey1)
-        {
             BuySell = 0; // long position
         }
-        else if (gDayAmpAndKeyPrice.ShortKey1 > 0 && curPrice <= gDayAmpAndKeyPrice.ShortKey1)
+        else if (gDayAmpAndKeyPrice.ShortKey1 > 0 && curPrice <= gDayAmpAndKeyPrice.ShortKey1 && curPrice >= gDayAmpAndKeyPrice.ShortKey1 - STOP_POINT)
         {
+            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gDayAmpAndKeyPrice.ShortKey1= %ld",
+                curPrice, gDayAmpAndKeyPrice.ShortKey1);
+
             BuySell = 1; // short position
         }
 
