@@ -41,7 +41,7 @@ void AutoConnect()
     {
         g_nCode = pSKQuoteLib->EnterMonitorLONG();
         pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000)); // 短暂休眠，避免过度占用 CPU
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
     }
 }
 
@@ -49,15 +49,15 @@ void AutoLogIn()
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
-    // 初始化
+    //
     g_nCode = pSKOrderLib->Initialize();
     pSKCenterLib->PrintfCodeMessage("AutoLogIn", "Initialize", g_nCode);
 
-    // 讀取憑證
+    //
     g_nCode = pSKOrderLib->ReadCertByID(g_strUserId);
     pSKCenterLib->PrintfCodeMessage("AutoLogIn", "ReadCertByID", g_nCode);
 
-    // 取得帳號
+    //
     g_nCode = pSKOrderLib->GetUserAccount();
     pSKCenterLib->PrintfCodeMessage("AutoLogIn", "GetUserAccount", g_nCode);
 
@@ -222,7 +222,7 @@ void AutoCalcuKeyPrices()
 
     pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
 
-    long long accu = 0;
+    long accu = 0;
     long AvgAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;
 
     for (int i = 0; i < gDaysKlineDiff.size(); ++i)
@@ -272,7 +272,7 @@ void release()
 }
 
 // To do list:
-// 日夜盤都要算振福關卡價 (done)
+//  (done)
 // Estimated trading volume
 // need VIX index
 // current time (done)
@@ -284,7 +284,7 @@ void release()
 // The price will be unstable at the beginning and will change from high to low.
 
 // To do list:
-// 日夜盤都要算振福關卡價
+//
 // Estimated trading volume
 // Instant profit and loss
 // need VIX index
@@ -311,8 +311,8 @@ void thread_main()
 
     pSKQuoteLib->GetCommodityIdx();
 
-    // 设置定期清屏的时间间隔（以毫秒为单位）
-    const int refreshInterval = 1000; // 1000毫秒
+    //
+    const int refreshInterval = 1000; // 1000
     auto lastClearTime = std::chrono::steady_clock::now();
 
     AutoQuoteTicks("TSEA", 3);
@@ -323,7 +323,7 @@ void thread_main()
 
     while (true)
     {
-        // 获取当前时间
+        //
         auto now = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClearTime);
 
@@ -335,13 +335,13 @@ void thread_main()
             // Strategy End:
         }
 
-        // 检查是否需要清屏
+        //
         if (elapsed.count() >= refreshInterval)
         {
-            // 清屏
+            //
             system("cls");
 
-            // 更新最后清屏时间
+            //
             lastClearTime = now;
 
             printf("CurMtxPrice: %ld    ", gCurCommPrice[gCommodtyInfo.MTXIdxNo]);
@@ -392,7 +392,7 @@ void thread_main()
             AutoBest5Long(gCommodtyInfo.HHIdxNo, "HHP");
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 短暂休眠，避免过度占用 CPU
+        std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU
 
         if (pSKQuoteLib->IsConnected() != 1)
         {
@@ -414,12 +414,12 @@ int main()
 
     init();
 
-    // printf("請輸入身分證字號：");
+    // printf("");
     // cin >> g_strUserId;
 
     g_strUserId = "F129305651";
 
-    // printf("請輸入密碼：");
+    // printf("");
     string pwd;
     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
     DWORD mode = 0;

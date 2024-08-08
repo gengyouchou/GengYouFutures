@@ -1,61 +1,60 @@
 #include "FutureOrderControl.h"
 
-System::Void CppCLITester::FutureOrderControl::btnSendFutureOrder_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::FutureOrderControl::btnSendFutureOrder_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾Ü´Á³f±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½fï¿½bï¿½ï¿½");
         return;
     }
 
-    System::String^ strFutureNo;
+    System::String ^ strFutureNo;
     int nBidAsk;
     int nPeriod;
     int nFlag;
-    System::String^ strPrice;
+    System::String ^ strPrice;
     int nQty;
-
 
     if (txtStockNo->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J°Ó«~¥N½X");
+        MessageBox::Show("ï¿½ï¿½JÓ«~ï¿½Nï¿½X");
         return;
     }
     strFutureNo = txtStockNo->Text->Trim();
 
     if (boxBidAsk->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¶R½æ§O");
+        MessageBox::Show("ï¿½ï¿½Rï¿½ï¿½O");
         return;
     }
     nBidAsk = boxBidAsk->SelectedIndex;
 
     if (boxPeriod->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü©e°U±ø¥ó");
+        MessageBox::Show("ï¿½ï¿½eï¿½Uï¿½ï¿½ï¿½ï¿½");
         return;
     }
     nPeriod = boxPeriod->SelectedIndex;
 
     if (boxFlag->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü·í¨R»P§_");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½Rï¿½Pï¿½_");
         return;
     }
     nFlag = boxFlag->SelectedIndex;
 
     double dPrice = 0.0;
-    //if (double->TryParse(txtPrice->Text->Trim(), out dPrice) == false)
-    if (double::TryParse(txtPrice->Text->Trim(), dPrice) == false && txtPrice->Text->Trim() != "M" && txtPrice->Text->Trim() != "P")
+    // if (double->TryParse(txtPrice->Text->Trim(), out dPrice) == false)
+    if (double ::TryParse(txtPrice->Text->Trim(), dPrice) == false && txtPrice->Text->Trim() != "M" && txtPrice->Text->Trim() != "P")
     {
-        MessageBox::Show("©e°U»ù½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½Æ¦r");
         return;
     }
     strPrice = txtPrice->Text->Trim();
 
-    if (int::TryParse(txtQty->Text->Trim(), nQty) == false)
+    if (int ::TryParse(txtQty->Text->Trim(), nQty) == false)
     {
-        MessageBox::Show("©e°U¶q½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½eï¿½ï¿½qï¿½Ð¿Jï¿½Æ¦r");
         return;
     }
 
@@ -69,82 +68,81 @@ System::Void CppCLITester::FutureOrderControl::btnSendFutureOrder_Click(System::
     pFutureOrder.sDayTrade = (short)nFlag;
     pFutureOrder.sTradeType = (short)nPeriod;
 
-  //  if (OnFutureOrderSignal != null)
-   // {
-        OnFutureOrderSignal(m_UserID, ckboxAsyn->Checked, pFutureOrder);
-   // }
+    //  if (OnFutureOrderSignal != null)
+    // {
+    OnFutureOrderSignal(m_UserID, ckboxAsyn->Checked, pFutureOrder);
+    // }
 }
 
-System::Void CppCLITester::FutureOrderControl::btnSendFutureOrderCLR_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::FutureOrderControl::btnSendFutureOrderCLR_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾Ü´Á³f±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½fï¿½bï¿½ï¿½");
         return;
     }
 
-    System::String^ strFutureNo;
+    System::String ^ strFutureNo;
     int nBidAsk;
     int nPeriod;
     int nFlag;
-    System::String^ strPrice;
+    System::String ^ strPrice;
     int nQty;
     int nNewClose;
     int nReserved;
 
-
     if (txtStockNo->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J°Ó«~¥N½X");
+        MessageBox::Show("ï¿½ï¿½JÓ«~ï¿½Nï¿½X");
         return;
     }
     strFutureNo = txtStockNo->Text->Trim();
 
     if (boxBidAsk->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¶R½æ§O");
+        MessageBox::Show("ï¿½ï¿½Rï¿½ï¿½O");
         return;
     }
     nBidAsk = boxBidAsk->SelectedIndex;
 
     if (boxPeriod->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü©e°U±ø¥ó");
+        MessageBox::Show("ï¿½ï¿½eï¿½Uï¿½ï¿½ï¿½ï¿½");
         return;
     }
     nPeriod = boxPeriod->SelectedIndex;
 
     if (boxNewClose->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü­Ü§O");
+        MessageBox::Show("ï¿½ï¿½O");
         return;
     }
     nNewClose = boxNewClose->SelectedIndex;
 
     if (boxFlag->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü·í¨R»P§_");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½Rï¿½Pï¿½_");
         return;
     }
     nFlag = boxFlag->SelectedIndex;
 
     double dPrice = 0.0;
-    if (double::TryParse(txtPrice->Text->Trim(), dPrice) == false && txtPrice->Text->Trim() != "M" && txtPrice->Text->Trim() != "P")
+    if (double ::TryParse(txtPrice->Text->Trim(), dPrice) == false && txtPrice->Text->Trim() != "M" && txtPrice->Text->Trim() != "P")
     {
-        MessageBox::Show("©e°U»ù½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½Æ¦r");
         return;
     }
     strPrice = txtPrice->Text->Trim();
 
-    if (int::TryParse(txtQty->Text->Trim(), nQty) == false)
+    if (int ::TryParse(txtQty->Text->Trim(), nQty) == false)
     {
-        MessageBox::Show("©e°U¶q½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½eï¿½ï¿½qï¿½Ð¿Jï¿½Æ¦r");
         return;
     }
 
     if (boxReserved->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü½L§O");
+        MessageBox::Show("ï¿½ï¿½Lï¿½O");
         return;
     }
     nReserved = boxReserved->SelectedIndex;
@@ -161,202 +159,200 @@ System::Void CppCLITester::FutureOrderControl::btnSendFutureOrderCLR_Click(Syste
     pFutureOrder.sNewClose = (short)nNewClose;
     pFutureOrder.sReserved = (short)nReserved;
 
-   // if (OnFutureOrderCLRSignal != null)
+    // if (OnFutureOrderCLRSignal != null)
     //{
-        OnFutureOrderCLRSignal(m_UserID, ckboxAsyn->Checked, pFutureOrder);
+    OnFutureOrderCLRSignal(m_UserID, ckboxAsyn->Checked, pFutureOrder);
     //}
 }
 
-System::Void CppCLITester::FutureOrderControl::btnDecreaseQty_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::FutureOrderControl::btnDecreaseQty_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾Ü´Á³f±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½fï¿½bï¿½ï¿½");
         return;
     }
     int nQty = 0;
-    System::String^ strSeqNo;
+    System::String ^ strSeqNo;
 
     if (txtDecreaseSeqNo->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J©e°U§Ç¸¹");
+        MessageBox::Show("ï¿½ï¿½Jï¿½eUï¿½Ç¸ï¿½");
         return;
     }
     strSeqNo = txtDecreaseSeqNo->Text->Trim();
 
-    if (int::TryParse(txtDecreaseQty->Text->Trim(), nQty) == false)
+    if (int ::TryParse(txtDecreaseQty->Text->Trim(), nQty) == false)
     {
-        MessageBox::Show("§ï¶q½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½ï¿½ï¿½Ð¿Jï¿½Æ¦r");
         return;
     }
-   // if (OnDecreaseOrderSignal != null)
+    // if (OnDecreaseOrderSignal != null)
     //{
-        OnDecreaseOrderSignal(m_UserID, true, m_UserAccount, strSeqNo, nQty);
+    OnDecreaseOrderSignal(m_UserID, true, m_UserAccount, strSeqNo, nQty);
     //}
 }
 
-System::Void CppCLITester::FutureOrderControl::btnCancelOrder_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::FutureOrderControl::btnCancelOrder_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾Ü´Á³f±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½fï¿½bï¿½ï¿½");
         return;
     }
-    System::String^ strStockNo;
+    System::String ^ strStockNo;
 
     if (txtCancelStockNo->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J©e°U§Ç¸¹");
+        MessageBox::Show("ï¿½ï¿½Jï¿½eUï¿½Ç¸ï¿½");
         return;
     }
     strStockNo = txtCancelStockNo->Text->Trim();
-   // if (OnCancelOrderSignal != null)
+    // if (OnCancelOrderSignal != null)
     //{
     OnCancelByStockNo(m_UserID, true, m_UserAccount, strStockNo);
     //}
 }
 
-System::Void CppCLITester::FutureOrderControl::btnCancelOrderBySeqNo_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::FutureOrderControl::btnCancelOrderBySeqNo_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾Ü´Á³f±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½fï¿½bï¿½ï¿½");
         return;
     }
 
-    System::String^ strSeqNo;
-        
+    System::String ^ strSeqNo;
+
     if (txtCancelSeqNo->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J©e°U§Ç¸¹");
+        MessageBox::Show("ï¿½ï¿½Jï¿½eUï¿½Ç¸ï¿½");
         return;
     }
     strSeqNo = txtCancelSeqNo->Text->Trim();
-   // if (OnCancelOrderSignal != null)
-   // {
-        OnCancelBySeqNo(m_UserID, true, m_UserAccount, strSeqNo);
+    // if (OnCancelOrderSignal != null)
+    // {
+    OnCancelBySeqNo(m_UserID, true, m_UserAccount, strSeqNo);
     //}
 }
 
-System::Void CppCLITester::FutureOrderControl::btnCancelOrderByBookNo_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::FutureOrderControl::btnCancelOrderByBookNo_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾Ü´Á³f±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½fï¿½bï¿½ï¿½");
         return;
     }
-    System::String^ strBookNo;
+    System::String ^ strBookNo;
 
     if (txtCancelBookNo->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J©e°U§Ç¸¹");
+        MessageBox::Show("ï¿½ï¿½Jï¿½eUï¿½Ç¸ï¿½");
         return;
     }
     strBookNo = txtCancelBookNo->Text->Trim();
-    ///if (OnCancelOrderSignal != null)
+    /// if (OnCancelOrderSignal != null)
     //{
-        OnCancelByBookNo(m_UserID, true, m_UserAccount, strBookNo);
-   // }
+    OnCancelByBookNo(m_UserID, true, m_UserAccount, strBookNo);
+    // }
 }
 
-System::Void CppCLITester::FutureOrderControl::btnCorrectPriceBySeqNo_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::FutureOrderControl::btnCorrectPriceBySeqNo_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾Ü´Á³f±b¸¹");
-        return;
-    }
-   
-        int nTradeType;
-        System::String^  strSeqNo;
-        System::String^  strPrice;
-
-        if (txtCorrectSeqNo->Text->Trim() == "")
-        {
-            MessageBox::Show("½Ð¿é¤J©e°U§Ç¸¹");
-            return;
-        }
-        strSeqNo = txtCorrectSeqNo->Text->Trim();
-
-        double dPrice = 0.0;
-        if (double::TryParse(txtCorrectPrice->Text->Trim(), dPrice) == false)
-        {
-            MessageBox::Show("­×§ï»ù®æ½Ð¿é¤J¼Æ¦r");
-            return;
-        }
-        strPrice = txtCorrectPrice->Text->Trim();
-
-        if (boxCorrectTradeType->SelectedIndex < 0)
-        {
-            MessageBox::Show("½Ð¿ï¾Ü©e°U±ø¥ó");
-            return;
-        }
-        nTradeType = boxCorrectTradeType->SelectedIndex;
-
-        OnCorrectPriceBySeqNo(m_UserID, true, m_UserAccount, strSeqNo, strPrice, nTradeType);
-
-}
-
-System::Void CppCLITester::FutureOrderControl::btnCorrectPriceByBookNo_Click(System::Object^ sender, System::EventArgs^ e)
-{
-    if (m_UserAccount == nullptr)
-    {
-        MessageBox::Show("½Ð¿ï¾Ü´Á³f±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½fï¿½bï¿½ï¿½");
         return;
     }
 
-        int nTradeType;
-        System::String^ strBookNo;
-        System::String^ strPrice;
+    int nTradeType;
+    System::String ^ strSeqNo;
+    System::String ^ strPrice;
 
-        if (txtCorrectBookNo->Text->Trim() == "")
-        {
-            MessageBox::Show("½Ð¿é¤J©e°U®Ñ¸¹");
-            return;
-        }
-        strBookNo = txtCorrectBookNo->Text->Trim();
+    if (txtCorrectSeqNo->Text->Trim() == "")
+    {
+        MessageBox::Show("ï¿½ï¿½Jï¿½eUï¿½Ç¸ï¿½");
+        return;
+    }
+    strSeqNo = txtCorrectSeqNo->Text->Trim();
 
-        double dPrice = 0.0;
-        if (double::TryParse(txtCorrectPrice->Text->Trim(), dPrice) == false)
-        {
-            MessageBox::Show("­×§ï»ù®æ½Ð¿é¤J¼Æ¦r");
-            return;
-        }
-        strPrice = txtCorrectPrice->Text->Trim();
+    double dPrice = 0.0;
+    if (double ::TryParse(txtCorrectPrice->Text->Trim(), dPrice) == false)
+    {
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½Ð¿ï¿½ï¿½Æ¦r");
+        return;
+    }
+    strPrice = txtCorrectPrice->Text->Trim();
 
-        if (boxCorrectSymbol->SelectedIndex < 0)
-        {
-            MessageBox::Show("½Ð¿ï¾Ü¥«³õÂ²ºÙ");
-            return;
-        }
-        nTradeType = boxCorrectTradeType->SelectedIndex;
+    if (boxCorrectTradeType->SelectedIndex < 0)
+    {
+        MessageBox::Show("ï¿½ï¿½eï¿½Uï¿½ï¿½ï¿½ï¿½");
+        return;
+    }
+    nTradeType = boxCorrectTradeType->SelectedIndex;
 
-        if (boxCorrectTradeType->SelectedIndex < 0)
-        {
-            MessageBox::Show("½Ð¿ï¾Ü©e°U±ø¥ó");
-            return;
-        }
-
-        OnCorrectPriceByBookNo(m_UserID, true, m_UserAccount, boxCorrectSymbol->Text->Trim(), strBookNo, strPrice, nTradeType);
-
+    OnCorrectPriceBySeqNo(m_UserID, true, m_UserAccount, strSeqNo, strPrice, nTradeType);
 }
 
-System::Void CppCLITester::FutureOrderControl::GetOpenInterest_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::FutureOrderControl::btnCorrectPriceByBookNo_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾Ü´Á³f±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½fï¿½bï¿½ï¿½");
         return;
     }
 
-    OnGetOpenInterest(m_UserID,m_UserAccount);
+    int nTradeType;
+    System::String ^ strBookNo;
+    System::String ^ strPrice;
+
+    if (txtCorrectBookNo->Text->Trim() == "")
+    {
+        MessageBox::Show("ï¿½ï¿½Jï¿½eUï¿½Ñ¸ï¿½");
+        return;
+    }
+    strBookNo = txtCorrectBookNo->Text->Trim();
+
+    double dPrice = 0.0;
+    if (double ::TryParse(txtCorrectPrice->Text->Trim(), dPrice) == false)
+    {
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½Ð¿ï¿½ï¿½Æ¦r");
+        return;
+    }
+    strPrice = txtCorrectPrice->Text->Trim();
+
+    if (boxCorrectSymbol->SelectedIndex < 0)
+    {
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½Â²ï¿½ï¿½");
+        return;
+    }
+    nTradeType = boxCorrectTradeType->SelectedIndex;
+
+    if (boxCorrectTradeType->SelectedIndex < 0)
+    {
+        MessageBox::Show("ï¿½ï¿½eï¿½Uï¿½ï¿½ï¿½ï¿½");
+        return;
+    }
+
+    OnCorrectPriceByBookNo(m_UserID, true, m_UserAccount, boxCorrectSymbol->Text->Trim(), strBookNo, strPrice, nTradeType);
 }
 
-System::Void CppCLITester::FutureOrderControl::btnGetOpenInterestFormat_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::FutureOrderControl::GetOpenInterest_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾Ü´Á³f±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½fï¿½bï¿½ï¿½");
+        return;
+    }
+
+    OnGetOpenInterest(m_UserID, m_UserAccount);
+}
+
+System::Void CppCLITester::FutureOrderControl::btnGetOpenInterestFormat_Click(System::Object ^ sender, System::EventArgs ^ e)
+{
+    if (m_UserAccount == nullptr)
+    {
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½fï¿½bï¿½ï¿½");
         return;
     }
 
@@ -364,64 +360,61 @@ System::Void CppCLITester::FutureOrderControl::btnGetOpenInterestFormat_Click(Sy
 
     if (FormatBox->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¦^¶Ç®æ¦¡");
+        MessageBox::Show("ï¿½ï¿½^ï¿½");
         return;
     }
     Format = FormatBox->SelectedIndex;
 
     OnGetOpenInterestWithFormat(m_UserID, m_UserAccount, Format);
-
 }
 
-System::Void CppCLITester::FutureOrderControl::btnGetFutureRights_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::FutureOrderControl::btnGetFutureRights_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾Ü´Á³f±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½fï¿½bï¿½ï¿½");
         return;
     }
 
     int CoinType;
     if (comBox_CoinType->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¹ô§O");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½O");
         return;
     }
     CoinType = comBox_CoinType->SelectedIndex;
 
-    GetFutureRights(m_UserID,m_UserAccount,CoinType);
-
+    GetFutureRights(m_UserID, m_UserAccount, CoinType);
 }
 
-System::Void CppCLITester::FutureOrderControl::btnSendTXOffset_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::FutureOrderControl::btnSendTXOffset_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾Ü´Á³f±b¸¹");  
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½fï¿½bï¿½ï¿½");
         return;
     }
 
     if (txtOffsetYearMonth->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J¦~¤ë(YYYYMM)");
+        MessageBox::Show("ï¿½ï¿½Jï¿½~ï¿½ï¿½(YYYYMM)");
         return;
     }
-    System::String^ YearMonth = txtOffsetYearMonth->Text->Trim();
+    System::String ^ YearMonth = txtOffsetYearMonth->Text->Trim();
 
     if (boxOffsetBuySell->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¶R½æ§O");
+        MessageBox::Show("ï¿½ï¿½Rï¿½ï¿½O");
         return;
     }
     int BuySell = boxOffsetBuySell->SelectedIndex;
-    
-    int Qty;
-    if (int::TryParse(txtOffsetQty->Text->Trim(), Qty) == false)
-    {
-        MessageBox::Show("©e°U¶q½Ð¿é¤J¼Æ¦r");
-        return; 
-    }
-    
-    SendTXOffset(m_UserID,false,m_UserAccount,YearMonth,BuySell,Qty);
-}
 
+    int Qty;
+    if (int ::TryParse(txtOffsetQty->Text->Trim(), Qty) == false)
+    {
+        MessageBox::Show("ï¿½eï¿½ï¿½qï¿½Ð¿Jï¿½Æ¦r");
+        return;
+    }
+
+    SendTXOffset(m_UserID, false, m_UserAccount, YearMonth, BuySell, Qty);
+}

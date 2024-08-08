@@ -239,29 +239,29 @@ long CSKOrderLib::SendFutureOrder(string strLogInID, bool bAsyncOrder, string st
 
 // struct FUTUREORDER
 // {
-//     BSTR bstrFullAccount; // ，＋7
+//     BSTR bstrFullAccount; // 7
 //     BSTR bstrStockNo;     //
-//     SHORT sTradeType;     // 0:ROD 3:IOC 4:FOK ,sTradeTypeROD，nOrderPriceType
+//     SHORT sTradeType;     // 0:ROD 3:IOC 4:FOK ,sTradeTypeRODnOrderPriceType
 //     SHORT sBuySell;  // 0: 1:
-//     SHORT sDayTrade; // 0: 1:，。
-//     SHORT sNewClose; // ，0: 1: 2:
-//     BSTR bstrPrice;  // ，(，)、[OCO]。
-//                      // nOrderPriceType，「P」 ,{}
-//     BSTR bstrPrice2; //[OCO]。
+//     SHORT sDayTrade; // 0: 1:
+//     SHORT sNewClose; // 0: 1: 2:
+//     BSTR bstrPrice;  // ()[OCO]
+//                      // nOrderPriceTypeP ,{}
+//     BSTR bstrPrice2; //[OCO]
 //     LONG nQty;           //
-//     BSTR bstrTrigger;    // ，、[OCO]。{、、、MIT、OCO：0、P}
-//     BSTR bstrTrigger2; //[OCO]。
+//     BSTR bstrTrigger;    // [OCO]{MITOCO0P}
+//     BSTR bstrTrigger2; //[OCO]
 
-//     BSTR bstrMovingPoint; //{}。
-//     SHORT sReserved;      // ，0:(TT+1)；1:T{MIT }
-//     BSTR bstrDealPrice;   //  {MIT：0、, }
+//     BSTR bstrMovingPoint; //{}
+//     SHORT sReserved;      // 0:(TT+1)1:T{MIT }
+//     BSTR bstrDealPrice;   //  {MIT0, }
 
-//     BSTR bstrSettlementMonth; // ，YYYYMM6(EX: 202206)
-//     LONG nOrderPriceType;     //   2: ; 3: （）
-//                               // sTradeTypeROD，nOrderPriceType
+//     BSTR bstrSettlementMonth; // YYYYMM6(EX: 202206)
+//     LONG nOrderPriceType;     //   2: ; 3:
+//                               // sTradeTypeRODnOrderPriceType
 //     LONG nTriggerDirection;   //{MIT} 1:GTE, 2:LTE
 // };
-//  : TX00、 MTX00，bstrSettlementMonth
+//  : TX00 MTX00bstrSettlementMonth
 
 long CSKOrderLib::SendFutureStop(string strLogInID,
                                  bool bAsyncOrder,
@@ -574,7 +574,7 @@ void CSKOrderLib::OnAsyncOrder(long nThreadID, long nCode, string strMessage)
     cout << endl;
 }
 
-// 「,」，：
+// ,
 // 1:
 // 1
 //

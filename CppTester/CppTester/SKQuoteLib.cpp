@@ -467,50 +467,50 @@ void CSKQuoteLib::OnConnection(long nKind, long nCode)
 
 // struct SKSTOCKLONG
 // {
-//     LONG nStockidx; // 商品自定索引代號
-//     SHORT sDecimal; // 小數位數
-//     SHORT sTypeNo;  //  EX: (證券)類股別 1 水泥 , 2 食品…etc.
+//     LONG nStockidx; //
+//     SHORT sDecimal; //
+//     SHORT sTypeNo;  //  EX: () 1  , 2 etc.
 
-//     BSTR bstrMarketNo;  // 市埸代碼　　　　　　　　　　　　　　　　　
-//     BSTR bstrStockNo;   // 商品代碼EX: 1101 台泥, TX12 台指期12月…etc.
-//     BSTR bstrStockName; // 商品名稱
+//     BSTR bstrMarketNo;  //
+//     BSTR bstrStockNo;   // EX: 1101 , TX12 12etc.
+//     BSTR bstrStockName; //
 
-//     LONG nHigh;  // 最高價
-//     LONG nOpen;  // 開盤價
-//     LONG nLow;   // 最低價
-//     LONG nClose; // 成交價
+//     LONG nHigh;  //
+//     LONG nOpen;  //
+//     LONG nLow;   //
+//     LONG nClose; //
 
-//     LONG nTickQty; // 單量
+//     LONG nTickQty; //
 
-//     LONG nRef; // 昨收、參考價
+//     LONG nRef; //
 
-//     LONG nBid; // 買價
-//     LONG nBc;  // 買量
-//     LONG nAsk; // 賣價
-//     LONG nAc;  // 賣量
+//     LONG nBid; //
+//     LONG nBc;  //
+//     LONG nAsk; //
+//     LONG nAc;  //
 
-//     LONG nTBc; // 買盤量(即外盤量)
-//     LONG nTAc; // 賣盤量(即內盤量)
+//     LONG nTBc; // ()
+//     LONG nTAc; // ()
 
-//     LONG nFutureOI; // 期貨未平倉 OI
+//     LONG nFutureOI; //  OI
 
-//     LONG nTQty; // 總量
-//     LONG nYQty; // 昨量
+//     LONG nTQty; //
+//     LONG nYQty; //
 
-//     LONG nUp;       // 漲停價
-//     LONG nDown;     // 跌停價
-//     LONG nSimulate; // 揭示 0:一般 1:試算　＊
-//     　　　　　　　　 // [證券逐筆]盤中出現『1:試算』代表行情劇動，
-// 　　　　　　　　　　　　　觸發價格穩定措施狀態
+//     LONG nUp;       //
+//     LONG nDown;     //
+//     LONG nSimulate; //  0: 1:
+//      // []1:
+//
 
-//     LONG nDayTrade // [限證券整股商品]可否當沖
-// 0:一般
-// 1:可先買後賣現股當沖
-// 2 : 可先買後賣和先賣後買現股當沖
-//                                    LONG nTradingDay // 交易日(YYYYMMDD)
-//                                        備註 : 當日非交易日時,
-//                                               資料為前一交易日
-//                                                   LONG nDealTime // 成交時間 (hhmmss)
+//     LONG nDayTrade // []
+// 0:
+// 1:
+// 2 :
+//                                    LONG nTradingDay // (YYYYMMDD)
+//                                         : ,
+//
+//                                                   LONG nDealTime //  (hhmmss)
 // };
 
 void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
@@ -683,7 +683,7 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 
     // cout << "strData : " << strData;
 
-    // (年/月/日 時:分, 開盤價, 最高價, 最低價, 收盤價, 成交量)
+    // (// :, , , , , )
     // 2024/07/30 16:16, 22256.00, 22259.00, 22250.00, 22255.00, 389
 
     DEBUG(DEBUG_LEVEL_DEBUG, "strData= %s", strData);
@@ -838,7 +838,7 @@ void processTradingData(const string &datetime, double openPrice, double highPri
 
         // if (hour >= 15)
         // {
-        // 處理夜盤的邏輯
+        //
         if (gNightCommHighLowPoint.count(date) == 0)
         {
             gNightCommHighLowPoint[date] = {{DBL_MIN, DBL_MAX}, {highPrice, lowPrice}};
@@ -865,7 +865,7 @@ void processTradingData(const string &datetime, double openPrice, double highPri
 
         //     string prevDate = "";
 
-        //     // 如果時間是00:00到05:00，則視為前一天的夜盤
+        //     // 00:0005:00
         //     auto it = gNightCommHighLowPoint.find(date);
 
         //     if (it != gNightCommHighLowPoint.begin())
@@ -877,7 +877,7 @@ void processTradingData(const string &datetime, double openPrice, double highPri
 
         //     if (prevDate != "")
         //     {
-        //         // 更新當前 second
+        //         //  second
         //         auto &prevEntry = gNightCommHighLowPoint[prevDate].first;
         //         entry.first = max(entry.first, prevEntry.first);
         //         entry.second = min(entry.second, prevEntry.second);

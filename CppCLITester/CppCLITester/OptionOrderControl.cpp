@@ -1,151 +1,149 @@
 #include "OptionOrderControl.h"
 
-Void CppCLITester::OptionOrderControl::btnSendOptionOrder_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::OptionOrderControl::btnSendOptionOrder_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
-	if (m_UserAccount == nullptr)
-	{
-		MessageBox::Show("½Ð¿ï¾Ü´Á³f±b¸¹");
-		return;
-	}
-
-	System::String^ strFutureNo;
-	int nBidAsk;
-	int nPeriod;
-	int nFlag;
-	System::String^ strPrice;
-	int nQty;
-	int nReserved;
-
-
-	if (txtStockNo->Text->Trim() == "")
-	{
-		MessageBox::Show("½Ð¿é¤J°Ó«~¥N½X");
-		return;
-	}
-	strFutureNo = txtStockNo->Text->Trim();
-
-	if (boxBidAsk->SelectedIndex < 0)
-	{
-		MessageBox::Show("½Ð¿ï¾Ü¶R½æ§O");
-		return;
-	}
-	nBidAsk = boxBidAsk->SelectedIndex;
-
-	if (boxPeriod->SelectedIndex < 0)
-	{
-		MessageBox::Show("½Ð¿ï¾Ü©e°U±ø¥ó");
-		return;
-	}
-	nPeriod = boxPeriod->SelectedIndex;
-
-	if (boxFlag->SelectedIndex < 0)
-	{
-		MessageBox::Show("½Ð¿ï¾Ü·í¨R»P§_");
-		return;
-	}
-	nFlag = boxFlag->SelectedIndex;
-
-	double dPrice = 0.0;
-	if (double::TryParse(txtPrice->Text->Trim(), dPrice) == false && txtPrice->Text->Trim() != "M" && txtPrice->Text->Trim() != "P")
-	{
-		MessageBox::Show("©e°U»ù½Ð¿é¤J¼Æ¦r");
-		return;
-	}
-	strPrice = txtPrice->Text->Trim();
-
-	if (int::TryParse(txtQty->Text->Trim(), nQty) == false)
-	{
-		MessageBox::Show("©e°U¶q½Ð¿é¤J¼Æ¦r");
-		return;
-	}
-
-	if (boxReserved->SelectedIndex < 0)
-	{
-		MessageBox::Show("½Ð¿ï¾Ü½L§O");
-		return;
-	}
-	nReserved = boxReserved->SelectedIndex;
-
-	SKCOMLib::FUTUREORDER pFutureOrder;
-
-	pFutureOrder.bstrFullAccount = m_UserAccount;
-	pFutureOrder.bstrPrice = strPrice;
-	pFutureOrder.bstrStockNo = strFutureNo;
-	pFutureOrder.nQty = nQty;
-	pFutureOrder.sBuySell = (short)nBidAsk;
-	pFutureOrder.sNewClose = (short)nFlag;
-	pFutureOrder.sTradeType = (short)nPeriod;
-	pFutureOrder.sReserved = (short)nReserved;
-
-	pFutureOrder.bstrTrigger = "";
-	pFutureOrder.bstrDealPrice = "";
-	pFutureOrder.bstrMovingPoint = "";
-
-	OnOptionOrderSignal(m_UserID, false, pFutureOrder);
-}
-
-Void CppCLITester::OptionOrderControl::btnSendOptionOrderAsync_Click(System::Object^ sender, System::EventArgs^ e)
-{
-	if (m_UserAccount == nullptr)
+    if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾Ü´Á³f±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½fï¿½bï¿½ï¿½");
         return;
     }
 
-    System::String^ strFutureNo;
+    System::String ^ strFutureNo;
     int nBidAsk;
     int nPeriod;
     int nFlag;
-    System::String^ strPrice;
+    System::String ^ strPrice;
     int nQty;
     int nReserved;
 
-
     if (txtStockNo->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J°Ó«~¥N½X");
+        MessageBox::Show("ï¿½ï¿½JÓ«~ï¿½Nï¿½X");
         return;
     }
     strFutureNo = txtStockNo->Text->Trim();
 
     if (boxBidAsk->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¶R½æ§O");
+        MessageBox::Show("ï¿½ï¿½Rï¿½ï¿½O");
         return;
     }
     nBidAsk = boxBidAsk->SelectedIndex;
 
     if (boxPeriod->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü©e°U±ø¥ó");
+        MessageBox::Show("ï¿½ï¿½eï¿½Uï¿½ï¿½ï¿½ï¿½");
         return;
     }
     nPeriod = boxPeriod->SelectedIndex;
 
     if (boxFlag->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü­Ü§O");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½Rï¿½Pï¿½_");
         return;
     }
     nFlag = boxFlag->SelectedIndex;
 
     double dPrice = 0.0;
-    if (double::TryParse(txtPrice->Text->Trim(),dPrice) == false && txtPrice->Text->Trim() != "M" && txtPrice->Text->Trim() != "P")
+    if (double ::TryParse(txtPrice->Text->Trim(), dPrice) == false && txtPrice->Text->Trim() != "M" && txtPrice->Text->Trim() != "P")
     {
-        MessageBox::Show("©e°U»ù½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½Æ¦r");
         return;
     }
     strPrice = txtPrice->Text->Trim();
 
-    if (int::TryParse(txtQty->Text->Trim(),nQty) == false)
+    if (int ::TryParse(txtQty->Text->Trim(), nQty) == false)
     {
-        MessageBox::Show("©e°U¶q½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½eï¿½ï¿½qï¿½Ð¿Jï¿½Æ¦r");
         return;
     }
 
     if (boxReserved->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü½L§O");
+        MessageBox::Show("ï¿½ï¿½Lï¿½O");
+        return;
+    }
+    nReserved = boxReserved->SelectedIndex;
+
+    SKCOMLib::FUTUREORDER pFutureOrder;
+
+    pFutureOrder.bstrFullAccount = m_UserAccount;
+    pFutureOrder.bstrPrice = strPrice;
+    pFutureOrder.bstrStockNo = strFutureNo;
+    pFutureOrder.nQty = nQty;
+    pFutureOrder.sBuySell = (short)nBidAsk;
+    pFutureOrder.sNewClose = (short)nFlag;
+    pFutureOrder.sTradeType = (short)nPeriod;
+    pFutureOrder.sReserved = (short)nReserved;
+
+    pFutureOrder.bstrTrigger = "";
+    pFutureOrder.bstrDealPrice = "";
+    pFutureOrder.bstrMovingPoint = "";
+
+    OnOptionOrderSignal(m_UserID, false, pFutureOrder);
+}
+
+Void CppCLITester::OptionOrderControl::btnSendOptionOrderAsync_Click(System::Object ^ sender, System::EventArgs ^ e)
+{
+    if (m_UserAccount == nullptr)
+    {
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½fï¿½bï¿½ï¿½");
+        return;
+    }
+
+    System::String ^ strFutureNo;
+    int nBidAsk;
+    int nPeriod;
+    int nFlag;
+    System::String ^ strPrice;
+    int nQty;
+    int nReserved;
+
+    if (txtStockNo->Text->Trim() == "")
+    {
+        MessageBox::Show("ï¿½ï¿½JÓ«~ï¿½Nï¿½X");
+        return;
+    }
+    strFutureNo = txtStockNo->Text->Trim();
+
+    if (boxBidAsk->SelectedIndex < 0)
+    {
+        MessageBox::Show("ï¿½ï¿½Rï¿½ï¿½O");
+        return;
+    }
+    nBidAsk = boxBidAsk->SelectedIndex;
+
+    if (boxPeriod->SelectedIndex < 0)
+    {
+        MessageBox::Show("ï¿½ï¿½eï¿½Uï¿½ï¿½ï¿½ï¿½");
+        return;
+    }
+    nPeriod = boxPeriod->SelectedIndex;
+
+    if (boxFlag->SelectedIndex < 0)
+    {
+        MessageBox::Show("ï¿½ï¿½O");
+        return;
+    }
+    nFlag = boxFlag->SelectedIndex;
+
+    double dPrice = 0.0;
+    if (double ::TryParse(txtPrice->Text->Trim(), dPrice) == false && txtPrice->Text->Trim() != "M" && txtPrice->Text->Trim() != "P")
+    {
+        MessageBox::Show("ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½Æ¦r");
+        return;
+    }
+    strPrice = txtPrice->Text->Trim();
+
+    if (int ::TryParse(txtQty->Text->Trim(), nQty) == false)
+    {
+        MessageBox::Show("ï¿½eï¿½ï¿½qï¿½Ð¿Jï¿½Æ¦r");
+        return;
+    }
+
+    if (boxReserved->SelectedIndex < 0)
+    {
+        MessageBox::Show("ï¿½ï¿½Lï¿½O");
         return;
     }
     nReserved = boxReserved->SelectedIndex;

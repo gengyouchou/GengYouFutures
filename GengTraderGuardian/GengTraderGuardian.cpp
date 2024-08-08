@@ -53,8 +53,8 @@ bool RestartProcess(const std::wstring &processPath)
 
 int main()
 {
-    std::wstring processName = L"CppTester.exe";                                            // 要检测的进程名
-    std::wstring processPath = L"C:\\GengYouFutures\\CppTester\\x64\\Debug\\CppTester.exe"; // 进程的完整路径
+    std::wstring processName = L"CppTester.exe";                                            //
+    std::wstring processPath = L"C:\\GengYouFutures\\CppTester\\x64\\Debug\\CppTester.exe"; //
 
     // Start the process initially
     if (RestartProcess(processPath))

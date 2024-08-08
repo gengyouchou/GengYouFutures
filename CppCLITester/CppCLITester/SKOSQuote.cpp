@@ -4,10 +4,10 @@ Void CppCLITester::SKOSQuote::OnUpDateDataQuote(SKCOMLib::SKFOREIGN_9LONG pForei
 {
     int nStockIdx = pForeign.nStockIdx;
 
-    DataRow^ drFind = m_dtForeigns->Rows->Find(nStockIdx);
+    DataRow ^ drFind = m_dtForeigns->Rows->Find(nStockIdx);
     if (drFind == nullptr)
     {
-        DataRow^ myDataRow = m_dtForeigns->NewRow();
+        DataRow ^ myDataRow = m_dtForeigns->NewRow();
 
         myDataRow["m_nStockidx"] = pForeign.nStockIdx;
         myDataRow["m_sDecimal"] = pForeign.sDecimal;
@@ -61,20 +61,20 @@ Void CppCLITester::SKOSQuote::OnUpDateDataQuote(SKCOMLib::SKFOREIGN_9LONG pForei
     }
 }
 
-//Void CppCLITester::SKOSQuote::OnNotifyHistoryTicks(short sStockidx, int nPtr, int nDate, int nTime, int nClose, int nQty)
+// Void CppCLITester::SKOSQuote::OnNotifyHistoryTicks(short sStockidx, int nPtr, int nDate, int nTime, int nClose, int nQty)
 //{
-//    System::String^ strData = "[OnNotifyHistoryTicks]" + sStockidx.ToString() + "," + nPtr.ToString() + "," + nDate.ToString() + " " + nTime.ToString() + "," + nClose.ToString() + "," + nQty.ToString();
+//     System::String^ strData = "[OnNotifyHistoryTicks]" + sStockidx.ToString() + "," + nPtr.ToString() + "," + nDate.ToString() + " " + nTime.ToString() + "," + nClose.ToString() + "," + nQty.ToString();
 //
-//    listTicks->Items->Add(strData);
+//     listTicks->Items->Add(strData);
 //
-//    listTicks->SelectedIndex = listTicks->Items->Count - 1;
-//}
+//     listTicks->SelectedIndex = listTicks->Items->Count - 1;
+// }
 
 Void CppCLITester::SKOSQuote::OnNotifyBest5LONG(int nStockidx, Int64 nBestBid1, int nBestBidQty1, Int64 nBestBid2, int nBestBidQty2, Int64 nBestBid3, int nBestBidQty3, Int64 nBestBid4, int nBestBidQty4, Int64 nBestBid5, int nBestBidQty5, Int64 nBestAsk1, int nBestAskQty1, Int64 nBestAsk2, int nBestAskQty2, Int64 nBestAsk3, int nBestAskQty3, Int64 nBestAsk4, int nBestAskQty4, Int64 nBestAsk5, int nBestAskQty5)
 {
     if (m_dtBest5Ask->Rows->Count == 0 && m_dtBest5Bid->Rows->Count == 0)
     {
-        DataRow^ myDataRow;
+        DataRow ^ myDataRow;
 
         myDataRow = m_dtBest5Ask->NewRow();
         myDataRow["m_nAskQty"] = nBestAskQty1;
@@ -101,8 +101,6 @@ Void CppCLITester::SKOSQuote::OnNotifyBest5LONG(int nStockidx, Int64 nBestBid1, 
         myDataRow["m_nAsk"] = nBestAsk5;
         m_dtBest5Ask->Rows->Add(myDataRow);
 
-
-
         myDataRow = m_dtBest5Bid->NewRow();
         myDataRow["m_nAskQty"] = nBestBidQty1;
         myDataRow["m_nAsk"] = nBestBid1;
@@ -127,10 +125,8 @@ Void CppCLITester::SKOSQuote::OnNotifyBest5LONG(int nStockidx, Int64 nBestBid1, 
         myDataRow["m_nAskQty"] = nBestBidQty5;
         myDataRow["m_nAsk"] = nBestBid5;
         m_dtBest5Bid->Rows->Add(myDataRow);
-
-
     }
-   else
+    else
     {
         gridBest5Ask->Rows[0]->Cells["m_nAskQty"]->Value = nBestAskQty1;
         gridBest5Ask->Rows[0]->Cells["m_nAsk"]->Value = nBestAsk1;
@@ -146,7 +142,6 @@ Void CppCLITester::SKOSQuote::OnNotifyBest5LONG(int nStockidx, Int64 nBestBid1, 
 
         gridBest5Ask->Rows[4]->Cells["m_nAskQty"]->Value = nBestAskQty5;
         gridBest5Ask->Rows[4]->Cells["m_nAsk"]->Value = nBestAsk5;
-
 
         gridBest5Bid->Rows[0]->Cells["m_nAskQty"]->Value = nBestBidQty1;
         gridBest5Bid->Rows[0]->Cells["m_nAsk"]->Value = nBestBid1;
@@ -169,7 +164,7 @@ Void CppCLITester::SKOSQuote::OnNotifyBest10LONG(int nStockIdx, Int64 nBestBid1,
 {
     if (m_dtBest10Ask->Rows->Count == 0 && m_dtBest10Bid->Rows->Count == 0)
     {
-        DataRow^ myDataRow;
+        DataRow ^ myDataRow;
 
         myDataRow = m_dtBest10Ask->NewRow();
         myDataRow["m_nAskQty"] = nBestAskQty1;
@@ -221,8 +216,6 @@ Void CppCLITester::SKOSQuote::OnNotifyBest10LONG(int nStockIdx, Int64 nBestBid1,
         myDataRow["m_nAsk"] = nBestAsk10;
         m_dtBest10Ask->Rows->Add(myDataRow);
 
-
-
         myDataRow = m_dtBest10Bid->NewRow();
         myDataRow["m_nAskQty"] = nBestBidQty1;
         myDataRow["m_nAsk"] = nBestBid1;
@@ -272,7 +265,6 @@ Void CppCLITester::SKOSQuote::OnNotifyBest10LONG(int nStockIdx, Int64 nBestBid1,
         myDataRow["m_nAskQty"] = nBestBidQty10;
         myDataRow["m_nAsk"] = nBestBid10;
         m_dtBest10Bid->Rows->Add(myDataRow);
-
     }
     else
     {
@@ -305,7 +297,6 @@ Void CppCLITester::SKOSQuote::OnNotifyBest10LONG(int nStockIdx, Int64 nBestBid1,
 
         gridBest10Ask->Rows[9]->Cells["m_nAskQty"]->Value = nBestAskQty10;
         gridBest10Ask->Rows[9]->Cells["m_nAsk"]->Value = nBestAsk10;
-
 
         gridBest10Bid->Rows[0]->Cells["m_nAskQty"]->Value = nBestBidQty1;
         gridBest10Bid->Rows[0]->Cells["m_nAsk"]->Value = nBestBid1;
@@ -341,7 +332,7 @@ Void CppCLITester::SKOSQuote::OnNotifyBest10LONG(int nStockIdx, Int64 nBestBid1,
 
 Void CppCLITester::SKOSQuote::OnNotifyTicksNineLONG(int nStockidx, int nPtr, int nDate, int nTime, Int64 nClose, int nQty)
 {
-    System::String^ strData = "[OnNotifyTicksNineLONG]" + nStockidx.ToString() + "," + nPtr.ToString() + "," + nDate.ToString() + " " + nTime.ToString() + "," + nClose.ToString() + "," + nQty.ToString();
+    System::String ^ strData = "[OnNotifyTicksNineLONG]" + nStockidx.ToString() + "," + nPtr.ToString() + "," + nDate.ToString() + " " + nTime.ToString() + "," + nClose.ToString() + "," + nQty.ToString();
 
     listTicks->Items->Add(strData);
 
@@ -350,14 +341,14 @@ Void CppCLITester::SKOSQuote::OnNotifyTicksNineLONG(int nStockidx, int nPtr, int
 
 Void CppCLITester::SKOSQuote::OnNotifyHistoryTicksNineLONG(int nStockidx, int nPtr, int nDate, int nTime, Int64 nClose, int nQty)
 {
-    System::String^ strData = "[OnNotifyHistoryTicksNineLONG]" + nStockidx.ToString() + "," + nPtr.ToString() + "," + nDate.ToString() + " " + nTime.ToString() + "," + nClose.ToString() + "," + nQty.ToString();
+    System::String ^ strData = "[OnNotifyHistoryTicksNineLONG]" + nStockidx.ToString() + "," + nPtr.ToString() + "," + nDate.ToString() + " " + nTime.ToString() + "," + nClose.ToString() + "," + nQty.ToString();
 
     listTicks->Items->Add(strData);
 
     listTicks->SelectedIndex = listTicks->Items->Count - 1;
 }
 
-Void CppCLITester::SKOSQuote::OnKLineData(System::String^ strStockNo, System::String^ strData)
+Void CppCLITester::SKOSQuote::OnKLineData(System::String ^ strStockNo, System::String ^ strData)
 {
     listKLine->Items->Add("[OnKLineData]" + strStockNo + ":" + strData);
 }
@@ -374,24 +365,24 @@ Void CppCLITester::SKOSQuote::OnConnect(int nKind, int nCode)
     }
 }
 
-Void CppCLITester::SKOSQuote::OnOverSeaProducts(System::String^ strValue)
+Void CppCLITester::SKOSQuote::OnOverSeaProducts(System::String ^ strValue)
 {
     listOverseaProducts->Items->Add("[OnOverSeaProducts]" + strValue);
 }
 
-Void CppCLITester::SKOSQuote::OnOverSeaProductsDetail(System::String^ strValue)
+Void CppCLITester::SKOSQuote::OnOverSeaProductsDetail(System::String ^ strValue)
 {
     listOverseaProducts->Items->Add("[OnOverSeaProductsDetail]" + strValue);
 }
 
-//Void CppCLITester::SKOSQuote::OnNotifyTicks(short sStockidx, int nPtr, int nDate, int nTime, int nClose, int nQty)
+// Void CppCLITester::SKOSQuote::OnNotifyTicks(short sStockidx, int nPtr, int nDate, int nTime, int nClose, int nQty)
 //{
-//    System::String^ strData = "[OnNotifyTicks]" + sStockidx.ToString() + "," + nPtr.ToString() + "," + nDate.ToString() + " " + nTime.ToString() + "," + nClose.ToString() + "," + nQty.ToString();
+//     System::String^ strData = "[OnNotifyTicks]" + sStockidx.ToString() + "," + nPtr.ToString() + "," + nDate.ToString() + " " + nTime.ToString() + "," + nClose.ToString() + "," + nQty.ToString();
 //
-//    listTicks->Items->Add(strData);
+//     listTicks->Items->Add(strData);
 //
-//    listTicks->SelectedIndex = listTicks->Items->Count - 1;
-//}
+//     listTicks->SelectedIndex = listTicks->Items->Count - 1;
+// }
 
 Void CppCLITester::SKOSQuote::OnQuoteUpdate(int nStockidx)
 {
@@ -402,26 +393,26 @@ Void CppCLITester::SKOSQuote::OnQuoteUpdate(int nStockidx)
     OnUpDateDataQuote(pForeign);
 }
 
-Void CppCLITester::SKOSQuote::btnInitialize_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKOSQuote::btnInitialize_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     int m_nCode = m_pSKOSQuote->SKOSQuoteLib_Initialize();
 
     GetMessage("OSQuote", m_nCode, "SKOSQuoteLib_Initialize");
 }
 
-Void CppCLITester::SKOSQuote::button1_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKOSQuote::button1_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_bfirst == true)
     {
-        // ³s½u
+        // ï¿½sï¿½u
         m_pSKOSQuote->OnConnect += gcnew SKCOMLib::_ISKOSQuoteLibEvents_OnConnectEventHandler(this, &CppCLITester::SKOSQuote::OnConnect);
 
         // Quote
         m_pSKOSQuote->OnNotifyQuoteLONG += gcnew SKCOMLib::_ISKOSQuoteLibEvents_OnNotifyQuoteLONGEventHandler(this, &CppCLITester::SKOSQuote::OnQuoteUpdate);
 
-        //Ticks
-        //m_pSKOSQuote->OnNotifyTicks += gcnew SKCOMLib::_ISKOSQuoteLibEvents_OnNotifyTicksEventHandler(this, &CppCLITester::SKOSQuote::OnNotifyTicks);
-        //m_pSKOSQuote->OnNotifyHistoryTicks += gcnew SKCOMLib::_ISKOSQuoteLibEvents_OnNotifyHistoryTicksEventHandler(this, &CppCLITester::SKOSQuote::OnNotifyHistoryTicks);
+        // Ticks
+        // m_pSKOSQuote->OnNotifyTicks += gcnew SKCOMLib::_ISKOSQuoteLibEvents_OnNotifyTicksEventHandler(this, &CppCLITester::SKOSQuote::OnNotifyTicks);
+        // m_pSKOSQuote->OnNotifyHistoryTicks += gcnew SKCOMLib::_ISKOSQuoteLibEvents_OnNotifyHistoryTicksEventHandler(this, &CppCLITester::SKOSQuote::OnNotifyHistoryTicks);
 
         m_pSKOSQuote->OnNotifyBest5NineDigitLONG += gcnew SKCOMLib::_ISKOSQuoteLibEvents_OnNotifyBest5NineDigitLONGEventHandler(this, &CppCLITester::SKOSQuote::OnNotifyBest5LONG);
         m_pSKOSQuote->OnNotifyBest10NineDigitLONG += gcnew SKCOMLib::_ISKOSQuoteLibEvents_OnNotifyBest10NineDigitLONGEventHandler(this, &CppCLITester::SKOSQuote::OnNotifyBest10LONG);
@@ -448,14 +439,14 @@ Void CppCLITester::SKOSQuote::button1_Click(System::Object^ sender, System::Even
     }
 }
 
-Void CppCLITester::SKOSQuote::btnDisconnect_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKOSQuote::btnDisconnect_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     int m_nCode = m_pSKOSQuote->SKOSQuoteLib_LeaveMonitor();
 
     GetMessage("OSQuote", m_nCode, "SKOSQuoteLib_LeaveMonitor");
 }
 
-Void CppCLITester::SKOSQuote::btnIsConnected_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKOSQuote::btnIsConnected_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     int m_nCode = m_pSKOSQuote->SKOSQuoteLib_IsConnected();
 
@@ -472,7 +463,7 @@ Void CppCLITester::SKOSQuote::btnIsConnected_Click(System::Object^ sender, Syste
     GetMessage("OSQuote", m_nCode, "SKOSQuoteLib_IsConnected");
 }
 
-Void CppCLITester::SKOSQuote::btnQueryStocks_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKOSQuote::btnQueryStocks_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     m_dtForeigns->Clear();
     gridStocks->ClearSelection();
@@ -483,24 +474,24 @@ Void CppCLITester::SKOSQuote::btnQueryStocks_Click(System::Object^ sender, Syste
     gridStocks->Columns["m_sDecimal"]->Visible = false;
     gridStocks->Columns["m_nDenominator"]->Visible = false;
     gridStocks->Columns["m_cMarketNo"]->Visible = false;
-    gridStocks->Columns["m_caExchangeNo"]->HeaderText = "¥æ©ö©Ò¥N½X";
-    gridStocks->Columns["m_caExchangeName"]->HeaderText = "¥æ©ö©Ò¦WºÙ";
-    gridStocks->Columns["m_caStockNo"]->HeaderText = "°Ó«~¥N½X";
-    gridStocks->Columns["m_caStockName"]->HeaderText = "°Ó«~¦WºÙ";
+    gridStocks->Columns["m_caExchangeNo"]->HeaderText = "ï¿½ï¿½ï¿½Ò¥Nï¿½X";
+    gridStocks->Columns["m_caExchangeName"]->HeaderText = "ï¿½ï¿½ï¿½Ò¦Wï¿½ï¿½";
+    gridStocks->Columns["m_caStockNo"]->HeaderText = "ï¿½~ï¿½Nï¿½X";
+    gridStocks->Columns["m_caStockName"]->HeaderText = "ï¿½~ï¿½Wï¿½ï¿½";
 
-    gridStocks->Columns["m_nOpen"]->HeaderText = "¶}½L»ù";
-    gridStocks->Columns["m_nHigh"]->HeaderText = "³Ì°ª»ù";
-    gridStocks->Columns["m_nLow"]->HeaderText = "³Ì§C»ù";
-    gridStocks->Columns["m_nClose"]->HeaderText = "¦¨¥æ»ù";
-    gridStocks->Columns["m_dSettlePrice"]->HeaderText = "µ²ºâ»ù";
-    gridStocks->Columns["m_nTickQty"]->HeaderText = "³æ¶q";
-    gridStocks->Columns["m_nRef"]->HeaderText = "¬Q¦¬»ù";
+    gridStocks->Columns["m_nOpen"]->HeaderText = "ï¿½}ï¿½Lï¿½ï¿½";
+    gridStocks->Columns["m_nHigh"]->HeaderText = "ï¿½ï¿½ï¿½ï¿½";
+    gridStocks->Columns["m_nLow"]->HeaderText = "ï¿½Cï¿½ï¿½";
+    gridStocks->Columns["m_nClose"]->HeaderText = "ï¿½ï¿½ï¿½ï¿½ï¿½";
+    gridStocks->Columns["m_dSettlePrice"]->HeaderText = "ï¿½ï¿½ï¿½ï¿½ï¿½";
+    gridStocks->Columns["m_nTickQty"]->HeaderText = "ï¿½ï¿½q";
+    gridStocks->Columns["m_nRef"]->HeaderText = "ï¿½Qï¿½ï¿½ï¿½ï¿½";
 
-    gridStocks->Columns["m_nBid"]->HeaderText = "¶R»ù";
-    gridStocks->Columns["m_nBc"]->HeaderText = "¶R¶q";
-    gridStocks->Columns["m_nAsk"]->HeaderText = "½æ»ù";
-    gridStocks->Columns["m_nAc"]->HeaderText = "½æ¶q";
-    gridStocks->Columns["m_nTQty"]->HeaderText = "¦¨¥æ¶q";
+    gridStocks->Columns["m_nBid"]->HeaderText = "ï¿½Rï¿½ï¿½";
+    gridStocks->Columns["m_nBc"]->HeaderText = "ï¿½Rï¿½q";
+    gridStocks->Columns["m_nAsk"]->HeaderText = "ï¿½ï¿½ï¿½";
+    gridStocks->Columns["m_nAc"]->HeaderText = "ï¿½ï¿½q";
+    gridStocks->Columns["m_nTQty"]->HeaderText = "ï¿½ï¿½ï¿½ï¿½q";
 
     short sPageNo = Convert::ToInt16(txtPageNo->Text);
     int m_nCode = m_pSKOSQuote->SKOSQuoteLib_RequestStocks(sPageNo, txtStocks->Text->Trim());
@@ -510,7 +501,7 @@ Void CppCLITester::SKOSQuote::btnQueryStocks_Click(System::Object^ sender, Syste
     GetMessage("OSQuote", m_nCode, "SKOSQuoteLib_RequestStocks");
 }
 
-Void CppCLITester::SKOSQuote::btnOverseaProducts2_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKOSQuote::btnOverseaProducts2_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     listOverseaProducts->Items->Clear();
 
@@ -518,7 +509,7 @@ Void CppCLITester::SKOSQuote::btnOverseaProducts2_Click(System::Object^ sender, 
     GetMessage("OSQuote", m_nCode, "SKOSQuoteLib_GetOverseaProductsDetail");
 }
 
-Void CppCLITester::SKOSQuote::btnTicks_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKOSQuote::btnTicks_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     listTicks->Items->Clear();
     m_dtBest5Ask->Clear();
@@ -529,32 +520,32 @@ Void CppCLITester::SKOSQuote::btnTicks_Click(System::Object^ sender, System::Eve
     gridBest5Bid->DataSource = m_dtBest5Bid;
     gridBest5Ask->DataSource = m_dtBest5Ask;
 
-    gridBest5Ask->Columns["m_nAskQty"]->HeaderText = "±i¼Æ";
+    gridBest5Ask->Columns["m_nAskQty"]->HeaderText = "ï¿½iï¿½ï¿½";
     gridBest5Ask->Columns["m_nAskQty"]->Width = 60;
-    gridBest5Ask->Columns["m_nAsk"]->HeaderText = "½æ»ù";
+    gridBest5Ask->Columns["m_nAsk"]->HeaderText = "ï¿½ï¿½ï¿½";
     gridBest5Ask->Columns["m_nAsk"]->Width = 60;
 
-    gridBest5Bid->Columns["m_nAskQty"]->HeaderText = "±i¼Æ";
+    gridBest5Bid->Columns["m_nAskQty"]->HeaderText = "ï¿½iï¿½ï¿½";
     gridBest5Bid->Columns["m_nAskQty"]->Width = 60;
-    gridBest5Bid->Columns["m_nAsk"]->HeaderText = "¶R»ù";
+    gridBest5Bid->Columns["m_nAsk"]->HeaderText = "ï¿½Rï¿½ï¿½";
     gridBest5Bid->Columns["m_nAsk"]->Width = 60;
 
     gridBest10Bid->DataSource = m_dtBest10Bid;
     gridBest10Ask->DataSource = m_dtBest10Ask;
 
-    gridBest10Ask->Columns["m_nAskQty"]->HeaderText = "±i¼Æ";
+    gridBest10Ask->Columns["m_nAskQty"]->HeaderText = "ï¿½iï¿½ï¿½";
     gridBest10Ask->Columns["m_nAskQty"]->Width = 60;
-    gridBest10Ask->Columns["m_nAsk"]->HeaderText = "½æ»ù";
+    gridBest10Ask->Columns["m_nAsk"]->HeaderText = "ï¿½ï¿½ï¿½";
     gridBest10Ask->Columns["m_nAsk"]->Width = 60;
 
-    gridBest10Bid->Columns["m_nAskQty"]->HeaderText = "±i¼Æ";
+    gridBest10Bid->Columns["m_nAskQty"]->HeaderText = "ï¿½iï¿½ï¿½";
     gridBest10Bid->Columns["m_nAskQty"]->Width = 60;
-    gridBest10Bid->Columns["m_nAsk"]->HeaderText = "¶R»ù";
+    gridBest10Bid->Columns["m_nAsk"]->HeaderText = "ï¿½Rï¿½ï¿½";
     gridBest10Bid->Columns["m_nAsk"]->Width = 60;
 
     short nPage = 0;
 
-    if (short::TryParse(txtOSTickPage->Text->ToString(), nPage) == false)
+    if (short ::TryParse(txtOSTickPage->Text->ToString(), nPage) == false)
         nPage = -1;
 
     int m_nCode = m_pSKOSQuote->SKOSQuoteLib_RequestTicks(nPage, txtTick->Text->Trim());
@@ -564,13 +555,13 @@ Void CppCLITester::SKOSQuote::btnTicks_Click(System::Object^ sender, System::Eve
     GetMessage("OSQuote", m_nCode, "SKOSQuoteLib_RequestTicks");
 }
 
-Void CppCLITester::SKOSQuote::btnLiveTick_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKOSQuote::btnLiveTick_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     listTicks->Items->Clear();
 
     short nPage = 0;
 
-    if (short::TryParse(txtOSTickPage->Text->ToString(), nPage) == false)
+    if (short ::TryParse(txtOSTickPage->Text->ToString(), nPage) == false)
         nPage = -1;
 
     int m_nCode = m_pSKOSQuote->SKOSQuoteLib_RequestLiveTick(nPage, txtTick->Text->Trim());
@@ -580,7 +571,7 @@ Void CppCLITester::SKOSQuote::btnLiveTick_Click(System::Object^ sender, System::
     GetMessage("OSQuote", m_nCode, "SKOSQuoteLib_RequestLiveTick");
 }
 
-Void CppCLITester::SKOSQuote::btnMarketDepth_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKOSQuote::btnMarketDepth_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     m_dtBest5Ask->Clear();
     m_dtBest5Bid->Clear();
@@ -590,32 +581,32 @@ Void CppCLITester::SKOSQuote::btnMarketDepth_Click(System::Object^ sender, Syste
     gridBest5Bid->DataSource = m_dtBest5Bid;
     gridBest5Ask->DataSource = m_dtBest5Ask;
 
-    gridBest5Ask->Columns["m_nAskQty"]->HeaderText = "±i¼Æ";
+    gridBest5Ask->Columns["m_nAskQty"]->HeaderText = "ï¿½iï¿½ï¿½";
     gridBest5Ask->Columns["m_nAskQty"]->Width = 60;
-    gridBest5Ask->Columns["m_nAsk"]->HeaderText = "½æ»ù";
+    gridBest5Ask->Columns["m_nAsk"]->HeaderText = "ï¿½ï¿½ï¿½";
     gridBest5Ask->Columns["m_nAsk"]->Width = 60;
 
-    gridBest5Bid->Columns["m_nAskQty"]->HeaderText = "±i¼Æ";
+    gridBest5Bid->Columns["m_nAskQty"]->HeaderText = "ï¿½iï¿½ï¿½";
     gridBest5Bid->Columns["m_nAskQty"]->Width = 60;
-    gridBest5Bid->Columns["m_nAsk"]->HeaderText = "¶R»ù";
+    gridBest5Bid->Columns["m_nAsk"]->HeaderText = "ï¿½Rï¿½ï¿½";
     gridBest5Bid->Columns["m_nAsk"]->Width = 60;
 
     gridBest10Bid->DataSource = m_dtBest10Bid;
     gridBest10Ask->DataSource = m_dtBest10Ask;
 
-    gridBest10Ask->Columns["m_nAskQty"]->HeaderText = "±i¼Æ";
+    gridBest10Ask->Columns["m_nAskQty"]->HeaderText = "ï¿½iï¿½ï¿½";
     gridBest10Ask->Columns["m_nAskQty"]->Width = 60;
-    gridBest10Ask->Columns["m_nAsk"]->HeaderText = "½æ»ù";
+    gridBest10Ask->Columns["m_nAsk"]->HeaderText = "ï¿½ï¿½ï¿½";
     gridBest10Ask->Columns["m_nAsk"]->Width = 60;
 
-    gridBest10Bid->Columns["m_nAskQty"]->HeaderText = "±i¼Æ";
+    gridBest10Bid->Columns["m_nAskQty"]->HeaderText = "ï¿½iï¿½ï¿½";
     gridBest10Bid->Columns["m_nAskQty"]->Width = 60;
-    gridBest10Bid->Columns["m_nAsk"]->HeaderText = "¶R»ù";
+    gridBest10Bid->Columns["m_nAsk"]->HeaderText = "ï¿½Rï¿½ï¿½";
     gridBest10Bid->Columns["m_nAsk"]->Width = 60;
 
     short nPage = 0;
 
-    if (short::TryParse(txtOSTickPage->Text->ToString(), nPage) == false)
+    if (short ::TryParse(txtOSTickPage->Text->ToString(), nPage) == false)
         nPage = -1;
 
     int m_nCode = m_pSKOSQuote->SKOSQuoteLib_RequestMarketDepth(nPage, txtTick->Text->Trim());
@@ -625,15 +616,15 @@ Void CppCLITester::SKOSQuote::btnMarketDepth_Click(System::Object^ sender, Syste
     GetMessage("OSQuote", m_nCode, "SKOSQuoteLib_RequestMarketDepth");
 }
 
-Void CppCLITester::SKOSQuote::btnGetTick_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKOSQuote::btnGetTick_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     int nStockidx;
     int nPtr;
 
-    if (int::TryParse(txtTickStockidx->Text, nStockidx) == false)
+    if (int ::TryParse(txtTickStockidx->Text, nStockidx) == false)
         return;
 
-    if (int::TryParse(txtTickPtr->Text, nPtr) == false)
+    if (int ::TryParse(txtTickPtr->Text, nPtr) == false)
         return;
 
     SKCOMLib::SKFOREIGNTICK_9 skTick;
@@ -648,11 +639,11 @@ Void CppCLITester::SKOSQuote::btnGetTick_Click(System::Object^ sender, System::E
     }
 }
 
-Void CppCLITester::SKOSQuote::btnGetBest5_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKOSQuote::btnGetBest5_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     int nStockidx;
 
-    if (int::TryParse(txtBestStockidx->Text, nStockidx) == false)
+    if (int ::TryParse(txtBestStockidx->Text, nStockidx) == false)
         return;
 
     SKCOMLib::SKBEST5_9 skBest5;
@@ -669,50 +660,49 @@ Void CppCLITester::SKOSQuote::btnGetBest5_Click(System::Object^ sender, System::
     }
 }
 
-Void CppCLITester::SKOSQuote::btnKLine_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKOSQuote::btnKLine_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     listKLine->Items->Clear();
 
-    System::String^ strStock = "";
+    System::String ^ strStock = "";
     short nType = 0;
 
     strStock = txtKLine->Text->Trim();
-    nType = short::Parse(boxKLineType->SelectedIndex.ToString());
+    nType = short ::Parse(boxKLineType->SelectedIndex.ToString());
 
     int m_nCode = m_pSKOSQuote->SKOSQuoteLib_RequestKLine(strStock, nType);
 
     GetMessage("OSQuote", m_nCode, "SKOSQuoteLib_RequestKLine");
 }
 
-Void CppCLITester::SKOSQuote::btnKLineByDate_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKOSQuote::btnKLineByDate_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     listKLine->Items->Clear();
 
-    System::String^ strStock = "";
+    System::String ^ strStock = "";
     short nType = 0;
-    System::String^ strStartDate = "";
-    System::String^ strEndDate = "";
+    System::String ^ strStartDate = "";
+    System::String ^ strEndDate = "";
 
     strStock = txtKLine->Text->Trim();
     strStartDate = txtStartDate->Text->Trim();
     strEndDate = txtEndDate->Text->Trim();
-    nType = short::Parse(boxKLineType->SelectedIndex.ToString());
+    nType = short ::Parse(boxKLineType->SelectedIndex.ToString());
 
     short sMinuteNumber;
 
-    if (short::TryParse(txtMinuteNumber->Text, sMinuteNumber) == false)
+    if (short ::TryParse(txtMinuteNumber->Text, sMinuteNumber) == false)
     {
         sMinuteNumber = 0;
     }
 
-
     int m_nCode = m_pSKOSQuote->SKOSQuoteLib_RequestKLineByDate(strStock, nType, strStartDate, strEndDate, sMinuteNumber);
-    //int m_nCode = m_pSKOSQuote->SKOSQuoteLib_RequestKLineByDate(strStock, nType, strStartDate, strEndDate);
+    // int m_nCode = m_pSKOSQuote->SKOSQuoteLib_RequestKLineByDate(strStock, nType, strStartDate, strEndDate);
 
     GetMessage("OSQuote", m_nCode, "SKOSQuoteLib_RequestKLineByDate");
 }
 
-Void CppCLITester::SKOSQuote::btnOverseaProducts_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKOSQuote::btnOverseaProducts_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     listOverseaProducts->Items->Clear();
 
@@ -721,11 +711,11 @@ Void CppCLITester::SKOSQuote::btnOverseaProducts_Click(System::Object^ sender, S
     GetMessage("OSQuote", m_nCode, "SKOSQuoteLib_RequestOverseaProducts");
 }
 
-DataTable^ CppCLITester::SKOSQuote::CreateStocksDataTable()
+DataTable ^ CppCLITester::SKOSQuote::CreateStocksDataTable()
 {
-    DataTable^ myDataTable = gcnew DataTable();
+    DataTable ^ myDataTable = gcnew DataTable();
 
-    DataColumn^ myDataColumn;
+    DataColumn ^ myDataColumn;
 
     myDataColumn = gcnew DataColumn();
     myDataColumn->DataType = Type::GetType("System.Int32");
@@ -827,19 +817,19 @@ DataTable^ CppCLITester::SKOSQuote::CreateStocksDataTable()
     myDataColumn->ColumnName = "m_nTQty";
     myDataTable->Columns->Add(myDataColumn);
 
-    // ³]©w DataTableªº PrimaryKey
-    array<System::Data::DataColumn^>^ colarray = gcnew array<System::Data::DataColumn^>(1);
+    // ï¿½]ï¿½w DataTableï¿½ï¿½ PrimaryKey
+    array<System::Data::DataColumn ^> ^ colarray = gcnew array<System::Data::DataColumn ^>(1);
     colarray[0] = myDataTable->Columns["m_nStockidx"];
     myDataTable->PrimaryKey = colarray;
 
     return myDataTable;
 }
 
-DataTable^ CppCLITester::SKOSQuote::CreateBest5AskTable()
+DataTable ^ CppCLITester::SKOSQuote::CreateBest5AskTable()
 {
-    DataTable^ myDataTable = gcnew DataTable();
+    DataTable ^ myDataTable = gcnew DataTable();
 
-    DataColumn^ myDataColumn;
+    DataColumn ^ myDataColumn;
 
     myDataColumn = gcnew DataColumn();
     myDataColumn->DataType = Type::GetType("System.Int32");

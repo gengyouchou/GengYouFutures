@@ -1,5 +1,4 @@
 #pragma once
-
 #include "SKCOM_reference.h"
 #include "TEventHandler.h"
 #include <iostream>
@@ -95,11 +94,11 @@ struct OpenInterestInfo
 //     short sBuySell;
 //     short sBuySell2;
 //     short sDayTrade;
-//     short sNewClose; // 0: 1: 2:{、}
+//     short sNewClose; // 0: 1: 2:{}
 //     long nQty;
 //     short sReserved;
 //     long nTimeFlag;
-//     long nOrderPriceType; //   2: ; 3: （）,sTradeTypeROD，nOrderPriceType
+//     long nOrderPriceType; //   2: ; 3: ,sTradeTypeRODnOrderPriceType
 //     BSTR bstrCIDTandem;
 //     BSTR bstrOrderSign;
 //     BSTR bstrSettlementMonth;

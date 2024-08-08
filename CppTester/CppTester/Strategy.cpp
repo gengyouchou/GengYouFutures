@@ -44,15 +44,15 @@ DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
  *
  *  struct FUTUREORDER
  * {
- *  BSTR bstrFullAccount; // ，＋7
+ *  BSTR bstrFullAccount; // 7
  *  BSTR bstrStockNo;     //
  *  SHORT sTradeType;     // 0:ROD  1:IOC  2:FOK
  *  SHORT sBuySell;       // 0: 1:
- *  SHORT sDayTrade;      // 0: 1:，。
- *  SHORT sNewClose;      // ，0: 1: 2:{、}
- *  BSTR bstrPrice;       // (IOC and FOK，「M」，「P」)　　　　　　　　　　　　
+ *  SHORT sDayTrade;      // 0: 1:
+ *  SHORT sNewClose;      // 0: 1: 2:{}
+ *  BSTR bstrPrice;       // (IOC and FOKMP)
  *  LONG nQty;            //
- *  SHORT sReserved;      //{SendFutureOrderCLR}，0:(TT+1)；1:T
+ *  SHORT sReserved;      //{SendFutureOrderCLR}0:(TT+1)1:T
  * };
  * long CSKOrderLib::SendFutureOrder(
  * string strLogInID,
@@ -76,12 +76,12 @@ void AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
     long g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
-                                                false, // bAsyncOrder 。
+                                                false, // bAsyncOrder
                                                 ProductNum,
                                                 1,        // IOC
                                                 BuySell,  // BuySell
                                                 0,        // DayTrade
-                                                NewClose, // NewClose // ，0: 1: 2:{、}
+                                                NewClose, // NewClose // 0: 1: 2:{}
                                                 "P",
                                                 1,
                                                 0);
@@ -99,7 +99,7 @@ VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId)
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
     // if over loss then do GetOpenInterest again in order to make sure
-    // AutoOrder won’t place a closing order with the wrong amount
+    // AutoOrder wont place a closing order with the wrong amount
     // else continue to calculate profit and loss and update to global variables
 
     if (gOpenInterestInfo.product != "")

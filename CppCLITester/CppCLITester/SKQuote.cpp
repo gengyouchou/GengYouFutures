@@ -1,10 +1,10 @@
 #include "SKQuote.h"
 
-DataTable^ CppCLITester::SKQuote::CreateStocksDataTable()
+DataTable ^ CppCLITester::SKQuote::CreateStocksDataTable()
 {
-    DataTable^ myDataTable = gcnew DataTable();
+    DataTable ^ myDataTable = gcnew DataTable();
 
-    DataColumn^ myDataColumn;
+    DataColumn ^ myDataColumn;
 
     myDataColumn = gcnew DataColumn();
     myDataColumn->DataType = Type::GetType("System.Int32");
@@ -67,7 +67,7 @@ DataTable^ CppCLITester::SKQuote::CreateStocksDataTable()
     myDataTable->Columns->Add(myDataColumn);
 
     myDataColumn = gcnew DataColumn();
-    //myDataColumn.DataType = Type::GetType("System.Double");
+    // myDataColumn.DataType = Type::GetType("System.Double");
     myDataColumn->DataType = Type::GetType("System.String");
     myDataColumn->ColumnName = "m_nBid";
     myDataTable->Columns->Add(myDataColumn);
@@ -78,7 +78,7 @@ DataTable^ CppCLITester::SKQuote::CreateStocksDataTable()
     myDataTable->Columns->Add(myDataColumn);
 
     myDataColumn = gcnew DataColumn();
-    //myDataColumn.DataType = Type::GetType("System.Double");
+    // myDataColumn.DataType = Type::GetType("System.Double");
     myDataColumn->DataType = Type::GetType("System.String");
     myDataColumn->ColumnName = "m_nAsk";
     myDataTable->Columns->Add(myDataColumn);
@@ -123,20 +123,19 @@ DataTable^ CppCLITester::SKQuote::CreateStocksDataTable()
     myDataColumn->ColumnName = "m_nDown";
     myDataTable->Columns->Add(myDataColumn);
 
-
-    // ³]©w DataTableªº PrimaryKey
-    array<System::Data::DataColumn^>^ colarray = gcnew array<System::Data::DataColumn^>(1);
+    // ï¿½]ï¿½w DataTableï¿½ï¿½ PrimaryKey
+    array<System::Data::DataColumn ^> ^ colarray = gcnew array<System::Data::DataColumn ^>(1);
     colarray[0] = myDataTable->Columns["m_caStockNo"];
     myDataTable->PrimaryKey = colarray;
 
     return myDataTable;
 }
 
-DataTable^ CppCLITester::SKQuote::CreateBest5AskTable()
+DataTable ^ CppCLITester::SKQuote::CreateBest5AskTable()
 {
-    DataTable^ myDataTable = gcnew DataTable();
+    DataTable ^ myDataTable = gcnew DataTable();
 
-    DataColumn^ myDataColumn;
+    DataColumn ^ myDataColumn;
 
     myDataColumn = gcnew DataColumn();
     myDataColumn->DataType = Type::GetType("System.String");
@@ -144,7 +143,7 @@ DataTable^ CppCLITester::SKQuote::CreateBest5AskTable()
     myDataTable->Columns->Add(myDataColumn);
 
     myDataColumn = gcnew DataColumn();
-    //myDataColumn->DataType = Type::GetType("System.Double");
+    // myDataColumn->DataType = Type::GetType("System.Double");
     myDataColumn->DataType = Type::GetType("System.String");
     myDataColumn->ColumnName = "m_nAsk";
     myDataTable->Columns->Add(myDataColumn);
@@ -190,27 +189,27 @@ Void CppCLITester::SKQuote::OnNotifyQuoteLONG(short sMarketNo, int nStockIdx)
 
 Void CppCLITester::SKQuote::OnNotifyBest5LONG(short sMarketNo, int nStockidx, int nBestBid1, int nBestBidQty1, int nBestBid2, int nBestBidQty2, int nBestBid3, int nBestBidQty3, int nBestBid4, int nBestBidQty4, int nBestBid5, int nBestBidQty5, int nExtendBid, int nExtendBidQty, int nBestAsk1, int nBestAskQty1, int nBestAsk2, int nBestAskQty2, int nBestAsk3, int nBestAskQty3, int nBestAsk4, int nBestAskQty4, int nBestAsk5, int nBestAskQty5, int nExtendAsk, int nExtendAskQty, int nSimulate)
 {
-    // ¨ú±o»ù¦ìªº¤p¼Æ¦ì¼Æ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ìªºï¿½pï¿½Æ¦ï¿½ï¿½
     SKCOMLib::SKSTOCKLONG pSKStock;
     double dDigitNum = 0.000;
-    System::String^ strStockNoTick = txtTick->Text->Trim();
+    System::String ^ strStockNoTick = txtTick->Text->Trim();
     int nCode = m_pSKQuote->SKQuoteLib_GetStockByNoLONG(strStockNoTick, pSKStock);
     if (nCode == 0)
         dDigitNum = (Math::Pow(10, pSKStock.sDecimal));
     else
-        dDigitNum = 100.00;//default value 
+        dDigitNum = 100.00; // default value
 
     if (m_dBest5Bid->Rows->Count == 0 && m_dBest5Ask->Rows->Count == 0)
     {
-        //¶R
-        DataRow^ MyDataRow = m_dBest5Bid->NewRow();
+        // ï¿½R
+        DataRow ^ MyDataRow = m_dBest5Bid->NewRow();
         MyDataRow["m_nAskQty"] = nBestBidQty1;
         if (nBestBid1 == kMarketPrice)
         {
             MyDataRow["m_nAsk"] = "m";
         }
         else
-        { 
+        {
             MyDataRow["m_nAsk"] = (nBestBid1 / dDigitNum).ToString();
         }
         m_dBest5Bid->Rows->Add(MyDataRow);
@@ -263,8 +262,7 @@ Void CppCLITester::SKQuote::OnNotifyBest5LONG(short sMarketNo, int nStockidx, in
         }
         m_dBest5Bid->Rows->Add(MyDataRow);
 
-
-        //½æ
+        // ï¿½ï¿½
         MyDataRow = m_dBest5Ask->NewRow();
         MyDataRow["m_nAskQty"] = nBestAskQty1;
         if (nBestAsk1 == kMarketPrice)
@@ -327,7 +325,7 @@ Void CppCLITester::SKQuote::OnNotifyBest5LONG(short sMarketNo, int nStockidx, in
     }
     else
     {
-        //¶R
+        // ï¿½R
         GridBest5Bid->Rows[0]->Cells["m_nAskQty"]->Value = nBestBidQty1;
         if (nBestBid1 == kMarketPrice)
         {
@@ -378,7 +376,7 @@ Void CppCLITester::SKQuote::OnNotifyBest5LONG(short sMarketNo, int nStockidx, in
             GridBest5Bid->Rows[4]->Cells["m_nAsk"]->Value = (nBestBid5 / dDigitNum).ToString();
         }
 
-        //½æ
+        // ï¿½ï¿½
         GridBest5Ask->Rows[0]->Cells["m_nAskQty"]->Value = nBestAskQty1;
         if (nBestAsk1 == kMarketPrice)
         {
@@ -433,7 +431,7 @@ Void CppCLITester::SKQuote::OnNotifyBest5LONG(short sMarketNo, int nStockidx, in
 
 Void CppCLITester::SKQuote::OnNotifyHistoryTicksLONG(short sMarketNo, int nStockIdx, int nPtr, int nDate, int lTimehms, int lTimemillismicros, int nBid, int nAsk, int nClose, int nQty, int nSimulate)
 {
-    System::String^  strData = "";
+    System::String ^ strData = "";
 
     int nMarketPrice = m_pSKQuote->SKQuoteLib_GetMarketPriceTS();
 
@@ -449,7 +447,6 @@ Void CppCLITester::SKQuote::OnNotifyHistoryTicksLONG(short sMarketNo, int nStock
             strData = nStockIdx.ToString() + "," + nPtr.ToString() + "," + nDate.ToString() + " " + lTimehms.ToString() + "," + nBid.ToString() + "," + "M" + "," + nClose.ToString() + "," + nQty.ToString();
         else
             strData = nStockIdx.ToString() + "," + nPtr.ToString() + "," + nDate.ToString() + " " + lTimehms.ToString() + "," + nBid.ToString() + "," + nAsk.ToString() + "," + nClose.ToString() + "," + nQty.ToString();
-
     }
 
     if (strData != "" && ((chkBoxSimulate->Checked) || (!chkBoxSimulate->Checked && nSimulate == 0)))
@@ -458,7 +455,7 @@ Void CppCLITester::SKQuote::OnNotifyHistoryTicksLONG(short sMarketNo, int nStock
 
 Void CppCLITester::SKQuote::OnNotifyTicksLONG(short sMarketNo, int nStockIdx, int nPtr, int nDate, int lTimehms, int lTimemillismicros, int nBid, int nAsk, int nClose, int nQty, int nSimulate)
 {
-    System::String^ strData = "";
+    System::String ^ strData = "";
 
     if (chkbox_msms->Checked == true)
         strData = nStockIdx.ToString() + "," + nPtr.ToString() + "," + nDate.ToString() + " " + lTimehms.ToString() + "," + nBid.ToString() + "," + nAsk.ToString() + "," + nClose.ToString() + "," + nQty.ToString();
@@ -478,45 +475,45 @@ Void CppCLITester::SKQuote::OnNotifyTicksLONG(short sMarketNo, int nStockIdx, in
         listTicks->Items->Add("[OnNotifyTicksLONG]" + strData);
 }
 
-Void CppCLITester::SKQuote::OnNotifyKLineData(System::String^ bstrStockNo, System::String^ bstrData)
+Void CppCLITester::SKQuote::OnNotifyKLineData(System::String ^ bstrStockNo, System::String ^ bstrData)
 {
     listKLine->Items->Add("[OnNotifyKLineData]" + bstrData);
 }
 
-System::Void CppCLITester::SKQuote::button1_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::SKQuote::button1_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_first)
     {
         m_first = false;
 
         m_pSKQuote->OnConnection += gcnew SKCOMLib::_ISKQuoteLibEvents_OnConnectionEventHandler(this, &CppCLITester::SKQuote::OnConnection);
-        // ³ø»ù
+        // ï¿½ï¿½ï¿½ï¿½
         m_pSKQuote->OnNotifyQuoteLONG += gcnew SKCOMLib::_ISKQuoteLibEvents_OnNotifyQuoteLONGEventHandler(this, &CppCLITester::SKQuote::OnNotifyQuoteLONG);
 
-        // ¦¨¥æ©ú²Ó¥H¤Î¤­ÀÉ
+        // ï¿½ï¿½ï¿½ï¿½Ó¥Hï¿½Î¤ï¿½ï¿½ï¿½
         m_pSKQuote->OnNotifyBest5LONG += gcnew SKCOMLib::_ISKQuoteLibEvents_OnNotifyBest5LONGEventHandler(this, &CppCLITester::SKQuote::OnNotifyBest5LONG);
         m_pSKQuote->OnNotifyTicksLONG += gcnew SKCOMLib::_ISKQuoteLibEvents_OnNotifyTicksLONGEventHandler(this, &CppCLITester::SKQuote::OnNotifyTicksLONG);
         m_pSKQuote->OnNotifyHistoryTicksLONG += gcnew SKCOMLib::_ISKQuoteLibEvents_OnNotifyHistoryTicksLONGEventHandler(this, &CppCLITester::SKQuote::OnNotifyHistoryTicksLONG);
-        
-        //kLine
+
+        // kLine
         m_pSKQuote->OnNotifyKLineData += gcnew SKCOMLib::_ISKQuoteLibEvents_OnNotifyKLineDataEventHandler(this, &CppCLITester::SKQuote::OnNotifyKLineData);
-        
-        //market Info
+
+        // market Info
         m_pSKQuote->OnNotifyMarketTot += gcnew SKCOMLib::_ISKQuoteLibEvents_OnNotifyMarketTotEventHandler(this, &CppCLITester::SKQuote::OnNotifyMarketTot);
         m_pSKQuote->OnNotifyMarketBuySell += gcnew SKCOMLib::_ISKQuoteLibEvents_OnNotifyMarketBuySellEventHandler(this, &CppCLITester::SKQuote::OnNotifyMarketBuySell);
         m_pSKQuote->OnNotifyMarketHighLow += gcnew SKCOMLib::_ISKQuoteLibEvents_OnNotifyMarketHighLowEventHandler(this, &CppCLITester::SKQuote::OnNotifyMarketHighLow);
 
-        //Bool & MACD
+        // Bool & MACD
         m_pSKQuote->OnNotifyBoolTunelLONG += gcnew SKCOMLib::_ISKQuoteLibEvents_OnNotifyBoolTunelLONGEventHandler(this, &CppCLITester::SKQuote::OnNotifyBoolTunelLONG);
         m_pSKQuote->OnNotifyMACDLONG += gcnew SKCOMLib::_ISKQuoteLibEvents_OnNotifyMACDLONGEventHandler(this, &CppCLITester::SKQuote::OnNotifyMACDLONG);
 
-        //FutureTrade Info
+        // FutureTrade Info
         m_pSKQuote->OnNotifyFutureTradeInfoLONG += gcnew SKCOMLib::_ISKQuoteLibEvents_OnNotifyFutureTradeInfoLONGEventHandler(this, &CppCLITester::SKQuote::OnNotifyFutureTradeInfoLONG);
 
-        //Strike Prices
+        // Strike Prices
         m_pSKQuote->OnNotifyStrikePrices += gcnew SKCOMLib::_ISKQuoteLibEvents_OnNotifyStrikePricesEventHandler(this, &CppCLITester::SKQuote::OnNotifyStrikePrices);
 
-        //Stock List
+        // Stock List
         m_pSKQuote->OnNotifyStockList += gcnew SKCOMLib::_ISKQuoteLibEvents_OnNotifyStockListEventHandler(this, &CppCLITester::SKQuote::OnNotifyStockList);
     }
     kMarketPrice = m_pSKQuote->SKQuoteLib_GetMarketPriceTS();
@@ -526,7 +523,7 @@ System::Void CppCLITester::SKQuote::button1_Click(System::Object^ sender, System
     GetMessage("Quote", n_mCode, "SKQuoteLib_EnterMonitorLONG");
 }
 
-Void CppCLITester::SKQuote::btnDisconnect_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::btnDisconnect_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     int n_mCode = m_pSKQuote->SKQuoteLib_LeaveMonitor();
 
@@ -539,15 +536,15 @@ Void CppCLITester::SKQuote::OnNotifyMarketTot(short sMarketNo, short sPtr, int n
 
     if (sMarketNo == 0)
     {
-        lblTotv->Text = dTotv.ToString() + "(»õ)";
-        lblTots->Text = nTots.ToString() + "(±i)";
-        lblTotc->Text = nTotc.ToString() + "(µ§)";
+        lblTotv->Text = dTotv.ToString() + "(ï¿½ï¿½)";
+        lblTots->Text = nTots.ToString() + "(ï¿½i)";
+        lblTotc->Text = nTotc.ToString() + "(ï¿½ï¿½)";
     }
     else
     {
-        lblTotv2->Text = dTotv.ToString() + "(»õ)";
-        lblTots2->Text = nTots.ToString() + "(±i)";
-        lblTotc2->Text = nTotc.ToString() + "(µ§)";
+        lblTotv2->Text = dTotv.ToString() + "(ï¿½ï¿½)";
+        lblTots2->Text = nTots.ToString() + "(ï¿½i)";
+        lblTotc2->Text = nTotc.ToString() + "(ï¿½ï¿½)";
     }
 }
 
@@ -555,17 +552,17 @@ Void CppCLITester::SKQuote::OnNotifyMarketBuySell(short sMarketNo, short sPtr, i
 {
     if (sMarketNo == 0)
     {
-        lbllBc->Text = nBc.ToString() + "(µ§)";
-        lbllBs->Text = nBs.ToString() + "(±i)";
-        lbllSc->Text = nSc.ToString() + "(µ§)";
-        lbllSs->Text = nSs.ToString() + "(±i)";
+        lbllBc->Text = nBc.ToString() + "(ï¿½ï¿½)";
+        lbllBs->Text = nBs.ToString() + "(ï¿½i)";
+        lbllSc->Text = nSc.ToString() + "(ï¿½ï¿½)";
+        lbllSs->Text = nSs.ToString() + "(ï¿½i)";
     }
     else
     {
-        lbllBc2->Text = nBc.ToString() + "(µ§)";
-        lbllBs2->Text = nBs.ToString() + "(±i)";
-        lbllSc2->Text = nSc.ToString() + "(µ§)";
-        lbllSs2->Text = nSs.ToString() + "(±i)";
+        lbllBc2->Text = nBc.ToString() + "(ï¿½ï¿½)";
+        lbllBs2->Text = nBs.ToString() + "(ï¿½i)";
+        lbllSc2->Text = nSc.ToString() + "(ï¿½ï¿½)";
+        lbllSs2->Text = nSs.ToString() + "(ï¿½i)";
     }
 }
 
@@ -589,21 +586,21 @@ Void CppCLITester::SKQuote::OnNotifyMarketHighLow(short sMarketNo, short sPtr, i
     }
 }
 
-Void CppCLITester::SKQuote::OnNotifyBoolTunelLONG(short sMarketNo, int nStockidx, System::String^ bstrAVG, System::String^ bstrUBT, System::String^ bstrLBT)
+Void CppCLITester::SKQuote::OnNotifyBoolTunelLONG(short sMarketNo, int nStockidx, System::String ^ bstrAVG, System::String ^ bstrUBT, System::String ^ bstrLBT)
 {
     lblAVG->Text = bstrAVG;
     lblUBT->Text = bstrUBT;
     lblLBT->Text = bstrLBT;
 }
 
-Void CppCLITester::SKQuote::OnNotifyMACDLONG(short sMarketNo, int nStockidx, System::String^ bstrMACD, System::String^ bstrDIF, System::String^ bstrOSC)
+Void CppCLITester::SKQuote::OnNotifyMACDLONG(short sMarketNo, int nStockidx, System::String ^ bstrMACD, System::String ^ bstrDIF, System::String ^ bstrOSC)
 {
     lblMACD->Text = bstrMACD;
     lblDIF->Text = bstrDIF;
     lblOSC->Text = bstrOSC;
 }
 
-Void CppCLITester::SKQuote::OnNotifyFutureTradeInfoLONG(System::String^ bstrStockNo, short sMarketNo, int nStockIdx, int nBuyTotalCount, int nSellTotalCount, int nBuyTotalQty, int nSellTotalQty, int nBuyDealTotalCount, int nSellDealTotalCount)
+Void CppCLITester::SKQuote::OnNotifyFutureTradeInfoLONG(System::String ^ bstrStockNo, short sMarketNo, int nStockIdx, int nBuyTotalCount, int nSellTotalCount, int nBuyTotalQty, int nSellTotalQty, int nBuyDealTotalCount, int nSellDealTotalCount)
 {
     lblMarketNo->Text = "MarketNo";
     lblStockIdx->Text = "StockIndex";
@@ -624,22 +621,22 @@ Void CppCLITester::SKQuote::OnNotifyFutureTradeInfoLONG(System::String^ bstrStoc
     lblFTISDC->Text = nSellDealTotalCount.ToString();
 }
 
-Void CppCLITester::SKQuote::OnNotifyStrikePrices(System::String^ bstrOptionData)
+Void CppCLITester::SKQuote::OnNotifyStrikePrices(System::String ^ bstrOptionData)
 {
-    System::String^  strData = "";
+    System::String ^ strData = "";
     strData = "[OnNotifyStrikePrices]" + bstrOptionData;
 
     listStrikePrices->Items->Add(strData);
     m_nCount++;
     listStrikePrices->SelectedIndex = listStrikePrices->Items->Count - 1;
 
-    if (bstrOptionData->Substring(0, 2) != "##")   //¶}ÀY##ªíµ²§ô¡A¤£­p°Ó«~¼Æ¶q
+    if (bstrOptionData->Substring(0, 2) != "##") // ï¿½}ï¿½Y##ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½pï¿½Ó«~ï¿½Æ¶q
         txt_StrikePriceCount->Text = m_nCount.ToString();
 }
 
-Void CppCLITester::SKQuote::OnNotifyStockList(short sMarketNo, System::String^ bstrStockListData)
+Void CppCLITester::SKQuote::OnNotifyStockList(short sMarketNo, System::String ^ bstrStockListData)
 {
-    System::String^  strData = "";
+    System::String ^ strData = "";
     strData = "[OnNotifyStockList]" + bstrStockListData;
 
     StockList->Items->Add(strData);
@@ -649,22 +646,22 @@ Void CppCLITester::SKQuote::OnNotifyStockList(short sMarketNo, System::String^ b
     else
         StockList->Items->Clear();
 
-    //Size^ size = TextRenderer->MeasureText(bstrStockListData, StockList->Font);
-    //if (StockList->HorizontalExtent < size->Width + 20)
-    //    StockList->HorizontalExtent = size->Width + 20;
+    // Size^ size = TextRenderer->MeasureText(bstrStockListData, StockList->Font);
+    // if (StockList->HorizontalExtent < size->Width + 20)
+    //     StockList->HorizontalExtent = size->Width + 20;
 }
 
 Void CppCLITester::SKQuote::OnUpDateDataRow(SKCOMLib::SKSTOCKLONG pStock)
 {
 
-    System::String^  strStockNo = pStock.bstrStockNo;
+    System::String ^ strStockNo = pStock.bstrStockNo;
 
-    DataRow^ drFind = m_dtStocks->Rows->Find(strStockNo);
+    DataRow ^ drFind = m_dtStocks->Rows->Find(strStockNo);
 
     if (drFind == nullptr)
     {
 
-        DataRow^  myDataRow = m_dtStocks->NewRow();
+        DataRow ^ myDataRow = m_dtStocks->NewRow();
 
         myDataRow["m_nStockidx"] = pStock.nStockIdx;
         myDataRow["m_sDecimal"] = pStock.sDecimal;
@@ -680,20 +677,18 @@ Void CppCLITester::SKQuote::OnUpDateDataRow(SKCOMLib::SKSTOCKLONG pStock)
         myDataRow["m_nRef"] = pStock.nRef / (Math::Pow(10, pStock.sDecimal));
 
         if (pStock.nBid == kMarketPrice)
-            myDataRow["m_nBid"] = "¥«»ù";
+            myDataRow["m_nBid"] = "ï¿½ï¿½ï¿½ï¿½";
         else
             myDataRow["m_nBid"] = (pStock.nBid / (Math::Pow(10, pStock.sDecimal))).ToString();
-
 
         myDataRow["m_nBc"] = pStock.nBc;
 
         if (pStock.nAsk == kMarketPrice)
-            myDataRow["m_nAsk"] = "¥«»ù";
+            myDataRow["m_nAsk"] = "ï¿½ï¿½ï¿½ï¿½";
         else
             myDataRow["m_nAsk"] = (pStock.nAsk / (Math::Pow(10, pStock.sDecimal))).ToString();
 
-
-        m_nSimulateStock = pStock.nSimulate;                 //¦¨¥æ»ù/¶R»ù/½æ»ù;´¦¥Ü
+        m_nSimulateStock = pStock.nSimulate; // ï¿½ï¿½ï¿½ï¿½ï¿½/ï¿½Rï¿½ï¿½/ï¿½ï¿½ï¿½;ï¿½ï¿½ï¿½ï¿½
         myDataRow["m_nAc"] = pStock.nAc;
         myDataRow["m_nTBc"] = pStock.nTBc;
         myDataRow["m_nTAc"] = pStock.nTAc;
@@ -721,18 +716,16 @@ Void CppCLITester::SKQuote::OnUpDateDataRow(SKCOMLib::SKSTOCKLONG pStock)
         drFind["m_nRef"] = pStock.nRef / (Math::Pow(10, pStock.sDecimal));
 
         if (pStock.nBid == kMarketPrice)
-            drFind["m_nBid"] = "¥«»ù";
+            drFind["m_nBid"] = "ï¿½ï¿½ï¿½ï¿½";
         else
             drFind["m_nBid"] = (pStock.nBid / (Math::Pow(10, pStock.sDecimal))).ToString();
-
 
         drFind["m_nBc"] = pStock.nBc;
 
         if (pStock.nAsk == kMarketPrice)
-            drFind["m_nAsk"] = "¥«»ù";
+            drFind["m_nAsk"] = "ï¿½ï¿½ï¿½ï¿½";
         else
             drFind["m_nAsk"] = (pStock.nAsk / (Math::Pow(10, pStock.sDecimal))).ToString();
-
 
         drFind["m_nAc"] = pStock.nAc;
         drFind["m_nTBc"] = pStock.nTBc;
@@ -742,20 +735,19 @@ Void CppCLITester::SKQuote::OnUpDateDataRow(SKCOMLib::SKSTOCKLONG pStock)
         drFind["m_nYQty"] = pStock.nYQty;
         drFind["m_nUp"] = pStock.nUp / (Math::Pow(10, pStock.sDecimal));
         drFind["m_nDown"] = pStock.nDown / (Math::Pow(10, pStock.sDecimal));
-        m_nSimulateStock = pStock.nSimulate;                 //¦¨¥æ»ù/¶R»ù/½æ»ù;´¦¥Ü
+        m_nSimulateStock = pStock.nSimulate; // ï¿½ï¿½ï¿½ï¿½ï¿½/ï¿½Rï¿½ï¿½/ï¿½ï¿½ï¿½;ï¿½ï¿½ï¿½ï¿½
     }
 }
 
-System::Void CppCLITester::SKQuote::btnQueryStocks_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::SKQuote::btnQueryStocks_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     short page;
-    if (short::TryParse(txtPageNo->Text->Trim(), page) == false)
+    if (short ::TryParse(txtPageNo->Text->Trim(), page) == false)
     {
-        MessageBox::Show("½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½ï¿½JÆ¦r");
         return;
     }
 
-    
     m_dtStocks->Clear();
     dataGridView1->ClearSelection();
 
@@ -765,39 +757,37 @@ System::Void CppCLITester::SKQuote::btnQueryStocks_Click(System::Object^ sender,
     dataGridView1->Columns["m_sDecimal"]->Visible = false;
     dataGridView1->Columns["m_sTypeNo"]->Visible = false;
     dataGridView1->Columns["m_cMarketNo"]->Visible = false;
-    dataGridView1->Columns["m_caStockNo"]->HeaderText = "¥N½X";
-    dataGridView1->Columns["m_caName"]->HeaderText = "¦WºÙ";
-    dataGridView1->Columns["m_nOpen"]->HeaderText = "¶}½L»ù";
-    //dataGridView1->Columns["m_nHigh"]->Visible = false;
-    dataGridView1->Columns["m_nHigh"]->HeaderText = "³Ì°ª";
-    //dataGridView1->Columns["m_nLow"]->Visible = false;
-    dataGridView1->Columns["m_nLow"]->HeaderText = "³Ì§C";
-    dataGridView1->Columns["m_nClose"]->HeaderText = "¦¨¥æ»ù";
-    dataGridView1->Columns["m_nTickQty"]->HeaderText = "³æ¶q";
-    dataGridView1->Columns["m_nRef"]->HeaderText = "¬Q¦¬»ù";
-    dataGridView1->Columns["m_nBid"]->HeaderText = "¶R»ù";
-    //dataGridView1->Columns["m_nBc"]->Visible = false;
-    dataGridView1->Columns["m_nBc"]->HeaderText = "¶R¶q";
-    dataGridView1->Columns["m_nAsk"]->HeaderText = "½æ»ù";
-    //dataGridView1->Columns["m_nAc"]->Visible = false;
-    dataGridView1->Columns["m_nAc"]->HeaderText = "½æ¶q";
-    //dataGridView1->Columns["m_nTBc"]->Visible = false;
-    dataGridView1->Columns["m_nTBc"]->HeaderText = "¶R½L¶q";
-    //dataGridView1->Columns["m_nTAc"]->Visible = false;
-    dataGridView1->Columns["m_nTAc"]->HeaderText = "½æ½L¶q";
+    dataGridView1->Columns["m_caStockNo"]->HeaderText = "ï¿½Nï¿½X";
+    dataGridView1->Columns["m_caName"]->HeaderText = "ï¿½Wï¿½ï¿½";
+    dataGridView1->Columns["m_nOpen"]->HeaderText = "ï¿½}ï¿½Lï¿½ï¿½";
+    // dataGridView1->Columns["m_nHigh"]->Visible = false;
+    dataGridView1->Columns["m_nHigh"]->HeaderText = "ï¿½ï¿½";
+    // dataGridView1->Columns["m_nLow"]->Visible = false;
+    dataGridView1->Columns["m_nLow"]->HeaderText = "ï¿½C";
+    dataGridView1->Columns["m_nClose"]->HeaderText = "ï¿½ï¿½ï¿½ï¿½ï¿½";
+    dataGridView1->Columns["m_nTickQty"]->HeaderText = "ï¿½ï¿½q";
+    dataGridView1->Columns["m_nRef"]->HeaderText = "ï¿½Qï¿½ï¿½ï¿½ï¿½";
+    dataGridView1->Columns["m_nBid"]->HeaderText = "ï¿½Rï¿½ï¿½";
+    // dataGridView1->Columns["m_nBc"]->Visible = false;
+    dataGridView1->Columns["m_nBc"]->HeaderText = "ï¿½Rï¿½q";
+    dataGridView1->Columns["m_nAsk"]->HeaderText = "ï¿½ï¿½ï¿½";
+    // dataGridView1->Columns["m_nAc"]->Visible = false;
+    dataGridView1->Columns["m_nAc"]->HeaderText = "ï¿½ï¿½q";
+    // dataGridView1->Columns["m_nTBc"]->Visible = false;
+    dataGridView1->Columns["m_nTBc"]->HeaderText = "ï¿½Rï¿½Lï¿½q";
+    // dataGridView1->Columns["m_nTAc"]->Visible = false;
+    dataGridView1->Columns["m_nTAc"]->HeaderText = "ï¿½ï¿½Lï¿½q";
     dataGridView1->Columns["m_nFutureOI"]->Visible = false;
-    //dataGridView1->Columns["m_nTQty"]->Visible = false;
-    dataGridView1->Columns["m_nTQty"]->HeaderText = "Á`¶q";
-    //dataGridView1->Columns["m_nYQty"]->Visible = false;
-    dataGridView1->Columns["m_nYQty"]->HeaderText = "¬Q¶q";
-    //dataGridView1->Columns["m_nUp"]->Visible = false;
-    dataGridView1->Columns["m_nUp"]->HeaderText = "º¦°±";
-    //dataGridView1->Columns["m_nDown"]->Visible = false;
-    dataGridView1->Columns["m_nDown"]->HeaderText = "¶^°±";
+    // dataGridView1->Columns["m_nTQty"]->Visible = false;
+    dataGridView1->Columns["m_nTQty"]->HeaderText = "ï¿½`ï¿½q";
+    // dataGridView1->Columns["m_nYQty"]->Visible = false;
+    dataGridView1->Columns["m_nYQty"]->HeaderText = "ï¿½Qï¿½q";
+    // dataGridView1->Columns["m_nUp"]->Visible = false;
+    dataGridView1->Columns["m_nUp"]->HeaderText = "ï¿½ï¿½ï¿½ï¿½";
+    // dataGridView1->Columns["m_nDown"]->Visible = false;
+    dataGridView1->Columns["m_nDown"]->HeaderText = "ï¿½^ï¿½ï¿½";
 
-    
-
-    array<String^>^ Stocks;
+    array<String ^> ^ Stocks;
     Stocks = txtStocks->Text->Trim()->Split(',');
 
     for each (System::String ^ s in Stocks)
@@ -819,39 +809,36 @@ System::Void CppCLITester::SKQuote::btnQueryStocks_Click(System::Object^ sender,
     txtPageNo->Text = page.ToString();
 
     GetMessage("Quote", n_mCode, "SKQuoteLib_RequestStocks");
-
-
 }
 
-Void CppCLITester::SKQuote::btnIsConnected_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::btnIsConnected_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     int n_mCode = m_pSKQuote->SKQuoteLib_IsConnected();
 
-
-    if (n_mCode == 1) // ³s½u¤¤
+    if (n_mCode == 1) // ï¿½sï¿½uï¿½ï¿½
     {
         ConnectedLabel->Text = "true";
         ConnectedLabel->BackColor = Color::Green;
     }
-    else if (n_mCode == 2)//¤U¸ü¤¤
+    else if (n_mCode == 2) // ï¿½Uï¿½ï¿½ï¿½ï¿½
     {
         ConnectedLabel->Text = "False";
         ConnectedLabel->BackColor = Color::Yellow;
     }
-    else // Â_½u
+    else // ï¿½_ï¿½u
     {
         ConnectedLabel->Text = "False";
         ConnectedLabel->BackColor = Color::Red;
     }
 
-    GetMessage("Quote",n_mCode,"SKQuoteLib_IsConnected");
+    GetMessage("Quote", n_mCode, "SKQuoteLib_IsConnected");
 }
 
-Void CppCLITester::SKQuote::btnTicks_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::btnTicks_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     short sPage;
 
-    if (short::TryParse(txtTickPageNo->Text, sPage) == false)
+    if (short ::TryParse(txtTickPageNo->Text, sPage) == false)
         return;
     listTicks->Items->Clear();
     m_dBest5Ask->Clear();
@@ -859,52 +846,52 @@ Void CppCLITester::SKQuote::btnTicks_Click(System::Object^ sender, System::Event
     GridBest5Ask->DataSource = m_dBest5Ask;
     GridBest5Bid->DataSource = m_dBest5Bid;
 
-    GridBest5Ask->Columns["m_nAskQty"]->HeaderText = "±i¼Æ";
+    GridBest5Ask->Columns["m_nAskQty"]->HeaderText = "ï¿½iï¿½ï¿½";
     GridBest5Ask->Columns["m_nAskQty"]->Width = 60;
-    GridBest5Ask->Columns["m_nAsk"]->HeaderText = "½æ»ù";
+    GridBest5Ask->Columns["m_nAsk"]->HeaderText = "ï¿½ï¿½ï¿½";
     GridBest5Ask->Columns["m_nAsk"]->Width = 60;
 
-    GridBest5Bid->Columns["m_nAskQty"]->HeaderText = "±i¼Æ";
+    GridBest5Bid->Columns["m_nAskQty"]->HeaderText = "ï¿½iï¿½ï¿½";
     GridBest5Bid->Columns["m_nAskQty"]->Width = 60;
-    GridBest5Bid->Columns["m_nAsk"]->HeaderText = "¶R»ù";
+    GridBest5Bid->Columns["m_nAsk"]->HeaderText = "ï¿½Rï¿½ï¿½";
     GridBest5Bid->Columns["m_nAsk"]->Width = 60;
 
-    int m_nCode = m_pSKQuote->SKQuoteLib_RequestTicks( sPage, txtTick->Text->Trim());
+    int m_nCode = m_pSKQuote->SKQuoteLib_RequestTicks(sPage, txtTick->Text->Trim());
 
     txtTickPageNo->Text = sPage.ToString();
 
     GetMessage("Quote", m_nCode, "SKQuoteLib_RequestTicks");
 }
 
-Void CppCLITester::SKQuote::btnLiveTick_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::btnLiveTick_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     listTicks->Items->Clear();
     short sPage;
 
-    if (short::TryParse(txtTickPageNo->Text,  sPage) == false)
+    if (short ::TryParse(txtTickPageNo->Text, sPage) == false)
         return;
 
-    int m_nCode = m_pSKQuote->SKQuoteLib_RequestLiveTick( sPage, txtTick->Text->Trim());
+    int m_nCode = m_pSKQuote->SKQuoteLib_RequestLiveTick(sPage, txtTick->Text->Trim());
 
     txtTickPageNo->Text = sPage.ToString();
 
     GetMessage("Quote", m_nCode, "SKQuoteLib_RequestLiveTick");
 }
 
-Void CppCLITester::SKQuote::btnTickStop_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::btnTickStop_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     int m_nCode = m_pSKQuote->SKQuoteLib_CancelRequestTicks(txtTick->Text->Trim());
 
     GetMessage("Quote", m_nCode, "SKQuoteLib_CancelRequestTicks");
 }
 
-Void CppCLITester::SKQuote::RequestStockListBtn_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::RequestStockListBtn_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     StockList->Items->Clear();
 
     if (MarketNo_txt->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J¥«³õ¥N½X");
+        MessageBox::Show("ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½X");
         return;
     }
     short sMarketNo = Convert::ToInt16(MarketNo_txt->Text->Trim());
@@ -913,7 +900,7 @@ Void CppCLITester::SKQuote::RequestStockListBtn_Click(System::Object^ sender, Sy
     GetMessage("Quote", m_nCode, "SKQuoteLib_RequestStockList");
 }
 
-Void CppCLITester::SKQuote::GetStrikePrices_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::GetStrikePrices_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     listStrikePrices->Items->Clear();
 
@@ -922,21 +909,21 @@ Void CppCLITester::SKQuote::GetStrikePrices_Click(System::Object^ sender, System
     GetMessage("Quote", m_nCode, "SKQuoteLib_GetStrikePrice");
 }
 
-Void CppCLITester::SKQuote::btnKLine_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::btnKLine_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     listKLine->Items->Clear();
 
-    short sKLineType = short::Parse(boxKLine->SelectedIndex.ToString());
-    short sOutType = short::Parse(boxOutType->SelectedIndex.ToString());
+    short sKLineType = short ::Parse(boxKLine->SelectedIndex.ToString());
+    short sOutType = short ::Parse(boxOutType->SelectedIndex.ToString());
 
     if (sKLineType < 0)
     {
-        MessageBox::Show("½Ð¿ï¾ÜKLineÃþ«¬");
+        MessageBox::Show("ï¿½ï¿½ï¿½KLineï¿½ï¿½ï¿½ï¿½");
         return;
     }
     if (sOutType < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¿é¥X®æ¦¡Ãþ«¬");
+        MessageBox::Show("ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½");
         return;
     }
 
@@ -945,27 +932,27 @@ Void CppCLITester::SKQuote::btnKLine_Click(System::Object^ sender, System::Event
     GetMessage("Quote", m_nCode, "SKQuoteLib_RequestKLine");
 }
 
-Void CppCLITester::SKQuote::btnKLineAM_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::btnKLineAM_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     listKLine->Items->Clear();
 
-    short sKLineType = short::Parse(boxKLine->SelectedIndex.ToString());
-    short sOutType = short::Parse(boxOutType->SelectedIndex.ToString());
-    short sTradeSession = short::Parse(boxTradeSession->SelectedIndex.ToString());
+    short sKLineType = short ::Parse(boxKLine->SelectedIndex.ToString());
+    short sOutType = short ::Parse(boxOutType->SelectedIndex.ToString());
+    short sTradeSession = short ::Parse(boxTradeSession->SelectedIndex.ToString());
 
     if (sKLineType < 0)
     {
-        MessageBox::Show("½Ð¿ï¾ÜKLineÃþ«¬");
+        MessageBox::Show("ï¿½ï¿½ï¿½KLineï¿½ï¿½ï¿½ï¿½");
         return;
     }
     if (sOutType < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¿é¥X®æ¦¡Ãþ«¬");
+        MessageBox::Show("ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½");
         return;
     }
     if (sTradeSession < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü½L§O");
+        MessageBox::Show("ï¿½ï¿½Lï¿½O");
         return;
     }
 
@@ -974,53 +961,53 @@ Void CppCLITester::SKQuote::btnKLineAM_Click(System::Object^ sender, System::Eve
     GetMessage("Quote", m_nCode, "SKQuoteLib_RequestKLineAM");
 }
 
-Void CppCLITester::SKQuote::btnKLineAMByDate_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::btnKLineAMByDate_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     listKLine->Items->Clear();
 
-    short sKLineType = short::Parse(boxKLine->SelectedIndex.ToString());
-    short sOutType = short::Parse(boxOutType->SelectedIndex.ToString());
-    short sTradeSession = short::Parse(boxTradeSession->SelectedIndex.ToString());
+    short sKLineType = short ::Parse(boxKLine->SelectedIndex.ToString());
+    short sOutType = short ::Parse(boxOutType->SelectedIndex.ToString());
+    short sTradeSession = short ::Parse(boxTradeSession->SelectedIndex.ToString());
     short sMinuteNumber;
 
     if (sKLineType < 0)
     {
-        MessageBox::Show("½Ð¿ï¾ÜKLineÃþ«¬");
+        MessageBox::Show("ï¿½ï¿½ï¿½KLineï¿½ï¿½ï¿½ï¿½");
         return;
     }
     if (sOutType < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¿é¥X®æ¦¡Ãþ«¬");
+        MessageBox::Show("ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½");
         return;
     }
     if (sTradeSession < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü½L§O");
+        MessageBox::Show("ï¿½ï¿½Lï¿½O");
         return;
     }
     if (txtStartDate->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J¶}©l®É¶¡¡A®æ¦¡YYYYMMDD");
+        MessageBox::Show("ï¿½ï¿½Jï¿½}lï¿½ï¿½ï¿½Aï¿½æ¦¡YYYYMMDD");
         return;
     }
     if (txtEndDate->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤Jµ²§ô®É¶¡¡A®æ¦¡YYYYMMDD");
+        MessageBox::Show("ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½É¶ï¿½Aï¿½æ¦¡YYYYMMDD");
         return;
     }
 
-    if (short::TryParse(txtMinuteNumber->Text, sMinuteNumber) == false)
+    if (short ::TryParse(txtMinuteNumber->Text, sMinuteNumber) == false)
     {
         sMinuteNumber = 0;
     }
-         
-   int m_nCode = m_pSKQuote->SKQuoteLib_RequestKLineAMByDate(txtKLine->Text->Trim(), sKLineType, sOutType, sTradeSession, txtStartDate->Text->Trim(), txtEndDate->Text->Trim(), sMinuteNumber);
-   // int m_nCode = m_pSKQuote->SKQuoteLib_RequestKLineAMByDate(txtKLine->Text->Trim(), sKLineType, sOutType, sTradeSession, txtStartDate->Text->Trim(), txtEndDate->Text->Trim());
+
+    int m_nCode = m_pSKQuote->SKQuoteLib_RequestKLineAMByDate(txtKLine->Text->Trim(), sKLineType, sOutType, sTradeSession, txtStartDate->Text->Trim(), txtEndDate->Text->Trim(), sMinuteNumber);
+    // int m_nCode = m_pSKQuote->SKQuoteLib_RequestKLineAMByDate(txtKLine->Text->Trim(), sKLineType, sOutType, sTradeSession, txtStartDate->Text->Trim(), txtEndDate->Text->Trim());
 
     GetMessage("Quote", m_nCode, "SKQuoteLib_RequestKLineAMByDate");
 }
 
-Void CppCLITester::SKQuote::Btn_RequestFutureTradeInfo_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::Btn_RequestFutureTradeInfo_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     lblFTIBc->Text = "TotalBc";
     lblFTISc->Text = "TotalSc";
@@ -1036,7 +1023,7 @@ Void CppCLITester::SKQuote::Btn_RequestFutureTradeInfo_Click(System::Object^ sen
     GetMessage("Quote", m_nCode, "SKQuoteLib_RequestFutureTradeInfo");
 }
 
-Void CppCLITester::SKQuote::btn_cancelFTI_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::btn_cancelFTI_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     short num = 50;
     int m_nCode = m_pSKQuote->SKQuoteLib_RequestFutureTradeInfo(num, text_StockNo->Text->Trim());
@@ -1044,84 +1031,82 @@ Void CppCLITester::SKQuote::btn_cancelFTI_Click(System::Object^ sender, System::
     GetMessage("Quote", m_nCode, "SKQuoteLib_CancelRequestFutureTradeInfo");
 }
 
-Void CppCLITester::SKQuote::button4_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::button4_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     int m_nCode = m_pSKQuote->SKQuoteLib_GetMarketBuySellUpDown();
     GetMessage("Quote", m_nCode, "SKQuoteLib_RequestMarketBuySellUpDown");
 }
 
-Void CppCLITester::SKQuote::btnGetBool_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::btnGetBool_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     short num = 0;
     int m_nCode = m_pSKQuote->SKQuoteLib_RequestBoolTunel(num, textBool->Text->Trim());
     GetMessage("Quote", m_nCode, "SKQuoteLib_RequestBoolTunel");
 }
 
-Void CppCLITester::SKQuote::btnCancelBool_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::btnCancelBool_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     short num = 50;
     int m_nCode = m_pSKQuote->SKQuoteLib_RequestBoolTunel(num, textBool->Text->Trim());
     GetMessage("Quote", m_nCode, "SKQuoteLib_CancelRequstBoolTunel");
 }
 
-Void CppCLITester::SKQuote::btnGetMACD_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::btnGetMACD_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     short num = 0;
     int m_nCode = m_pSKQuote->SKQuoteLib_RequestMACD(num, textMACD->Text->Trim());
     GetMessage("Quote", m_nCode, "SKQuoteLib_RequestMACD");
 }
 
-Void CppCLITester::SKQuote::btnCancelMACD_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::btnCancelMACD_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     short num = 50;
     int m_nCode = m_pSKQuote->SKQuoteLib_RequestMACD(num, textMACD->Text->Trim());
     GetMessage("Quote", m_nCode, "SKQuoteLib_CancelRequstMACD");
 }
 
-Void CppCLITester::SKQuote::btnGetTick_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::btnGetTick_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     short sMarket;
     int nStockidx;
     int nPtr;
 
-    if (short::TryParse(txtTickMarket->Text, sMarket) == false)
+    if (short ::TryParse(txtTickMarket->Text, sMarket) == false)
         return;
 
-    if (int::TryParse(txtTickStockidx->Text, nStockidx) == false)
+    if (int ::TryParse(txtTickStockidx->Text, nStockidx) == false)
         return;
 
-    if (int::TryParse(txtTickPtr->Text,  nPtr) == false)
+    if (int ::TryParse(txtTickPtr->Text, nPtr) == false)
         return;
 
     SKCOMLib::SKTICK skHistoryTick;
     int m_nCode = m_pSKQuote->SKQuoteLib_GetTickLONG(sMarket, nStockidx, nPtr, skHistoryTick);
     lblGetTick->Text = "HistoryTick..........................................................";
 
-
     if (m_nCode == 0)
     {
-        //lblGetTick.Text = skHistoryTick.nTime.ToString() + "/" + skHistoryTick.nBid.ToString() + " " + skHistoryTick.nAsk.ToString() + "/" + skHistoryTick.nClose.ToString() + " ...";
+        // lblGetTick.Text = skHistoryTick.nTime.ToString() + "/" + skHistoryTick.nBid.ToString() + " " + skHistoryTick.nAsk.ToString() + "/" + skHistoryTick.nClose.ToString() + " ...";
         lblGetTick->Text = skHistoryTick.nTimehms.ToString() + "/" + skHistoryTick.nBid.ToString() + " " + skHistoryTick.nAsk.ToString() + "/" + skHistoryTick.nClose.ToString() + "/" + skHistoryTick.nQty.ToString() + "...";
-
     }
 
     GetMessage("Quote", m_nCode, "SKQuoteLib_RequestOneHistoryTick");
 }
 
-Void CppCLITester::SKQuote::btnGetBest5_Click(System::Object^ sender, System::EventArgs^ e)
+Void CppCLITester::SKQuote::btnGetBest5_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     short sMarket;
     int nStockidx;
 
-    if (short::TryParse(txtBestMarket->Text, sMarket) == false)
+    if (short ::TryParse(txtBestMarket->Text, sMarket) == false)
         return;
 
-    if (int::TryParse(txtBestStockidx->Text, nStockidx) == false)
+    if (int ::TryParse(txtBestStockidx->Text, nStockidx) == false)
         return;
 
     SKCOMLib::SKBEST5 skBest5;
 
-    int  m_nCode = m_pSKQuote->SKQuoteLib_GetBest5LONG(sMarket, nStockidx, skBest5);
+    int m_nCode = m_pSKQuote->SKQuoteLib_GetBest5LONG(sMarket, nStockidx, skBest5);
 
     lblBest5Bid->Text = "Best5_Buy..........................................................";
     lblBest5Ask->Text = "Best5_Sell..........................................................";
@@ -1135,4 +1120,3 @@ Void CppCLITester::SKQuote::btnGetBest5_Click(System::Object^ sender, System::Ev
 
     GetMessage("Quote", m_nCode, "SKQuoteLib_GetBest5LONG");
 }
-
