@@ -44,3 +44,8 @@ VOID AutoCalcuKeyPrices();
 
 #define MAXIMUM_LOSS 5000
 #define DOLLARS_PER_TICK 10
+
+// Order
+
+#define ORDER_CLOSE_POSITION 1
+#define ORDER_NEW_POSITION 0

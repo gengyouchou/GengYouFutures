@@ -118,18 +118,19 @@ void AutoCalcuKeyPrices()
 /**
  * @brief
  *
- *  struct FUTUREORDER
- * {
- *  BSTR bstrFullAccount; // 7
- *  BSTR bstrStockNo;     //
- *  SHORT sTradeType;     // 0:ROD  1:IOC  2:FOK
- *  SHORT sBuySell;       // 0: 1:
- *  SHORT sDayTrade;      // 0: 1:
- *  SHORT sNewClose;      // 0: 1: 2:{}
- *  BSTR bstrPrice;       // (IOC and FOKMP)
- *  LONG nQty;            //
- *  SHORT sReserved;      //{SendFutureOrderCLR}0:(TT+1)1:T
- * };
+ * struct FUTUREORDER
+{
+    BSTR bstrFullAccount; // Full account number, branch code + 7-digit account number
+    BSTR bstrStockNo;     // Future option code
+    SHORT sTradeType;     // 0: ROD, 1: IOC, 2: FOK
+    SHORT sBuySell;       // 0: Buy, 1: Sell
+    SHORT sDayTrade;      // Day trade, 0: No, 1: Yes. Refer to exchange regulations for tradable items.
+    SHORT sNewClose;      // New position or close position, 0: New position, 1: Close position, 2: Auto (used for new futures and options)
+    BSTR bstrPrice;       // Order price (for IOC and FOK, use "M" for market price, "P" for range market price)
+    LONG nQty;            // Number of contracts
+    SHORT sReserved;      // {For SendFutureOrderCLR futures order} Trading session, 0: Intraday (T session and T+1 session), 1: T session reservation
+};
+
  * long CSKOrderLib::SendFutureOrder(
  * string strLogInID,
  * bool bAsyncOrder,
@@ -218,8 +219,8 @@ VOID StrategyStopFuturesLoss(string strUserId)
             for (auto &x : vec)
             {
                 AutoOrder(x,
-                          1,      // Close
-                          BuySell // Buy or sell
+                          ORDER_CLOSE_POSITION, // Close
+                          BuySell               // Buy or sell
                 );
             }
 
@@ -282,8 +283,8 @@ VOID StrategyClosePosition(string strUserId)
             for (auto &x : vec)
             {
                 AutoOrder(x,
-                          1,      // Close
-                          BuySell // Buy or sell
+                          ORDER_CLOSE_POSITION, // Close
+                          BuySell               // Buy or sell
                 );
             }
 
@@ -328,31 +329,42 @@ VOID StrategyNewPosition(string strUserId)
               curPrice, gOpenInterestInfo.avgCost);
 
         SHORT BuySell = -1;
+        BOOL LongShortKStickMatch = FALSE;
 
         if (gDayAmpAndKeyPrice.LongKey1 > 0 && curPrice >= gDayAmpAndKeyPrice.LongKey1 && curPrice <= gDayAmpAndKeyPrice.LongKey1 + STOP_POINT)
         {
             LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gDayAmpAndKeyPrice.LongKey1= %ld",
                 curPrice, gDayAmpAndKeyPrice.LongKey1);
 
-            BuySell = 0; // long position
+            BuySell = 0; // Long position
+
+            if (curPrice > gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][2])
+            {
+                LongShortKStickMatch = TRUE;
+            }
         }
         else if (gDayAmpAndKeyPrice.ShortKey1 > 0 && curPrice <= gDayAmpAndKeyPrice.ShortKey1 && curPrice >= gDayAmpAndKeyPrice.ShortKey1 - STOP_POINT)
         {
             LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gDayAmpAndKeyPrice.ShortKey1= %ld",
                 curPrice, gDayAmpAndKeyPrice.ShortKey1);
 
-            BuySell = 1; // short position
+            BuySell = 1; // Short position
+
+            if (curPrice < gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][2])
+            {
+                LongShortKStickMatch = TRUE;
+            }
         }
 
-        if (BuySell != -1)
+        if (BuySell != -1 && LongShortKStickMatch == TRUE)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
             for (auto &x : vec)
             {
                 AutoOrder(x,
-                          1,      // Close
-                          BuySell // Buy or sell
+                          ORDER_CLOSE_POSITION, // Close
+                          BuySell               // Buy or sell
                 );
             }
 
