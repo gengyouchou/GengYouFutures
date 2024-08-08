@@ -199,12 +199,12 @@ VOID StrategyStopFuturesLoss(string strUserId)
 
         if (gOpenInterestInfo.buySell == "S")
         {
-            profitAndLoss = gOpenInterestInfo.avgCost - curPrice;
+            profitAndLoss = (gOpenInterestInfo.avgCost - curPrice) * DOLLARS_PER_TICK;
             BuySell = 1; // short position
         }
         else
         {
-            profitAndLoss = curPrice - gOpenInterestInfo.avgCost;
+            profitAndLoss = (curPrice - gOpenInterestInfo.avgCost) * DOLLARS_PER_TICK;
             BuySell = 0; // long position
         }
 

@@ -43,3 +43,4 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);
 VOID AutoCalcuKeyPrices();
 
 #define MAXIMUM_LOSS 5000
+#define DOLLARS_PER_TICK 10
