@@ -770,13 +770,10 @@ void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimul
             gCurCommHighLowPoint[nStockIndex] = {LONG_MIN, LONG_MAX};
         }
 
-        DEBUG(DEBUG_LEVEL_INFO, "nStockIndex = %ld, lTimehms=%ld, nClose=%ld", nStockIndex, lTimehms, nClose);
+        DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex = %ld, lTimehms=%ld, nClose=%ld", nStockIndex, lTimehms, nClose);
 
         gCurCommHighLowPoint[nStockIndex][0] = max(gCurCommHighLowPoint[nStockIndex][0], nClose);
         gCurCommHighLowPoint[nStockIndex][1] = min(gCurCommHighLowPoint[nStockIndex][1], nClose);
-
-        gCurCommHighLowPoint[nStockIndex][0] /= 100;
-        gCurCommHighLowPoint[nStockIndex][1] /= 100;
     }
 }
 

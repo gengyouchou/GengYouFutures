@@ -310,8 +310,8 @@ void thread_main()
             if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) > 0)
             {
 
-                long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0];
-                long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1];
+                long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0] / 100;
+                long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1] / 100;
 
                 printf("CurHigh: %ld, CurLow: %ld, ", CurHigh, CurLow);
 
