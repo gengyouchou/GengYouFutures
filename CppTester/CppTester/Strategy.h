@@ -37,5 +37,6 @@ struct DAY_AMP_AND_KEY_PRICE
 
 VOID StrategyStopFuturesLoss(CSKOrderLib *SKOrderLib, string strUserId);
 VOID AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);
+void AutoCalcuKeyPrices();
 
 #define MAXIMUM_LOSS 5000

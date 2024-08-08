@@ -39,6 +39,79 @@ extern COMMODITY_INFO gCommodtyInfo;
 
 DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
 
+void AutoKLineData(IN string ProductNum)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
+
+    long g_nCode = pSKQuoteLib->RequestKLine(ProductNum);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "g_nCode=%ld", g_nCode);
+
+    pSKCenterLib->PrintfCodeMessage("Quote", "RequestKLine", g_nCode);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
+}
+
+void AutoCalcuKeyPrices()
+{
+    if (gDaysKlineDiff.size() < 20)
+    {
+        AutoKLineData(COMMODITY_TX_MAIN);
+
+        pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
+
+        long accu = 0;
+        long AvgAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;
+
+        for (int i = 0; i < gDaysKlineDiff.size(); ++i)
+        {
+            DEBUG(DEBUG_LEVEL_INFO, "Diff = %ld ", gDaysKlineDiff[i]);
+
+            accu += gDaysKlineDiff[i];
+
+            LargestAmp = max(LargestAmp, gDaysKlineDiff[i]);
+            SmallestAmp = min(SmallestAmp, gDaysKlineDiff[i]);
+        }
+
+        AvgAmp = accu / DayMA;
+
+        LargerAmp = (AvgAmp + LargestAmp) / 2;
+        SmallAmp = (AvgAmp + SmallestAmp) / 2;
+
+        DEBUG(DEBUG_LEVEL_INFO, "SmallestAmp : %ld", SmallestAmp);
+        DEBUG(DEBUG_LEVEL_INFO, "SmallAmp : %ld", SmallAmp);
+        DEBUG(DEBUG_LEVEL_INFO, "AvgAmp : %ld", AvgAmp);
+        DEBUG(DEBUG_LEVEL_INFO, "LargerAmp : %ld", LargerAmp);
+        DEBUG(DEBUG_LEVEL_INFO, "LargestAmp : %ld", LargestAmp);
+
+        gDayAmpAndKeyPrice.SmallestAmp = SmallestAmp;
+        gDayAmpAndKeyPrice.SmallAmp = SmallAmp;
+        gDayAmpAndKeyPrice.AvgAmp = AvgAmp;
+        gDayAmpAndKeyPrice.LargerAmp = LargerAmp;
+        gDayAmpAndKeyPrice.LargestAmp = LargestAmp;
+    }
+
+    if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) > 0)
+    {
+        long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0];
+        long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1];
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "MTXIdxNo: %ld. High: %ld, Low: %ld", gCommodtyInfo.MTXIdxNo, CurHigh, CurLow);
+
+        gDayAmpAndKeyPrice.LongKey5 = CurLow + gDayAmpAndKeyPrice.LargestAmp;
+        gDayAmpAndKeyPrice.LongKey4 = CurLow + gDayAmpAndKeyPrice.LargerAmp;
+        gDayAmpAndKeyPrice.LongKey3 = CurLow + gDayAmpAndKeyPrice.AvgAmp;
+        gDayAmpAndKeyPrice.LongKey2 = CurLow + gDayAmpAndKeyPrice.SmallAmp;
+        gDayAmpAndKeyPrice.LongKey1 = CurLow + gDayAmpAndKeyPrice.SmallestAmp;
+
+        gDayAmpAndKeyPrice.ShortKey1 = CurHigh + gDayAmpAndKeyPrice.LargestAmp;
+        gDayAmpAndKeyPrice.ShortKey2 = CurHigh + gDayAmpAndKeyPrice.LargerAmp;
+        gDayAmpAndKeyPrice.ShortKey3 = CurHigh + gDayAmpAndKeyPrice.AvgAmp;
+        gDayAmpAndKeyPrice.ShortKey4 = CurHigh + gDayAmpAndKeyPrice.SmallAmp;
+        gDayAmpAndKeyPrice.ShortKey5 = CurHigh + gDayAmpAndKeyPrice.SmallestAmp;
+    }
+}
+
 /**
  * @brief
  *

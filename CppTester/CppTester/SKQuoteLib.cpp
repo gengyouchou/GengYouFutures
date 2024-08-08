@@ -553,7 +553,7 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
 
     // printf("OnNotifyTicksLONG : %ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
+    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
     GetCurPrice(nStockIndex, nClose, nSimulate);
@@ -568,7 +568,7 @@ void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDa
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     // printf("OnNotifyHistoryTicksLONG : %ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
-    DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
+    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
     CaluCurCommHighLowPoint(nStockIndex, nClose, nSimulate, lTimehms);
@@ -763,11 +763,16 @@ void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimul
     {
         if (gCurCommHighLowPoint.count(nStockIndex) <= 0)
         {
-            gCurCommHighLowPoint[nStockIndex] = {nClose, nClose};
+            gCurCommHighLowPoint[nStockIndex] = {LONG_MIN, LONG_MAX};
         }
+
+        DEBUG(DEBUG_LEVEL_INFO, "lTimehms=%ld, nClose=%ld", lTimehms, nClose);
 
         gCurCommHighLowPoint[nStockIndex][0] = max(gCurCommHighLowPoint[nStockIndex][0], nClose);
         gCurCommHighLowPoint[nStockIndex][1] = min(gCurCommHighLowPoint[nStockIndex][1], nClose);
+
+        gCurCommHighLowPoint[nStockIndex][0] /= 100;
+        gCurCommHighLowPoint[nStockIndex][1] /= 100;
     }
 }
 

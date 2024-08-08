@@ -103,27 +103,14 @@ void AutoQuoteTicks(IN string ProductNum, short sPageNo)
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
-void AutoKLineData(IN string ProductNum)
-{
-    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
-
-    g_nCode = pSKQuoteLib->RequestKLine(ProductNum);
-
-    DEBUG(DEBUG_LEVEL_DEBUG, "g_nCode=%ld", g_nCode);
-
-    pSKCenterLib->PrintfCodeMessage("Quote", "RequestKLine", g_nCode);
-
-    DEBUG(DEBUG_LEVEL_DEBUG, "end");
-}
-
 void AutoBest5Long(LONG ProductIdxNo, string ProductName)
 {
     long curPrice = 0;
 
     if (gCurCommHighLowPoint.count(ProductIdxNo) > 0)
     {
-        long CurHigh = gCurCommHighLowPoint[ProductIdxNo][0] / 100;
-        long CurLow = gCurCommHighLowPoint[ProductIdxNo][1] / 100;
+        long CurHigh = gCurCommHighLowPoint[ProductIdxNo][0];
+        long CurLow = gCurCommHighLowPoint[ProductIdxNo][1];
 
         DEBUG(DEBUG_LEVEL_DEBUG, "IdxNo: %ld. High: %ld, Low: %ld", ProductIdxNo, CurHigh, CurLow);
 
@@ -216,43 +203,6 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
     }
 }
 
-void AutoCalcuKeyPrices()
-{
-    AutoKLineData(COMMODITY_TX_MAIN);
-
-    pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
-
-    long accu = 0;
-    long AvgAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;
-
-    for (int i = 0; i < gDaysKlineDiff.size(); ++i)
-    {
-        DEBUG(DEBUG_LEVEL_INFO, "Diff = %ld ", gDaysKlineDiff[i]);
-
-        accu += gDaysKlineDiff[i];
-
-        LargestAmp = max(LargestAmp, gDaysKlineDiff[i]);
-        SmallestAmp = min(SmallestAmp, gDaysKlineDiff[i]);
-    }
-
-    AvgAmp = accu / DayMA;
-
-    LargerAmp = (AvgAmp + LargestAmp) / 2;
-    SmallAmp = (AvgAmp + SmallestAmp) / 2;
-
-    DEBUG(DEBUG_LEVEL_INFO, "SmallestAmp : %ld", SmallestAmp);
-    DEBUG(DEBUG_LEVEL_INFO, "SmallAmp : %ld", SmallAmp);
-    DEBUG(DEBUG_LEVEL_INFO, "AvgAmp : %ld", AvgAmp);
-    DEBUG(DEBUG_LEVEL_INFO, "LargerAmp : %ld", LargerAmp);
-    DEBUG(DEBUG_LEVEL_INFO, "LargestAmp : %ld", LargestAmp);
-
-    gDayAmpAndKeyPrice.SmallestAmp = SmallestAmp;
-    gDayAmpAndKeyPrice.SmallAmp = SmallAmp;
-    gDayAmpAndKeyPrice.AvgAmp = AvgAmp;
-    gDayAmpAndKeyPrice.LargerAmp = LargerAmp;
-    gDayAmpAndKeyPrice.LargestAmp = LargestAmp;
-}
-
 void init()
 {
     pSKCenterLib = new CSKCenterLib;
@@ -300,8 +250,6 @@ void thread_main()
 
     AutoGetFutureRights();
 
-    AutoCalcuKeyPrices();
-
     long res = pSKQuoteLib->RequestServerTime();
 
     DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestServerTime()=%d", res);
@@ -323,6 +271,7 @@ void thread_main()
 
     while (true)
     {
+        AutoCalcuKeyPrices();
         //
         auto now = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClearTime);
@@ -344,41 +293,39 @@ void thread_main()
             //
             lastClearTime = now;
 
-            printf("CurMtxPrice: %ld    ", gCurCommPrice[gCommodtyInfo.MTXIdxNo]);
-            printf("ServerTime: %d: %d: %d  ", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
-            printf("Time: %ld: TSEA prices: %ld Valume: %ld: Buy: %ld Sell: %ld\n",
-                   gCurTaiexInfo[0][0], gCurCommPrice[gCommodtyInfo.TSEAIdxNo], gCurTaiexInfo[0][1], gCurTaiexInfo[0][2], gCurTaiexInfo[0][3]);
+            printf("[CurMtxPrice: %ld, ", gCurCommPrice[gCommodtyInfo.MTXIdxNo]);
+            printf("ServerTime: %d: %d: %d ]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+            printf("[TSEA prices: %ld, Valume: %ld: Buy: %ld Sell: %ld]\n",
+                   gCurCommPrice[gCommodtyInfo.TSEAIdxNo], gCurTaiexInfo[0][1], gCurTaiexInfo[0][2], gCurTaiexInfo[0][3]);
 
             printf("=========================================\n");
 
             if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) > 0)
             {
-                long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0] / 100;
-                long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1] / 100;
 
-                DEBUG(DEBUG_LEVEL_DEBUG, "MTXIdxNo: %ld. High: %ld, Low: %ld", gCommodtyInfo.MTXIdxNo, CurHigh, CurLow);
+                long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0];
+                long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1];
 
-                printf("CurHigh: %ld, CurLow: %ld\n\n", CurHigh, CurLow);
+                printf("CurHigh: %ld, CurLow: %ld, ", CurHigh, CurLow);
 
-                printf("=========================================\n");
-
-                printf("Long Key 5: %ld\n", CurLow + gDayAmpAndKeyPrice.LargestAmp);
-                printf("Long Key 4: %ld\n", CurLow + gDayAmpAndKeyPrice.LargerAmp);
-                printf("Long Key 3: %ld\n", CurLow + gDayAmpAndKeyPrice.AvgAmp);
-                printf("Long Key 2: %ld\n", CurLow + gDayAmpAndKeyPrice.SmallAmp);
-                printf("Long Key 1: %ld\n", CurLow + gDayAmpAndKeyPrice.SmallestAmp);
-                printf("=========================================\n");
-                printf("Short Key 1: %ld\n", CurHigh - gDayAmpAndKeyPrice.SmallestAmp);
-                printf("Short Key 2: %ld\n", CurHigh - gDayAmpAndKeyPrice.SmallAmp);
-                printf("Short Key 3: %ld\n", CurHigh - gDayAmpAndKeyPrice.AvgAmp);
-                printf("Short Key 4: %ld\n", CurHigh - gDayAmpAndKeyPrice.LargerAmp);
-                printf("Short Key 5: %ld\n", CurHigh - gDayAmpAndKeyPrice.LargestAmp);
-
-                printf("\n");
                 printf("CurAmp : %d\n", CurHigh - CurLow);
-
-                printf("=========================================\n");
             }
+
+            printf("=========================================\n");
+
+            printf("Long Key 5: %ld\n", gDayAmpAndKeyPrice.LongKey5);
+            printf("Long Key 4: %ld\n", gDayAmpAndKeyPrice.LongKey4);
+            printf("Long Key 3: %ld\n", gDayAmpAndKeyPrice.LongKey3);
+            printf("Long Key 2: %ld\n", gDayAmpAndKeyPrice.LongKey2);
+            printf("Long Key 1: %ld\n", gDayAmpAndKeyPrice.LongKey1);
+            printf("=========================================\n");
+            printf("Short Key 1: %ld\n", gDayAmpAndKeyPrice.ShortKey1);
+            printf("Short Key 2: %ld\n", gDayAmpAndKeyPrice.ShortKey2);
+            printf("Short Key 3: %ld\n", gDayAmpAndKeyPrice.ShortKey3);
+            printf("Short Key 4: %ld\n", gDayAmpAndKeyPrice.ShortKey4);
+            printf("Short Key 5: %ld\n", gDayAmpAndKeyPrice.ShortKey5);
+
+            printf("=========================================\n");
 
             printf("SmallestAmp : %ld, ", gDayAmpAndKeyPrice.SmallestAmp);
             printf("SmallAmp : %ld, ", gDayAmpAndKeyPrice.SmallAmp);
