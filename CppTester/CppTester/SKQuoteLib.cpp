@@ -578,8 +578,6 @@ void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDa
     DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
-    GetCurPrice(nStockIndex, nClose, nSimulate);
-
     CaluCurCommHighLowPoint(nStockIndex, nClose, nSimulate, lTimehms);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
