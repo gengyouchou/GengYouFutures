@@ -551,9 +551,12 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
-    // printf("OnNotifyTicksLONG : %ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
+    if (nSimulate == 1)
+    {
+        return;
+    }
 
-    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
+    DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
     GetCurPrice(nStockIndex, nClose, nSimulate);
@@ -567,9 +570,15 @@ void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDa
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
-    // printf("OnNotifyHistoryTicksLONG : %ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
-    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
+    if (nSimulate == 1)
+    {
+        return;
+    }
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
+
+    GetCurPrice(nStockIndex, nClose, nSimulate);
 
     CaluCurCommHighLowPoint(nStockIndex, nClose, nSimulate, lTimehms);
 
@@ -749,14 +758,9 @@ void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimul
         return;
     }
 
-    if (gCurServerTime[0] < 0)
-    {
-        return;
-    }
-
     bool isDaySession = gCurServerTime[0] >= 8 && gCurServerTime[0] <= 14;
 
-    bool isNightSession = gCurServerTime[0] <= 8 || gCurServerTime[0] > 14;
+    bool isNightSession = gCurServerTime[0] < 8 || gCurServerTime[0] > 14;
 
     if ((isDaySession && lTimehms > 50000 && lTimehms <= 134500) ||
         (isNightSession && (lTimehms <= 50000 || lTimehms > 134500)))
@@ -766,7 +770,7 @@ void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimul
             gCurCommHighLowPoint[nStockIndex] = {LONG_MIN, LONG_MAX};
         }
 
-        DEBUG(DEBUG_LEVEL_INFO, "lTimehms=%ld, nClose=%ld", lTimehms, nClose);
+        DEBUG(DEBUG_LEVEL_INFO, "nStockIndex = %ld, lTimehms=%ld, nClose=%ld", nStockIndex, lTimehms, nClose);
 
         gCurCommHighLowPoint[nStockIndex][0] = max(gCurCommHighLowPoint[nStockIndex][0], nClose);
         gCurCommHighLowPoint[nStockIndex][1] = min(gCurCommHighLowPoint[nStockIndex][1], nClose);
@@ -823,17 +827,10 @@ void processTradingData(const string &datetime, double openPrice, double highPri
             entry.second = min(entry.second, lowPrice);
         }
     }
-    // else if (hour >= 15 || hour <= 5)
+
     {
         // Night session
 
-        // only have [15 -> 00]  [00 -> 05]
-        //               Day       Day+1
-        //           [fir, sec]  [fir, sec]
-
-        // if (hour >= 15)
-        // {
-        //
         if (gNightCommHighLowPoint.count(date) == 0)
         {
             gNightCommHighLowPoint[date] = {{DBL_MIN, DBL_MAX}, {highPrice, lowPrice}};
@@ -847,42 +844,6 @@ void processTradingData(const string &datetime, double openPrice, double highPri
 
         DEBUG(DEBUG_LEVEL_DEBUG, "Date15_00: %s, High: %f, Low: %f",
               date, entry.first, entry.second);
-        // }
-        // else if (hour <= 5)
-        // {
-        //     if (gNightCommHighLowPoint.count(date) == 0)
-        //     {
-        //         gNightCommHighLowPoint[date] = {{DBL_MIN, DBL_MAX}, {highPrice, lowPrice}};
-        //     }
-        //     auto &entry = gNightCommHighLowPoint[date].second;
-        //     entry.first = max(entry.first, highPrice);
-        //     entry.second = min(entry.second, lowPrice);
-
-        //     string prevDate = "";
-
-        //     // 00:0005:00
-        //     auto it = gNightCommHighLowPoint.find(date);
-
-        //     if (it != gNightCommHighLowPoint.begin())
-        //     {
-        //         --it;
-        //         prevDate = it->first;
-        //         DEBUG(DEBUG_LEVEL_INFO, "prevDate=%s", prevDate);
-        //     }
-
-        //     if (prevDate != "")
-        //     {
-        //         //  second
-        //         auto &prevEntry = gNightCommHighLowPoint[prevDate].first;
-        //         entry.first = max(entry.first, prevEntry.first);
-        //         entry.second = min(entry.second, prevEntry.second);
-
-        //         DEBUG(DEBUG_LEVEL_INFO, "prevDate datetime: %s, highPrice: %f, lowPrice: %f", prevDate, prevEntry.first, prevEntry.second);
-        //     }
-
-        //     DEBUG(DEBUG_LEVEL_INFO, "Date0_5: %s, High: %f, Low: %f",
-        //           date, entry.first, entry.second);
-        // }
     }
 }
 
