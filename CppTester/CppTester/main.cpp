@@ -286,7 +286,8 @@ void thread_main()
         {
             // Strategy start:
 
-            StrategyStopFuturesLoss(pSKOrderLib, g_strUserId);
+            StrategyStopFuturesLoss(g_strUserId);
+            StrategyClosePosition(g_strUserId);
 
             // Strategy End:
         }
