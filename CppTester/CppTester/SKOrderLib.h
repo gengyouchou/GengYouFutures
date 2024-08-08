@@ -73,11 +73,11 @@ private:
 
 struct OpenInterestInfo
 {
-    std::string product;   // 商品
-    std::string buySell;   // 買賣別
-    long openPosition;     // 未平倉部位
-    long dayTradePosition; // 當沖未平倉部位
-    double avgCost;        // 平均成本 (小數部分已處理)
+    std::string product;        // 商品
+    std::string buySell;        // 買賣別
+    std::LONG openPosition;     // 未平倉部位
+    std::LONG dayTradePosition; // 當沖未平倉部位
+    std::DOUBLE avgCost;        // 平均成本 (小數部分已處理)
 };
 
 // struct FUTUREORDER
