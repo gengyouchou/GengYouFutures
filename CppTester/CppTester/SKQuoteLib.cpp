@@ -418,7 +418,7 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
 
     long res = RequestStockIndexMap(CommList, &skStock);
 
-    MTXIdxNo = skStock.nStockIdx;
+    MTXIdxNoAM = skStock.nStockIdx;
 
     DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, MTXIdxNoAM=%d", res, MTXIdxNoAM);
 
