@@ -13,7 +13,7 @@
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 
-#define STOP_POINT 100
+#define STOP_POINT 200
 
 // Define the global logger instance
 Logger StrategyLog("Strategy.log");
@@ -313,6 +313,17 @@ VOID StrategyNewPosition(string strUserId)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
+    double OpenPrice = 0;
+
+    if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) == 0)
+    {
+        return;
+    }
+    else
+    {
+        OpenPrice = static_cast<double>(gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][2]) / 100;
+    }
+
     double curPrice = 0;
 
     if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
@@ -337,9 +348,9 @@ VOID StrategyNewPosition(string strUserId)
 
             BuySell = 0; // Long position
 
-            if (curPrice > gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][2])
+            if (curPrice > OpenPrice)
             {
-                LOG(DEBUG_LEVEL_INFO, "curPrice = %f > Open price: %f", curPrice, gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][2]);
+                LOG(DEBUG_LEVEL_INFO, "curPrice = %f > Open price: %f", curPrice, OpenPrice);
                 LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gDayAmpAndKeyPrice.LongKey1= %ld",
                     curPrice, gDayAmpAndKeyPrice.LongKey1);
                 LongShortKStickMatch = TRUE;
@@ -350,9 +361,9 @@ VOID StrategyNewPosition(string strUserId)
 
             BuySell = 1; // Short position
 
-            if (curPrice < gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][2])
+            if (curPrice < OpenPrice)
             {
-                LOG(DEBUG_LEVEL_INFO, "curPrice = %f < Open price: %f", curPrice, gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][2]);
+                LOG(DEBUG_LEVEL_INFO, "curPrice = %f < Open price: %f", curPrice, OpenPrice);
                 LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gDayAmpAndKeyPrice.ShortKey1= %ld",
                     curPrice, gDayAmpAndKeyPrice.ShortKey1);
 
