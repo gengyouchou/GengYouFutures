@@ -76,7 +76,8 @@ struct OpenInterestInfo
     string buySell;        //
     LONG openPosition;     //
     LONG dayTradePosition; //
-    DOUBLE avgCost;        //  ()
+    DOUBLE avgCost;        //
+    DOUBLE profitAndLoss;
 };
 
 // struct FUTUREORDER
