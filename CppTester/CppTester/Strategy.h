@@ -40,7 +40,7 @@ VOID StrategyClosePosition(string strUserId);
 VOID StrategyNewPosition(string strUserId);
 
 LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);
-VOID AutoCalcuKeyPrices();
+VOID AutoCalcuKeyPrices(LONG nStockidx);
 
 #define MAXIMUM_LOSS 5000
 #define DOLLARS_PER_TICK 10

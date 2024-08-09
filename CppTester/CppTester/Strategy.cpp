@@ -55,7 +55,7 @@ void AutoKLineData(IN string ProductNum)
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
-void AutoCalcuKeyPrices()
+VOID AutoCalcuKeyPrices(LONG nStockidx)
 {
     if (gDaysKlineDiff.size() < 20)
     {
@@ -94,12 +94,12 @@ void AutoCalcuKeyPrices()
         gDayAmpAndKeyPrice.LargestAmp = LargestAmp;
     }
 
-    if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) > 0)
+    if (gCurCommHighLowPoint.count(nStockidx) > 0)
     {
-        long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0] / 100;
-        long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1] / 100;
+        long CurHigh = gCurCommHighLowPoint[nStockidx][0] / 100;
+        long CurLow = gCurCommHighLowPoint[nStockidx][1] / 100;
 
-        DEBUG(DEBUG_LEVEL_DEBUG, "MTXIdxNo: %ld. High: %ld, Low: %ld", gCommodtyInfo.MTXIdxNo, CurHigh, CurLow);
+        DEBUG(DEBUG_LEVEL_DEBUG, "MTXIdxNo: %ld. High: %ld, Low: %ld", nStockidx, CurHigh, CurLow);
 
         gDayAmpAndKeyPrice.LongKey5 = CurLow + gDayAmpAndKeyPrice.LargestAmp;
         gDayAmpAndKeyPrice.LongKey4 = CurLow + gDayAmpAndKeyPrice.LargerAmp;

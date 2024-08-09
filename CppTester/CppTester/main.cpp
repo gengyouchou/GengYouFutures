@@ -259,11 +259,8 @@ void thread_main()
 
     pSKQuoteLib->GetCommodityIdx();
 
-    //
     const int refreshInterval = 1000; // 1000
     auto lastClearTime = std::chrono::steady_clock::now();
-
-    AutoCalcuKeyPrices();
 
     std::string CommList;
 
@@ -283,8 +280,19 @@ void thread_main()
             continue;
         }
 
-        AutoCalcuKeyPrices();
-        //
+        LONG MtxCommodtyInfo = 0;
+
+        if (gCurServerTime[0] < 8 || gCurServerTime[0] > 14)
+        {
+            MtxCommodtyInfo = gCommodtyInfo.MTXIdxNo;
+        }
+        else
+        {
+            MtxCommodtyInfo = gCommodtyInfo.MTXIdxNoAM;
+        }
+
+        AutoCalcuKeyPrices(MtxCommodtyInfo);
+
         auto now = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClearTime);
 
@@ -307,18 +315,18 @@ void thread_main()
             //
             lastClearTime = now;
 
-            printf("[CurMtxPrice: %ld, ", gCurCommPrice[gCommodtyInfo.MTXIdxNo]);
+            printf("[CurMtxPrice: %ld, ", gCurCommPrice[MtxCommodtyInfo]);
             printf("ServerTime: %d: %d: %d ]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
             printf("[TSEA prices: %ld, Valume: %ld: Buy: %ld Sell: %ld]\n",
                    gCurCommPrice[gCommodtyInfo.TSEAIdxNo], gCurTaiexInfo[0][1], gCurTaiexInfo[0][2], gCurTaiexInfo[0][3]);
 
             printf("=========================================\n");
 
-            if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) > 0)
+            if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
             {
 
-                long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0] / 100;
-                long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1] / 100;
+                long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
+                long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
 
                 printf("CurHigh: %ld, CurLow: %ld, ", CurHigh, CurLow);
 
