@@ -21,7 +21,7 @@ std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 
 SHORT gCurServerTime[3] = {-1, -1, -1};
 
-COMMODITY_INFO gCommodtyInfo = {0, 0, 0, 0};
+COMMODITY_INFO gCommodtyInfo = {0, 0, 0, 0, 0};
 
 long CalculateDiff(const std::string &data);
 void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate, IN long lTimehms);
@@ -408,9 +408,21 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
 {
     SKCOMLib::SKSTOCKLONG skStock;
 
-    long MTXIdxNo = 0, TSMCIdxNo = 0, HHIdxNo = 0, TSEAIdxNo = 0;
+    long MTXIdxNo = 0, MTXIdxNoAM = 0, TSMCIdxNo = 0, HHIdxNo = 0, TSEAIdxNo = 0;
 
-    long res = RequestStockIndexMap(COMMODITY_MAIN, &skStock);
+    std::string CommList;
+
+    std::ostringstream oss;
+    oss << COMMODITY_MAIN << "AM";
+    CommList = oss.str();
+
+    long res = RequestStockIndexMap(CommList, &skStock);
+
+    MTXIdxNo = skStock.nStockIdx;
+
+    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, MTXIdxNoAM=%d", res, MTXIdxNoAM);
+
+    res = RequestStockIndexMap(COMMODITY_MAIN, &skStock);
 
     MTXIdxNo = skStock.nStockIdx;
 
@@ -435,6 +447,7 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
 
     gCommodtyInfo.HHIdxNo = HHIdxNo;
     gCommodtyInfo.MTXIdxNo = MTXIdxNo;
+    gCommodtyInfo.MTXIdxNoAM = MTXIdxNoAM;
     gCommodtyInfo.TSEAIdxNo = TSEAIdxNo;
     gCommodtyInfo.TSMCIdxNo = TSMCIdxNo;
 }

@@ -12,6 +12,7 @@
 struct COMMODITY_INFO
 {
     long MTXIdxNo;
+    long MTXIdxNoAM;
     long TSMCIdxNo;
     long HHIdxNo;
     long TSEAIdxNo;
