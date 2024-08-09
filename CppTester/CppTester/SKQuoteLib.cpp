@@ -466,50 +466,36 @@ void CSKQuoteLib::OnConnection(long nKind, long nCode)
 
 // struct SKSTOCKLONG
 // {
-//     LONG nStockidx; //
-//     SHORT sDecimal; //
-//     SHORT sTypeNo;  //  EX: () 1  , 2 etc.
-
-//     BSTR bstrMarketNo;  //
-//     BSTR bstrStockNo;   // EX: 1101 , TX12 12etc.
-//     BSTR bstrStockName; //
-
-//     LONG nHigh;  //
-//     LONG nOpen;  //
-//     LONG nLow;   //
-//     LONG nClose; //
-
-//     LONG nTickQty; //
-
-//     LONG nRef; //
-
-//     LONG nBid; //
-//     LONG nBc;  //
-//     LONG nAsk; //
-//     LONG nAc;  //
-
-//     LONG nTBc; // ()
-//     LONG nTAc; // ()
-
-//     LONG nFutureOI; //  OI
-
-//     LONG nTQty; //
-//     LONG nYQty; //
-
-//     LONG nUp;       //
-//     LONG nDown;     //
-//     LONG nSimulate; //  0: 1:
-//      // []1:
-//
-
-//     LONG nDayTrade // []
-// 0:
-// 1:
-// 2 :
-//                                    LONG nTradingDay // (YYYYMMDD)
-//                                         : ,
-//
-//                                                   LONG nDealTime //  (hhmmss)
+//     LONG nStockidx; // Custom stock index code
+//     SHORT sDecimal; // Decimal places
+//     SHORT sTypeNo;  // EX: (Securities) Category type, 1 Cement, 2 Food, etc.
+//     // …etc.
+//     BSTR bstrMarketNo;  // Market code
+//     BSTR bstrStockNo;   // Stock code, e.g., 1101 Taiwan Cement, TX12 Taiwan Index Futures December, etc.
+//     BSTR bstrStockName; // Stock name
+//     LONG nHigh;         // Highest price
+//     LONG nOpen;         // Opening price
+//     LONG nLow;          // Lowest price
+//     LONG nClose;        // Closing price
+//     LONG nTickQty;      // Tick volume
+//     LONG nRef;          // Previous close or reference price
+//     LONG nBid;          // Bid price
+//     LONG nBc;           // Bid volume
+//     LONG nAsk;          // Ask price
+//     LONG nAc;           // Ask volume
+//     LONG nTBc;          // Bid volume (external volume)
+//     LONG nTAc;          // Ask volume (internal volume)
+//     LONG nFutureOI;     // Futures open interest (OI)
+//     LONG nTQty;         // Total volume
+//     LONG nYQty;         // Previous day's volume
+//     LONG nUp;           // Upper limit price
+//     LONG nDown;         // Lower limit price
+//     LONG nSimulate;     // Indicator: 0: Normal, 1: Simulated
+//     // * [Securities tick-by-tick] When '1: Simulated' appears during trading, it indicates a price stability measure is in effect.
+//     LONG nDayTrade;   // [Limited to securities with whole lot trading] Whether day trading is allowed: 0: Normal, 1: Allowed for buying first and selling later (day trading), 2: Allowed for both buying first and selling later and selling first and buying later (day trading)
+//     LONG nTradingDay; // Trading day (YYYYMMDD)
+//     // Note: If it's a non-trading day, the data is from the previous trading day.
+//     LONG nDealTime; // Transaction time (hhmmss)
 // };
 
 void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
@@ -537,10 +523,11 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
     char *szStockNo = _com_util::ConvertBSTRToString(skStock.bstrStockNo);
     char *szStockName = _com_util::ConvertBSTRToString(skStock.bstrStockName);
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex= %ld, szStockNo: %s, szStockName : %s, Open: %d, High: %d, Low: %d, Close: %d, Simulate: %d",
+    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex= %ld, szStockNo: %s, szStockName : %s, nDealTime: %ld Open: %d, High: %d, Low: %d, Close: %d, Simulate: %d",
           nStockIndex,
           szStockNo,
           szStockName,
+          skStock.nDealTime,
           skStock.nOpen,
           skStock.nHigh,
           skStock.nLow,
