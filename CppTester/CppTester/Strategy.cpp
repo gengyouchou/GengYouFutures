@@ -196,11 +196,11 @@ VOID StrategyStopFuturesLoss(string strUserId)
 
     if (gOpenInterestInfo.product != "" && gOpenInterestInfo.avgCost != 0 && curPrice > 0)
     {
-        LOG(DEBUG_LEVEL_INFO, "product: %s", gOpenInterestInfo.product);
-        LOG(DEBUG_LEVEL_INFO, "buySell: %s", gOpenInterestInfo.buySell);
-        LOG(DEBUG_LEVEL_INFO, "openPosition: %ld", gOpenInterestInfo.openPosition);
-        LOG(DEBUG_LEVEL_INFO, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
-        LOG(DEBUG_LEVEL_INFO, "avgCost: %f", gOpenInterestInfo.avgCost);
+        LOG(DEBUG_LEVEL_DEBUG, "product: %s", gOpenInterestInfo.product);
+        LOG(DEBUG_LEVEL_DEBUG, "buySell: %s", gOpenInterestInfo.buySell);
+        LOG(DEBUG_LEVEL_DEBUG, "openPosition: %ld", gOpenInterestInfo.openPosition);
+        LOG(DEBUG_LEVEL_DEBUG, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
+        LOG(DEBUG_LEVEL_DEBUG, "avgCost: %f", gOpenInterestInfo.avgCost);
 
         SHORT BuySell = -1;
 
@@ -215,11 +215,16 @@ VOID StrategyStopFuturesLoss(string strUserId)
             BuySell = 0; // long position
         }
 
-        LOG(DEBUG_LEVEL_INFO, "curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
+        gLocalOpenInterestInfo.profitAndLoss = profitAndLoss;
+
+        LOG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
             curPrice, gOpenInterestInfo.avgCost, profitAndLoss);
 
         if (profitAndLoss >= MAXIMUM_LOSS)
         {
+            LOG(DEBUG_LEVEL_INFO, "STOP Loss at curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
+                curPrice, gOpenInterestInfo.avgCost, profitAndLoss);
+
             vector<string> vec = {COMMODITY_MAIN, COMMODITY_OTHER};
 
             for (auto &x : vec)
@@ -263,13 +268,13 @@ VOID StrategyClosePosition(string strUserId)
 
     if (gOpenInterestInfo.product != "" && gOpenInterestInfo.avgCost != 0 && curPrice > 0)
     {
-        LOG(DEBUG_LEVEL_INFO, "product: %s", gOpenInterestInfo.product);
-        LOG(DEBUG_LEVEL_INFO, "buySell: %s", gOpenInterestInfo.buySell);
-        LOG(DEBUG_LEVEL_INFO, "openPosition: %ld", gOpenInterestInfo.openPosition);
-        LOG(DEBUG_LEVEL_INFO, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
-        LOG(DEBUG_LEVEL_INFO, "avgCost: %f", gOpenInterestInfo.avgCost);
+        LOG(DEBUG_LEVEL_DEBUG, "product: %s", gOpenInterestInfo.product);
+        LOG(DEBUG_LEVEL_DEBUG, "buySell: %s", gOpenInterestInfo.buySell);
+        LOG(DEBUG_LEVEL_DEBUG, "openPosition: %ld", gOpenInterestInfo.openPosition);
+        LOG(DEBUG_LEVEL_DEBUG, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
+        LOG(DEBUG_LEVEL_DEBUG, "avgCost: %f", gOpenInterestInfo.avgCost);
 
-        LOG(DEBUG_LEVEL_INFO, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
+        LOG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
             curPrice, gOpenInterestInfo.avgCost);
 
         SHORT BuySell = -1;
@@ -396,17 +401,18 @@ VOID StrategyNewPosition(string strUserId)
                 if (BuySell == 1)
                 {
                     gLocalOpenInterestInfo.buySell = "S";
+                    gLocalOpenInterestInfo.openPosition -= 1;
                 }
                 else if (BuySell == 0)
                 {
                     gLocalOpenInterestInfo.buySell = "B";
+                    gLocalOpenInterestInfo.openPosition += 1;
                 }
                 else
                 {
                     gLocalOpenInterestInfo.buySell = "";
                 }
 
-                gLocalOpenInterestInfo.openPosition += 1;
                 gLocalOpenInterestInfo.avgCost = curPrice;
             }
 

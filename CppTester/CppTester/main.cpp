@@ -23,6 +23,7 @@ extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 extern COMMODITY_INFO gCommodtyInfo;
 extern DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice;
+extern OpenInterestInfo gLocalOpenInterestInfo;
 
 // Define the global logger instance
 Logger logger("debug.log");
@@ -335,6 +336,16 @@ void thread_main()
             }
 
             printf("=========================================\n");
+
+            if (gLocalOpenInterestInfo.openPosition > 0 || gLocalOpenInterestInfo.dayTradePosition > 0)
+            {
+                printf("Open Position: %d, AvgCost:%f, ProfitAndLoss: %f\n",
+                       gLocalOpenInterestInfo.openPosition,
+                       gLocalOpenInterestInfo.avgCost,
+                       gLocalOpenInterestInfo.profitAndLoss);
+
+                printf("=========================================\n");
+            }
 
             printf("Long Key 5: %ld\n", gDayAmpAndKeyPrice.LongKey5);
             printf("Long Key 4: %ld\n", gDayAmpAndKeyPrice.LongKey4);
