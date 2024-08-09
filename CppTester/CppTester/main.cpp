@@ -111,6 +111,7 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
     {
         long CurHigh = gCurCommHighLowPoint[ProductIdxNo][0];
         long CurLow = gCurCommHighLowPoint[ProductIdxNo][1];
+        long Open = gCurCommHighLowPoint[ProductIdxNo][2];
 
         DEBUG(DEBUG_LEVEL_DEBUG, "IdxNo: %ld. High: %ld, Low: %ld", ProductIdxNo, CurHigh, CurLow);
 
@@ -118,7 +119,7 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
 
         printf("%s : %ld, ", ProductName.c_str(), gCurCommPrice[ProductIdxNo]);
 
-        printf("CurHigh: %ld, CurLow: %ld\n", CurHigh, CurLow);
+        printf("Open: %ld, CurHigh: %ld, CurLow: %ld\n", Open, CurHigh, CurLow);
     }
 
     if (gBest5BidOffer[ProductIdxNo].size() >= 10)
@@ -316,7 +317,7 @@ void thread_main()
             lastClearTime = now;
 
             printf("[CurMtxPrice: %ld, ", gCurCommPrice[MtxCommodtyInfo]);
-            printf("ServerTime: %d: %d: %d ]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+            printf("ServerTime: %d: %d: %d ], ", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
             printf("[TSEA prices: %ld, Valume: %ld: Buy: %ld Sell: %ld]\n",
                    gCurCommPrice[gCommodtyInfo.TSEAIdxNo], gCurTaiexInfo[0][1], gCurTaiexInfo[0][2], gCurTaiexInfo[0][3]);
 
@@ -328,7 +329,7 @@ void thread_main()
                 long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
                 long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
 
-                printf("CurHigh: %ld, CurLow: %ld, ", CurHigh, CurLow);
+                printf("Open: %ld, CurHigh: %ld, CurLow: %ld, ", gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow);
 
                 printf("CurAmp : %d\n", CurHigh - CurLow);
             }
