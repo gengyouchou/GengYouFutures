@@ -408,29 +408,30 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
 {
     SKCOMLib::SKSTOCKLONG skStock;
 
+    long MTXIdxNo = 0, TSMCIdxNo = 0, HHIdxNo = 0, TSEAIdxNo = 0;
+
     long res = RequestStockIndexMap(COMMODITY_MAIN, &skStock);
 
-    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d", res);
+    MTXIdxNo = skStock.nStockIdx;
 
-    long MTXIdxNo = skStock.nStockIdx;
+    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, MTXIdxNo=%d", res, MTXIdxNo);
 
     res = RequestStockIndexMap("2330", &skStock);
 
-    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d", res);
-
-    long TSMCIdxNo = skStock.nStockIdx;
+    TSMCIdxNo = skStock.nStockIdx;
+    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, TSMCIdxNo=%d", res, TSMCIdxNo);
 
     res = RequestStockIndexMap("2317", &skStock);
 
-    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d", res);
+    HHIdxNo = skStock.nStockIdx;
 
-    long HHIdxNo = skStock.nStockIdx;
+    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, HHIdxNo=%d", res, HHIdxNo);
 
     res = RequestStockIndexMap("TSEA", &skStock);
 
-    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d", res);
+    TSEAIdxNo = skStock.nStockIdx;
 
-    long TSEAIdxNo = skStock.nStockIdx;
+    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, TSEAIdxNo=%d", res, TSEAIdxNo);
 
     gCommodtyInfo.HHIdxNo = HHIdxNo;
     gCommodtyInfo.MTXIdxNo = MTXIdxNo;
