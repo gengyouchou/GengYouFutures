@@ -458,7 +458,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
         --countShort;
     }
 
-    LOG(DEBUG_LEVEL_INFO, "countLong = %ld, countShort=%ld", countLong, countShort);
+    LOG(DEBUG_LEVEL_DEBUG, "countLong = %ld, countShort=%ld", countLong, countShort);
 
     return countLong + countShort;
 }
@@ -466,6 +466,11 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 LONG StrategyCaluBidOfferLongShort(VOID)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    if (gBidOfferLongShort >= LONG_MAX / 2 || gBidOfferLongShort < LONG_MIN / 2)
+    {
+        return gBidOfferLongShort;
+    }
 
     // long MTXIdxNo;
     // long MTXIdxNoAM;
@@ -487,7 +492,7 @@ LONG StrategyCaluBidOfferLongShort(VOID)
         gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
     }
 
-    LOG(DEBUG_LEVEL_INFO, "LongShort = %ld", gBidOfferLongShort);
+    LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gBidOfferLongShort);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 
