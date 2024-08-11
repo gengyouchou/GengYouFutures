@@ -303,7 +303,14 @@ void thread_main()
 
             StrategyStopFuturesLoss(g_strUserId);
             StrategyClosePosition(g_strUserId);
-            StrategyNewPosition(g_strUserId);
+
+            LONG longShort = StrategyCaluBidOfferLongShort();
+
+            if (longShort >= BID_OFFER_LONG_SHORT_THRESHOLD ||
+                -longShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
+            {
+                StrategyNewPosition(g_strUserId);
+            }
 
             // Strategy End:
         }

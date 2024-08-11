@@ -13,8 +13,6 @@
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 
-#define STOP_POINT 200
-
 // Define the global logger instance
 Logger StrategyLog("Strategy.log");
 
@@ -47,6 +45,8 @@ extern COMMODITY_INFO gCommodtyInfo;
 
 DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
 BID_OFFER_LONG_AND_SHORT gBidOfferLongAndShort = {0};
+
+static LONG gBidOfferLongShort = 0;
 
 void AutoKLineData(IN string ProductNum)
 {
@@ -458,6 +458,8 @@ LONG CountBidOfferLongShort(LONG nStockidx)
         --countShort;
     }
 
+    LOG(DEBUG_LEVEL_INFO, "countLong = %ld, countShort=%ld", countLong, countShort);
+
     return countLong + countShort;
 }
 
@@ -471,23 +473,23 @@ LONG StrategyCaluBidOfferLongShort(VOID)
     // long HHIdxNo;
     // long TSEAIdxNo;
 
-    LONG longShort = 0;
-
     if (gCommodtyInfo.TSMCIdxNo != 0)
     {
         long nStockidx = gCommodtyInfo.TSMCIdxNo;
 
-        longShort += CountBidOfferLongShort(nStockidx);
+        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
     }
 
     if (gCommodtyInfo.HHIdxNo != 0)
     {
         long nStockidx = gCommodtyInfo.HHIdxNo;
 
-        longShort += CountBidOfferLongShort(nStockidx);
+        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
     }
 
-    return longShort;
+    LOG(DEBUG_LEVEL_INFO, "LongShort = %ld", gBidOfferLongShort);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
+
+    return gBidOfferLongShort;
 }
