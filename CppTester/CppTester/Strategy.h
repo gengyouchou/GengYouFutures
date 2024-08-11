@@ -35,9 +35,17 @@ struct DAY_AMP_AND_KEY_PRICE
     long ShortKey5;
 };
 
+struct BID_OFFER_LONG_AND_SHORT
+{
+    LONG Tsmc;
+    LONG Foxconn;
+    LONG MediaTek;
+};
+
 VOID StrategyStopFuturesLoss(string strUserId);
 VOID StrategyClosePosition(string strUserId);
 VOID StrategyNewPosition(string strUserId);
+LONG StrategyCaluBidOfferLongShort(VOID);
 
 LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);
 VOID AutoCalcuKeyPrices(LONG nStockidx);

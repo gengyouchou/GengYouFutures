@@ -46,6 +46,7 @@ extern string g_strUserId;
 extern COMMODITY_INFO gCommodtyInfo;
 
 DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
+BID_OFFER_LONG_AND_SHORT gBidOfferLongAndShort = {0};
 
 void AutoKLineData(IN string ProductNum)
 {
@@ -425,6 +426,68 @@ VOID StrategyNewPosition(string strUserId)
     }
 
     gOpenInterestInfo = gLocalOpenInterestInfo;
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "End");
+}
+
+LONG CountBidOfferLongShort(LONG nStockidx)
+{
+    long countLong = 0, countShort = 0;
+
+    long totalBid = 0;
+
+    for (int i = 0; i < 5; ++i)
+    {
+        totalBid += gBest5BidOffer[nStockidx][i].second;
+    }
+
+    long totalOffer = 0;
+
+    for (int i = 5; i < 10; ++i)
+    {
+        totalOffer += gBest5BidOffer[nStockidx][i].second;
+    }
+
+    if (totalBid * 2 <= totalOffer)
+    {
+        ++countLong;
+    }
+
+    if (totalOffer * 2 <= totalBid)
+    {
+        --countShort;
+    }
+
+    return countLong + countShort;
+}
+
+LONG StrategyCaluBidOfferLongShort(VOID)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    // long MTXIdxNo;
+    // long MTXIdxNoAM;
+    // long TSMCIdxNo;
+    // long HHIdxNo;
+    // long TSEAIdxNo;
+
+    LONG longShort = 0;
+
+    if (gCommodtyInfo.TSMCIdxNo != 0)
+    {
+        long nStockidx = gCommodtyInfo.TSMCIdxNo;
+
+        longShort += CountBidOfferLongShort(nStockidx);
+    }
+
+    if (gCommodtyInfo.HHIdxNo != 0)
+    {
+        long nStockidx = gCommodtyInfo.HHIdxNo;
+
+        longShort += CountBidOfferLongShort(nStockidx);
+    }
+
+    return longShort;
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
