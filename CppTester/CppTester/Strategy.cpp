@@ -295,16 +295,8 @@ VOID StrategyClosePosition(string strUserId)
                 gOpenInterestInfo.openPosition = 0;
                 gOpenInterestInfo.avgCost = 0;
             }
-
-            pSKOrderLib->GetOpenInterest(strUserId, 1);
         }
     }
-    else
-    {
-        pSKOrderLib->GetOpenInterest(strUserId, 1);
-    }
-
-    gOpenInterestInfo = gOpenInterestInfo;
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
@@ -375,13 +367,7 @@ VOID StrategyNewLongPosition(string strUserId)
 
                 gOpenInterestInfo.avgCost = curPrice;
             }
-
-            pSKOrderLib->GetOpenInterest(strUserId, 1);
         }
-    }
-    else
-    {
-        pSKOrderLib->GetOpenInterest(strUserId, 1);
     }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
@@ -457,13 +443,7 @@ VOID StrategyNewShortPosition(string strUserId)
 
                 gOpenInterestInfo.avgCost = curPrice;
             }
-
-            pSKOrderLib->GetOpenInterest(strUserId, 1);
         }
-    }
-    else
-    {
-        pSKOrderLib->GetOpenInterest(strUserId, 1);
     }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
@@ -629,13 +609,7 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG LongShort)
 
                 gOpenInterestInfo.avgCost = curPrice;
             }
-
-            pSKOrderLib->GetOpenInterest(strUserId, 1);
         }
-    }
-    else
-    {
-        pSKOrderLib->GetOpenInterest(strUserId, 1);
     }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
