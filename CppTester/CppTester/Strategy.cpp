@@ -183,8 +183,6 @@ VOID StrategyStopFuturesLoss(string strUserId)
     double profitAndLoss = 0;
     double curPrice = 0;
 
-    gOpenInterestInfo = gOpenInterestInfo;
-
     long res = pSKOrderLib->GetOpenInterest(strUserId, 1);
 
     if (res != 0)
@@ -288,13 +286,6 @@ VOID StrategyClosePosition(string strUserId)
                           BuySell               // Buy or sell
                 );
             }
-
-            {
-                gOpenInterestInfo.product = "";
-                gOpenInterestInfo.buySell = "";
-                gOpenInterestInfo.openPosition = 0;
-                gOpenInterestInfo.avgCost = 0;
-            }
         }
     }
 
@@ -361,10 +352,8 @@ VOID StrategyNewLongPosition(string strUserId)
 
             {
                 gOpenInterestInfo.product = COMMODITY_OTHER;
-
                 gOpenInterestInfo.buySell = "B";
                 gOpenInterestInfo.openPosition += 1;
-
                 gOpenInterestInfo.avgCost = curPrice;
             }
         }
@@ -434,13 +423,8 @@ VOID StrategyNewShortPosition(string strUserId)
 
             {
                 gOpenInterestInfo.product = COMMODITY_OTHER;
-
-                if (BuySell == 1)
-                {
-                    gOpenInterestInfo.buySell = "S";
-                    gOpenInterestInfo.openPosition -= 1;
-                }
-
+                gOpenInterestInfo.buySell = "S";
+                gOpenInterestInfo.openPosition -= 1;
                 gOpenInterestInfo.avgCost = curPrice;
             }
         }
