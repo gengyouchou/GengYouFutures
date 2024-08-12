@@ -304,16 +304,18 @@ void thread_main()
             StrategyStopFuturesLoss(g_strUserId);
             StrategyClosePosition(g_strUserId);
 
-            LONG longShort = StrategyCaluBidOfferLongShort();
+            // LONG longShort = StrategyCaluBidOfferLongShort();
 
-            if (longShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
-            {
-                StrategyNewLongPosition(g_strUserId);
-            }
-            else if (-longShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
-            {
-                StrategyNewShortPosition(g_strUserId);
-            }
+            // if (longShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
+            // {
+            //     StrategyNewLongPosition(g_strUserId);
+            // }
+            // else if (-longShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
+            // {
+            //     StrategyNewShortPosition(g_strUserId);
+            // }
+
+            StrategyNewIntervalAmpLongShortPosition(g_strUserId, 0);
 
             // Strategy End:
         }

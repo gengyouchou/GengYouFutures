@@ -47,6 +47,7 @@ VOID StrategyClosePosition(string strUserId);
 VOID StrategyNewLongPosition(string strUserId);
 VOID StrategyNewShortPosition(string strUserId);
 LONG StrategyCaluBidOfferLongShort(VOID);
+VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG LongShort);
 
 LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);
 VOID AutoCalcuKeyPrices(LONG nStockidx);
