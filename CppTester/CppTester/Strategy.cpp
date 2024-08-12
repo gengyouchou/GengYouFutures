@@ -322,7 +322,7 @@ VOID StrategyClosePosition(string strUserId)
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
-VOID StrategyNewPosition(string strUserId)
+VOID StrategyNewLongPosition(string strUserId)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
@@ -369,7 +369,76 @@ VOID StrategyNewPosition(string strUserId)
                 LongShortKStickMatch = TRUE;
             }
         }
-        else if (gDayAmpAndKeyPrice.ShortKey1 > 0 && curPrice <= gDayAmpAndKeyPrice.ShortKey1 && curPrice >= gDayAmpAndKeyPrice.ShortKey1 - STOP_POINT)
+
+        if (BuySell == 0 && LongShortKStickMatch == TRUE)
+        {
+            vector<string> vec = {COMMODITY_OTHER};
+
+            for (auto &x : vec)
+            {
+                AutoOrder(x,
+                          ORDER_CLOSE_POSITION, // Close
+                          BuySell               // Buy or sell
+                );
+            }
+
+            {
+                gLocalOpenInterestInfo.product = COMMODITY_OTHER;
+
+                gLocalOpenInterestInfo.buySell = "B";
+                gLocalOpenInterestInfo.openPosition += 1;
+
+                gLocalOpenInterestInfo.avgCost = curPrice;
+            }
+
+            pSKOrderLib->GetOpenInterest(strUserId, 1);
+        }
+    }
+    else
+    {
+        pSKOrderLib->GetOpenInterest(strUserId, 1);
+    }
+
+    gOpenInterestInfo = gLocalOpenInterestInfo;
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "End");
+}
+
+VOID StrategyNewShortPosition(string strUserId)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    double OpenPrice = 0;
+
+    if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) == 0)
+    {
+        return;
+    }
+    else
+    {
+        OpenPrice = static_cast<double>(gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][2]) / 100;
+    }
+
+    double curPrice = 0;
+
+    if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
+    {
+        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100;
+    }
+
+    if (gOpenInterestInfo.product == "" &&
+        gOpenInterestInfo.avgCost == 0 &&
+        gOpenInterestInfo.openPosition == 0 &&
+        gOpenInterestInfo.dayTradePosition == 0 &&
+        curPrice > 0)
+    {
+        DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
+              curPrice, gOpenInterestInfo.avgCost);
+
+        SHORT BuySell = -1;
+        BOOL LongShortKStickMatch = FALSE;
+
+        if (gDayAmpAndKeyPrice.ShortKey1 > 0 && curPrice <= gDayAmpAndKeyPrice.ShortKey1 && curPrice >= gDayAmpAndKeyPrice.ShortKey1 - STOP_POINT)
         {
 
             BuySell = 1; // Short position
@@ -384,7 +453,7 @@ VOID StrategyNewPosition(string strUserId)
             }
         }
 
-        if (BuySell != -1 && LongShortKStickMatch == TRUE)
+        if (BuySell == 1 && LongShortKStickMatch == TRUE)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
@@ -403,15 +472,6 @@ VOID StrategyNewPosition(string strUserId)
                 {
                     gLocalOpenInterestInfo.buySell = "S";
                     gLocalOpenInterestInfo.openPosition -= 1;
-                }
-                else if (BuySell == 0)
-                {
-                    gLocalOpenInterestInfo.buySell = "B";
-                    gLocalOpenInterestInfo.openPosition += 1;
-                }
-                else
-                {
-                    gLocalOpenInterestInfo.buySell = "";
                 }
 
                 gLocalOpenInterestInfo.avgCost = curPrice;

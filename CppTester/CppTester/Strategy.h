@@ -44,7 +44,8 @@ struct BID_OFFER_LONG_AND_SHORT
 
 VOID StrategyStopFuturesLoss(string strUserId);
 VOID StrategyClosePosition(string strUserId);
-VOID StrategyNewPosition(string strUserId);
+VOID StrategyNewLongPosition(string strUserId);
+VOID StrategyNewShortPosition(string strUserId);
 LONG StrategyCaluBidOfferLongShort(VOID);
 
 LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);

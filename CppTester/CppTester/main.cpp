@@ -306,10 +306,13 @@ void thread_main()
 
             LONG longShort = StrategyCaluBidOfferLongShort();
 
-            if (longShort >= BID_OFFER_LONG_SHORT_THRESHOLD ||
-                -longShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
+            if (longShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
             {
-                StrategyNewPosition(g_strUserId);
+                StrategyNewLongPosition(g_strUserId);
+            }
+            else if (-longShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
+            {
+                StrategyNewShortPosition(g_strUserId);
             }
 
             // Strategy End:
