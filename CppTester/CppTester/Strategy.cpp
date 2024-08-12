@@ -158,17 +158,16 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
-    long g_nCode = 0;
-    // = pSKOrderLib->SendFutureOrder(g_strUserId,
-    //                                             false, // bAsyncOrder
-    //                                             ProductNum,
-    //                                             1,        // IOC
-    //                                             BuySell,  // BuySell
-    //                                             0,        // DayTrade
-    //                                             NewClose, // NewClose // 0: 1: 2:{}
-    //                                             "P",
-    //                                             1,
-    //                                             0);
+    long g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
+                                                false, // bAsyncOrder
+                                                ProductNum,
+                                                1,        // IOC
+                                                BuySell,  // BuySell
+                                                0,        // DayTrade
+                                                NewClose, // New position or close position, 0: New position, 1: Close position, 2: Auto (used for new futures and options)
+                                                "P",
+                                                1,
+                                                0);
 
     pSKCenterLib->PrintfCodeMessage("AutoOrder", "SendFutureOrder", g_nCode);
 
