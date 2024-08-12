@@ -264,15 +264,17 @@ VOID StrategyClosePosition(string strUserId)
         LOG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
             curPrice, gOpenInterestInfo.avgCost);
 
-        SHORT BuySell = -1;
+        SHORT CloseBuySell = -1, BuySell = -1;
 
         if (gOpenInterestInfo.buySell == "S")
         {
-            BuySell = 1; // short position
+            BuySell = 1;
+            CloseBuySell = 0; // short position
         }
-        else
+        else if (gOpenInterestInfo.buySell == "B")
         {
-            BuySell = 0; // long position
+            BuySell = 0;
+            CloseBuySell = 1; // long position
         }
 
         if ((BuySell == 0 && gDayAmpAndKeyPrice.LongKey2 > 0 && curPrice >= gDayAmpAndKeyPrice.LongKey2) ||
@@ -284,7 +286,7 @@ VOID StrategyClosePosition(string strUserId)
             {
                 AutoOrder(x,
                           ORDER_CLOSE_POSITION, // Close
-                          BuySell               // Buy or sell
+                          CloseBuySell          // Buy or sell
                 );
             }
         }
