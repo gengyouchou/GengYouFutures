@@ -530,7 +530,7 @@ LONG StrategyCaluBidOfferLongShort(VOID)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
-    if (gBidOfferLongShort >= LONG_MAX / 2 || gBidOfferLongShort < LONG_MIN / 2)
+    if (gBidOfferLongShort >= INT_MAX || gBidOfferLongShort < INT_MIN)
     {
         return gBidOfferLongShort;
     }
