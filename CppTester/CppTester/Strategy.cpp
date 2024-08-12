@@ -32,13 +32,7 @@ extern std::unordered_map<long, long> gCurCommPrice;
 extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 
 extern OpenInterestInfo gOpenInterestInfo;
-OpenInterestInfo gLocalOpenInterestInfo = {
-    "", // product
-    "", // buySell
-    0,  // openPosition 0
-    0,  // dayTradePosition 0
-    0.0 // avgCost 0.0
-};
+
 extern string g_strUserId;
 
 extern COMMODITY_INFO gCommodtyInfo;
@@ -189,6 +183,15 @@ VOID StrategyStopFuturesLoss(string strUserId)
     double profitAndLoss = 0;
     double curPrice = 0;
 
+    gOpenInterestInfo = gOpenInterestInfo;
+
+    long res = pSKOrderLib->GetOpenInterest(strUserId, 1);
+
+    if (res != 0)
+    {
+        DEBUG(DEBUG_LEVEL_DEBUG, "pSKOrderLib->GetOpenInterest(strUserId, 1)=%ld", res);
+    }
+
     if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
     {
         curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
@@ -215,7 +218,7 @@ VOID StrategyStopFuturesLoss(string strUserId)
             BuySell = 0; // long position
         }
 
-        gLocalOpenInterestInfo.profitAndLoss = profitAndLoss;
+        gOpenInterestInfo.profitAndLoss = profitAndLoss;
 
         LOG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
             curPrice, gOpenInterestInfo.avgCost, profitAndLoss);
@@ -234,23 +237,8 @@ VOID StrategyStopFuturesLoss(string strUserId)
                           BuySell               // Buy or sell
                 );
             }
-
-            {
-                gLocalOpenInterestInfo.product = "";
-                gLocalOpenInterestInfo.buySell = "";
-                gLocalOpenInterestInfo.openPosition = 0;
-                gLocalOpenInterestInfo.avgCost = 0;
-            }
-
-            pSKOrderLib->GetOpenInterest(strUserId, 1);
         }
     }
-    else
-    {
-        pSKOrderLib->GetOpenInterest(strUserId, 1);
-    }
-
-    gOpenInterestInfo = gLocalOpenInterestInfo;
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
@@ -302,10 +290,10 @@ VOID StrategyClosePosition(string strUserId)
             }
 
             {
-                gLocalOpenInterestInfo.product = "";
-                gLocalOpenInterestInfo.buySell = "";
-                gLocalOpenInterestInfo.openPosition = 0;
-                gLocalOpenInterestInfo.avgCost = 0;
+                gOpenInterestInfo.product = "";
+                gOpenInterestInfo.buySell = "";
+                gOpenInterestInfo.openPosition = 0;
+                gOpenInterestInfo.avgCost = 0;
             }
 
             pSKOrderLib->GetOpenInterest(strUserId, 1);
@@ -316,7 +304,7 @@ VOID StrategyClosePosition(string strUserId)
         pSKOrderLib->GetOpenInterest(strUserId, 1);
     }
 
-    gOpenInterestInfo = gLocalOpenInterestInfo;
+    gOpenInterestInfo = gOpenInterestInfo;
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
@@ -380,12 +368,12 @@ VOID StrategyNewLongPosition(string strUserId)
             }
 
             {
-                gLocalOpenInterestInfo.product = COMMODITY_OTHER;
+                gOpenInterestInfo.product = COMMODITY_OTHER;
 
-                gLocalOpenInterestInfo.buySell = "B";
-                gLocalOpenInterestInfo.openPosition += 1;
+                gOpenInterestInfo.buySell = "B";
+                gOpenInterestInfo.openPosition += 1;
 
-                gLocalOpenInterestInfo.avgCost = curPrice;
+                gOpenInterestInfo.avgCost = curPrice;
             }
 
             pSKOrderLib->GetOpenInterest(strUserId, 1);
@@ -395,8 +383,6 @@ VOID StrategyNewLongPosition(string strUserId)
     {
         pSKOrderLib->GetOpenInterest(strUserId, 1);
     }
-
-    gOpenInterestInfo = gLocalOpenInterestInfo;
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
@@ -461,15 +447,15 @@ VOID StrategyNewShortPosition(string strUserId)
             }
 
             {
-                gLocalOpenInterestInfo.product = COMMODITY_OTHER;
+                gOpenInterestInfo.product = COMMODITY_OTHER;
 
                 if (BuySell == 1)
                 {
-                    gLocalOpenInterestInfo.buySell = "S";
-                    gLocalOpenInterestInfo.openPosition -= 1;
+                    gOpenInterestInfo.buySell = "S";
+                    gOpenInterestInfo.openPosition -= 1;
                 }
 
-                gLocalOpenInterestInfo.avgCost = curPrice;
+                gOpenInterestInfo.avgCost = curPrice;
             }
 
             pSKOrderLib->GetOpenInterest(strUserId, 1);
@@ -479,8 +465,6 @@ VOID StrategyNewShortPosition(string strUserId)
     {
         pSKOrderLib->GetOpenInterest(strUserId, 1);
     }
-
-    gOpenInterestInfo = gLocalOpenInterestInfo;
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
@@ -623,12 +607,12 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG LongShort)
             }
 
             {
-                gLocalOpenInterestInfo.product = COMMODITY_OTHER;
+                gOpenInterestInfo.product = COMMODITY_OTHER;
 
                 if (BuySell == 1)
                 {
-                    gLocalOpenInterestInfo.buySell = "S";
-                    gLocalOpenInterestInfo.openPosition -= 1;
+                    gOpenInterestInfo.buySell = "S";
+                    gOpenInterestInfo.openPosition -= 1;
 
                     LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f",
                         curPrice);
@@ -636,14 +620,14 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG LongShort)
 
                 if (BuySell == 0)
                 {
-                    gLocalOpenInterestInfo.buySell = "B";
-                    gLocalOpenInterestInfo.openPosition += 1;
+                    gOpenInterestInfo.buySell = "B";
+                    gOpenInterestInfo.openPosition += 1;
 
                     LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f",
                         curPrice);
                 }
 
-                gLocalOpenInterestInfo.avgCost = curPrice;
+                gOpenInterestInfo.avgCost = curPrice;
             }
 
             pSKOrderLib->GetOpenInterest(strUserId, 1);
@@ -653,8 +637,6 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG LongShort)
     {
         pSKOrderLib->GetOpenInterest(strUserId, 1);
     }
-
-    gOpenInterestInfo = gLocalOpenInterestInfo;
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }

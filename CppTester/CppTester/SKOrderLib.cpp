@@ -10,26 +10,22 @@
 
 using namespace std;
 
-// 1
-//
-// 2
-//
+// Format 1:
 
-// 3
-//
-// 4
-//
-// 5
-//
-// 6
-//
-// 7
-//  ()
+// 1. Market Type
+// 2. Account Number
+// 3. Product
+// 4. Buy/Sell Indicator
+// 5. Open Position
+// 6. Day Trading Open Position
+// 7. Average Cost (Decimal Part Processed)
+// 8. Commission per Contract
+// 9. Transaction Tax (Ten-thousandths of X)
+// 10.LOGIN_ID
 
-//
 OpenInterestInfo gOpenInterestInfo = {
     "", // product
-    "", // buySell
+    "", // Buy/Sell Indicator
     0,  // openPosition 0
     0,  // dayTradePosition 0
     0.0 // avgCost 0.0
@@ -362,7 +358,9 @@ long CSKOrderLib::GetOpenInterest(
     string strFullAccount_TF = "";
 
     if (vec_strFullAccount_TF.size() > 0)
+    {
         strFullAccount_TF = vec_strFullAccount_TF[0];
+    }
     else
     {
         cout << "GetOpenInterest Error : No Future Account.";
@@ -373,6 +371,8 @@ long CSKOrderLib::GetOpenInterest(
     BSTR bstrAccount = _bstr_t(strFullAccount_TF.c_str());
 
     long m_nCode = m_pSKOrderLib->GetOpenInterestGW(bstrLogInID, bstrAccount, nFormat);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "GetOpenInterestGW=%ld", m_nCode);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 
@@ -650,6 +650,14 @@ void ParseOpenInterestMessage(const std::string &strMessage)
     }
     else
     {
-        std::cerr << "Message does not contain enough items" << std::endl;
+        gOpenInterestInfo = {
+            "", // product
+            "", // Buy/Sell Indicator
+            0,  // openPosition 0
+            0,  // dayTradePosition 0
+            0.0 // avgCost 0.0
+        };
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "NO Open Position: %s", strMessage);
     }
 }
