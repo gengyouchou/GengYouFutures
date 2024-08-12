@@ -52,9 +52,9 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG LongShort);
 LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);
 VOID AutoCalcuKeyPrices(LONG nStockidx);
 
-#define MAXIMUM_LOSS 20
+#define MAXIMUM_LOSS 3000
 #define DOLLARS_PER_TICK 10
-#define STOP_POINT 200
+#define STOP_POINT 100
 
 #define BID_OFFER_LONG_SHORT_THRESHOLD 100
 
