@@ -1,7 +1,9 @@
-#include <windows.h>
-#include <tlhelp32.h>
 #include <iostream>
 #include <string>
+
+#include <windows.h>
+
+#include <tlhelp32.h>
 
 // Convert CHAR array to std::wstring
 std::wstring CharToWstring(const char *charArray)
@@ -53,19 +55,8 @@ bool RestartProcess(const std::wstring &processPath)
 
 int main()
 {
-    std::wstring processName = L"CppTester.exe";                                            //
-    std::wstring processPath = L"C:\\GengYouFutures\\CppTester\\x64\\Debug\\CppTester.exe"; //
-
-    // Start the process initially
-    if (RestartProcess(processPath))
-    {
-        std::wcout << L"Started " << processName << std::endl;
-    }
-    else
-    {
-        std::wcerr << L"Failed to start " << processName << std::endl;
-        return 1; // Exit if process can't be started initially
-    }
+    std::wstring processName = L"CppTester.exe";
+    std::wstring processPath = L"C:\\GengYouFutures\\CppTester\\x64\\Debug\\CppTester.exe";
 
     while (true)
     {

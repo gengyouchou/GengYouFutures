@@ -26,11 +26,10 @@ cmake --build "%BUILD_DIR%" --config Debug
 REM 打印构建结果
 if errorlevel 1 (
     echo Build failed.
-    exit /b 1
 ) else (
     echo Build succeeded.
 )
 
+cd ..
+cd ..
 
-cd ..
-cd ..
