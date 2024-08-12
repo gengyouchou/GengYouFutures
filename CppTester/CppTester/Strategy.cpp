@@ -191,7 +191,7 @@ VOID StrategyStopFuturesLoss(string strUserId)
 
     if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
     {
-        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100;
+        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
     }
 
     if (gOpenInterestInfo.product != "" && gOpenInterestInfo.avgCost != 0 && curPrice > 0)
@@ -263,7 +263,7 @@ VOID StrategyClosePosition(string strUserId)
 
     if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
     {
-        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100;
+        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
     }
 
     if (gOpenInterestInfo.product != "" && gOpenInterestInfo.avgCost != 0 && curPrice > 0)
@@ -333,15 +333,17 @@ VOID StrategyNewLongPosition(string strUserId)
     }
     else
     {
-        OpenPrice = static_cast<double>(gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][2]) / 100;
+        OpenPrice = static_cast<double>(gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][2]) / 100.0;
     }
 
     double curPrice = 0;
 
     if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
     {
-        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100;
+        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
     }
+
+    double IntersectionOfLongAndShort = static_cast<double>(gDayAmpAndKeyPrice.LongKey1 + gDayAmpAndKeyPrice.ShortKey1) / 2.0;
 
     if (gOpenInterestInfo.product == "" &&
         gOpenInterestInfo.avgCost == 0 &&
@@ -355,7 +357,7 @@ VOID StrategyNewLongPosition(string strUserId)
         SHORT BuySell = -1;
         BOOL LongShortKStickMatch = FALSE;
 
-        if (gDayAmpAndKeyPrice.LongKey1 > 0 && curPrice >= gDayAmpAndKeyPrice.LongKey1 && curPrice <= gDayAmpAndKeyPrice.LongKey1 + STOP_POINT)
+        if (gDayAmpAndKeyPrice.LongKey1 > 0 && curPrice >= IntersectionOfLongAndShort && curPrice <= gDayAmpAndKeyPrice.LongKey1 + STOP_POINT)
         {
 
             BuySell = 0; // Long position
@@ -363,8 +365,8 @@ VOID StrategyNewLongPosition(string strUserId)
             if (curPrice > OpenPrice)
             {
                 LOG(DEBUG_LEVEL_INFO, "curPrice = %f > Open price: %f", curPrice, OpenPrice);
-                LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gDayAmpAndKeyPrice.LongKey1= %ld",
-                    curPrice, gDayAmpAndKeyPrice.LongKey1);
+                LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, IntersectionOfLongAndShort= %f",
+                    curPrice, IntersectionOfLongAndShort);
                 LongShortKStickMatch = TRUE;
             }
         }
@@ -415,15 +417,17 @@ VOID StrategyNewShortPosition(string strUserId)
     }
     else
     {
-        OpenPrice = static_cast<double>(gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][2]) / 100;
+        OpenPrice = static_cast<double>(gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][2]) / 100.0;
     }
 
     double curPrice = 0;
 
     if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
     {
-        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100;
+        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
     }
+
+    double IntersectionOfLongAndShort = static_cast<double>(gDayAmpAndKeyPrice.LongKey1 + gDayAmpAndKeyPrice.ShortKey1) / 2.0;
 
     if (gOpenInterestInfo.product == "" &&
         gOpenInterestInfo.avgCost == 0 &&
@@ -437,7 +441,7 @@ VOID StrategyNewShortPosition(string strUserId)
         SHORT BuySell = -1;
         BOOL LongShortKStickMatch = FALSE;
 
-        if (gDayAmpAndKeyPrice.ShortKey1 > 0 && curPrice <= gDayAmpAndKeyPrice.ShortKey1 && curPrice >= gDayAmpAndKeyPrice.ShortKey1 - STOP_POINT)
+        if (gDayAmpAndKeyPrice.ShortKey1 > 0 && curPrice <= IntersectionOfLongAndShort && curPrice >= gDayAmpAndKeyPrice.ShortKey1 - STOP_POINT)
         {
 
             BuySell = 1; // Short position
@@ -445,8 +449,8 @@ VOID StrategyNewShortPosition(string strUserId)
             if (curPrice < OpenPrice)
             {
                 LOG(DEBUG_LEVEL_INFO, "curPrice = %f < Open price: %f", curPrice, OpenPrice);
-                LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gDayAmpAndKeyPrice.ShortKey1= %ld",
-                    curPrice, gDayAmpAndKeyPrice.ShortKey1);
+                LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, IntersectionOfLongAndShort= %f",
+                    curPrice, IntersectionOfLongAndShort);
 
                 LongShortKStickMatch = TRUE;
             }
@@ -570,15 +574,15 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG LongShort)
     }
     else
     {
-        CurAmp = static_cast<double>(gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0]) / 100 -
-                 static_cast<double>(gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1]) / 100;
+        CurAmp = static_cast<double>(gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0]) / 100.0 -
+                 static_cast<double>(gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1]) / 100.0;
     }
 
     double curPrice = 0;
 
     if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
     {
-        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100;
+        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
     }
 
     BOOL IntervalAmpKStickMatch = FALSE;
