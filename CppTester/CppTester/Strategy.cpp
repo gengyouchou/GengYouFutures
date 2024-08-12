@@ -345,11 +345,7 @@ VOID StrategyNewLongPosition(string strUserId)
 
     double IntersectionOfLongAndShort = static_cast<double>(gDayAmpAndKeyPrice.LongKey1 + gDayAmpAndKeyPrice.ShortKey1) / 2.0;
 
-    if (gOpenInterestInfo.product == "" &&
-        gOpenInterestInfo.avgCost == 0 &&
-        gOpenInterestInfo.openPosition == 0 &&
-        gOpenInterestInfo.dayTradePosition == 0 &&
-        curPrice > 0)
+    if (curPrice > 0 && gOpenInterestInfo.openPosition <= 0)
     {
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
@@ -429,11 +425,7 @@ VOID StrategyNewShortPosition(string strUserId)
 
     double IntersectionOfLongAndShort = static_cast<double>(gDayAmpAndKeyPrice.LongKey1 + gDayAmpAndKeyPrice.ShortKey1) / 2.0;
 
-    if (gOpenInterestInfo.product == "" &&
-        gOpenInterestInfo.avgCost == 0 &&
-        gOpenInterestInfo.openPosition == 0 &&
-        gOpenInterestInfo.dayTradePosition == 0 &&
-        curPrice > 0)
+    if (curPrice > 0 && gOpenInterestInfo.openPosition >= 0)
     {
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
@@ -596,25 +588,21 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG LongShort)
         return;
     }
 
-    if (gOpenInterestInfo.product == "" &&
-        gOpenInterestInfo.avgCost == 0 &&
-        gOpenInterestInfo.openPosition == 0 &&
-        gOpenInterestInfo.dayTradePosition == 0 &&
-        curPrice > 0)
+    if (curPrice > 0)
     {
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
         SHORT BuySell = -1;
 
-        if (LongShort == 1)
+        if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
         {
             if (gDayAmpAndKeyPrice.ShortKey2 > 0 && curPrice <= gDayAmpAndKeyPrice.ShortKey2 && curPrice >= gDayAmpAndKeyPrice.ShortKey1 - STOP_POINT)
             {
                 BuySell = 0; // Long position
             }
         }
-        else if (LongShort == 0)
+        else if (LongShort == 0 && gOpenInterestInfo.openPosition >= 0)
         {
             if (gDayAmpAndKeyPrice.LongKey2 > 0 && curPrice >= gDayAmpAndKeyPrice.LongKey2 && curPrice <= gDayAmpAndKeyPrice.LongKey2 + STOP_POINT)
             {
