@@ -183,12 +183,12 @@ VOID StrategyStopFuturesLoss(string strUserId)
     double profitAndLoss = 0;
     double curPrice = 0;
 
-    long res = pSKOrderLib->GetOpenInterest(strUserId, 1);
+    // long res = pSKOrderLib->GetOpenInterest(strUserId, 1);
 
-    if (res != 0)
-    {
-        DEBUG(DEBUG_LEVEL_DEBUG, "pSKOrderLib->GetOpenInterest(strUserId, 1)=%ld", res);
-    }
+    // if (res != 0)
+    // {
+    //     DEBUG(DEBUG_LEVEL_DEBUG, "pSKOrderLib->GetOpenInterest(strUserId, 1)=%ld", res);
+    // }
 
     if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
     {
@@ -203,17 +203,18 @@ VOID StrategyStopFuturesLoss(string strUserId)
         LOG(DEBUG_LEVEL_DEBUG, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
         LOG(DEBUG_LEVEL_DEBUG, "avgCost: %f", gOpenInterestInfo.avgCost);
 
-        SHORT BuySell = -1;
+        SHORT CloseBuySell = -1;
 
         if (gOpenInterestInfo.buySell == "S")
         {
             profitAndLoss = (gOpenInterestInfo.avgCost - curPrice) * DOLLARS_PER_TICK;
-            BuySell = 1; // short position
+            CloseBuySell = 0; // short position
         }
-        else
+        else if (gOpenInterestInfo.buySell == "B")
+
         {
             profitAndLoss = (curPrice - gOpenInterestInfo.avgCost) * DOLLARS_PER_TICK;
-            BuySell = 0; // long position
+            CloseBuySell = 1; // long position
         }
 
         gOpenInterestInfo.profitAndLoss = profitAndLoss;
@@ -221,7 +222,7 @@ VOID StrategyStopFuturesLoss(string strUserId)
         LOG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
             curPrice, gOpenInterestInfo.avgCost, profitAndLoss);
 
-        if (profitAndLoss >= MAXIMUM_LOSS)
+        if (-profitAndLoss >= MAXIMUM_LOSS)
         {
             LOG(DEBUG_LEVEL_INFO, "STOP Loss at curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
                 curPrice, gOpenInterestInfo.avgCost, profitAndLoss);
@@ -232,7 +233,7 @@ VOID StrategyStopFuturesLoss(string strUserId)
             {
                 AutoOrder(x,
                           ORDER_CLOSE_POSITION, // Close
-                          BuySell               // Buy or sell
+                          CloseBuySell          // Buy or sell
                 );
             }
         }
