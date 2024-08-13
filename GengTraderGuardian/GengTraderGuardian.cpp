@@ -42,12 +42,12 @@ DWORD GetProcessIDByName(const std::wstring &processName)
 
 bool RestartProcess(const std::wstring &processPath)
 {
-    std::wcerr << L"Restart at path: " << processPath << std::endl;
+    std::wcerr << L"Attempting to restart at path: " << processPath << std::endl;
 
     // Ensure the process is started
     STARTUPINFOW si = {sizeof(si)};
     PROCESS_INFORMATION pi;
-    if (CreateProcessW(processPath.c_str(), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
+    if (CreateProcessW(processPath.c_str(), NULL, NULL, NULL, FALSE, DETACHED_PROCESS, NULL, NULL, &si, &pi))
     {
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
@@ -81,7 +81,7 @@ int main()
                 std::wcerr << L"Failed to restart " << processName << std::endl;
             }
         }
-        Sleep(5000); // Check every 5 seconds
+        Sleep(50000); // Check every 5 seconds
     }
 
     return 0;
