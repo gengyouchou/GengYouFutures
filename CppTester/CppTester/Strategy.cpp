@@ -184,12 +184,12 @@ VOID StrategyStopFuturesLoss(string strUserId)
     double profitAndLoss = 0;
     double curPrice = 0;
 
-    long res = pSKOrderLib->GetOpenInterest(strUserId, 1);
+    // long res = pSKOrderLib->GetOpenInterest(strUserId, 1);
 
-    if (res != 0)
-    {
-        DEBUG(DEBUG_LEVEL_DEBUG, "pSKOrderLib->GetOpenInterest(strUserId, 1)=%ld", res);
-    }
+    // if (res != 0)
+    // {
+    //     DEBUG(DEBUG_LEVEL_DEBUG, "pSKOrderLib->GetOpenInterest(strUserId, 1)=%ld", res);
+    // }
 
     if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
     {
@@ -480,7 +480,7 @@ VOID StrategyNewShortPosition(string strUserId)
 
 LONG CountBidOfferLongShort(LONG nStockidx)
 {
-    if (gCurServerTime[0] < 9 || gCurServerTime[0] >= 14)
+    if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 30) || gCurServerTime[0] >= 14)
     {
         return 0;
     }
