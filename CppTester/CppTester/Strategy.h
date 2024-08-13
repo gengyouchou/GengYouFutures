@@ -46,8 +46,7 @@ struct BID_OFFER_LONG_AND_SHORT
 
 VOID StrategyStopFuturesLoss(string strUserId);
 VOID StrategyClosePosition(string strUserId);
-VOID StrategyNewLongPosition(string strUserId);
-VOID StrategyNewShortPosition(string strUserId);
+VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort);
 LONG StrategyCaluBidOfferLongShort(VOID);
 VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG LongShort);
 

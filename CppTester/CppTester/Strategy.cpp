@@ -297,7 +297,7 @@ VOID StrategyClosePosition(string strUserId)
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
-VOID StrategyNewLongPosition(string strUserId)
+VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
@@ -319,32 +319,35 @@ VOID StrategyNewLongPosition(string strUserId)
         curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
     }
 
-    double IntersectionOfLongAndShort = static_cast<double>(gDayAmpAndKeyPrice.LongKey1 + gDayAmpAndKeyPrice.ShortKey1) / 2.0;
+    double CurAmp = 0;
 
-    if (curPrice > 0 && gOpenInterestInfo.openPosition <= 0)
+    if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) > 0)
+    {
+        double CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0] / 100.0;
+        double CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1] / 100.0;
+        CurAmp = CurHigh - CurLow;
+    }
+
+    double CostMovingAverage = static_cast<double>(gDayAmpAndKeyPrice.CostMovingAverage);
+
+    if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
     {
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
         SHORT BuySell = -1;
-        BOOL LongShortKStickMatch = FALSE;
 
-        if (gDayAmpAndKeyPrice.LongKey1 > 0 && curPrice >= IntersectionOfLongAndShort && curPrice <= gDayAmpAndKeyPrice.LongKey1 + STOP_POINT)
+        if (gDayAmpAndKeyPrice.LongKey1 > 0 &&
+            curPrice >= CostMovingAverage &&
+            curPrice <= gDayAmpAndKeyPrice.LongKey1 + STOP_POINT &&
+            CurAmp <= gDayAmpAndKeyPrice.SmallAmp)
         {
-
             BuySell = 0; // Long position
 
-            if (curPrice > OpenPrice)
-            {
-                LOG(DEBUG_LEVEL_INFO, "curPrice = %f > Open price: %f", curPrice, OpenPrice);
-                LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, IntersectionOfLongAndShort= %f",
-                    curPrice, IntersectionOfLongAndShort);
-                LongShortKStickMatch = TRUE;
-            }
-        }
+            LOG(DEBUG_LEVEL_INFO, "curPrice = %f > Open price: %f", curPrice, OpenPrice);
+            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, CostMovingAverage= %f",
+                curPrice, CostMovingAverage);
 
-        if (BuySell == 0 && LongShortKStickMatch == TRUE)
-        {
             vector<string> vec = {COMMODITY_OTHER};
 
             for (auto &x : vec)
@@ -359,6 +362,44 @@ VOID StrategyNewLongPosition(string strUserId)
                 gOpenInterestInfo.product = COMMODITY_OTHER;
                 gOpenInterestInfo.buySell = "B";
                 gOpenInterestInfo.openPosition += 1;
+                gOpenInterestInfo.avgCost = curPrice;
+            }
+        }
+    }
+
+    if (LongShort == 0 && gOpenInterestInfo.openPosition >= 0)
+    {
+        DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
+              curPrice, gOpenInterestInfo.avgCost);
+
+        SHORT BuySell = -1;
+
+        if (gDayAmpAndKeyPrice.ShortKey1 > 0 &&
+            curPrice <= CostMovingAverage &&
+            curPrice >= gDayAmpAndKeyPrice.ShortKey1 + STOP_POINT &&
+            CurAmp <= gDayAmpAndKeyPrice.SmallAmp)
+        {
+
+            BuySell = 1; // Short position
+
+            LOG(DEBUG_LEVEL_INFO, "curPrice = %f < Open price: %f", curPrice, OpenPrice);
+            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, CostMovingAverage= %f",
+                curPrice, CostMovingAverage);
+
+            vector<string> vec = {COMMODITY_OTHER};
+
+            for (auto &x : vec)
+            {
+                AutoOrder(x,
+                          ORDER_CLOSE_POSITION, // Close
+                          BuySell               // Buy or sell
+                );
+            }
+
+            {
+                gOpenInterestInfo.product = COMMODITY_OTHER;
+                gOpenInterestInfo.buySell = "S";
+                gOpenInterestInfo.openPosition -= 1;
                 gOpenInterestInfo.avgCost = curPrice;
             }
         }

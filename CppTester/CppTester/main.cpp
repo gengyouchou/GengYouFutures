@@ -308,11 +308,11 @@ void thread_main()
 
             if (longShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
             {
-                StrategyNewLongPosition(g_strUserId);
+                StrategyNewLongShortPosition(g_strUserId, 1);
             }
             else if (-longShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
             {
-                StrategyNewShortPosition(g_strUserId);
+                StrategyNewLongShortPosition(g_strUserId, 0);
             }
 
             // StrategyNewIntervalAmpLongShortPosition(g_strUserId, 0);
