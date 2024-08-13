@@ -39,8 +39,7 @@ extern COMMODITY_INFO gCommodtyInfo;
 
 DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
 BID_OFFER_LONG_AND_SHORT gBidOfferLongAndShort = {0};
-
-static LONG gBidOfferLongShort = 0;
+LONG gBidOfferLongShort = 0;
 
 void AutoKLineData(IN string ProductNum)
 {

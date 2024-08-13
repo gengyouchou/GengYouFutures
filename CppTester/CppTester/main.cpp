@@ -24,6 +24,7 @@ extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 extern COMMODITY_INFO gCommodtyInfo;
 extern DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice;
 extern OpenInterestInfo gOpenInterestInfo;
+extern LONG gBidOfferLongShort;
 
 // Define the global logger instance
 Logger logger("debug.log");
@@ -304,13 +305,11 @@ void thread_main()
             StrategyStopFuturesLoss(g_strUserId);
             StrategyClosePosition(g_strUserId);
 
-            LONG longShort = StrategyCaluBidOfferLongShort();
-
-            if (longShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
+            if (gBidOfferLongShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
             {
                 StrategyNewLongShortPosition(g_strUserId, 1);
             }
-            else if (-longShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
+            else if (-gBidOfferLongShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
             {
                 StrategyNewLongShortPosition(g_strUserId, 0);
             }
@@ -382,8 +381,14 @@ void thread_main()
 
             printf("=========================================\n");
 
+            printf("BidOfferLongShort : %ld\n", gBidOfferLongShort);
+
+            printf("=========================================\n");
+
             AutoBest5Long(gCommodtyInfo.TSMCIdxNo, "TSMC");
             AutoBest5Long(gCommodtyInfo.HHIdxNo, "HHP");
+
+            StrategyCaluBidOfferLongShort();
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU
