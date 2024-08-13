@@ -156,7 +156,7 @@ VOID AutoCalcuKeyPrices(LONG nStockidx)
         gDayAmpAndKeyPrice.ShortKey1 = CurHigh - gDayAmpAndKeyPrice.SmallestAmp;
     }
 
-    gCostMovingAverageVal = CountCostMovingAverage();
+    CountCostMovingAverage();
 }
 
 /**
@@ -398,7 +398,6 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort)
         {
             BuySell = 0; // Long position
 
-            LOG(DEBUG_LEVEL_INFO, "curPrice = %f > Open price: %f", curPrice, OpenPrice);
             LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f",
                 curPrice, gCostMovingAverageVal);
 
@@ -436,7 +435,6 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort)
 
             BuySell = 1; // Short position
 
-            LOG(DEBUG_LEVEL_INFO, "curPrice = %f < Open price: %f", curPrice, OpenPrice);
             LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f",
                 curPrice, gCostMovingAverageVal);
 

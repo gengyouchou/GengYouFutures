@@ -418,7 +418,7 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
 
         long Avg = static_cast<long>((cur.first + cur.second) / 2.0);
 
-        DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f, Avg: %ld", entry.first, cur.first, cur.second, Avg);
+        DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f, Avg: %ld", entry.first, cur.first, cur.second, Avg);
 
         gCostMovingAverage.push_back(Avg);
 
