@@ -58,43 +58,42 @@ void AutoKLineData(IN string ProductNum)
 
 DOUBLE CountCostMovingAverage(VOID)
 {
-    if (gCostMovingAverageVal == 0)
+    double LocalCostMovingAverageVal = 0;
+
+    double count = 0;
+
+    for (auto &Avg : gCostMovingAverage)
     {
-        double count = 0;
-        double LocalCostMovingAverageVal = 0;
+        DEBUG(DEBUG_LEVEL_DEBUG, "Avg = %ld", Avg);
 
-        for (auto &Avg : gCostMovingAverage)
-        {
-            DEBUG(DEBUG_LEVEL_INFO, "Avg = %ld", Avg);
+        ++count;
 
-            ++count;
-
-            LocalCostMovingAverageVal += static_cast<double>(Avg);
-        }
-
-        if (count != 0)
-        {
-            LocalCostMovingAverageVal /= count;
-        }
-
-        DEBUG(DEBUG_LEVEL_INFO, "LocalCostMovingAverageVal = %f", LocalCostMovingAverageVal);
-
-        gCostMovingAverageVal = LocalCostMovingAverageVal;
+        LocalCostMovingAverageVal += static_cast<double>(Avg);
     }
 
-    double curPrice = 0;
-
-    if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
+    if (count != 0)
     {
-        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
+        LocalCostMovingAverageVal /= count;
     }
 
-    if (curPrice != 0)
+    DEBUG(DEBUG_LEVEL_DEBUG, "LocalCostMovingAverageVal = %f", LocalCostMovingAverageVal);
+
+    double CurAvg = 0;
+
+    if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) != 0)
     {
-        return (gCostMovingAverageVal + curPrice) / 2.0;
+        long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0] / 100;
+        long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1] / 100;
+
+        CurAvg = static_cast<double>(CurHigh + CurLow) / 2.0;
     }
 
-    return gCostMovingAverageVal;
+    if (CurAvg != 0)
+    {
+        return (LocalCostMovingAverageVal + CurAvg) / 2.0;
+    }
+
+    return LocalCostMovingAverageVal;
 }
 
 VOID AutoCalcuKeyPrices(LONG nStockidx)
@@ -156,7 +155,7 @@ VOID AutoCalcuKeyPrices(LONG nStockidx)
         gDayAmpAndKeyPrice.ShortKey1 = CurHigh - gDayAmpAndKeyPrice.SmallestAmp;
     }
 
-    CountCostMovingAverage();
+    gCostMovingAverageVal = CountCostMovingAverage();
 }
 
 /**
