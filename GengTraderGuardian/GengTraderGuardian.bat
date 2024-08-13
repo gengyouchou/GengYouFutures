@@ -5,7 +5,8 @@ setlocal enabledelayedexpansion
 set "currentDrive=%~d0"
 
 :: 设置程序路径
-set "cppTesterPath=%currentDrive%GengYouFutures\CppTester\x64\Debug\CppTester.exe"
+set "cppTesterDir=%currentDrive%GengYouFutures\CppTester\x64\Debug"
+set "cppTesterPath=%cppTesterDir%\CppTester.exe"
 set "gengTraderGuardianPath=%currentDrive%GengYouFutures\GengTraderGuardian\GengTraderGuardian.exe"
 
 :restartCppTester
@@ -13,6 +14,8 @@ set "gengTraderGuardianPath=%currentDrive%GengYouFutures\GengTraderGuardian\Geng
 tasklist /FI "IMAGENAME eq CppTester.exe" | find /I "CppTester.exe" >nul
 if errorlevel 1 (
     echo CppTester.exe is not running. Restarting...
+    :: 更改工作目录为CppTester.exe所在目录
+    cd /d "%cppTesterDir%"
     start "" "%cppTesterPath%"
 ) else (
     echo CppTester.exe is already running.
@@ -44,6 +47,7 @@ timeout /t %waitSeconds% /nobreak >nul
 
 :: 重启CppTester.exe
 echo Restarting CppTester.exe at 08:30...
+cd /d "%cppTesterDir%"
 start "" "%cppTesterPath%"
 
 :: 返回主循环
