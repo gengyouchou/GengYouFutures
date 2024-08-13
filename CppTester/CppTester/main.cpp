@@ -305,13 +305,21 @@ void thread_main()
             StrategyStopFuturesLoss(g_strUserId);
             StrategyClosePosition(g_strUserId);
 
-            if (gBidOfferLongShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
+            if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 30) || gCurServerTime[0] >= 14)
             {
                 StrategyNewLongShortPosition(g_strUserId, 1);
-            }
-            else if (-gBidOfferLongShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
-            {
                 StrategyNewLongShortPosition(g_strUserId, 0);
+            }
+            else
+            {
+                if (gBidOfferLongShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
+                {
+                    StrategyNewLongShortPosition(g_strUserId, 1);
+                }
+                else if (-gBidOfferLongShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
+                {
+                    StrategyNewLongShortPosition(g_strUserId, 0);
+                }
             }
 
             // StrategyNewIntervalAmpLongShortPosition(g_strUserId, 0);
