@@ -63,3 +63,7 @@ VOID AutoCalcuKeyPrices(LONG nStockidx);
 
 #define ORDER_CLOSE_POSITION 1
 #define ORDER_NEW_POSITION 0
+
+// Mode
+
+#define TEST_MODE 1

@@ -184,12 +184,15 @@ VOID StrategyStopFuturesLoss(string strUserId)
     double profitAndLoss = 0;
     double curPrice = 0;
 
-    // long res = pSKOrderLib->GetOpenInterest(strUserId, 1);
+    if (TEST_MODE == 0)
+    {
+        long res = pSKOrderLib->GetOpenInterest(strUserId, 1);
 
-    // if (res != 0)
-    // {
-    //     DEBUG(DEBUG_LEVEL_DEBUG, "pSKOrderLib->GetOpenInterest(strUserId, 1)=%ld", res);
-    // }
+        if (res != 0)
+        {
+            DEBUG(DEBUG_LEVEL_DEBUG, "pSKOrderLib->GetOpenInterest(strUserId, 1)=%ld", res);
+        }
+    }
 
     if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
     {
@@ -236,6 +239,17 @@ VOID StrategyStopFuturesLoss(string strUserId)
                           ORDER_CLOSE_POSITION, // Close
                           CloseBuySell          // Buy or sell
                 );
+            }
+
+            if (TEST_MODE == 1)
+            {
+                gOpenInterestInfo = {
+                    "", // product
+                    "", // Buy/Sell Indicator
+                    0,  // openPosition 0
+                    0,  // dayTradePosition 0
+                    0.0 // avgCost 0.0
+                };
             }
         }
     }
