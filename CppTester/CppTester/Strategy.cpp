@@ -389,7 +389,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort)
 
         if (gDayAmpAndKeyPrice.ShortKey1 > 0 &&
             curPrice <= CostMovingAverage &&
-            curPrice >= gDayAmpAndKeyPrice.ShortKey1 + STOP_POINT &&
+            curPrice >= gDayAmpAndKeyPrice.ShortKey1 - STOP_POINT &&
             CurAmp <= gDayAmpAndKeyPrice.SmallAmp)
         {
 
