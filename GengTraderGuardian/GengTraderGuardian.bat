@@ -1,43 +1,50 @@
 @echo off
-setlocal
+setlocal enabledelayedexpansion
 
-:: 设置变量
-set "processName=CppTester.exe"
-set "checkInterval=10"  :: 检查间隔时间（秒）
+:: 获取当前盘符
+set "currentDrive=%~d0"
 
-:: 获取当前目录
-set "currentDir=%~dp0"
+:: 设置程序路径
+set "cppTesterPath=%currentDrive%GengYouFutures\CppTester\x64\Debug\CppTester.exe"
+set "gengTraderGuardianPath=%currentDrive%GengYouFutures\GengTraderGuardian\GengTraderGuardian.exe"
 
-:: 获取当前驱动器
-for %%d in ("%currentDir%") do set "driveLetter=%%d"
+:restartCppTester
+:: 检查CppTester.exe是否在运行
+tasklist /FI "IMAGENAME eq CppTester.exe" | find /I "CppTester.exe" >nul
+if errorlevel 1 (
+    echo CppTester.exe is not running. Restarting...
+    start "" "%cppTesterPath%"
+) else (
+    echo CppTester.exe is already running.
+)
 
-:: 设置进程路径
-set "processPath=%driveLetter%\GengYouFutures\CppTester\x64\Debug\%processName%"
+:: 每10秒检查一次
+timeout /t 10 /nobreak >nul
+goto restartCppTester
 
-:: 每 10 秒检查进程是否运行
-:checkLoop
-    :: 检查进程是否正在运行
-    tasklist /FI "IMAGENAME eq %processName%" 2>NUL | find /I /N "%processName%" >NUL
-    if "%ERRORLEVEL%"=="0" (
-        :: 进程正在运行
-        echo %processName% is running.
-    ) else (
-        :: 进程没有运行，尝试启动
-        echo %processName% is not running. Restarting...
-        if exist "%processPath%" (
-            start "" "%processPath%"
-            if "%ERRORLEVEL%"=="0" (
-                echo %processName% restarted successfully.
-            ) else (
-                echo Failed to restart %processName%.
-            )
-        ) else (
-            echo The path %processPath% does not exist.
-        )
-    )
+:: 每天早上8:30重启CppTester.exe
+:: 计算到8:30的等待时间
+:restartDaily
+set "now=%time%"
+set "target=08:30:00.00"
 
-    :: 等待 10 秒后再次检查
-    timeout /t %checkInterval% /nobreak >NUL
-    goto checkLoop
+:: 比较时间
+for /F "tokens=1-4 delims=:." %%a in ("%now%") do set /A nowSeconds=(((%%a*60)+%%b)*60)+%%c
+for /F "tokens=1-4 delims=:." %%a in ("%target%") do set /A targetSeconds=(((%%a*60)+%%b)*60)+%%c
 
-endlocal
+set /A waitSeconds=targetSeconds-nowSeconds
+
+if %waitSeconds% LEQ 0 (
+    :: 计算负数等待时间，表示已经过了8:30，需要等到第二天
+    set /A waitSeconds=86400-nowSeconds+targetSeconds
+)
+
+echo Waiting %waitSeconds% seconds until 08:30
+timeout /t %waitSeconds% /nobreak >nul
+
+:: 重启CppTester.exe
+echo Restarting CppTester.exe at 08:30...
+start "" "%cppTesterPath%"
+
+:: 返回主循环
+goto restartCppTester
