@@ -112,6 +112,8 @@ VOID AutoCalcuKeyPrices(LONG nStockidx)
         gDayAmpAndKeyPrice.ShortKey3 = CurHigh - gDayAmpAndKeyPrice.AvgAmp;
         gDayAmpAndKeyPrice.ShortKey2 = CurHigh - gDayAmpAndKeyPrice.SmallAmp;
         gDayAmpAndKeyPrice.ShortKey1 = CurHigh - gDayAmpAndKeyPrice.SmallestAmp;
+
+        gDayAmpAndKeyPrice.CostMovingAverage = (gDayAmpAndKeyPrice.LongKey1 + gDayAmpAndKeyPrice.ShortKey1) / 2;
     }
 }
 

@@ -341,8 +341,9 @@ void thread_main()
 
                 long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
                 long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
+                long CostMovingAverage = gDayAmpAndKeyPrice.CostMovingAverage;
 
-                printf("Open: %ld, CurHigh: %ld, CurLow: %ld, ", gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow);
+                printf("Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, ", gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage);
 
                 printf("CurAmp : %d\n", CurHigh - CurLow);
             }

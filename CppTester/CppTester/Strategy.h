@@ -33,6 +33,8 @@ struct DAY_AMP_AND_KEY_PRICE
     long ShortKey3;
     long ShortKey4;
     long ShortKey5;
+
+    long CostMovingAverage;
 };
 
 struct BID_OFFER_LONG_AND_SHORT
