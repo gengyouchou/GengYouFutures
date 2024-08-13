@@ -392,8 +392,8 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort)
         SHORT BuySell = -1;
 
         if (gDayAmpAndKeyPrice.LongKey1 > 0 &&
-            curPrice >= gCostMovingAverageVal &&
-            curPrice <= gDayAmpAndKeyPrice.LongKey1 + STOP_POINT &&
+            curPrice >= gCostMovingAverageVal + ACTIVITY_POINT &&
+            curPrice <= gDayAmpAndKeyPrice.LongKey1 + ACTIVITY_POINT &&
             CurAmp <= gDayAmpAndKeyPrice.SmallAmp)
         {
             BuySell = 0; // Long position
@@ -428,8 +428,8 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort)
         SHORT BuySell = -1;
 
         if (gDayAmpAndKeyPrice.ShortKey1 > 0 &&
-            curPrice <= gCostMovingAverageVal &&
-            curPrice >= gDayAmpAndKeyPrice.ShortKey1 - STOP_POINT &&
+            curPrice <= gCostMovingAverageVal - ACTIVITY_POINT &&
+            curPrice >= gDayAmpAndKeyPrice.ShortKey1 - ACTIVITY_POINT &&
             CurAmp <= gDayAmpAndKeyPrice.SmallAmp)
         {
 
@@ -577,14 +577,14 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG LongShort)
 
         if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
         {
-            if (gDayAmpAndKeyPrice.ShortKey2 > 0 && curPrice <= gDayAmpAndKeyPrice.ShortKey2 && curPrice >= gDayAmpAndKeyPrice.ShortKey1 - STOP_POINT)
+            if (gDayAmpAndKeyPrice.ShortKey2 > 0 && curPrice <= gDayAmpAndKeyPrice.ShortKey2 && curPrice >= gDayAmpAndKeyPrice.ShortKey1 - ACTIVITY_POINT)
             {
                 BuySell = 0; // Long position
             }
         }
         else if (LongShort == 0 && gOpenInterestInfo.openPosition >= 0)
         {
-            if (gDayAmpAndKeyPrice.LongKey2 > 0 && curPrice >= gDayAmpAndKeyPrice.LongKey2 && curPrice <= gDayAmpAndKeyPrice.LongKey2 + STOP_POINT)
+            if (gDayAmpAndKeyPrice.LongKey2 > 0 && curPrice >= gDayAmpAndKeyPrice.LongKey2 && curPrice <= gDayAmpAndKeyPrice.LongKey2 + ACTIVITY_POINT)
             {
                 BuySell = 1; // Short position
             }

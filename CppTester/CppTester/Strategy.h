@@ -54,7 +54,7 @@ VOID AutoCalcuKeyPrices(LONG nStockidx);
 
 #define MAXIMUM_LOSS 3000
 #define DOLLARS_PER_TICK 10
-#define STOP_POINT 100
+#define ACTIVITY_POINT 50
 
 #define BID_OFFER_LONG_SHORT_THRESHOLD 100
 
