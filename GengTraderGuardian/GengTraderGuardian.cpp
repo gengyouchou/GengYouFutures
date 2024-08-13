@@ -42,7 +42,7 @@ DWORD GetProcessIDByName(const std::wstring &processName)
 
 bool RestartProcess(const std::wstring &processPath)
 {
-    std::wcerr << L"Failed to restart " << L" at path: " << processPath << std::endl;
+    std::wcerr << L"Restart at path: " << processPath << std::endl;
 
     // Ensure the process is started
     STARTUPINFOW si = {sizeof(si)};
@@ -59,7 +59,12 @@ bool RestartProcess(const std::wstring &processPath)
 int main()
 {
     std::wstring processName = L"CppTester.exe";
-    std::filesystem::path processPath = std::filesystem::current_path() / "CppTester" / "x64" / "Debug" / processName;
+
+    // get current root
+    std::filesystem::path currentPath = std::filesystem::current_path();
+    std::wstring driveLetter = currentPath.root_name().wstring();
+
+    std::filesystem::path processPath = driveLetter + L"\\GengYouFutures\\CppTester\\x64\\Debug\\" + processName;
 
     while (true)
     {
