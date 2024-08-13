@@ -25,6 +25,7 @@ extern COMMODITY_INFO gCommodtyInfo;
 extern DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice;
 extern OpenInterestInfo gOpenInterestInfo;
 extern LONG gBidOfferLongShort;
+extern double gCostMovingAverageVal;
 
 // Define the global logger instance
 Logger logger("debug.log");
@@ -348,7 +349,7 @@ void thread_main()
 
                 long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
                 long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
-                long CostMovingAverage = gDayAmpAndKeyPrice.CostMovingAverage;
+                long CostMovingAverage = static_cast<long>(CountCostMovingAverage());
 
                 printf("Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, ", gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage);
 

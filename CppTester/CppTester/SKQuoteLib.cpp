@@ -11,6 +11,7 @@
 
 std::unordered_map<long, std::array<long, 3>> gCurCommHighLowPoint; // {High, Low, Open}
 std::deque<long> gDaysKlineDiff;
+std::deque<long> gCostMovingAverage;
 
 std::map<string, pair<double, double>> gDaysCommHighLowPoint;
 std::map<string, pair<pair<double, double>, pair<double, double>>> gNightCommHighLowPoint;
@@ -400,6 +401,30 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
             {
                 gDaysKlineDiff.pop_front();
             }
+        }
+    }
+
+    // Calculate CostMovingAverage
+
+    for (const auto &entry : gNightCommHighLowPoint) // need ordered by date  from the past to the present
+    {
+        auto cur = entry.second.second;
+
+        if (cur.first == DBL_MIN || cur.second == DBL_MAX)
+        {
+            // Not every day there is an end of night trading
+            continue;
+        }
+
+        long Avg = static_cast<long>((cur.first + cur.second) / 2.0);
+
+        DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f, Avg: %ld", entry.first, cur.first, cur.second, Avg);
+
+        gCostMovingAverage.push_back(Avg);
+
+        if (gCostMovingAverage.size() > COST_DAY_MA)
+        {
+            gCostMovingAverage.pop_front();
         }
     }
 }

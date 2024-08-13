@@ -33,8 +33,6 @@ struct DAY_AMP_AND_KEY_PRICE
     long ShortKey3;
     long ShortKey4;
     long ShortKey5;
-
-    long CostMovingAverage;
 };
 
 struct BID_OFFER_LONG_AND_SHORT
@@ -49,6 +47,7 @@ VOID StrategyClosePosition(string strUserId);
 VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort);
 LONG StrategyCaluBidOfferLongShort(VOID);
 VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG LongShort);
+DOUBLE CountCostMovingAverage(VOID);
 
 LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);
 VOID AutoCalcuKeyPrices(LONG nStockidx);

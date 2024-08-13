@@ -8,6 +8,7 @@
 #define COMMODITY_TX_MAIN "TX00"
 
 #define DayMA 20
+#define COST_DAY_MA 5
 
 struct COMMODITY_INFO
 {

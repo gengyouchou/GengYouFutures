@@ -27,6 +27,7 @@ extern CSKOrderLib *pSKOrderLib;
 extern SHORT gCurServerTime[3];
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 extern std::deque<long> gDaysKlineDiff;
+extern std::deque<long> gCostMovingAverage;
 extern std::unordered_map<long, std::array<long, 3>> gCurCommHighLowPoint;
 extern std::unordered_map<long, long> gCurCommPrice;
 extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
@@ -40,6 +41,7 @@ extern COMMODITY_INFO gCommodtyInfo;
 DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
 BID_OFFER_LONG_AND_SHORT gBidOfferLongAndShort = {0};
 LONG gBidOfferLongShort = 0;
+double gCostMovingAverageVal = 0;
 
 void AutoKLineData(IN string ProductNum)
 {
@@ -52,6 +54,47 @@ void AutoKLineData(IN string ProductNum)
     pSKCenterLib->PrintfCodeMessage("Quote", "RequestKLine", g_nCode);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
+}
+
+DOUBLE CountCostMovingAverage(VOID)
+{
+    if (gCostMovingAverageVal == 0)
+    {
+        double count = 0;
+        double LocalCostMovingAverageVal = 0;
+
+        for (auto &Avg : gCostMovingAverage)
+        {
+            DEBUG(DEBUG_LEVEL_INFO, "Avg = %ld", Avg);
+
+            ++count;
+
+            LocalCostMovingAverageVal += static_cast<double>(Avg);
+        }
+
+        if (count != 0)
+        {
+            LocalCostMovingAverageVal /= count;
+        }
+
+        DEBUG(DEBUG_LEVEL_INFO, "LocalCostMovingAverageVal = %f", LocalCostMovingAverageVal);
+
+        gCostMovingAverageVal = LocalCostMovingAverageVal;
+    }
+
+    double curPrice = 0;
+
+    if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
+    {
+        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
+    }
+
+    if (curPrice != 0)
+    {
+        return (gCostMovingAverageVal + curPrice) / 2.0;
+    }
+
+    return gCostMovingAverageVal;
 }
 
 VOID AutoCalcuKeyPrices(LONG nStockidx)
@@ -111,9 +154,9 @@ VOID AutoCalcuKeyPrices(LONG nStockidx)
         gDayAmpAndKeyPrice.ShortKey3 = CurHigh - gDayAmpAndKeyPrice.AvgAmp;
         gDayAmpAndKeyPrice.ShortKey2 = CurHigh - gDayAmpAndKeyPrice.SmallAmp;
         gDayAmpAndKeyPrice.ShortKey1 = CurHigh - gDayAmpAndKeyPrice.SmallestAmp;
-
-        gDayAmpAndKeyPrice.CostMovingAverage = (gDayAmpAndKeyPrice.LongKey1 + gDayAmpAndKeyPrice.ShortKey1) / 2;
     }
+
+    gCostMovingAverageVal = CountCostMovingAverage();
 }
 
 /**
@@ -341,8 +384,6 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort)
         CurAmp = CurHigh - CurLow;
     }
 
-    double CostMovingAverage = static_cast<double>(gDayAmpAndKeyPrice.CostMovingAverage);
-
     if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
     {
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
@@ -351,15 +392,15 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort)
         SHORT BuySell = -1;
 
         if (gDayAmpAndKeyPrice.LongKey1 > 0 &&
-            curPrice >= CostMovingAverage &&
+            curPrice >= gCostMovingAverageVal &&
             curPrice <= gDayAmpAndKeyPrice.LongKey1 + STOP_POINT &&
             CurAmp <= gDayAmpAndKeyPrice.SmallAmp)
         {
             BuySell = 0; // Long position
 
             LOG(DEBUG_LEVEL_INFO, "curPrice = %f > Open price: %f", curPrice, OpenPrice);
-            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, CostMovingAverage= %f",
-                curPrice, CostMovingAverage);
+            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f",
+                curPrice, gCostMovingAverageVal);
 
             vector<string> vec = {COMMODITY_OTHER};
 
@@ -388,7 +429,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort)
         SHORT BuySell = -1;
 
         if (gDayAmpAndKeyPrice.ShortKey1 > 0 &&
-            curPrice <= CostMovingAverage &&
+            curPrice <= gCostMovingAverageVal &&
             curPrice >= gDayAmpAndKeyPrice.ShortKey1 - STOP_POINT &&
             CurAmp <= gDayAmpAndKeyPrice.SmallAmp)
         {
@@ -396,8 +437,8 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort)
             BuySell = 1; // Short position
 
             LOG(DEBUG_LEVEL_INFO, "curPrice = %f < Open price: %f", curPrice, OpenPrice);
-            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, CostMovingAverage= %f",
-                curPrice, CostMovingAverage);
+            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f",
+                curPrice, gCostMovingAverageVal);
 
             vector<string> vec = {COMMODITY_OTHER};
 
