@@ -1,3 +1,4 @@
+#include <filesystem> // C++17 filesystem library for relative paths
 #include <iostream>
 #include <string>
 
@@ -41,6 +42,8 @@ DWORD GetProcessIDByName(const std::wstring &processName)
 
 bool RestartProcess(const std::wstring &processPath)
 {
+    std::wcerr << L"Failed to restart " << L" at path: " << processPath << std::endl;
+
     // Ensure the process is started
     STARTUPINFOW si = {sizeof(si)};
     PROCESS_INFORMATION pi;
@@ -56,7 +59,7 @@ bool RestartProcess(const std::wstring &processPath)
 int main()
 {
     std::wstring processName = L"CppTester.exe";
-    std::wstring processPath = L"C:\\GengYouFutures\\CppTester\\x64\\Debug\\CppTester.exe";
+    std::filesystem::path processPath = std::filesystem::current_path() / "CppTester" / "x64" / "Debug" / processName;
 
     while (true)
     {
@@ -64,7 +67,7 @@ int main()
         if (processID == 0)
         {
             // Process is not running, restart it
-            if (RestartProcess(processPath))
+            if (RestartProcess(processPath.wstring()))
             {
                 std::wcout << L"Restarted " << processName << std::endl;
             }
