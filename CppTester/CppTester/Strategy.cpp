@@ -481,6 +481,11 @@ VOID StrategyNewShortPosition(string strUserId)
 
 LONG CountBidOfferLongShort(LONG nStockidx)
 {
+    if (gCurServerTime[0] < 9 || gCurServerTime[0] >= 14)
+    {
+        return 0;
+    }
+
     long countLong = 0, countShort = 0;
 
     long totalBid = 0;
