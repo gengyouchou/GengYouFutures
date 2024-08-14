@@ -26,19 +26,23 @@ if errorlevel 1 (
     start "" "%cppTesterPath%"
     :: 输出启动信息
     echo Started %cppTesterPath%
-) else (
-    echo CppTester.exe is already running.
 )
 
 :: 每10秒检查一次
 timeout /t 10 /nobreak >nul
 goto restartCppTester
 
-:: 每天早上8:30重启CppTester.exe
+:: 每天早上8:30和下午2:30重启CppTester.exe
 :restartDaily
-:: 计算到8:30的等待时间
+call :restartAtTime "08:30:00" "Morning restart"
+call :restartAtTime "14:30:00" "Afternoon restart"
+goto restartCppTester
+
+:restartAtTime
+:: 参数1: 目标时间 (格式: HH:MM:SS)
+:: 参数2: 重启原因
 set "now=%time%"
-set "target=08:30:00.00"
+set "target=%~1"
 
 :: 比较时间
 for /F "tokens=1-4 delims=:." %%a in ("%now%") do set /A nowSeconds=(((%%a*60)+%%b)*60)+%%c
@@ -47,18 +51,17 @@ for /F "tokens=1-4 delims=:." %%a in ("%target%") do set /A targetSeconds=(((%%a
 set /A waitSeconds=targetSeconds-nowSeconds
 
 if %waitSeconds% LEQ 0 (
-    :: 计算负数等待时间，表示已经过了8:30，需要等到第二天
+    :: 计算负数等待时间，表示已经过了目标时间，需要等到第二天
     set /A waitSeconds=86400-nowSeconds+targetSeconds
 )
 
-echo Waiting %waitSeconds% seconds until 08:30
+echo Waiting %waitSeconds% seconds until %target% (%~2)
 timeout /t %waitSeconds% /nobreak >nul
 
 :: 重启CppTester.exe
-echo Restarting CppTester.exe at 08:30...
+echo Restarting CppTester.exe at %target% due to %~2...
 cd /d "%cppTesterDir%"
 echo Changing directory to %cppTesterDir%
 start "" "%cppTesterPath%"
 
-:: 返回主循环
-goto restartCppTester
+exit /b
