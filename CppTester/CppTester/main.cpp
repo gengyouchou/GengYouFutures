@@ -277,6 +277,13 @@ void thread_main()
     AutoQuoteTicks("2330", 2);
     AutoQuoteTicks("2317", 3);
 
+    while (gCurServerTime[0] < 0)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
+    }
+
+    DEBUG(DEBUG_LEVEL_INFO, "[ServerTime: %d: %d: %d]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+
     long PreHigh = 0, PreLow = 0;
 
     while (true)
@@ -284,11 +291,6 @@ void thread_main()
         if (gCurServerTime[0] < 0)
         {
             continue;
-
-            if (gCurServerTime[0] >= 0)
-            {
-                DEBUG(DEBUG_LEVEL_INFO, "[ServerTime: %d: %d: %d]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
-            }
         }
 
         if (PreHigh == 0 || PreLow == 0)
