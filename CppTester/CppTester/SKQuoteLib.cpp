@@ -15,6 +15,7 @@ std::deque<long> gCostMovingAverage;
 
 std::map<string, pair<double, double>> gDaysCommHighLowPoint;
 std::map<string, pair<pair<double, double>, pair<double, double>>> gNightCommHighLowPoint;
+std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint;
 
 std::unordered_map<long, long> gCurCommPrice;
 std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
@@ -562,10 +563,11 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
     char *szStockNo = _com_util::ConvertBSTRToString(skStock.bstrStockNo);
     char *szStockName = _com_util::ConvertBSTRToString(skStock.bstrStockName);
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex= %ld, szStockNo: %s, szStockName : %s, nDealTime: %ld Open: %d, High: %d, Low: %d, Close: %d, Simulate: %d",
+    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex= %ld, szStockNo: %s, szStockName : %s, nTradingDay: %ld, nDealTime: %ld, Open: %d, High: %d, Low: %d, Close: %d, Simulate: %d",
           nStockIndex,
           szStockNo,
           szStockName,
+          skStock.nTradingDay,
           skStock.nDealTime,
           skStock.nOpen,
           skStock.nHigh,
@@ -828,7 +830,7 @@ void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate)
 void processTradingData(const string &datetime, double openPrice, double highPrice, double lowPrice, double closePrice, int volume)
 {
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
+    DEBUG(DEBUG_LEVEL_INFO, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
 
     // Extract the date and time from the datetime string
     string date = datetime.substr(0, 10);
