@@ -509,6 +509,11 @@ LONG CountBidOfferLongShort(LONG nStockidx)
         return 0;
     }
 
+    if (gBest5BidOffer[nStockidx].size() < 10)
+    {
+        return 0;
+    }
+
     long countLong = 0, countShort = 0;
 
     long totalBid = 0;
