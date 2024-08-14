@@ -541,14 +541,28 @@ LONG CountBidOfferLongShort(LONG nStockidx)
         totalOffer += gBest5BidOffer[nStockidx][i].second;
     }
 
+    long nClose = 0, nQty = 0;
+
+    if (gBest5BidOffer[nStockidx].size() >= 11)
+    {
+        nClose = gBest5BidOffer[nStockidx][10].first;
+        nQty = gBest5BidOffer[nStockidx][10].second;
+    }
+
     if (totalBid * 3 <= totalOffer * 2)
     {
-        ++countLong;
+        if (nClose > 0 && nClose >= gBest5BidOffer[nStockidx][5].first)
+        {
+            ++countLong;
+        }
     }
 
     if (totalOffer * 3 <= totalBid * 2)
     {
-        --countShort;
+        if (nClose > 0 && nClose <= gBest5BidOffer[nStockidx][0].first)
+        {
+            --countShort;
+        }
     }
 
     LOG(DEBUG_LEVEL_DEBUG, "countLong = %ld, countShort=%ld", countLong, countShort);
