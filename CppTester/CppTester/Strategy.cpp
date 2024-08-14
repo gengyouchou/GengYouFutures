@@ -389,6 +389,17 @@ VOID StrategyClosePosition(string strUserId)
                           CloseBuySell          // Buy or sell
                 );
             }
+
+            if (TEST_MODE == 1)
+            {
+                gOpenInterestInfo = {
+                    "", // product
+                    "", // Buy/Sell Indicator
+                    0,  // openPosition 0
+                    0,  // dayTradePosition 0
+                    0.0 // avgCost 0.0
+                };
+            }
         }
     }
 
