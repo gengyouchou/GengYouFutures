@@ -50,7 +50,7 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG LongShort);
 DOUBLE CountCostMovingAverage(VOID);
 
 LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);
-VOID AutoCalcuKeyPrices(LONG nStockidx);
+VOID AutoCalcuKeyPrices(VOID);
 
 #define MAXIMUM_LOSS 3000
 #define DOLLARS_PER_TICK 10

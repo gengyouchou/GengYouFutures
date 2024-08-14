@@ -25,6 +25,7 @@ extern COMMODITY_INFO gCommodtyInfo;
 extern DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice;
 extern OpenInterestInfo gOpenInterestInfo;
 extern LONG gBidOfferLongShort;
+extern double gCostMovingAverageVal;
 
 // Define the global logger instance
 Logger logger("debug.log");
@@ -296,7 +297,9 @@ void thread_main()
             MtxCommodtyInfo = gCommodtyInfo.MTXIdxNoAM;
         }
 
-        AutoCalcuKeyPrices(MtxCommodtyInfo);
+        AutoCalcuKeyPrices();
+        
+        gCostMovingAverageVal = CountCostMovingAverage();
 
         auto now = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClearTime);

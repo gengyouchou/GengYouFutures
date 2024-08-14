@@ -78,12 +78,43 @@ DOUBLE CountCostMovingAverage(VOID)
 
     DEBUG(DEBUG_LEVEL_DEBUG, "LocalCostMovingAverageVal = %f", LocalCostMovingAverageVal);
 
+    LONG MtxCommodtyInfo = 0;
+
+    double yesterdayAvg = 0;
+
+    if (gCurServerTime[0] < 8 || gCurServerTime[0] > 14)
+    {
+        MtxCommodtyInfo = gCommodtyInfo.MTXIdxNo;
+
+        if (gCurCommHighLowPoint.count(MtxCommodtyInfo) != 0)
+        {
+            long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM][0] / 100;
+            long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM][1] / 100;
+
+            yesterdayAvg = static_cast<double>(CurHigh + CurLow) / 2.0;
+        }
+    }
+    else
+    {
+        MtxCommodtyInfo = gCommodtyInfo.MTXIdxNoAM;
+
+        if (gCurCommHighLowPoint.count(MtxCommodtyInfo) != 0)
+        {
+            long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0] / 100;
+            long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1] / 100;
+
+            yesterdayAvg = static_cast<double>(CurHigh + CurLow) / 2.0;
+        }
+    }
+
+    LocalCostMovingAverageVal = (LocalCostMovingAverageVal + yesterdayAvg) / 2.0;
+
     double CurAvg = 0;
 
-    if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) != 0)
+    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) != 0)
     {
-        long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0] / 100;
-        long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1] / 100;
+        long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
+        long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
 
         CurAvg = static_cast<double>(CurHigh + CurLow) / 2.0;
     }
@@ -96,8 +127,22 @@ DOUBLE CountCostMovingAverage(VOID)
     return LocalCostMovingAverageVal;
 }
 
-VOID AutoCalcuKeyPrices(LONG nStockidx)
+VOID AutoCalcuKeyPrices(VOID)
 {
+
+    // Determine whether to use day quotation or full day and night quotation
+
+    LONG MtxCommodtyInfo = 0;
+
+    if (gCurServerTime[0] < 8 || gCurServerTime[0] > 14)
+    {
+        MtxCommodtyInfo = gCommodtyInfo.MTXIdxNo;
+    }
+    else
+    {
+        MtxCommodtyInfo = gCommodtyInfo.MTXIdxNoAM;
+    }
+
     if (gDaysKlineDiff.size() < 20)
     {
         AutoKLineData(COMMODITY_TX_MAIN);
@@ -109,7 +154,7 @@ VOID AutoCalcuKeyPrices(LONG nStockidx)
 
         for (int i = 0; i < gDaysKlineDiff.size(); ++i)
         {
-            DEBUG(DEBUG_LEVEL_INFO, "Diff = %ld ", gDaysKlineDiff[i]);
+            DEBUG(DEBUG_LEVEL_DEBUG, "Diff = %ld ", gDaysKlineDiff[i]);
 
             accu += gDaysKlineDiff[i];
 
@@ -135,12 +180,12 @@ VOID AutoCalcuKeyPrices(LONG nStockidx)
         gDayAmpAndKeyPrice.LargestAmp = LargestAmp;
     }
 
-    if (gCurCommHighLowPoint.count(nStockidx) > 0)
+    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
     {
-        long CurHigh = gCurCommHighLowPoint[nStockidx][0] / 100;
-        long CurLow = gCurCommHighLowPoint[nStockidx][1] / 100;
+        long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
+        long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
 
-        DEBUG(DEBUG_LEVEL_DEBUG, "MTXIdxNo: %ld. High: %ld, Low: %ld", nStockidx, CurHigh, CurLow);
+        DEBUG(DEBUG_LEVEL_DEBUG, "MTXIdxNo: %ld. High: %ld, Low: %ld", MtxCommodtyInfo, CurHigh, CurLow);
 
         gDayAmpAndKeyPrice.LongKey5 = CurLow + gDayAmpAndKeyPrice.LargestAmp;
         gDayAmpAndKeyPrice.LongKey4 = CurLow + gDayAmpAndKeyPrice.LargerAmp;
@@ -154,8 +199,6 @@ VOID AutoCalcuKeyPrices(LONG nStockidx)
         gDayAmpAndKeyPrice.ShortKey2 = CurHigh - gDayAmpAndKeyPrice.SmallAmp;
         gDayAmpAndKeyPrice.ShortKey1 = CurHigh - gDayAmpAndKeyPrice.SmallestAmp;
     }
-
-    gCostMovingAverageVal = CountCostMovingAverage();
 }
 
 /**
