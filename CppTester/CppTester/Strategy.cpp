@@ -541,12 +541,12 @@ LONG CountBidOfferLongShort(LONG nStockidx)
         totalOffer += gBest5BidOffer[nStockidx][i].second;
     }
 
-    if (totalBid * 2 <= totalOffer)
+    if (totalBid * 3 <= totalOffer * 2)
     {
         ++countLong;
     }
 
-    if (totalOffer * 2 <= totalBid)
+    if (totalOffer * 3 <= totalBid * 2)
     {
         --countShort;
     }

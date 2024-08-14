@@ -584,6 +584,15 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
     DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
+    if (gBest5BidOffer[nStockIndex].size() == 10)
+    {
+        gBest5BidOffer[nStockIndex].push_back({nClose, nQty});
+    }
+    else
+    {
+        gBest5BidOffer[nStockIndex][10] = {nClose, nQty};
+    }
+
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
