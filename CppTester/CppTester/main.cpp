@@ -108,8 +108,6 @@ void AutoQuoteTicks(IN string ProductNum, short sPageNo)
 
 void AutoBest5Long(LONG ProductIdxNo, string ProductName)
 {
-    long curPrice = 0;
-
     if (gCurCommHighLowPoint.count(ProductIdxNo) > 0)
     {
         long CurHigh = gCurCommHighLowPoint[ProductIdxNo][0];
@@ -118,13 +116,10 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
 
         DEBUG(DEBUG_LEVEL_DEBUG, "IdxNo: %ld. High: %ld, Low: %ld", ProductIdxNo, CurHigh, CurLow);
 
-        curPrice = gCurCommPrice[ProductIdxNo];
-
         printf("%s : %ld, ", ProductName.c_str(), gCurCommPrice[ProductIdxNo]);
 
         printf("Open: %ld, CurHigh: %ld, CurLow: %ld\n", Open, CurHigh, CurLow);
     }
-
     if (gBest5BidOffer[ProductIdxNo].size() >= 10)
     {
 
@@ -139,63 +134,35 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
                           gBest5BidOffer[ProductIdxNo][6].second +
                           gBest5BidOffer[ProductIdxNo][5].second;
 
-        string Offer1Deal = "", Offer2Deal = "", Offer3Deal = "", Offer4Deal = "", Offer5Deal = "";
-        string Bid1Deal = "", Bid2Deal = "", Bid3Deal = "", Bid4Deal = "", Bid5Deal = "";
+        long nClose = 0, nQty = 0;
 
-        if (curPrice == gBest5BidOffer[ProductIdxNo][9].first)
+        if (gBest5BidOffer[ProductIdxNo].size() >= 11)
         {
-            Offer5Deal = "*";
-        }
-        else if (curPrice == gBest5BidOffer[ProductIdxNo][8].first)
-        {
-            Offer4Deal = "*";
-        }
-        else if (curPrice == gBest5BidOffer[ProductIdxNo][7].first)
-        {
-            Offer3Deal = "*";
-        }
-        else if (curPrice == gBest5BidOffer[ProductIdxNo][6].first)
-        {
-            Offer2Deal = "*";
-        }
-        else if (curPrice == gBest5BidOffer[ProductIdxNo][5].first)
-        {
-            Offer1Deal = "*";
-        }
-        else if (curPrice == gBest5BidOffer[ProductIdxNo][0].first)
-        {
-            Bid1Deal = "*";
-        }
-        else if (curPrice == gBest5BidOffer[ProductIdxNo][1].first)
-        {
-            Bid2Deal = "*";
-        }
-        else if (curPrice == gBest5BidOffer[ProductIdxNo][2].first)
-        {
-            Bid3Deal = "*";
-        }
-        else if (curPrice == gBest5BidOffer[ProductIdxNo][3].first)
-        {
-            Bid4Deal = "*";
-        }
-        else if (curPrice == gBest5BidOffer[ProductIdxNo][4].first)
-        {
-            Bid5Deal = "*";
+            nClose = gBest5BidOffer[ProductIdxNo][10].first;
+            nQty = gBest5BidOffer[ProductIdxNo][10].second;
         }
 
         printf("Total Offer: [%ld]\n", TotalOffer);
 
-        printf("Ask5: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][9].first, gBest5BidOffer[ProductIdxNo][9].second, Offer5Deal.c_str());
-        printf("Ask4: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][8].first, gBest5BidOffer[ProductIdxNo][8].second, Offer4Deal.c_str());
-        printf("Ask3: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][7].first, gBest5BidOffer[ProductIdxNo][7].second, Offer3Deal.c_str());
-        printf("Ask2: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][6].first, gBest5BidOffer[ProductIdxNo][6].second, Offer2Deal.c_str());
-        printf("Ask1: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][5].first, gBest5BidOffer[ProductIdxNo][5].second, Offer1Deal.c_str());
+        printf("Ask5: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][9].first, gBest5BidOffer[ProductIdxNo][9].second);
+        printf("Ask4: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][8].first, gBest5BidOffer[ProductIdxNo][8].second);
+        printf("Ask3: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][7].first, gBest5BidOffer[ProductIdxNo][7].second);
+        printf("Ask2: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][6].first, gBest5BidOffer[ProductIdxNo][6].second);
+        printf("Ask1: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][5].first, gBest5BidOffer[ProductIdxNo][5].second);
+        if (nClose > 0 && nClose >= gBest5BidOffer[ProductIdxNo][5].first)
+        {
+            printf("Close: [%ld]: [%ld]\n", nClose, nQty);
+        }
         printf("=========================================\n");
-        printf("Bid1: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][0].first, gBest5BidOffer[ProductIdxNo][0].second, Bid1Deal.c_str());
-        printf("Bid2: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][1].first, gBest5BidOffer[ProductIdxNo][1].second, Bid2Deal.c_str());
-        printf("Bid3: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][2].first, gBest5BidOffer[ProductIdxNo][2].second, Bid3Deal.c_str());
-        printf("Bid4: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][3].first, gBest5BidOffer[ProductIdxNo][3].second, Bid4Deal.c_str());
-        printf("Bid5: [%ld]: [%ld]%s\n", gBest5BidOffer[ProductIdxNo][4].first, gBest5BidOffer[ProductIdxNo][4].second, Bid5Deal.c_str());
+        if (nClose > 0 && nClose <= gBest5BidOffer[ProductIdxNo][0].first)
+        {
+            printf("Close: [%ld]: [%ld]\n", nClose, nQty);
+        }
+        printf("Bid1: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][0].first, gBest5BidOffer[ProductIdxNo][0].second);
+        printf("Bid2: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][1].first, gBest5BidOffer[ProductIdxNo][1].second);
+        printf("Bid3: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][2].first, gBest5BidOffer[ProductIdxNo][2].second);
+        printf("Bid4: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][3].first, gBest5BidOffer[ProductIdxNo][3].second);
+        printf("Bid5: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][4].first, gBest5BidOffer[ProductIdxNo][4].second);
 
         printf("Total Bid:   [%ld]\n", TotalBid);
 
