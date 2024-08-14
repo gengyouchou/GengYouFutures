@@ -86,7 +86,7 @@ DOUBLE CountCostMovingAverage(VOID)
     {
         MtxCommodtyInfo = gCommodtyInfo.MTXIdxNo;
 
-        if (gCurCommHighLowPoint.count(MtxCommodtyInfo) != 0)
+        if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM) != 0)
         {
             long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM][0] / 100;
             long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM][1] / 100;
@@ -98,7 +98,7 @@ DOUBLE CountCostMovingAverage(VOID)
     {
         MtxCommodtyInfo = gCommodtyInfo.MTXIdxNoAM;
 
-        if (gCurCommHighLowPoint.count(MtxCommodtyInfo) != 0)
+        if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) != 0)
         {
             long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0] / 100;
             long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1] / 100;

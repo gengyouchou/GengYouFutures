@@ -277,10 +277,39 @@ void thread_main()
     AutoQuoteTicks("2330", 2);
     AutoQuoteTicks("2317", 3);
 
+    long PreHigh = 0, PreLow = 0;
+
     while (true)
     {
         if (gCurServerTime[0] < 0)
         {
+            continue;
+        }
+
+        if (PreHigh == 0 || PreLow == 0)
+        {
+            if (gCurServerTime[0] < 8 || gCurServerTime[0] > 14)
+            {
+                if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM) != 0)
+                {
+                    PreHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM][0] / 100;
+                    PreLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM][1] / 100;
+                }
+            }
+            else
+            {
+                if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) != 0)
+                {
+                    PreHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0] / 100;
+                    PreLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1] / 100;
+                }
+            }
+
+            if (PreHigh != 0 && PreLow != 0)
+            {
+                DEBUG(DEBUG_LEVEL_INFO, "PreHigh: %ld, PreLow: %ld", PreHigh, PreLow);
+            }
+
             continue;
         }
 
@@ -298,7 +327,7 @@ void thread_main()
         }
 
         AutoCalcuKeyPrices();
-        
+
         gCostMovingAverageVal = CountCostMovingAverage();
 
         auto now = std::chrono::steady_clock::now();
