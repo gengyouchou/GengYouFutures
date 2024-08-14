@@ -284,6 +284,11 @@ void thread_main()
         if (gCurServerTime[0] < 0)
         {
             continue;
+
+            if (gCurServerTime[0] >= 0)
+            {
+                DEBUG(DEBUG_LEVEL_INFO, "[ServerTime: %d: %d: %d]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+            }
         }
 
         if (PreHigh == 0 || PreLow == 0)
@@ -370,8 +375,8 @@ void thread_main()
             //
             lastClearTime = now;
 
-            printf("[CurMtxPrice: %ld, ", gCurCommPrice[MtxCommodtyInfo]);
-            printf("ServerTime: %d: %d: %d ], ", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+            printf("[CurMtxPrice: %ld], ", gCurCommPrice[MtxCommodtyInfo]);
+            printf("[ServerTime: %d: %d: %d], ", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
             printf("[TSEA prices: %ld, Valume: %ld: Buy: %ld Sell: %ld]\n",
                    gCurCommPrice[gCommodtyInfo.TSEAIdxNo], gCurTaiexInfo[0][1], gCurTaiexInfo[0][2], gCurTaiexInfo[0][3]);
 
