@@ -283,6 +283,8 @@ void thread_main()
             continue;
         }
 
+        // Determine whether to use day quotation or full day and night quotation
+
         LONG MtxCommodtyInfo = 0;
 
         if (gCurServerTime[0] < 8 || gCurServerTime[0] > 14)

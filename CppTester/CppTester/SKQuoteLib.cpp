@@ -14,7 +14,6 @@ std::deque<long> gDaysKlineDiff;
 std::deque<long> gCostMovingAverage;
 
 std::map<string, pair<double, double>> gDaysCommHighLowPoint;
-std::map<string, pair<pair<double, double>, pair<double, double>>> gNightCommHighLowPoint;
 std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint;
 
 std::unordered_map<long, long> gCurCommPrice;
@@ -382,15 +381,9 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
     {
         DEBUG(DEBUG_LEVEL_INFO, "isNightSession");
 
-        for (const auto &entry : gNightCommHighLowPoint) // need ordered by date  from the past to the present
+        for (const auto &entry : gDaysNightAllCommHighLowPoint) // need ordered by date  from the past to the present
         {
-            auto cur = entry.second.second;
-
-            if (cur.first == DBL_MIN || cur.second == DBL_MAX)
-            {
-                // Not every day there is an end of night trading
-                continue;
-            }
+            auto cur = entry.second;
 
             long diff = static_cast<long>(cur.first - cur.second);
 
@@ -407,15 +400,9 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
 
     // Calculate CostMovingAverage
 
-    for (const auto &entry : gNightCommHighLowPoint) // need ordered by date  from the past to the present
+    for (const auto &entry : gDaysNightAllCommHighLowPoint) // need ordered by date  from the past to the present
     {
-        auto cur = entry.second.second;
-
-        if (cur.first == DBL_MIN || cur.second == DBL_MAX)
-        {
-            // Not every day there is an end of night trading
-            continue;
-        }
+        auto cur = entry.second;
 
         long Avg = static_cast<long>((cur.first + cur.second) / 2.0);
 
@@ -847,23 +834,26 @@ void processTradingData(const string &datetime, double openPrice, double highPri
         {
             gDaysCommHighLowPoint[date] = {highPrice, lowPrice};
         }
-        else
-        {
-            auto &entry = gDaysCommHighLowPoint[date];
-            entry.first = max(entry.first, highPrice);
-            entry.second = min(entry.second, lowPrice);
-        }
+
+        auto &entry = gDaysCommHighLowPoint[date];
+        entry.first = max(entry.first, highPrice);
+        entry.second = min(entry.second, lowPrice);
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "Date08_45: %s, High: %f, Low: %f",
+              date, entry.first, entry.second);
     }
 
     {
         // Night session
 
-        if (gNightCommHighLowPoint.count(date) == 0)
+        if (gDaysNightAllCommHighLowPoint.count(date) == 0)
         {
-            gNightCommHighLowPoint[date] = {{DBL_MIN, DBL_MAX}, {highPrice, lowPrice}};
+            gDaysNightAllCommHighLowPoint[date] = {highPrice, lowPrice};
         }
 
-        auto &entry = gNightCommHighLowPoint[date].second;
+        auto &entry = gDaysNightAllCommHighLowPoint[date];
         entry.first = max(entry.first, highPrice);
         entry.second = min(entry.second, lowPrice);
 
