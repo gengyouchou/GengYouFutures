@@ -360,7 +360,7 @@ void thread_main()
 
                 printf("Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, ", gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage);
 
-                printf("CurAmp : %d\n", CurHigh - CurLow);
+                printf("CurAvg: %ld, CurAmp : %ld\n", (CurHigh + CurLow) / 2, CurHigh - CurLow);
             }
 
             printf("=========================================\n");
