@@ -1,12 +1,10 @@
-#include <filesystem> // C++17 filesystem library for relative paths
+#include <filesystem>
 #include <iostream>
 #include <string>
-
 #include <windows.h>
-
 #include <tlhelp32.h>
+#include <ctime>
 
-// Convert CHAR array to std::wstring
 std::wstring CharToWstring(const char *charArray)
 {
     int size = MultiByteToWideChar(CP_ACP, 0, charArray, -1, NULL, 0);
@@ -27,7 +25,7 @@ DWORD GetProcessIDByName(const std::wstring &processName)
         {
             do
             {
-                std::wstring exeFile = CharToWstring(pe32.szExeFile); // Convert CHAR array to std::wstring
+                std::wstring exeFile = CharToWstring(pe32.szExeFile);
                 if (processName == exeFile)
                 {
                     processID = pe32.th32ProcessID;
@@ -40,39 +38,52 @@ DWORD GetProcessIDByName(const std::wstring &processName)
     return processID;
 }
 
-bool RestartProcess(const std::wstring &processPath)
+void CloseProcess(const DWORD processID)
 {
-    std::wcerr << L"Attempting to restart at path: " << processPath << std::endl;
-
-    // Ensure the process is started
-    STARTUPINFOW si = {sizeof(si)};
-    PROCESS_INFORMATION pi;
-    if (CreateProcessW(processPath.c_str(), NULL, NULL, NULL, FALSE, DETACHED_PROCESS, NULL, NULL, &si, &pi))
+    HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, processID);
+    if (hProcess)
     {
-        CloseHandle(pi.hProcess);
-        CloseHandle(pi.hThread);
-        return true; // Process started successfully
+        TerminateProcess(hProcess, 0);
+        CloseHandle(hProcess);
     }
-    return false; // Failed to start the process
+}
+
+bool IsTimeToRestart()
+{
+    time_t now = time(0);
+    tm *localTime = localtime(&now);
+
+    // Check if current time is 8:45 AM or 3:00 PM
+    if ((localTime->tm_hour == 8 && localTime->tm_min == 30) ||
+        (localTime->tm_hour == 14 && localTime->tm_min == 45))
+    {
+        return true;
+    }
+    return false;
 }
 
 int main()
 {
     std::wstring processName = L"CppTester.exe";
-
-    // get current root
     std::filesystem::path currentPath = std::filesystem::current_path();
     std::wstring driveLetter = currentPath.root_name().wstring();
-
     std::filesystem::path processPath = driveLetter + L"\\GengYouFutures\\CppTester\\x64\\Debug\\" + processName;
 
     while (true)
     {
         DWORD processID = GetProcessIDByName(processName);
-        if (processID == 0)
+        if (IsTimeToRestart())
         {
-            // Process is not running, restart it
-            if (RestartProcess(processPath.wstring()))
+            if (processID != 0)
+            {
+                CloseProcess(processID);
+                std::wcout << L"Closed " << processName << L" at restart time" << std::endl;
+            }
+            Sleep(60000); // Wait 1 minute to avoid multiple restarts within the same minute
+        }
+        else if (processID == 0)
+        {
+            if (CreateProcessW(processPath.c_str(), NULL, NULL, NULL, FALSE, DETACHED_PROCESS, NULL, NULL, NULL, NULL))
             {
                 std::wcout << L"Restarted " << processName << std::endl;
             }
@@ -81,8 +92,7 @@ int main()
                 std::wcerr << L"Failed to restart " << processName << std::endl;
             }
         }
-        Sleep(50000); // Check every 5 seconds
+        Sleep(5000); // Check every 5 seconds
     }
-
     return 0;
 }
