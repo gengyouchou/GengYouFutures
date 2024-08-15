@@ -51,24 +51,38 @@ void CloseProcess(const DWORD processID)
 bool IsTimeToClose()
 {
     time_t now = time(0);
-    tm *localTime = localtime(&now);
+    tm localTime;
+    localtime_s(&localTime, &now);
 
-    // Check if current time is 8:45 AM or 3:00 PM
-    if ((localTime->tm_hour == 8 && localTime->tm_min == 30) ||
-        (localTime->tm_hour == 14 && localTime->tm_min == 45))
+    // Check if current time is 8:30 AM or 3:00 PM
+    if ((localTime.tm_hour == 8 && localTime.tm_min == 30) ||
+        (localTime.tm_hour == 15 && localTime.tm_min == 0))
     {
         return true;
     }
     return false;
 }
 
+void PrintCurrentTime()
+{
+    time_t now = time(0);
+    tm localTime;
+    localtime_s(&localTime, &now);
+    std::wcout << L"Current time: "
+               << localTime.tm_hour << L":"
+               << localTime.tm_min << L":"
+               << localTime.tm_sec << std::endl;
+}
+
 int main()
 {
     std::wstring processName = L"CppTester.exe";
+    int printCounter = 0;
 
     while (true)
     {
         DWORD processID = GetProcessIDByName(processName);
+
         if (IsTimeToClose())
         {
             if (processID != 0)
@@ -78,6 +92,13 @@ int main()
             }
             Sleep(60000); // Wait 1 minute to avoid multiple closures within the same minute
         }
+
+        if (++printCounter >= 2) // Print time every 10 seconds
+        {
+            PrintCurrentTime();
+            printCounter = 0;
+        }
+
         Sleep(5000); // Check every 5 seconds
     }
     return 0;
