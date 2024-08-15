@@ -445,7 +445,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort)
         SHORT BuySell = -1;
 
         if (gDayAmpAndKeyPrice.LongKey1 > 0 &&
-            curPrice >= gCostMovingAverageVal + ACTIVITY_POINT &&
+            curPrice >= gCostMovingAverageVal &&
             curPrice <= gDayAmpAndKeyPrice.LongKey1 + ACTIVITY_POINT &&
             CurAmp <= gDayAmpAndKeyPrice.SmallAmp)
         {
@@ -481,7 +481,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort)
         SHORT BuySell = -1;
 
         if (gDayAmpAndKeyPrice.ShortKey1 > 0 &&
-            curPrice <= gCostMovingAverageVal - ACTIVITY_POINT &&
+            curPrice <= gCostMovingAverageVal &&
             curPrice >= gDayAmpAndKeyPrice.ShortKey1 - ACTIVITY_POINT &&
             CurAmp <= gDayAmpAndKeyPrice.SmallAmp)
         {
