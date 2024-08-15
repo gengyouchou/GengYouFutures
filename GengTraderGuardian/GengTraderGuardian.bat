@@ -22,26 +22,20 @@ echo GengTraderGuardian Path: %gengTraderGuardianPath%
 tasklist /FI "IMAGENAME eq CppTester.exe" | find /I "CppTester.exe" >nul
 if errorlevel 1 (
     echo CppTester.exe is not running. Restarting...
-    :: 更改工作目录为CppTester.exe所在目录
-    cd /d "%cppTesterDir%"
-    echo Changing directory to %cppTesterDir%
-    :: 启动CppTester.exe
-    start "" "%cppTesterPath%"
+    :: 使用PowerShell以管理员身份启动CppTester.exe
+    powershell -Command "Start-Process -FilePath '%cppTesterPath%' -Verb RunAs"
     :: 输出启动信息
-    echo Started %cppTesterPath%
+    echo Started %cppTesterPath% as Administrator
 )
 
 :: 检查GengTraderGuardian.exe是否在运行
 tasklist /FI "IMAGENAME eq GengTraderGuardian.exe" | find /I "GengTraderGuardian.exe" >nul
 if errorlevel 1 (
     echo GengTraderGuardian.exe is not running. Restarting...
-    :: 更改工作目录为GengTraderGuardian.exe所在目录
-    cd /d "%gengTraderGuardianDir%"
-    echo Changing directory to %gengTraderGuardianDir%
-    :: 启动GengTraderGuardian.exe
-    start "" "%gengTraderGuardianPath%"
+    :: 使用PowerShell以管理员身份启动GengTraderGuardian.exe
+    powershell -Command "Start-Process -FilePath '%gengTraderGuardianPath%' -Verb RunAs"
     :: 输出启动信息
-    echo Started %gengTraderGuardianPath%
+    echo Started %gengTraderGuardianPath% as Administrator
 )
 
 :: 每10秒检查一次
