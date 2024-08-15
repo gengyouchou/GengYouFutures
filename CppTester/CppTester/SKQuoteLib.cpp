@@ -584,6 +584,11 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
     DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
+    if (gBest5BidOffer[nStockIndex].size() < 10)
+    {
+        return;
+    }
+
     if (gBest5BidOffer[nStockIndex].size() == 10)
     {
         gBest5BidOffer[nStockIndex].push_back({nClose, nQty});
@@ -643,18 +648,24 @@ void CSKQuoteLib::OnNotifyBest5LONG(
 
     if (nSimulate == 0)
     {
-        gBest5BidOffer[nStockidx] = {
-            {0, 0},
-            {0, 0},
-            {0, 0},
-            {0, 0},
-            {0, 0},
-            {0, 0},
-            {0, 0},
-            {0, 0},
-            {0, 0},
-            {0, 0},
-        };
+
+        if (gBest5BidOffer.count(nStockidx) <= 0)
+        {
+            gBest5BidOffer[nStockidx] = {
+                {0, 0},
+                {0, 0},
+                {0, 0},
+                {0, 0},
+                {0, 0},
+                {0, 0},
+                {0, 0},
+                {0, 0},
+                {0, 0},
+                {0, 0},
+                {0, 0}
+
+            };
+        }
 
         gBest5BidOffer[nStockidx][0] = {nBestBid1, nBestBidQty1};
         gBest5BidOffer[nStockidx][1] = {nBestBid2, nBestBidQty2};
