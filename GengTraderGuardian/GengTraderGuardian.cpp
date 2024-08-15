@@ -34,14 +34,41 @@ void PrintAllProcesses()
     }
 }
 
-void CloseProcessByPath(const std::wstring &processPath)
+void TerminateProcessByPath(const std::wstring &processPath)
 {
-    std::wstring modifiedPath = processPath;
-    std::replace(modifiedPath.begin(), modifiedPath.end(), L'\\', L'/');
-
-    std::wstring command = L"wmic process where ExecutablePath='" + modifiedPath + L"' delete";
-    _wsystem(command.c_str());
-    std::wcout << L"Attempted to close process at: " << processPath << std::endl;
+    HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hProcessSnap != INVALID_HANDLE_VALUE)
+    {
+        PROCESSENTRY32 pe32;
+        pe32.dwSize = sizeof(PROCESSENTRY32);
+        if (Process32First(hProcessSnap, &pe32))
+        {
+            do
+            {
+                HANDLE hProcess = OpenProcess(PROCESS_TERMINATE | PROCESS_QUERY_INFORMATION, FALSE, pe32.th32ProcessID);
+                if (hProcess)
+                {
+                    wchar_t currentProcessPath[MAX_PATH];
+                    if (GetModuleFileNameExW(hProcess, NULL, currentProcessPath, MAX_PATH))
+                    {
+                        if (processPath == currentProcessPath)
+                        {
+                            if (TerminateProcess(hProcess, 0))
+                            {
+                                std::wcout << L"Successfully terminated process: " << pe32.szExeFile << L" Path: " << processPath << std::endl;
+                            }
+                            else
+                            {
+                                std::wcerr << L"Failed to terminate process: " << pe32.szExeFile << L" Path: " << processPath << std::endl;
+                            }
+                        }
+                    }
+                    CloseHandle(hProcess);
+                }
+            } while (Process32Next(hProcessSnap, &pe32));
+        }
+        CloseHandle(hProcessSnap);
+    }
 }
 
 bool IsTimeToClose()
@@ -50,13 +77,12 @@ bool IsTimeToClose()
     tm localTime;
     localtime_s(&localTime, &now);
 
-    // if ((localTime.tm_hour == 8 && localTime.tm_min == 30) ||
-    //     (localTime.tm_hour == 15 && localTime.tm_min == 0) ||
-    //     (localTime.tm_hour == 20 && localTime.tm_min == 1))
-    // {
-    //     return true;
-    // }
-    // return false;
+    if ((localTime.tm_hour == 8 && localTime.tm_min == 30) ||
+        (localTime.tm_hour == 15 && localTime.tm_min == 0))
+    {
+        return true;
+    }
+    return false;
 
     return true;
 }
@@ -82,9 +108,9 @@ int main()
     {
         if (IsTimeToClose())
         {
-            std::wcout << L"Time's up. Attempting to close process at: " << processPath << std::endl;
-            PrintAllProcesses();
-            CloseProcessByPath(processPath);
+            std::wcout << L"Time's up. Attempting to terminate process at: " << processPath << std::endl;
+            // PrintAllProcesses();
+            TerminateProcessByPath(processPath);
             Sleep(60000);
         }
 
