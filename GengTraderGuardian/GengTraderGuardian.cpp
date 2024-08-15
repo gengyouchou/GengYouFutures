@@ -48,7 +48,7 @@ void CloseProcess(const DWORD processID)
     }
 }
 
-bool IsTimeToRestart()
+bool IsTimeToClose()
 {
     time_t now = time(0);
     tm *localTime = localtime(&now);
@@ -65,32 +65,18 @@ bool IsTimeToRestart()
 int main()
 {
     std::wstring processName = L"CppTester.exe";
-    std::filesystem::path currentPath = std::filesystem::current_path();
-    std::wstring driveLetter = currentPath.root_name().wstring();
-    std::filesystem::path processPath = driveLetter + L"\\GengYouFutures\\CppTester\\x64\\Debug\\" + processName;
 
     while (true)
     {
         DWORD processID = GetProcessIDByName(processName);
-        if (IsTimeToRestart())
+        if (IsTimeToClose())
         {
             if (processID != 0)
             {
                 CloseProcess(processID);
-                std::wcout << L"Closed " << processName << L" at restart time" << std::endl;
+                std::wcout << L"Closed " << processName << L" at the designated time" << std::endl;
             }
-            Sleep(60000); // Wait 1 minute to avoid multiple restarts within the same minute
-        }
-        else if (processID == 0)
-        {
-            if (CreateProcessW(processPath.c_str(), NULL, NULL, NULL, FALSE, DETACHED_PROCESS, NULL, NULL, NULL, NULL))
-            {
-                std::wcout << L"Restarted " << processName << std::endl;
-            }
-            else
-            {
-                std::wcerr << L"Failed to restart " << processName << std::endl;
-            }
+            Sleep(60000); // Wait 1 minute to avoid multiple closures within the same minute
         }
         Sleep(5000); // Check every 5 seconds
     }
