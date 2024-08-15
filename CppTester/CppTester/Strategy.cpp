@@ -551,18 +551,23 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
     if (totalBid * 3 <= totalOffer * 2)
     {
-        if (nClose > 0 && nClose >= gBest5BidOffer[nStockidx][5].first)
-        {
-            ++countLong;
-        }
+        ++countLong;
+    }
+
+    if (nClose > 0 && nClose <= gBest5BidOffer[nStockidx][0].first && nQty >= 10)
+    {
+        --countLong;
     }
 
     if (totalOffer * 3 <= totalBid * 2)
     {
-        if (nClose > 0 && nClose <= gBest5BidOffer[nStockidx][0].first)
-        {
-            --countShort;
-        }
+
+        --countShort;
+    }
+
+    if (nClose > 0 && nClose >= gBest5BidOffer[nStockidx][5].first && nQty >= 10)
+    {
+        ++countShort;
     }
 
     LOG(DEBUG_LEVEL_DEBUG, "countLong = %ld, countShort=%ld", countLong, countShort);
