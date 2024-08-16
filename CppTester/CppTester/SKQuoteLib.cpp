@@ -205,8 +205,6 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
 
     case 8:
     {
-        // Your code for cases 8, 9, 10, and 17 here
-        // ...
 
         SHORT sMarketNo = V_I2(&(pdispparams->rgvarg)[5]);
         LONG nTime = V_I4(&(pdispparams->rgvarg)[3]);
@@ -282,15 +280,6 @@ long CSKQuoteLib::RequestKLine(string strStockNo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
     BSTR BstrStockNo = _bstr_t(strStockNo.c_str());
-
-    // string StrOutType = "1";
-    // BSTR BstrOutType = _bstr_t(StrOutType.c_str());
-
-    // string StartDateStr = "20240716";
-    // BSTR StartDate = _bstr_t(StartDateStr.c_str());
-
-    // string EndDateStr = "20240719";
-    // BSTR EndDate = _bstr_t(EndDateStr.c_str());
 
     long res = 0;
 
@@ -710,17 +699,15 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 
     string strStockNo = string(_bstr_t(bstrStockNo));
 
-    // cout << "OnNotifyKLineData : " << endl;
-    // cout << "strStockNo : " << strStockNo << endl;
-
     DEBUG(DEBUG_LEVEL_DEBUG, "strStockNo= %s", strStockNo);
 
     string strData = string(_bstr_t(bstrData));
 
-    // cout << "strData : " << strData;
-
-    // (// :, , , , , )
+    // (Date, Open Price, High Price, Low Price, Close Price, Volume)
+    // For example, product code (1108)
+    // 2021/8/2, 12.95, 13.00, 12.80, 12.95, 291
     // 2024/07/30 16:16, 22256.00, 22259.00, 22250.00, 22255.00, 389
+    // The prices retrieved in the new output function have been processed to include decimal points and are provided by the Solace K-Line server.
 
     DEBUG(DEBUG_LEVEL_DEBUG, "strData= %s", strData);
 

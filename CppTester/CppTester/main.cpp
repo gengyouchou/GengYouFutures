@@ -246,7 +246,7 @@ void thread_main()
 
     while (gCurServerTime[0] < 0)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
     }
 
     DEBUG(DEBUG_LEVEL_INFO, "[ServerTime: %d: %d: %d]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
@@ -429,22 +429,15 @@ int main()
 
     init();
 
-    // printf("");
-    // cin >> g_strUserId;
-
     g_strUserId = "F129305651";
 
-    // printf("");
     string pwd;
     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
     DWORD mode = 0;
     GetConsoleMode(hStdin, &mode);
     SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
     pwd = "youlose1A!";
-    // cout << endl;
-
-    // cout << g_strUserId << " " << pwd << endl;
-
+   
     g_nCode = pSKCenterLib->Login(g_strUserId.c_str(), pwd.c_str());
 
     pSKCenterLib->PrintfCodeMessage("Center", "Login", g_nCode);
