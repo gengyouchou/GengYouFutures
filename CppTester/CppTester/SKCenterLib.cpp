@@ -1,8 +1,8 @@
 ﻿#include "SKCenterLib.h"
 #include <iostream>
 #include <string>
-#include <vector>
 #include <typeinfo>
+#include <vector>
 using namespace std;
 
 vector<string> UserAccount;
@@ -81,6 +81,5 @@ void CSKCenterLib::PrintfCodeMessage(string Features, string FunctionName, long 
 // Events
 void CSKCenterLib::OnTimer(LONG nTime)
 {
-    cout << endl
-         << "Now Time : " << nTime << endl;
+    DEBUG(DEBUG_LEVEL_DEBUG, "Now Time : ", nTime);
 }

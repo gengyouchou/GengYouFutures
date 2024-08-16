@@ -116,21 +116,21 @@ long CSKReplyLib::SKReplyLib_SolaceCloseByID(string strUserID)
 // Event
 void CSKReplyLib::OnConnect(string strUserID, long nCode)
 {
-	cout << "iOnConnect" << strUserID << ", " << nCode << endl;
+	cout << "OnConnect" << strUserID << ", " << nCode << endl;
 }
 void CSKReplyLib::OnDisconnect(string strUserID, long nCode)
 {
-	cout << "iOnConnect" << strUserID << ", " << nCode << endl;
+	cout << "OnConnect" << strUserID << ", " << nCode << endl;
 }
 void CSKReplyLib::OnComplete()
 {
-	cout << "iOnConnect" << endl;
+	cout << "OnConnect" << endl;
 }
 
 void CSKReplyLib::OnReplyMessage(string strMessage, string strLoginID, short *sConfirmCode)
 {
 	*sConfirmCode = -1;
-	cout << "iOnReplyMessagejLogin ID : " << strLoginID << ", Message : " << strMessage << endl;
+	cout << "OnReplyMessage Login ID : " << strLoginID << ", Message : " << strMessage << endl;
 }
 
 void CSKReplyLib::OnNewData(string strData)
