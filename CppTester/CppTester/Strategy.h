@@ -42,11 +42,11 @@ struct BID_OFFER_LONG_AND_SHORT
     LONG MediaTek;
 };
 
-VOID StrategyStopFuturesLoss(string strUserId);
-VOID StrategyClosePosition(string strUserId);
-VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort);
+VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo);
+VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo);
+VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort);
 LONG StrategyCaluBidOfferLongShort(VOID);
-VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG LongShort);
+VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort);
 DOUBLE CountCostMovingAverage(VOID);
 
 LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);

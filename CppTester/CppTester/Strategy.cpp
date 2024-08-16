@@ -259,7 +259,7 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
     return g_nCode;
 }
 
-VOID StrategyStopFuturesLoss(string strUserId)
+VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
@@ -279,9 +279,9 @@ VOID StrategyStopFuturesLoss(string strUserId)
         }
     }
 
-    if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
+    if (gCurCommPrice.count(MtxCommodtyInfo) != 0)
     {
-        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
+        curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
     }
 
     if (gOpenInterestInfo.product != "" && gOpenInterestInfo.avgCost != 0 && curPrice > 0)
@@ -342,15 +342,15 @@ VOID StrategyStopFuturesLoss(string strUserId)
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
-VOID StrategyClosePosition(string strUserId)
+VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
     double curPrice = 0;
 
-    if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
+    if (gCurCommPrice.count(MtxCommodtyInfo) != 0)
     {
-        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
+        curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
     }
 
     if (gOpenInterestInfo.product != "" && gOpenInterestInfo.avgCost != 0 && curPrice > 0)
@@ -406,35 +406,35 @@ VOID StrategyClosePosition(string strUserId)
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
-VOID StrategyNewLongShortPosition(string strUserId, LONG LongShort)
+VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
     double OpenPrice = 0;
 
-    if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) == 0)
+    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) == 0)
     {
         return;
     }
     else
     {
-        OpenPrice = static_cast<double>(gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][2]) / 100.0;
+        OpenPrice = static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][2]) / 100.0;
     }
 
     double curPrice = 0;
 
-    if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
+    if (gCurCommPrice.count(MtxCommodtyInfo) != 0)
     {
-        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
+        curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
     }
 
     double CurAvg = 0;
     double CurAmp = 0;
 
-    if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) > 0)
+    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
     {
-        double CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0] / 100.0;
-        double CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1] / 100.0;
+        double CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100.0;
+        double CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100.0;
         CurAmp = CurHigh - CurLow;
         CurAvg = (CurHigh + CurLow) / 2;
     }
@@ -615,27 +615,27 @@ LONG StrategyCaluBidOfferLongShort(VOID)
     return gBidOfferLongShort;
 }
 
-VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG LongShort)
+VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
     double CurAmp = 0;
 
-    if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) == 0)
+    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) == 0)
     {
         return;
     }
     else
     {
-        CurAmp = static_cast<double>(gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0]) / 100.0 -
-                 static_cast<double>(gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1]) / 100.0;
+        CurAmp = static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][0]) / 100.0 -
+                 static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][1]) / 100.0;
     }
 
     double curPrice = 0;
 
-    if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
+    if (gCurCommPrice.count(MtxCommodtyInfo) != 0)
     {
-        curPrice = static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
+        curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
     }
 
     BOOL IntervalAmpKStickMatch = FALSE;
