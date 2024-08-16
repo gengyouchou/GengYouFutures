@@ -52,9 +52,11 @@ DOUBLE CountCostMovingAverage(VOID);
 LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);
 VOID AutoCalcuKeyPrices(VOID);
 
+// Strategy
+
 #define MAXIMUM_LOSS 3000
-#define DOLLARS_PER_TICK 10
 #define ACTIVITY_POINT 100
+#define SWING_POINTS 20
 
 #define BID_OFFER_LONG_SHORT_THRESHOLD 100
 
@@ -62,6 +64,7 @@ VOID AutoCalcuKeyPrices(VOID);
 
 #define ORDER_CLOSE_POSITION 1
 #define ORDER_NEW_POSITION 0
+#define DOLLARS_PER_TICK 10
 
 // Mode
 

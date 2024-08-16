@@ -462,6 +462,15 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
         CurAvg = (CurHigh + CurLow) / 2;
     }
 
+    DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, CurAvg= %f, gCostMovingAverageVal=%f",
+          curPrice, CurAvg, gCostMovingAverageVal);
+
+    if (abs(CurAvg - gCostMovingAverageVal) <= SWING_POINTS ||
+        CurAmp > gDayAmpAndKeyPrice.SmallAmp)
+    {
+        return;
+    }
+
     if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
     {
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
@@ -472,8 +481,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
         if (curPrice >= gCostMovingAverageVal &&
             curPrice >= CurAvg &&
             gDayAmpAndKeyPrice.LongKey1 > 0 &&
-            curPrice <= gDayAmpAndKeyPrice.LongKey1 + ACTIVITY_POINT &&
-            CurAmp <= gDayAmpAndKeyPrice.SmallAmp)
+            curPrice <= gDayAmpAndKeyPrice.LongKey1 + ACTIVITY_POINT)
         {
             BuySell = 0; // Long position
 
@@ -509,8 +517,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
         if (curPrice <= gCostMovingAverageVal &&
             curPrice <= CurAvg &&
             gDayAmpAndKeyPrice.ShortKey1 > 0 &&
-            curPrice >= gDayAmpAndKeyPrice.ShortKey1 - ACTIVITY_POINT &&
-            CurAmp <= gDayAmpAndKeyPrice.SmallAmp)
+            curPrice >= gDayAmpAndKeyPrice.ShortKey1 - ACTIVITY_POINT)
         {
 
             BuySell = 1; // Short position
