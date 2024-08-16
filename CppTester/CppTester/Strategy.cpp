@@ -406,6 +406,29 @@ VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo)
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
+/**
+ * @brief Implements a futures trading strategy based on the relationship between the cost line and the moving average line.
+ *
+ * Strategy Overview:
+ *
+ * 1. Cost Line Above the Moving Average Line:
+ *    - Bearish Bias: Short the market when the price falls below the cost line, with the moving average line trending downward.
+ *    - If the price rebounds and breaks through the moving average line, followed by a breakthrough of the cost line, switch to a bullish bias.
+ *
+ * 2. Cost Line Below the Moving Average Line:
+ *    - Bullish Bias: Go long when the price breaks above the cost line, with the moving average line trending upward.
+ *    - If the price declines, breaking below the moving average line, and continues to fall below the cost line, switch to a bearish bias.
+ *
+ * 3. Cost Line Equals the Moving Average Line:
+ *    - Range-Bound Market: The market is considered range-bound, with the price oscillating between the cost line and the moving average line.
+ *    - If the distance between the two lines is less than 20 points, refrain from trading.
+ *
+ * @param costLine The cost line value.
+ * @param movingAverageLine The moving average line value.
+ * @param currentPrice The current market price.
+ * @return The trading action to be taken (e.g., buy, sell, hold).
+ */
+
 VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
