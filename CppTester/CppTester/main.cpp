@@ -11,6 +11,7 @@
 #include <iostream>
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
+#include <yaml-cpp/yaml.h>
 
 #include "Strategy.h"
 
@@ -422,22 +423,45 @@ void thread_main()
 
 int main()
 {
-
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
+
+    string pwd = "";
+
+    try
+    {
+        YAML::Node config = YAML::LoadFile("config.yaml");
+
+        if (config["account"])
+        {
+            std::string account = config["account"].as<std::string>();
+            std::string password = config["password"].as<std::string>();
+
+            DEBUG(DEBUG_LEVEL_INFO, "Account: %s, Password: %s", account.c_str(), password.c_str());
+
+            g_strUserId = account;
+            pwd = password;
+        }
+        else
+        {
+            DEBUG(DEBUG_LEVEL_INFO, "Account or Password not found in config.yaml");
+        }
+    }
+    catch (const YAML::BadFile &e)
+    {
+        DEBUG(DEBUG_LEVEL_ERROR, "Failed to load config.yaml: %s", e.what());
+
+        return 1;
+    }
 
     CoInitialize(NULL);
 
     init();
 
-    g_strUserId = "F129305651";
-
-    string pwd;
     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
     DWORD mode = 0;
     GetConsoleMode(hStdin, &mode);
     SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
-    pwd = "youlose1A!";
-   
+
     g_nCode = pSKCenterLib->Login(g_strUserId.c_str(), pwd.c_str());
 
     pSKCenterLib->PrintfCodeMessage("Center", "Login", g_nCode);
