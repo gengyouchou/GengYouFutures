@@ -10,10 +10,6 @@ project(CppTester)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# if(NOT CMAKE_BUILD_TYPE)
-#     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
-# endif()
-
 # 添加源文件
 set(SOURCES
     CppTester/main.cpp
@@ -34,7 +30,6 @@ set(HEADERS
     CppTester/SKReplyLib.h
     CppTester/TEventHandler.h
     CppTester/Strategy.h
-
     ../Logger/Logger.h
 )
 
@@ -46,8 +41,21 @@ include_directories("../../")
 # 设置不同配置的编译选项
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 
+# 引入 yaml-cpp
+include(FetchContent)
+
+FetchContent_Declare(
+  yaml-cpp
+  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+  GIT_TAG yaml-cpp-0.7.0  # 可以指定具体的 tag、分支名或 commit hash
+)
+FetchContent_MakeAvailable(yaml-cpp)
+
 # 定义生成的目标
 add_executable(CppTester ${SOURCES} ${HEADERS})
+
+# 链接 yaml-cpp 库
+target_link_libraries(CppTester PUBLIC yaml-cpp)
 
 # 设置编译器标志
 target_compile_options(CppTester PRIVATE
@@ -61,21 +69,9 @@ target_link_options(CppTester PRIVATE
     $<$<CONFIG:Release>:-optimize>
 )
 
-# # 添加库路径
-# link_directories("${CMAKE_SOURCE_DIR}/../DLL/x64")
-
-# # 链接库
-# target_link_libraries(CppTester SKCOM)
-
-# # 设置运行时 DLL 路径
-# set_target_properties(CppTester PROPERTIES
-#     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../"
-# )
-
 # 设置 DLL 的路径，确保 DLL 可以被找到
 add_custom_command(TARGET CppTester POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${CMAKE_SOURCE_DIR}/../DLL/x64/SKCOM.dll"
     $<TARGET_FILE_DIR:CppTester>
 )
-
