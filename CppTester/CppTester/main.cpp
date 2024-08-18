@@ -368,9 +368,8 @@ void thread_main()
 
                 if (PrintInfoCount == 60)
                 {
-                    LOG(DEBUG_LEVEL_INFO, "Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, ",
-                        gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage);
-                    LOG(DEBUG_LEVEL_INFO, "CurAvg: %ld, CurAmp : %ld\n", (CurHigh + CurLow) / 2, CurHigh - CurLow);
+                    LOG(DEBUG_LEVEL_INFO, "[CurMtxPrice: %ld], Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, CurAvg: %ld, CurAmp : %ld",
+                        gCurCommPrice[MtxCommodtyInfo], gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage, (CurHigh + CurLow) / 2, CurHigh - CurLow);
                     PrintInfoCount = 0;
                 }
                 else
