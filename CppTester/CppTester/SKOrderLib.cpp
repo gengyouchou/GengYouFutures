@@ -32,6 +32,7 @@ OpenInterestInfo gOpenInterestInfo = {
 };
 
 string g_strUserId = "";
+string gPwd = "";
 
 void ParseOpenInterestMessage(const std::string &strMessage);
 

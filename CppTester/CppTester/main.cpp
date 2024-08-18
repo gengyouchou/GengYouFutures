@@ -27,6 +27,7 @@ extern DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice;
 extern OpenInterestInfo gOpenInterestInfo;
 extern LONG gBidOfferLongShort;
 extern double gCostMovingAverageVal;
+extern STRATEGY_CONFIG gStrategyConfig;
 
 // Define the global logger instance
 Logger logger("debug.log");
@@ -38,6 +39,7 @@ CSKOrderLib *pSKOrderLib;
 
 long g_nCode = 0;
 extern string g_strUserId;
+extern string gPwd;
 
 void AutoConnect()
 {
@@ -321,11 +323,11 @@ void thread_main()
             }
             else
             {
-                if (gBidOfferLongShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
+                if (gBidOfferLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
                 {
                     StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
                 }
-                else if (-gBidOfferLongShort >= BID_OFFER_LONG_SHORT_THRESHOLD)
+                else if (-gBidOfferLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
                 {
                     StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
                 }
@@ -421,12 +423,8 @@ void thread_main()
     }
 }
 
-int main()
+void readConfig()
 {
-    DEBUG(DEBUG_LEVEL_DEBUG, "start");
-
-    string pwd = "";
-
     try
     {
         YAML::Node config = YAML::LoadFile("config.yaml");
@@ -439,19 +437,49 @@ int main()
             DEBUG(DEBUG_LEVEL_INFO, "Account: %s, Password: %s", account.c_str(), password.c_str());
 
             g_strUserId = account;
-            pwd = password;
+            gPwd = password;
         }
-        else
+
+        if (config["CLOSING_KEY_PRICE_LEVEL"])
         {
-            DEBUG(DEBUG_LEVEL_INFO, "Account or Password not found in config.yaml");
+            gStrategyConfig.ClosingKeyPriceLevel = config["CLOSING_KEY_PRICE_LEVEL"].as<LONG>();
         }
+
+        if (config["BID_OFFER_LONG_SHORT_THRESHOLD"])
+        {
+            gStrategyConfig.BidOfferLongShortThreshold = config["BID_OFFER_LONG_SHORT_THRESHOLD"].as<LONG>();
+        }
+
+        if (config["ACTIVITY_POINT"])
+        {
+            gStrategyConfig.ActivePoint = config["ACTIVITY_POINT"].as<LONG>();
+        }
+
+        if (config["MAXIMUM_LOSS"])
+        {
+            gStrategyConfig.MaximumLoss = config["MAXIMUM_LOSS"].as<DOUBLE>();
+        }
+
+        DEBUG(DEBUG_LEVEL_INFO, "Closing Key Price Level: %ld", gStrategyConfig.ClosingKeyPriceLevel);
+        DEBUG(DEBUG_LEVEL_INFO, "Bid Offer Long Short Threshold: %ld", gStrategyConfig.BidOfferLongShortThreshold);
+        DEBUG(DEBUG_LEVEL_INFO, "Activity Point: %ld", gStrategyConfig.ActivePoint);
+        DEBUG(DEBUG_LEVEL_INFO, "Maximum Loss: %f", gStrategyConfig.MaximumLoss);
     }
     catch (const YAML::BadFile &e)
     {
-        DEBUG(DEBUG_LEVEL_ERROR, "Failed to load config.yaml: %s", e.what());
+        std::cerr << "Failed to load config.yaml: " << e.what() << std::endl;
+        system("pause");
 
-        return 1;
+        DEBUG(DEBUG_LEVEL_INFO, "Account or Password not found in config.yaml");
+        exit(1);
     }
+}
+
+int main()
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
+
+    readConfig();
 
     CoInitialize(NULL);
 
@@ -462,7 +490,7 @@ int main()
     GetConsoleMode(hStdin, &mode);
     SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
 
-    g_nCode = pSKCenterLib->Login(g_strUserId.c_str(), pwd.c_str());
+    g_nCode = pSKCenterLib->Login(g_strUserId.c_str(), gPwd.c_str());
 
     pSKCenterLib->PrintfCodeMessage("Center", "Login", g_nCode);
 

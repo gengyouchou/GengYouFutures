@@ -42,6 +42,14 @@ struct BID_OFFER_LONG_AND_SHORT
     LONG MediaTek;
 };
 
+struct STRATEGY_CONFIG
+{
+    LONG ClosingKeyPriceLevel;
+    LONG BidOfferLongShortThreshold;
+    LONG ActivePoint;
+    DOUBLE MaximumLoss;
+};
+
 VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo);
 VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo);
 VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort);
@@ -54,11 +62,7 @@ VOID AutoCalcuKeyPrices(VOID);
 
 // Strategy
 
-#define MAXIMUM_LOSS 3000
-#define ACTIVITY_POINT 100
 #define SWING_POINTS 20
-
-#define BID_OFFER_LONG_SHORT_THRESHOLD 100
 
 // Order
 
