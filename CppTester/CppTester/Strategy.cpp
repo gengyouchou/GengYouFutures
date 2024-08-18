@@ -408,6 +408,84 @@ VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo)
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
+LONG EstimatedLongSideKeyPrice(VOID)
+{
+    if (gDayAmpAndKeyPrice.LongKey1 == 0)
+    {
+        return LONG_MIN;
+    }
+
+    switch (gStrategyConfig.ClosingKeyPriceLevel)
+    {
+    case 1:
+    {
+        return gDayAmpAndKeyPrice.LongKey1 + gStrategyConfig.ActivePoint;
+    }
+    case 2:
+    {
+        return gDayAmpAndKeyPrice.LongKey2 + gStrategyConfig.ActivePoint;
+    }
+    case 3:
+    {
+        return gDayAmpAndKeyPrice.LongKey3 + gStrategyConfig.ActivePoint;
+    }
+    case 4:
+    {
+        return gDayAmpAndKeyPrice.LongKey4 + gStrategyConfig.ActivePoint;
+    }
+    case 5:
+    {
+        return gDayAmpAndKeyPrice.LongKey5 + gStrategyConfig.ActivePoint;
+    }
+
+    default:
+    {
+        // Code for other cases
+        return LONG_MIN;
+        break;
+    }
+    }
+}
+
+LONG EstimatedShortSideKeyPrice(VOID)
+{
+    if (gDayAmpAndKeyPrice.ShortKey1 == 0)
+    {
+        return LONG_MAX;
+    }
+
+    switch (gStrategyConfig.ClosingKeyPriceLevel)
+    {
+    case 1:
+    {
+        return gDayAmpAndKeyPrice.ShortKey1 - gStrategyConfig.ActivePoint;
+    }
+    case 2:
+    {
+        return gDayAmpAndKeyPrice.ShortKey2 - gStrategyConfig.ActivePoint;
+    }
+    case 3:
+    {
+        return gDayAmpAndKeyPrice.ShortKey3 - gStrategyConfig.ActivePoint;
+    }
+    case 4:
+    {
+        return gDayAmpAndKeyPrice.ShortKey4 - gStrategyConfig.ActivePoint;
+    }
+    case 5:
+    {
+        return gDayAmpAndKeyPrice.ShortKey5 - gStrategyConfig.ActivePoint;
+    }
+
+    default:
+    {
+        // Code for other cases
+        return LONG_MAX;
+        break;
+    }
+    }
+}
+
 /**
  * @brief Implements a futures trading strategy based on the relationship between the cost line and the moving average line.
  *
@@ -468,7 +546,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
           curPrice, CurAvg, gCostMovingAverageVal);
 
     if (abs(CurAvg - gCostMovingAverageVal) <= SWING_POINTS ||
-        CurAmp > gDayAmpAndKeyPrice.SmallAmp)
+        CurAmp > gDayAmpAndKeyPrice.SmallAmp + gStrategyConfig.ActivePoint)
     {
         return;
     }
@@ -482,8 +560,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
 
         if (curPrice >= gCostMovingAverageVal &&
             curPrice >= CurAvg &&
-            gDayAmpAndKeyPrice.LongKey1 > 0 &&
-            curPrice <= gDayAmpAndKeyPrice.LongKey1 + gStrategyConfig.ActivePoint)
+            curPrice <= EstimatedLongSideKeyPrice())
         {
             BuySell = 0; // Long position
 
@@ -518,8 +595,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
 
         if (curPrice <= gCostMovingAverageVal &&
             curPrice <= CurAvg &&
-            gDayAmpAndKeyPrice.ShortKey1 > 0 &&
-            curPrice >= gDayAmpAndKeyPrice.ShortKey1 - gStrategyConfig.ActivePoint)
+            curPrice >= EstimatedShortSideKeyPrice())
         {
 
             BuySell = 1; // Short position
@@ -671,7 +747,7 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
 
     BOOL IntervalAmpKStickMatch = FALSE;
 
-    if (CurAmp <= gDayAmpAndKeyPrice.AvgAmp)
+    if (CurAmp <= gDayAmpAndKeyPrice.SmallAmp + gStrategyConfig.ActivePoint)
     {
         IntervalAmpKStickMatch = TRUE;
     }
