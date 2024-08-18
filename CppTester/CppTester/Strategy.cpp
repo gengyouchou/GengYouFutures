@@ -45,6 +45,9 @@ double gCostMovingAverageVal = 0;
 
 STRATEGY_CONFIG gStrategyConfig;
 
+LONG EstimatedLongSideKeyPrice(VOID);
+LONG EstimatedShortSideKeyPrice(VOID);
+
 void AutoKLineData(IN string ProductNum)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
@@ -379,8 +382,8 @@ VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo)
             CloseBuySell = 1; // long position
         }
 
-        if ((BuySell == 0 && gDayAmpAndKeyPrice.LongKey2 > 0 && curPrice >= gDayAmpAndKeyPrice.LongKey2) ||
-            (BuySell == 1 && gDayAmpAndKeyPrice.ShortKey2 > 0 && curPrice <= gDayAmpAndKeyPrice.ShortKey2))
+        if ((BuySell == 0 && curPrice >= EstimatedLongSideKeyPrice()) ||
+            (BuySell == 1 && curPrice <= EstimatedShortSideKeyPrice()))
         {
             vector<string> vec = {COMMODITY_OTHER};
 
