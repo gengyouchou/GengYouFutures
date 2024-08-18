@@ -256,6 +256,8 @@ void thread_main()
 
     long PreHigh = 0, PreLow = 0;
 
+    LONG PrintInfoCount = 0;
+
     while (true)
     {
         if (gCurServerTime[0] < 0)
@@ -338,7 +340,6 @@ void thread_main()
             // Strategy End:
         }
 
-        //
         if (elapsed.count() >= refreshInterval)
         {
             //
@@ -364,6 +365,18 @@ void thread_main()
                 printf("Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, ", gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage);
 
                 printf("CurAvg: %ld, CurAmp : %ld\n", (CurHigh + CurLow) / 2, CurHigh - CurLow);
+
+                if (PrintInfoCount == 60)
+                {
+                    LOG(DEBUG_LEVEL_INFO, "Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, ",
+                        gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage);
+                    LOG(DEBUG_LEVEL_INFO, "CurAvg: %ld, CurAmp : %ld\n", (CurHigh + CurLow) / 2, CurHigh - CurLow);
+                    PrintInfoCount = 0;
+                }
+                else
+                {
+                    ++PrintInfoCount;
+                }
             }
 
             printf("=========================================\n");
