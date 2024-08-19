@@ -148,7 +148,7 @@ VOID AutoCalcuKeyPrices(VOID)
         MtxCommodtyInfo = gCommodtyInfo.MTXIdxNoAM;
     }
 
-    if (gDaysKlineDiff.size() < 20)
+    if (gDaysKlineDiff.size() == 0)
     {
         // AutoKLineData(COMMODITY_TX_MAIN);
 
@@ -181,6 +181,8 @@ VOID AutoCalcuKeyPrices(VOID)
             updateHighLowPoints(yesterday, -1, -1, cur[0], cur[1]);
         }
 
+        pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
+
         long accu = 0;
         long AvgAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;
 
@@ -210,6 +212,11 @@ VOID AutoCalcuKeyPrices(VOID)
         gDayAmpAndKeyPrice.AvgAmp = AvgAmp;
         gDayAmpAndKeyPrice.LargerAmp = LargerAmp;
         gDayAmpAndKeyPrice.LargestAmp = LargestAmp;
+    }
+
+    if (gDaysKlineDiff.size() < 20)
+    {
+        return;
     }
 
     if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
