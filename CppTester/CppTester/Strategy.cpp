@@ -28,7 +28,7 @@ extern SHORT gCurServerTime[3];
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 extern std::deque<long> gDaysKlineDiff;
 extern std::deque<long> gCostMovingAverage;
-extern std::unordered_map<long, std::array<long, 3>> gCurCommHighLowPoint;
+extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
 extern std::unordered_map<long, long> gCurCommPrice;
 extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 
@@ -150,9 +150,36 @@ VOID AutoCalcuKeyPrices(VOID)
 
     if (gDaysKlineDiff.size() < 20)
     {
-        AutoKLineData(COMMODITY_TX_MAIN);
+        // AutoKLineData(COMMODITY_TX_MAIN);
 
-        pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
+        // pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
+
+        // Load existing high/low points from the YAML file
+        loadHighLowPoints();
+
+        if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo))
+        {
+            auto &cur = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo];
+            std::ostringstream oss;
+            oss << cur[3];
+
+            std::string yesterday = oss.str();
+
+            // Update the points and save back to the file
+            updateHighLowPoints(yesterday, cur[0], cur[1], -1, -1);
+        }
+
+        if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM))
+        {
+            auto &cur = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM];
+            std::ostringstream oss;
+            oss << cur[3];
+
+            std::string yesterday = oss.str();
+
+            // Update the points and save back to the file
+            updateHighLowPoints(yesterday, -1, -1, cur[0], cur[1]);
+        }
 
         long accu = 0;
         long AvgAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;

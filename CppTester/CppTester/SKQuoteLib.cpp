@@ -3,13 +3,15 @@
 #include <deque>
 #include <iostream>
 #include <map>
+#include <string>
 #include <unordered_map>
+#include <yaml-cpp/yaml.h>
 
 #define SK_SUBJECT_CONNECTION_CONNECTED 3001
 #define SK_SUBJECT_CONNECTION_DISCONNECT 3002
 #define SK_SUBJECT_CONNECTION_STOCKS_READY 3003
 
-std::unordered_map<long, std::array<long, 3>> gCurCommHighLowPoint; // {High, Low, Open}
+std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint; // {High, Low, Open, Data}
 std::deque<long> gDaysKlineDiff;
 std::deque<long> gCostMovingAverage;
 
@@ -356,7 +358,7 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
         {
             long diff = static_cast<long>(entry.second.first - entry.second.second);
 
-            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f, Diff: %ld", entry.first, entry.second.first, entry.second.second, diff);
+            DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f, Diff: %ld", entry.first, entry.second.first, entry.second.second, diff);
 
             gDaysKlineDiff.push_back(diff);
 
@@ -376,7 +378,7 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
 
             long diff = static_cast<long>(cur.first - cur.second);
 
-            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f, Diff: %ld", entry.first, entry.second.first, entry.second.second, diff);
+            DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f, Diff: %ld", entry.first, entry.second.first, entry.second.second, diff);
 
             gDaysKlineDiff.push_back(diff);
 
@@ -554,6 +556,7 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
     gCurCommHighLowPoint[nStockIndex][0] = skStock.nHigh;
     gCurCommHighLowPoint[nStockIndex][1] = skStock.nLow;
     gCurCommHighLowPoint[nStockIndex][2] = skStock.nOpen;
+    gCurCommHighLowPoint[nStockIndex][3] = skStock.nTradingDay;
 
     GetCurPrice(nStockIndex, skStock.nClose, skStock.nSimulate);
 
@@ -711,7 +714,7 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 
     DEBUG(DEBUG_LEVEL_DEBUG, "strData= %s", strData);
 
-    parseAndProcessData(strData);
+    // parseAndProcessData(strData);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
@@ -896,4 +899,77 @@ void parseAndProcessData(const string &data)
     ss >> volume;
 
     processTradingData(datetime, openPrice, highPrice, lowPrice, closePrice, volume);
+}
+
+// Function to load high/low points from database.yaml into global maps
+void loadHighLowPoints()
+{
+    try
+    {
+        // Load the YAML file
+        YAML::Node config = YAML::LoadFile("database.yaml");
+
+        // Load day session high/low points into gDaysCommHighLowPoint
+        for (const auto &date : config["DaysCommHighLowPoint"])
+        {
+            std::string key = date.first.as<std::string>();
+            double high = date.second["High"].as<double>();
+            double low = date.second["Low"].as<double>();
+            gDaysCommHighLowPoint[key] = std::make_pair(high, low);
+        }
+
+        // Load night session high/low points into gDaysNightAllCommHighLowPoint
+        for (const auto &date : config["DaysNightAllCommHighLowPoint"])
+        {
+            std::string key = date.first.as<std::string>();
+            double high = date.second["High"].as<double>();
+            double low = date.second["Low"].as<double>();
+            gDaysNightAllCommHighLowPoint[key] = std::make_pair(high, low);
+        }
+    }
+    catch (const YAML::BadFile &e)
+    {
+        // Handle error if the file cannot be loaded
+        std::cerr << "Failed to load database.yaml: " << e.what() << std::endl;
+        exit(1);
+    }
+}
+
+// Function to update high/low points for a specific date and maintain the last 20 entries
+void updateHighLowPoints(const std::string &date, double dayHigh, double dayLow, double nightHigh, double nightLow)
+{
+    // Update day session high/low points for the given date
+    gDaysCommHighLowPoint[date] = std::make_pair(dayHigh, dayLow);
+
+    // Update night session high/low points for the given date
+    gDaysNightAllCommHighLowPoint[date] = std::make_pair(nightHigh, nightLow);
+
+    // Maintain only the last 20 entries for day session
+    if (gDaysCommHighLowPoint.size() > 20)
+    {
+        gDaysCommHighLowPoint.erase(gDaysCommHighLowPoint.begin());
+    }
+
+    // Maintain only the last 20 entries for night session
+    if (gDaysNightAllCommHighLowPoint.size() > 20)
+    {
+        gDaysNightAllCommHighLowPoint.erase(gDaysNightAllCommHighLowPoint.begin());
+    }
+
+    // Write the updated data back to database.yaml
+    YAML::Node config;
+    for (const auto &pair : gDaysCommHighLowPoint)
+    {
+        config["DaysCommHighLowPoint"][pair.first]["High"] = pair.second.first;
+        config["DaysCommHighLowPoint"][pair.first]["Low"] = pair.second.second;
+    }
+
+    for (const auto &pair : gDaysNightAllCommHighLowPoint)
+    {
+        config["DaysNightAllCommHighLowPoint"][pair.first]["High"] = pair.second.first;
+        config["DaysNightAllCommHighLowPoint"][pair.first]["Low"] = pair.second.second;
+    }
+
+    std::ofstream fout("database.yaml");
+    fout << config;
 }

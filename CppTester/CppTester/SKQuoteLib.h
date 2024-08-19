@@ -86,3 +86,5 @@ private:
 };
 
 VOID GetCommodityIdx(VOID);
+void loadHighLowPoints();
+void updateHighLowPoints(const std::string &date, double dayHigh, double dayLow, double nightHigh, double nightLow);

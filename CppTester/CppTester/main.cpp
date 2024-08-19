@@ -17,7 +17,7 @@
 
 extern std::deque<long> gDaysKlineDiff;
 extern bool gEatOffer;
-extern std::unordered_map<long, std::array<long, 3>> gCurCommHighLowPoint;
+extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
 extern SHORT gCurServerTime[3];
 extern std::unordered_map<long, long> gCurCommPrice;
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
