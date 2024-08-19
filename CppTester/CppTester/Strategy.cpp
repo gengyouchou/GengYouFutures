@@ -692,7 +692,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
     long nClose = 0, nQty = 0;
 
-    if (gBest5BidOffer[nStockidx].size() >= 11)
+    if (gBest5BidOffer.count(nStockidx) && gBest5BidOffer[nStockidx].size() >= 11)
     {
         nClose = gBest5BidOffer[nStockidx][10].first;
         nQty = gBest5BidOffer[nStockidx][10].second;

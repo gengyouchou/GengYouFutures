@@ -581,11 +581,7 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
         return;
     }
 
-    if (gBest5BidOffer[nStockIndex].size() == 10)
-    {
-        gBest5BidOffer[nStockIndex].push_back({nClose, nQty});
-    }
-    else if (gBest5BidOffer[nStockIndex].size() >= 11)
+    if (gBest5BidOffer.count(nStockIndex) && gBest5BidOffer[nStockIndex].size() >= 11)
     {
         gBest5BidOffer[nStockIndex][10] = {nClose, nQty};
     }

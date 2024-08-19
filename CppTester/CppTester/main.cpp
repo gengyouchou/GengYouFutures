@@ -123,7 +123,7 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
 
         printf("Open: %ld, CurHigh: %ld, CurLow: %ld\n", Open, CurHigh, CurLow);
     }
-    if (gBest5BidOffer[ProductIdxNo].size() >= 10)
+    if (gBest5BidOffer.count(ProductIdxNo) && gBest5BidOffer[ProductIdxNo].size() >= 10)
     {
 
         long TotalBid = gBest5BidOffer[ProductIdxNo][0].second +
@@ -139,7 +139,7 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
 
         long nClose = 0, nQty = 0;
 
-        if (gBest5BidOffer[ProductIdxNo].size() >= 11)
+        if (gBest5BidOffer.count(ProductIdxNo) && gBest5BidOffer[ProductIdxNo].size() >= 11)
         {
             nClose = gBest5BidOffer[ProductIdxNo][10].first;
             nQty = gBest5BidOffer[ProductIdxNo][10].second;
