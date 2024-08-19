@@ -65,4 +65,4 @@ Testing/
 logs/
 !assets/
 *.exe
-*.yaml
+config.yaml
