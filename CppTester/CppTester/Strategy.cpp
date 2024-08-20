@@ -188,6 +188,8 @@ VOID AutoCalcuKeyPrices(VOID)
 
     if (gDaysKlineDiff.size() < DayMA)
     {
+        std::cerr << "Failed to get key prices" << std::endl;
+        system("pause");
         return;
     }
 
