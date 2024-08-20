@@ -359,9 +359,9 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
     {
         DEBUG(DEBUG_LEVEL_INFO, "isDaySession");
 
-        if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM))
+        if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo))
         {
-            auto &cur = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM];
+            auto &cur = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo];
             std::ostringstream oss;
             oss << cur[3];
 
@@ -373,7 +373,7 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
             DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", yesterday, PreHigh, PreLow);
 
             // Update the points and save back to the file
-            updateHighLowPoints(yesterday, PreHigh, PreLow, -1, -1);
+            updateHighLowPoints(yesterday, -1, -1, PreHigh, PreLow);
         }
 
         for (const auto &entry : gDaysCommHighLowPoint) // need ordered by date  from the past to the present
@@ -394,9 +394,9 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
     {
         DEBUG(DEBUG_LEVEL_INFO, "isNightSession");
 
-        if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo))
+        if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM))
         {
-            auto &cur = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo];
+            auto &cur = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM];
             std::ostringstream oss;
             oss << cur[3];
 
@@ -408,7 +408,7 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
             DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", yesterday, PreHigh, PreLow);
 
             // Update the points and save back to the file
-            updateHighLowPoints(yesterday, -1, -1, PreHigh, PreLow);
+            updateHighLowPoints(yesterday, PreHigh, PreLow, -1, -1);
         }
 
         for (const auto &entry : gDaysNightAllCommHighLowPoint) // need ordered by date  from the past to the present
