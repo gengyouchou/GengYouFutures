@@ -571,8 +571,8 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
 
         SHORT BuySell = -1;
 
-        if (curPrice >= gCostMovingAverageVal &&
-            curPrice >= CurAvg &&
+        if (CurAvg > gCostMovingAverageVal &&
+            curPrice >= gCostMovingAverageVal &&
             curPrice <= EstimatedLongSideKeyPrice())
         {
             BuySell = 0; // Long position
@@ -606,8 +606,8 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
 
         SHORT BuySell = -1;
 
-        if (curPrice <= gCostMovingAverageVal &&
-            curPrice <= CurAvg &&
+        if (CurAvg < gCostMovingAverageVal &&
+            curPrice <= gCostMovingAverageVal &&
             curPrice >= EstimatedShortSideKeyPrice())
         {
 
