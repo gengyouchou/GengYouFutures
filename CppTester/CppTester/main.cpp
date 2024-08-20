@@ -424,14 +424,14 @@ void thread_main()
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU
 
-        if (pSKQuoteLib->IsConnected() != 1)
-        {
-            DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");
+        // if (pSKQuoteLib->IsConnected() != 1)
+        // {
+        //     DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");
 
-            // AutoConnect();
-            release();
-            exit(0);
-        }
+        //     // AutoConnect();
+        //     release();
+        //     exit(0);
+        // }
     }
 }
 
