@@ -17,8 +17,8 @@ std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint; // {High, Lo
 std::deque<long> gDaysKlineDiff;
 std::deque<long> gCostMovingAverage;
 
-std::map<string, pair<double, double>> gDaysCommHighLowPoint;
-std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint;
+std::map<string, pair<double, double>> gDaysCommHighLowPoint;         // Max len: DAY_NIGHT_HIGH_LOW_K_LINE
+std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint; // Max len: DAY_NIGHT_HIGH_LOW_K_LINE
 
 std::unordered_map<long, long> gCurCommPrice;
 std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
@@ -987,8 +987,8 @@ void updateHighLowPoints(const std::string &date, double dayHigh, double dayLow,
         // Update day session high/low points for the given date
         gDaysCommHighLowPoint[date] = std::make_pair(dayHigh, dayLow);
 
-        // Maintain only the last 20 entries for day session
-        if (gDaysCommHighLowPoint.size() > 20)
+        // Maintain only the last DAY_NIGHT_HIGH_LOW_K_LINE entries for day session
+        if (gDaysCommHighLowPoint.size() > DAY_NIGHT_HIGH_LOW_K_LINE)
         {
             gDaysCommHighLowPoint.erase(gDaysCommHighLowPoint.begin());
         }
@@ -999,8 +999,8 @@ void updateHighLowPoints(const std::string &date, double dayHigh, double dayLow,
         // Update night session high/low points for the given date
         gDaysNightAllCommHighLowPoint[date] = std::make_pair(nightHigh, nightLow);
 
-        // Maintain only the last 20 entries for night session
-        if (gDaysNightAllCommHighLowPoint.size() > 20)
+        // Maintain only the last DAY_NIGHT_HIGH_LOW_K_LINE entries for night session
+        if (gDaysNightAllCommHighLowPoint.size() > DAY_NIGHT_HIGH_LOW_K_LINE)
         {
             gDaysNightAllCommHighLowPoint.erase(gDaysNightAllCommHighLowPoint.begin());
         }

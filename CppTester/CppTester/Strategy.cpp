@@ -150,7 +150,7 @@ VOID AutoCalcuKeyPrices(VOID)
         MtxCommodtyInfo = gCommodtyInfo.MTXIdxNoAM;
     }
 
-    if (gDaysKlineDiff.size() == 0)
+    if (gDaysKlineDiff.size() < DayMA)
     {
 
         pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
@@ -186,7 +186,7 @@ VOID AutoCalcuKeyPrices(VOID)
         gDayAmpAndKeyPrice.LargestAmp = LargestAmp;
     }
 
-    if (gDaysKlineDiff.size() < 20)
+    if (gDaysKlineDiff.size() < DayMA)
     {
         return;
     }

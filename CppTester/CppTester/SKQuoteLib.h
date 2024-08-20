@@ -7,7 +7,8 @@
 #define COMMODITY_OTHER "TM0000"
 #define COMMODITY_TX_MAIN "TX00"
 
-#define DayMA 20
+#define DayMA 2
+#define DAY_NIGHT_HIGH_LOW_K_LINE 20
 #define COST_DAY_MA 1
 
 struct COMMODITY_INFO
