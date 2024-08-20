@@ -368,7 +368,7 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
             double PreHigh = static_cast<double>(cur[0]) / 100.0;
             double PreLow = static_cast<double>(cur[1]) / 100.0;
 
-            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", yesterday, PreHigh, PreLow);
+            DEBUG(DEBUG_LEVEL_INFO, "Update form yesterday, Date: %s, High: %f, Low: %f", yesterday, PreHigh, PreLow);
 
             // Update the points and save back to the file
             updateHighLowPoints(yesterday, -1, -1, PreHigh, PreLow);
@@ -403,7 +403,7 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
             double PreHigh = static_cast<double>(cur[0]) / 100.0;
             double PreLow = static_cast<double>(cur[1]) / 100.0;
 
-            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", yesterday, PreHigh, PreLow);
+            DEBUG(DEBUG_LEVEL_INFO, "Update form yesterday, Date: %s, High: %f, Low: %f", yesterday, PreHigh, PreLow);
 
             // Update the points and save back to the file
             updateHighLowPoints(yesterday, PreHigh, PreLow, -1, -1);

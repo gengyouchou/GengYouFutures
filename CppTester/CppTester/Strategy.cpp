@@ -150,15 +150,25 @@ VOID AutoCalcuKeyPrices(VOID)
         MtxCommodtyInfo = gCommodtyInfo.MTXIdxNoAM;
     }
 
-    if (gDaysKlineDiff.size() < DayMA)
-    {
+    int len = gDaysKlineDiff.size();
 
+    if (len == 0)
+    {
         pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
+
+        len = gDaysKlineDiff.size();
+
+        if (len == 0)
+        {
+            std::cerr << "Failed to get key prices" << std::endl;
+            system("pause");
+            return;
+        }
 
         long accu = 0;
         long AvgAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;
 
-        for (int i = 0; i < gDaysKlineDiff.size(); ++i)
+        for (int i = 0; i < len; ++i)
         {
             DEBUG(DEBUG_LEVEL_INFO, "Diff = %ld ", gDaysKlineDiff[i]);
 
@@ -168,7 +178,7 @@ VOID AutoCalcuKeyPrices(VOID)
             SmallestAmp = min(SmallestAmp, gDaysKlineDiff[i]);
         }
 
-        AvgAmp = accu / DayMA;
+        AvgAmp = accu / len;
 
         LargerAmp = (AvgAmp + LargestAmp) / 2;
         SmallAmp = (AvgAmp + SmallestAmp) / 2;
@@ -184,13 +194,6 @@ VOID AutoCalcuKeyPrices(VOID)
         gDayAmpAndKeyPrice.AvgAmp = AvgAmp;
         gDayAmpAndKeyPrice.LargerAmp = LargerAmp;
         gDayAmpAndKeyPrice.LargestAmp = LargestAmp;
-    }
-
-    if (gDaysKlineDiff.size() < DayMA)
-    {
-        std::cerr << "Failed to get key prices" << std::endl;
-        system("pause");
-        return;
     }
 
     if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
