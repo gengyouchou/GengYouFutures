@@ -294,7 +294,7 @@ void thread_main()
             StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
             StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
 
-            if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 30) || gCurServerTime[0] >= 14)
+            if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 15)
             {
                 StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
                 StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
