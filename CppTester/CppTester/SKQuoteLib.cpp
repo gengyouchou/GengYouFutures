@@ -346,6 +346,9 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
         return;
     }
 
+    // Load existing high/low points from the YAML file
+    loadHighLowPoints();
+
     bool isDaySession = gCurServerTime[0] >= 8 && gCurServerTime[0] <= 14;
 
     bool isNightSession = gCurServerTime[0] < 8 || gCurServerTime[0] > 14;
@@ -354,11 +357,28 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
     {
         DEBUG(DEBUG_LEVEL_INFO, "isDaySession");
 
+        if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo))
+        {
+            auto &cur = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo];
+            std::ostringstream oss;
+            oss << cur[3];
+
+            std::string yesterday = oss.str();
+
+            double PreHigh = static_cast<double>(cur[0]) / 100.0;
+            double PreLow = static_cast<double>(cur[1]) / 100.0;
+
+            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", yesterday, PreHigh, PreLow);
+
+            // Update the points and save back to the file
+            updateHighLowPoints(yesterday, PreHigh, PreLow, -1, -1);
+        }
+
         for (const auto &entry : gDaysCommHighLowPoint) // need ordered by date  from the past to the present
         {
             long diff = static_cast<long>(entry.second.first - entry.second.second);
 
-            DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f, Diff: %ld", entry.first, entry.second.first, entry.second.second, diff);
+            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f, Diff: %ld", entry.first, entry.second.first, entry.second.second, diff);
 
             gDaysKlineDiff.push_back(diff);
 
@@ -372,13 +392,30 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
     {
         DEBUG(DEBUG_LEVEL_INFO, "isNightSession");
 
+        if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM))
+        {
+            auto &cur = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM];
+            std::ostringstream oss;
+            oss << cur[3];
+
+            std::string yesterday = oss.str();
+
+            double PreHigh = static_cast<double>(cur[0]) / 100.0;
+            double PreLow = static_cast<double>(cur[1]) / 100.0;
+
+            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", yesterday, PreHigh, PreLow);
+
+            // Update the points and save back to the file
+            updateHighLowPoints(yesterday, -1, -1, PreHigh, PreLow);
+        }
+
         for (const auto &entry : gDaysNightAllCommHighLowPoint) // need ordered by date  from the past to the present
         {
             auto cur = entry.second;
 
             long diff = static_cast<long>(cur.first - cur.second);
 
-            DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f, Diff: %ld", entry.first, entry.second.first, entry.second.second, diff);
+            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f, Diff: %ld", entry.first, entry.second.first, entry.second.second, diff);
 
             gDaysKlineDiff.push_back(diff);
 

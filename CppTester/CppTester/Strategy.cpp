@@ -152,32 +152,6 @@ VOID AutoCalcuKeyPrices(VOID)
 
     if (gDaysKlineDiff.size() == 0)
     {
-        // Load existing high/low points from the YAML file
-        loadHighLowPoints();
-
-        if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo))
-        {
-            auto &cur = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo];
-            std::ostringstream oss;
-            oss << cur[3];
-
-            std::string yesterday = oss.str();
-
-            // Update the points and save back to the file
-            updateHighLowPoints(yesterday, cur[0], cur[1], -1, -1);
-        }
-
-        if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM))
-        {
-            auto &cur = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM];
-            std::ostringstream oss;
-            oss << cur[3];
-
-            std::string yesterday = oss.str();
-
-            // Update the points and save back to the file
-            updateHighLowPoints(yesterday, -1, -1, cur[0], cur[1]);
-        }
 
         pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
 
