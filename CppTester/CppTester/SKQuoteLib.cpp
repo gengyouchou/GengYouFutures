@@ -11,8 +11,6 @@
 #define SK_SUBJECT_CONNECTION_DISCONNECT 3002
 #define SK_SUBJECT_CONNECTION_STOCKS_READY 3003
 
-string gDatabasePath = "";
-
 std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint; // {High, Low, Open, Data}
 std::deque<long> gDaysKlineDiff;
 std::deque<long> gCostMovingAverage;
@@ -942,7 +940,7 @@ void loadHighLowPoints()
     try
     {
         // Load the YAML file
-        YAML::Node config = YAML::LoadFile(gDatabasePath);
+        YAML::Node config = YAML::LoadFile(DATABASE_PATH);
 
         // Load day session high/low points into gDaysCommHighLowPoint
         for (const auto &date : config["DaysCommHighLowPoint"])
@@ -1020,6 +1018,6 @@ void updateHighLowPoints(const std::string &date, double dayHigh, double dayLow,
         config["DaysNightAllCommHighLowPoint"][pair.first]["Low"] = pair.second.second;
     }
 
-    std::ofstream fout(gDatabasePath);
+    std::ofstream fout(DATABASE_PATH);
     fout << config;
 }

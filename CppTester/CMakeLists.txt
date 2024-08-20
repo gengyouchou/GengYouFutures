@@ -83,3 +83,21 @@ add_custom_command(TARGET CppTester POST_BUILD
     $<TARGET_FILE_DIR:CppTester>
 )
 
+# Find the current working directory
+set(CURRENT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Extract the drive letter from the current directory (Windows specific)
+string(SUBSTRING "${CURRENT_DIR}" 0 2 CURRENT_DRIVE)
+
+# Define the path to the database.yaml file
+set(DATABASE_PATH "${CURRENT_DRIVE}/GengYouFutures/CppTester/CppTester/database.yaml")
+
+# Generate the config.h file
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
+
+
+# 将生成的头文件目录添加到包含路径中
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+
+

@@ -2,6 +2,7 @@
 
 #include "SKCOM_reference.h"
 #include "TEventHandler.h"
+#include "config.h"
 
 #define COMMODITY_MAIN "MTX00"
 #define COMMODITY_OTHER "TM0000"
@@ -10,6 +11,7 @@
 #define DayMA 3
 #define DAY_NIGHT_HIGH_LOW_K_LINE 20
 #define COST_DAY_MA 1
+// #define DATABASE_PATH "F:/GengYouFutures/CppTester/CppTester/database.yaml";
 
 struct COMMODITY_INFO
 {
