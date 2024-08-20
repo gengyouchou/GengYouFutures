@@ -925,8 +925,15 @@ void loadHighLowPoints()
     }
     catch (const YAML::BadFile &e)
     {
-        // Handle error if the file cannot be loaded
+
         std::cerr << "Failed to load database.yaml: " << e.what() << std::endl;
+
+        DEBUG(DEBUG_LEVEL_INFO, "Failed to load database.yaml");
+
+        system("pause");
+
+        // Handle error if the file cannot be loaded
+
         exit(1);
     }
 }

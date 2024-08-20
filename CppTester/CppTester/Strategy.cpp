@@ -135,6 +135,8 @@ DOUBLE CountCostMovingAverage(VOID)
 VOID AutoCalcuKeyPrices(VOID)
 {
 
+    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
+
     // Determine whether to use day quotation or full day and night quotation
 
     LONG MtxCommodtyInfo = 0;
@@ -150,10 +152,6 @@ VOID AutoCalcuKeyPrices(VOID)
 
     if (gDaysKlineDiff.size() == 0)
     {
-        // AutoKLineData(COMMODITY_TX_MAIN);
-
-        // pSKQuoteLib->ProcessDaysOrNightCommHighLowPoint();
-
         // Load existing high/low points from the YAML file
         loadHighLowPoints();
 
@@ -188,7 +186,7 @@ VOID AutoCalcuKeyPrices(VOID)
 
         for (int i = 0; i < gDaysKlineDiff.size(); ++i)
         {
-            DEBUG(DEBUG_LEVEL_DEBUG, "Diff = %ld ", gDaysKlineDiff[i]);
+            DEBUG(DEBUG_LEVEL_INFO, "Diff = %ld ", gDaysKlineDiff[i]);
 
             accu += gDaysKlineDiff[i];
 
@@ -238,6 +236,8 @@ VOID AutoCalcuKeyPrices(VOID)
         gDayAmpAndKeyPrice.ShortKey2 = CurHigh - gDayAmpAndKeyPrice.SmallAmp;
         gDayAmpAndKeyPrice.ShortKey1 = CurHigh - gDayAmpAndKeyPrice.SmallestAmp;
     }
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
 /**

@@ -75,3 +75,11 @@ add_custom_command(TARGET CppTester POST_BUILD
     "${CMAKE_SOURCE_DIR}/../DLL/x64/SKCOM.dll"
     $<TARGET_FILE_DIR:CppTester>
 )
+
+# 在 add_custom_command 中修改路徑
+add_custom_command(TARGET CppTester POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_SOURCE_DIR}/CppTester/database.yaml"
+    $<TARGET_FILE_DIR:CppTester>
+)
+
