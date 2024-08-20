@@ -40,6 +40,7 @@ CSKOrderLib *pSKOrderLib;
 long g_nCode = 0;
 extern string g_strUserId;
 extern string gPwd;
+extern string gDatabasePath;
 
 void AutoConnect()
 {
@@ -441,7 +442,7 @@ void readConfig()
     {
         YAML::Node config = YAML::LoadFile("config.yaml");
 
-        if (config["account"])
+        if (config["account"] && config["password"])
         {
             std::string account = config["account"].as<std::string>();
             std::string password = config["password"].as<std::string>();
@@ -450,6 +451,16 @@ void readConfig()
 
             g_strUserId = account;
             gPwd = password;
+        }
+
+        if (config["DATABASE_PATH"])
+        {
+            // Get the database path from config.yaml
+            std::string databasePath = config["DATABASE_PATH"].as<std::string>();
+
+            gDatabasePath = databasePath;
+
+            DEBUG(DEBUG_LEVEL_INFO, "Database Path: %s", gDatabasePath.c_str());
         }
 
         if (config["CLOSING_KEY_PRICE_LEVEL"])
