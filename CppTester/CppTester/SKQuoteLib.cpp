@@ -978,24 +978,17 @@ void loadHighLowPoints()
 // Function to update high/low points for a specific date and maintain the last 20 entries
 void updateHighLowPoints(const std::string &date, double dayHigh, double dayLow, double nightHigh, double nightLow)
 {
-
-    // Write the updated data back to database.yaml
     YAML::Node config;
 
     if (dayHigh > 0 && dayLow > 0)
     {
         // Update day session high/low points for the given date
         gDaysCommHighLowPoint[date] = std::make_pair(dayHigh, dayLow);
+
         // Maintain only the last 20 entries for day session
         if (gDaysCommHighLowPoint.size() > 20)
         {
             gDaysCommHighLowPoint.erase(gDaysCommHighLowPoint.begin());
-        }
-
-        for (const auto &pair : gDaysCommHighLowPoint)
-        {
-            config["DaysCommHighLowPoint"][pair.first]["High"] = pair.second.first;
-            config["DaysCommHighLowPoint"][pair.first]["Low"] = pair.second.second;
         }
     }
 
@@ -1009,12 +1002,20 @@ void updateHighLowPoints(const std::string &date, double dayHigh, double dayLow,
         {
             gDaysNightAllCommHighLowPoint.erase(gDaysNightAllCommHighLowPoint.begin());
         }
+    }
 
-        for (const auto &pair : gDaysNightAllCommHighLowPoint)
-        {
-            config["DaysNightAllCommHighLowPoint"][pair.first]["High"] = pair.second.first;
-            config["DaysNightAllCommHighLowPoint"][pair.first]["Low"] = pair.second.second;
-        }
+    // Write the entire gDaysCommHighLowPoint map back to database.yaml
+    for (const auto &pair : gDaysCommHighLowPoint)
+    {
+        config["DaysCommHighLowPoint"][pair.first]["High"] = pair.second.first;
+        config["DaysCommHighLowPoint"][pair.first]["Low"] = pair.second.second;
+    }
+
+    // Write the entire gDaysNightAllCommHighLowPoint map back to database.yaml
+    for (const auto &pair : gDaysNightAllCommHighLowPoint)
+    {
+        config["DaysNightAllCommHighLowPoint"][pair.first]["High"] = pair.second.first;
+        config["DaysNightAllCommHighLowPoint"][pair.first]["Low"] = pair.second.second;
     }
 
     std::ofstream fout("database.yaml");
