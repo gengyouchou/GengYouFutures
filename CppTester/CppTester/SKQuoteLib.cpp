@@ -374,20 +374,6 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
             updateHighLowPoints(yesterday, PreHigh, PreLow, -1, -1);
         }
 
-        if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo))
-        {
-            auto &cur = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo];
-            std::ostringstream oss;
-            oss << cur[3];
-
-            std::string yesterday = oss.str();
-
-            double PreHigh = static_cast<double>(cur[0]) / 100.0;
-            double PreLow = static_cast<double>(cur[1]) / 100.0;
-
-            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f", yesterday, PreHigh, PreLow);
-        }
-
         for (const auto &entry : gDaysCommHighLowPoint) // need ordered by date  from the past to the present
         {
             long diff = static_cast<long>(entry.second.first - entry.second.second);
