@@ -10,10 +10,10 @@
 #include <string>
 #include <type_traits> // for std::is_same_v
 
-#ifndef NDEBUG
+// #ifndef NDEBUG
 #define LOGGING_ENABLED
 #define ENABLE_DEBUG
-#endif
+// #endif
 
 // Define different debug levels
 #define DEBUG_LEVEL_INFO 1
