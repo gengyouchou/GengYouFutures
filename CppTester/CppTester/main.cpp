@@ -16,7 +16,6 @@
 #include "Strategy.h"
 
 extern std::deque<long> gDaysKlineDiff;
-extern bool gEatOffer;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
 extern SHORT gCurServerTime[3];
 extern std::unordered_map<long, long> gCurCommPrice;
@@ -247,51 +246,28 @@ void thread_main()
     AutoQuoteTicks("2330", 2);
     AutoQuoteTicks("2317", 3);
 
-    while (gCurServerTime[0] < 0)
+    while (true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+
+        if (gCurServerTime[0] >= 0 &&
+            gCommodtyInfo.MTXIdxNoAM >= 0 &&
+            gCommodtyInfo.MTXIdxNo >= 0 &&
+            gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM) != 0 &&
+            gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) != 0 &&
+            gCurCommPrice.count(gCommodtyInfo.MTXIdxNoAM) != 0 &&
+            gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
+        {
+            break;
+        }
     }
 
     DEBUG(DEBUG_LEVEL_INFO, "[ServerTime: %d: %d: %d]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
 
-    long PreHigh = 0, PreLow = 0;
-
-    LONG PrintInfoCount = 0;
+    LONG PrintInfoCount = 0, CheckConnected = 0;
 
     while (true)
     {
-        if (gCurServerTime[0] < 0)
-        {
-            continue;
-        }
-
-        if (PreHigh == 0 || PreLow == 0)
-        {
-            if (gCurServerTime[0] < 8 || gCurServerTime[0] > 14)
-            {
-                if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM) != 0)
-                {
-                    PreHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM][0] / 100;
-                    PreLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM][1] / 100;
-                }
-            }
-            else
-            {
-                if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) != 0)
-                {
-                    PreHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0] / 100;
-                    PreLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1] / 100;
-                }
-            }
-
-            if (PreHigh != 0 && PreLow != 0)
-            {
-                DEBUG(DEBUG_LEVEL_INFO, "PreHigh: %ld, PreLow: %ld", PreHigh, PreLow);
-            }
-
-            continue;
-        }
-
         // Determine whether to use day quotation or full day and night quotation
 
         LONG MtxCommodtyInfo = 0;
@@ -340,9 +316,23 @@ void thread_main()
             // Strategy End:
         }
 
+        // Ouput start
+
         if (elapsed.count() >= refreshInterval)
         {
-            //
+            ++CheckConnected;
+
+            if (CheckConnected == 30)
+            {
+                if (pSKQuoteLib->IsConnected() != 1)
+                {
+                    DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");
+                    release();
+                    exit(0);
+                }
+
+                CheckConnected = 0;
+            }
             system("cls");
 
             //
@@ -365,17 +355,6 @@ void thread_main()
                 printf("Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, ", gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage);
 
                 printf("CurAvg: %ld, CurAmp : %ld\n", (CurHigh + CurLow) / 2, CurHigh - CurLow);
-
-                if (PrintInfoCount == 60)
-                {
-                    LOG(DEBUG_LEVEL_DEBUG, "[CurMtxPrice: %ld], Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, CurAvg: %ld, CurAmp : %ld, BidOfferLongShort : %ld",
-                        gCurCommPrice[MtxCommodtyInfo], gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage, (CurHigh + CurLow) / 2, CurHigh - CurLow, gBidOfferLongShort);
-                    PrintInfoCount = 0;
-                }
-                else
-                {
-                    ++PrintInfoCount;
-                }
             }
 
             printf("=========================================\n");
@@ -423,15 +402,6 @@ void thread_main()
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU
-
-        // if (pSKQuoteLib->IsConnected() != 1)
-        // {
-        //     DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");
-
-        //     // AutoConnect();
-        //     release();
-        //     exit(0);
-        // }
     }
 }
 

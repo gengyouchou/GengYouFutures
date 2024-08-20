@@ -24,7 +24,7 @@ std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 
 SHORT gCurServerTime[3] = {-1, -1, -1};
 
-COMMODITY_INFO gCommodtyInfo = {0, 0, 0, 0, 0};
+COMMODITY_INFO gCommodtyInfo = {-1, -1, -1, -1, -1};
 
 long CalculateDiff(const std::string &data);
 void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate, IN long lTimehms);
