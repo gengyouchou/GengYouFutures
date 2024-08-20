@@ -683,7 +683,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
         if (nClose > 0 && nClose <= gBest5BidOffer[nStockidx][0].first && nQty >= 10)
         {
-            --countLong;
+            countLong -= 10;
         }
     }
 
@@ -693,7 +693,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
         if (nClose > 0 && nClose >= gBest5BidOffer[nStockidx][5].first && nQty >= 10)
         {
-            ++countShort;
+            countShort += 10;
         }
     }
 
