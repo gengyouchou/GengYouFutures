@@ -624,6 +624,8 @@ void ParseOpenInterestMessage(const std::string &strMessage)
     // [OnOpenInterest] strMessage=TF,F0200006358844,TM08,S,1,0,21236.00,,,F129305651
     // [OnEventFiringObjectInvoke] dispidMember == 4
     // [OnOpenInterest] strMessage=##,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    // or
+    // M003 NO DATA#
 
     while (std::getline(ss, item, ','))
     {
@@ -634,6 +636,8 @@ void ParseOpenInterestMessage(const std::string &strMessage)
 
     if (!items.empty() && items[0] == UnKnowMarket)
     {
+        LOG(DEBUG_LEVEL_INFO, "Message: %s", strMessage);
+        gOpenInterestInfo.NeedToUpdate = FALSE;
         return;
     }
 
