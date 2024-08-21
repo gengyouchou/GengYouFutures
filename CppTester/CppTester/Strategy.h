@@ -74,7 +74,7 @@ VOID AutoCalcuKeyPrices(VOID);
 
 // Mode
 
-#define TEST_MODE 0
+#define TEST_MODE 1
 
 #if TEST_MODE
 
