@@ -43,7 +43,13 @@ BID_OFFER_LONG_AND_SHORT gBidOfferLongAndShort = {0};
 LONG gBidOfferLongShort = 0;
 double gCostMovingAverageVal = 0;
 
-STRATEGY_CONFIG gStrategyConfig;
+STRATEGY_CONFIG gStrategyConfig = {
+    CLOSING_KEY_PRICE_LEVEL,
+    BID_OFFER_LONG_SHORT_THRESHOLD,
+    ACTIVITY_POINT,
+    MAXIMUM_LOSS
+
+};
 
 LONG EstimatedLongSideKeyPrice(VOID);
 LONG EstimatedShortSideKeyPrice(VOID);

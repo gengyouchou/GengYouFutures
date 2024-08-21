@@ -83,3 +83,10 @@ VOID AutoCalcuKeyPrices(VOID);
 #endif
 
 #define NIGHT_TRADING 0
+
+// default config
+
+#define CLOSING_KEY_PRICE_LEVEL 2
+#define MAXIMUM_LOSS 3000.0
+#define ACTIVITY_POINT 0
+#define BID_OFFER_LONG_SHORT_THRESHOLD 100
