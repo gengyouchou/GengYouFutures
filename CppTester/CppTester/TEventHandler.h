@@ -118,7 +118,7 @@ namespace TEventHandlerNamespace
 
         void SetupConnectionPoint(device_interface *pdevice_interface)
         {
-            DEBUG("Start");
+            DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
             IConnectionPointContainer *pIConnectionPointContainerTemp = NULL;
             IUnknown *pIUnknown = NULL;
@@ -129,9 +129,6 @@ namespace TEventHandlerNamespace
 
             if (pIUnknown)
             {
-
-                DEBUG("pIUnknown");
-
                 // QI the pdevice_interface for its connection point.
                 pdevice_interface->QueryInterface(IID_IConnectionPointContainer, (void **)&pIConnectionPointContainerTemp);
 
@@ -144,15 +141,13 @@ namespace TEventHandlerNamespace
 
                 if (m_pIConnectionPoint)
                 {
-                    DEBUG("m_pIConnectionPoint->Advise");
-
                     m_pIConnectionPoint->Advise(pIUnknown, &m_dwEventCookie);
                 }
 
                 pIUnknown->Release();
                 pIUnknown = NULL;
             }
-            DEBUG("End");
+            DEBUG(DEBUG_LEVEL_DEBUG, "end");
         }
 
     public:

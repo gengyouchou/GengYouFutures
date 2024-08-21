@@ -1,93 +1,90 @@
 #include "SKReply.h"
 
-//custom
-DataTable^ CreateDataTable()
-{
-    DataTable^ mDataTable = gcnew DataTable();
+// custom
+DataTable ^ CreateDataTable() {
+    DataTable ^ mDataTable = gcnew DataTable();
 
-    DataColumn^ mDataColumn;
+    DataColumn ^ mDataColumn;
 
-    //¯Á¤Þ
+    // ï¿½ï¿½ï¿½ï¿½
     mDataColumn = gcnew DataColumn();
     mDataColumn->DataType = Type::GetType("System.Int32");
     mDataColumn->ColumnName = "Index";
     mDataTable->Columns->Add(mDataColumn);
 
-    //©e°U§Ç¸¹
+    // ï¿½eï¿½ï¿½Ç¸ï¿½
     mDataColumn = gcnew DataColumn();
     mDataColumn->DataType = Type::GetType("System.String");
     mDataColumn->ColumnName = "KeyNo";
     mDataTable->Columns->Add(mDataColumn);
 
-    //ª¬ºA
+    // ï¿½ï¿½ï¿½A
     mDataColumn = gcnew DataColumn();
     mDataColumn->DataType = Type::GetType("System.String");
     mDataColumn->ColumnName = "Type";
     mDataTable->Columns->Add(mDataColumn);
 
-    // ¥«³õ§O
+    // ï¿½ï¿½ï¿½ï¿½ï¿½O
     mDataColumn = gcnew DataColumn();
     mDataColumn->DataType = Type::GetType("System.String");
     mDataColumn->ColumnName = "MarketType";
     mDataTable->Columns->Add(mDataColumn);
 
-    //±b¸¹
+    // ï¿½bï¿½ï¿½
     mDataColumn = gcnew DataColumn();
     mDataColumn->DataType = Type::GetType("System.String");
     mDataColumn->ColumnName = "CustNo";
     mDataTable->Columns->Add(mDataColumn);
 
-    //°Ó«~¥N½X
+    // ï¿½~ï¿½Nï¿½X
     mDataColumn = gcnew DataColumn();
     mDataColumn->DataType = Type::GetType("System.String");
     mDataColumn->ColumnName = "ComId";
     mDataTable->Columns->Add(mDataColumn);
 
-    //¦WºÙ 
-    //«Ý¸É
+    // ï¿½Wï¿½ï¿½
+    // ï¿½ï¿½
 
-    //©e°UÁ`Ãþ
+    // ï¿½eï¿½Uï¿½`ï¿½ï¿½
     mDataColumn = gcnew DataColumn();
     mDataColumn->DataType = Type::GetType("System.String");
     mDataColumn->ColumnName = "BuySell";
     mDataTable->Columns->Add(mDataColumn);
 
-    //©e°U»ù
+    // ï¿½eï¿½Uï¿½ï¿½
     mDataColumn = gcnew DataColumn();
     mDataColumn->DataType = Type::GetType("System.String");
     mDataColumn->ColumnName = "Price";
     mDataTable->Columns->Add(mDataColumn);
 
-    //©e°U¶q
+    // ï¿½eï¿½Uï¿½q
     mDataColumn = gcnew DataColumn();
     mDataColumn->DataType = Type::GetType("System.String");
     mDataColumn->ColumnName = "Qty";
     mDataTable->Columns->Add(mDataColumn);
 
-    //¦¨¥æ¶q 
-    //«Ý¸É
+    // ï¿½ï¿½ï¿½ï¿½q
+    // ï¿½ï¿½
 
-
-
-    //©e°U®Ñ
+    // ï¿½eï¿½Uï¿½ï¿½
     mDataColumn = gcnew DataColumn();
     mDataColumn->DataType = Type::GetType("System.String");
     mDataColumn->ColumnName = "OrederNo";
     mDataTable->Columns->Add(mDataColumn);
 
-    //©e°U®É¶¡
+    // ï¿½eï¿½ï¿½É¶ï¿½
     mDataColumn = gcnew DataColumn();
     mDataColumn->DataType = Type::GetType("System.String");
     mDataColumn->ColumnName = "TradeData";
     mDataTable->Columns->Add(mDataColumn);
 
-    //©e°U¦³®Ä¤é´Á
+    // ï¿½eï¿½ï¿½ï¿½ï¿½Ä¤ï¿½ï¿½
     mDataColumn = gcnew DataColumn();
     mDataColumn->DataType = Type::GetType("System.String");
     mDataColumn->ColumnName = "OrderEffective";
     mDataTable->Columns->Add(mDataColumn);
 
-    //½L§O
+    // ï¿½Lï¿½O
     mDataColumn = gcnew DataColumn();
     mDataColumn->DataType = Type::GetType("System.String");
     mDataColumn->ColumnName = "Reserved";
@@ -98,7 +95,7 @@ DataTable^ CreateDataTable()
     return mDataTable;
 }
 
-Void CppCLITester::SKReply::OnConnect(System::String^ bstrUserID, int nErrorCode)
+    Void CppCLITester::SKReply::OnConnect(System::String ^ bstrUserID, int nErrorCode)
 {
     if (bstrUserID == m_UserID)
     {
@@ -106,7 +103,7 @@ Void CppCLITester::SKReply::OnConnect(System::String^ bstrUserID, int nErrorCode
     }
 }
 
-Void CppCLITester::SKReply::OnDisconnect(System::String^ bstrUserID, int nErrorCode)
+Void CppCLITester::SKReply::OnDisconnect(System::String ^ bstrUserID, int nErrorCode)
 {
     if (bstrUserID == m_UserID)
     {
@@ -114,14 +111,14 @@ Void CppCLITester::SKReply::OnDisconnect(System::String^ bstrUserID, int nErrorC
     }
 }
 
-Void CppCLITester::SKReply::OnComplete(System::String^ bstrUserID)
+Void CppCLITester::SKReply::OnComplete(System::String ^ bstrUserID)
 {
-    // ¸ê®Æ³£±µ¦¬§¹²¦¤F
+    // ï¿½Æ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½F
     if (bstrUserID == m_UserID)
     {
         lblSignalReplySolace->ForeColor = Color::Green;
 
-        //±N¸ê®Æ©ñ¨ìDataView·í¤¤
+        // ï¿½Nï¿½Æ©ï¿½ï¿½DataViewï¿½ï¿½ï¿½ï¿½
         myDataTable = CreateDataTable();
 
         myDataTable->Clear();
@@ -131,447 +128,436 @@ Void CppCLITester::SKReply::OnComplete(System::String^ bstrUserID)
     }
 }
 
-Void CppCLITester::SKReply::OnNewData(System::String^ bstrUserID,System::String^ bstrMessage)
+Void CppCLITester::SKReply::OnNewData(System::String ^ bstrUserID, System::String ^ bstrMessage)
 {
-   // WriteMessage(bstrMessage);
+    // WriteMessage(bstrMessage);
     if (bstrUserID == m_UserID)
     {
         Stringarray->Add(bstrMessage);
     }
 }
 
-Void CppCLITester::SKReply::ShowDetail(System::String^ type)
+Void CppCLITester::SKReply::ShowDetail(System::String ^ type)
 {
     int num = Stringarray->Count;
 
-    for(int i=0 ; i<num ; i++)
+    for (int i = 0; i < num; i++)
     {
-        array<String^>^ strValue;
+        array<String ^> ^ strValue;
 
         strValue = Stringarray[i]->Split(',');
 
-        
         if (strValue[2] == type || type == "")
         {
 
             DataIndex += 1;
-            DataRow^ mDataRow = myDataTable->NewRow();
-            //¯Á¤Þ
+            DataRow ^ mDataRow = myDataTable->NewRow();
+            // ï¿½ï¿½ï¿½ï¿½
             mDataRow["Index"] = DataIndex;
 
-            //©e°U§Ç¸¹
+            // ï¿½eï¿½ï¿½Ç¸ï¿½
             mDataRow["KeyNo"] = strValue[0];
 
-            //ª¬ºA
+            // ï¿½ï¿½ï¿½A
             if (strValue[2] == "N")
             {
-                mDataRow["Type"] = "©e°U";
+                mDataRow["Type"] = "ï¿½eï¿½U";
             }
             else if (strValue[2] == "C")
             {
-                mDataRow["Type"] = "¨ú®ø";
+                mDataRow["Type"] = "ï¿½ï¿½ï¿½ï¿½";
             }
             else if (strValue[2] == "U")
             {
-                mDataRow["Type"] = "§ï¶q";
+                mDataRow["Type"] = "ï¿½ï¿½q";
             }
             else if (strValue[2] == "P")
             {
-                mDataRow["Type"] = "§ï»ù";
+                mDataRow["Type"] = "ï¿½ï¿½ï¿½";
             }
             else if (strValue[2] == "D")
             {
-                mDataRow["Type"] = "¦¨¥æ";
+                mDataRow["Type"] = "ï¿½ï¿½ï¿½ï¿½";
             }
             else if (strValue[2] == "B")
             {
-                mDataRow["Type"] = "§ï»ù§ï¶q";
+                mDataRow["Type"] = "ï¿½ï¿½ï¿½ï¿½ï¿½q";
             }
             else if (strValue[2] == "S")
             {
-                mDataRow["Type"] = "°ÊºA°h³æ";
+                mDataRow["Type"] = "ï¿½Aï¿½hï¿½ï¿½";
             }
 
-
-            // ¥«³õ§O
+            // ï¿½ï¿½ï¿½ï¿½ï¿½O
             if (strValue[1] == "TS")
             {
-                mDataRow["MarketType"] = "ÃÒ¨é";
+                mDataRow["MarketType"] = "ï¿½ï¿½";
             }
             else if (strValue[1] == "TA")
             {
-                mDataRow["MarketType"] = "½L«á";
+                mDataRow["MarketType"] = "ï¿½Lï¿½ï¿½";
             }
             else if (strValue[1] == "TL")
             {
-                mDataRow["MarketType"] = "¹sªÑ";
+                mDataRow["MarketType"] = "ï¿½sï¿½ï¿½";
             }
             else if (strValue[1] == "TP")
             {
-                mDataRow["MarketType"] = "¿³Âd";
+                mDataRow["MarketType"] = "ï¿½ï¿½ï¿½d";
             }
             else if (strValue[1] == "TF")
             {
-                mDataRow["MarketType"] = "´Á³f";
+                mDataRow["MarketType"] = "ï¿½ï¿½ï¿½f";
             }
             else if (strValue[1] == "TO")
             {
-                mDataRow["MarketType"] = "¿ï¾ÜÅv";
+                mDataRow["MarketType"] = "ï¿½ï¿½ï¿½ï¿½v";
             }
             else if (strValue[1] == "OF")
             {
-                mDataRow["MarketType"] = "®ü´Á";
+                mDataRow["MarketType"] = "ï¿½ï¿½ï¿½ï¿½";
             }
             else if (strValue[1] == "OO")
             {
-                mDataRow["MarketType"] = "®ü¿ï";
+                mDataRow["MarketType"] = "ï¿½ï¿½ï¿½ï¿½";
             }
             else if (strValue[1] == "OS")
             {
-                mDataRow["MarketType"] = "½Æ©e°U";
+                mDataRow["MarketType"] = "ï¿½eï¿½U";
             }
 
-
-            //±b¸¹
+            // ï¿½bï¿½ï¿½
             mDataRow["CustNo"] = strValue[5];
 
-            //°Ó«~¥N½X
+            // ï¿½~ï¿½Nï¿½X
             mDataRow["ComId"] = strValue[8];
 
-            //¦WºÙ 
-            //«Ý¸É
+            // ï¿½Wï¿½ï¿½
+            // ï¿½ï¿½
 
-            //©e°UÁ`Ãþ 
-            System::String^  str = strValue[6];
-            System::String^  strPrint = "";
+            // ï¿½eï¿½Uï¿½`ï¿½ï¿½
+            System::String ^ str = strValue[6];
+            System::String ^ strPrint = "";
 
-
-                //´Á³f
+            // ï¿½ï¿½ï¿½f
             if (strValue[1] == "TF")
             {
-                //[0] B/S ¶R/½æ
+                //[0] B/S ï¿½R/ï¿½ï¿½
                 if (str[0] == 'B')
                 {
-                    strPrint += "¶R ";
+                    strPrint += "ï¿½R ";
                 }
-                else if(str[0] == 'S')
+                else if (str[0] == 'S')
                 {
-                    strPrint += "½æ ";
+                    strPrint += "ï¿½ï¿½ ";
                 }
 
-                // [1] Y/·í¨R, N/·s­Ü, O/¥­­Ü, 7/¥N¨R¾P
-                if(str[1] ==  'Y')
-                    strPrint += "·í¨R¡@";
-                
-                else if(str[1]== 'N')
-                    strPrint += "·s­Ü¡@";
-                   
-                else if(str[1] == 'O')
-                    strPrint += "¥­­Ü¡@";
-                   
-                else if(str[1]== '7')
-                    strPrint += "¥N¨R¾P¡@";
+                // [1] Y/ï¿½ï¿½ï¿½R, N/ï¿½sï¿½ï¿½, O/ï¿½ï¿½ï¿½ï¿½, 7/ï¿½Nï¿½Rï¿½P
+                if (str[1] == 'Y')
+                    strPrint += "ï¿½ï¿½ï¿½Rï¿½@";
+
+                else if (str[1] == 'N')
+                    strPrint += "ï¿½ï¿½Ü¡@";
+
+                else if (str[1] == 'O')
+                    strPrint += "ï¿½ï¿½Ü¡@";
+
+                else if (str[1] == '7')
+                    strPrint += "ï¿½Nï¿½Rï¿½Pï¿½@";
 
                 // [2] I/R/F  IOC / ROD / FOK
                 if (str[2] == 'I')
                 {
-                    strPrint += "IOC¡@";
+                    strPrint += "IOCï¿½@";
                 }
                 else if (str[2] == 'R')
                 {
-                    strPrint += "ROD¡@";
+                    strPrint += "RODï¿½@";
                 }
                 else if (str[2] == 'F')
                 {
-                    strPrint += "FOK¡@";
+                    strPrint += "FOKï¿½@";
                 }
 
-                // [3] 1/2/3/4/5¡@¥«»ù/­­»ù/°±·l/°±·l­­»ù/¦¬¥«
+                // [3] 1/2/3/4/5ï¿½@ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½l/ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½
                 if (str[3] == '1')
                 {
-                    strPrint += "¥«»ù¡@";
+                    strPrint += "ï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
                 else if (str[3] == '2')
                 {
-                    strPrint += "­­»ù¡@";
+                    strPrint += "ï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
                 else if (str[3] == '3')
                 {
-                    strPrint += "°±·l¡@";
+                    strPrint += "ï¿½ï¿½ï¿½lï¿½@";
                 }
                 else if (str[3] == '4')
                 {
-                    strPrint += "°±·l­­»ù¡@";
+                    strPrint += "ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
                 else if (str[3] == '5')
                 {
-                    strPrint += "¦¬¥«¡@";
+                    strPrint += "ï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
             }
-            else if (strValue[1] == "OF") // ®ü´Á
+            else if (strValue[1] == "OF") // ï¿½ï¿½ï¿½ï¿½
             {
             }
-            else if (strValue[1] == "OO") //®ü¿ï
+            else if (strValue[1] == "OO") // ï¿½ï¿½ï¿½ï¿½
             {
-                //[0] B/S ¶R/½æ
+                //[0] B/S ï¿½R/ï¿½ï¿½
                 if (str[0] == 'B')
                 {
-                    strPrint += "¶R ";
+                    strPrint += "ï¿½R ";
                 }
                 else if (str[0] == 'S')
                 {
-                    strPrint += "½æ ";
+                    strPrint += "ï¿½ï¿½ ";
                 }
 
-                // [1] N/O ·s­Ü / ¥­­Ü
+                // [1] N/O ï¿½sï¿½ï¿½ / ï¿½ï¿½ï¿½ï¿½
                 if (str[1] == 'N')
                 {
-                    strPrint += "·s­Ü¡@";
+                    strPrint += "ï¿½ï¿½Ü¡@";
                 }
                 else if (str[1] == 'O')
                 {
-                    strPrint += "¥­­Ü¡@";
+                    strPrint += "ï¿½ï¿½Ü¡@";
                 }
 
                 // [2] I/R/F  IOC / ROD / FOK
                 if (str[2] == 'I')
                 {
-                    strPrint += "IOC¡@";
+                    strPrint += "IOCï¿½@";
                 }
                 else if (str[2] == 'R')
                 {
-                    strPrint += "ROD¡@";
+                    strPrint += "RODï¿½@";
                 }
                 else if (str[2] == 'F')
                 {
-                    strPrint += "FOK¡@";
+                    strPrint += "FOKï¿½@";
                 }
 
-                // [3] 1/2/3/4/5¡@¥«»ù/­­»ù/°±·l/°±·l­­»ù/¦¬¥«
+                // [3] 1/2/3/4/5ï¿½@ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½l/ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½
                 if (str[3] == '1')
                 {
-                    strPrint += "¥«»ù¡@";
+                    strPrint += "ï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
                 else if (str[3] == '2')
                 {
-                    strPrint += "­­»ù¡@";
+                    strPrint += "ï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
                 else if (str[3] == '3')
                 {
-                    strPrint += "°±·l¡@";
+                    strPrint += "ï¿½ï¿½ï¿½lï¿½@";
                 }
                 else if (str[3] == '4')
                 {
-                    strPrint += "°±·l­­»ù¡@";
+                    strPrint += "ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
                 else if (str[3] == '5')
                 {
-                    strPrint += "¦¬¥«¡@";
+                    strPrint += "ï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
-
-
             }
             else if (strValue[1] == "OS")
             {
-                //[0] B/S ¶R/½æ
+                //[0] B/S ï¿½R/ï¿½ï¿½
                 if (str[0] == 'B')
                 {
-                    strPrint += "¶R ";
+                    strPrint += "ï¿½R ";
                 }
                 else if (str[0] == 'S')
                 {
-                    strPrint += "½æ ";
+                    strPrint += "ï¿½ï¿½ ";
                 }
 
                 //
                 if (str[1] == '1')
                 {
-                    strPrint += "¥«»ù¡@";
+                    strPrint += "ï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
                 else if (str[1] == '2')
                 {
-                    strPrint += "­­»ù¡@";
+                    strPrint += "ï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
                 else if (str[1] == '3')
                 {
-                    strPrint += "°±·l¡@";
+                    strPrint += "ï¿½ï¿½ï¿½lï¿½@";
                 }
                 else if (str[1] == '4')
                 {
-                    strPrint += "°±·l­­»ù¡@";
+                    strPrint += "ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
                 else if (str[1] == '5')
                 {
-                    strPrint += "¦¬¥«¡@";
+                    strPrint += "ï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
             }
-            else if (strValue[1] == "IO")//¿ï¾ÜÅv
+            else if (strValue[1] == "IO") // ï¿½ï¿½ï¿½ï¿½v
             {
-                //[0] B/S ¶R/½æ
+                //[0] B/S ï¿½R/ï¿½ï¿½
                 if (str[0] == 'B')
                 {
-                    strPrint += "¶R ";
+                    strPrint += "ï¿½R ";
                 }
                 else if (str[0] == 'S')
                 {
-                    strPrint += "½æ ";
+                    strPrint += "ï¿½ï¿½ ";
                 }
 
-                // [1] Y/·í¨R, N/·s­Ü, O/¥­­Ü, 7/¥N¨R¾P
+                // [1] Y/ï¿½ï¿½ï¿½R, N/ï¿½sï¿½ï¿½, O/ï¿½ï¿½ï¿½ï¿½, 7/ï¿½Nï¿½Rï¿½P
                 if (str[1] == 'Y')
-                    strPrint += "·í¨R¡@";
+                    strPrint += "ï¿½ï¿½ï¿½Rï¿½@";
 
                 else if (str[1] == 'N')
-                    strPrint += "·s­Ü¡@";
+                    strPrint += "ï¿½ï¿½Ü¡@";
 
                 else if (str[1] == 'O')
-                    strPrint += "¥­­Ü¡@";
+                    strPrint += "ï¿½ï¿½Ü¡@";
 
                 else if (str[1] == '7')
-                    strPrint += "¥N¨R¾P¡@";
+                    strPrint += "ï¿½Nï¿½Rï¿½Pï¿½@";
 
                 // [2] I/R/F  IOC / ROD / FOK
                 if (str[2] == 'I')
                 {
-                    strPrint += "IOC¡@";
+                    strPrint += "IOCï¿½@";
                 }
                 else if (str[2] == 'R')
                 {
-                    strPrint += "ROD¡@";
+                    strPrint += "RODï¿½@";
                 }
                 else if (str[2] == 'F')
                 {
-                    strPrint += "FOK¡@";
+                    strPrint += "FOKï¿½@";
                 }
 
-                // [3] 1/2/3/4/5¡@¥«»ù/­­»ù/°±·l/°±·l­­»ù/¦¬¥«
+                // [3] 1/2/3/4/5ï¿½@ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½l/ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½
                 if (str[3] == '1')
                 {
-                    strPrint += "¥«»ù¡@";
+                    strPrint += "ï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
                 else if (str[3] == '2')
                 {
-                    strPrint += "­­»ù¡@";
+                    strPrint += "ï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
                 else if (str[3] == '3')
                 {
-                    strPrint += "°±·l¡@";
+                    strPrint += "ï¿½ï¿½ï¿½lï¿½@";
                 }
                 else if (str[3] == '4')
                 {
-                    strPrint += "°±·l­­»ù¡@";
+                    strPrint += "ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
                 else if (str[3] == '5')
                 {
-                    strPrint += "¦¬¥«¡@";
+                    strPrint += "ï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
             }
             else
             {
-                //[0] B/S ¶R/½æ
+                //[0] B/S ï¿½R/ï¿½ï¿½
                 if (str[0] == 'B')
                 {
-                    strPrint += "¶R ";
+                    strPrint += "ï¿½R ";
                 }
                 else if (str[0] == 'S')
                 {
-                    strPrint += "½æ ";
+                    strPrint += "ï¿½ï¿½ ";
                 }
 
-                // [1,2] 00 ²{ªÑ¡A01 ¥N¸ê¡A02 ¥N¨é¡A03 ¿Ä¸ê¡A04 ¿Ä¨é¡A08 µL¨é¡A20 ¹sªÑ¡A40 ©ç½æ²{ªÑ 
-                System::String^ tempstring = str->Substring(1, 2);
+                // [1,2] 00 ï¿½ï¿½Ñ¡A01 ï¿½Nï¿½ï¿½A02 ï¿½Nï¿½A0 ï¿½Ä¸ï¿½A04 ï¿½Ä¨ï¿½08 ï¿½Lï¿½ï¿½A20 ï¿½sï¿½Ñ¡A40 ï¿½ï¿½ï¿½{ï¿½ï¿½
+                System::String ^ tempstring = str->Substring(1, 2);
                 if (tempstring == "00")
                 {
-                    strPrint += "²{ªÑ ";
+                    strPrint += "ï¿½{ï¿½ï¿½ ";
                 }
                 else if (tempstring == "01")
                 {
-                    strPrint += "¥N¸ê ";
+                    strPrint += "ï¿½Nï¿½ï¿½ ";
                 }
                 else if (tempstring == "02")
                 {
-                    strPrint += "¥N¨é ";
+                    strPrint += "ï¿½Nï¿½ï¿½ ";
                 }
                 else if (tempstring == "03")
                 {
-                    strPrint += "¿Ä¸ê ";
+                    strPrint += "ï¿½ï¿½ ";
                 }
                 else if (tempstring == "04")
                 {
-                    strPrint += "¿Ä¨é ";
+                    strPrint += "ï¿½ï¿½ ";
                 }
                 else if (tempstring == "08")
                 {
-                    strPrint += "µL¨é ";
+                    strPrint += "ï¿½Lï¿½ï¿½ ";
                 }
                 else if (tempstring == "20")
                 {
-                    strPrint += "¹sªÑ ";
+                    strPrint += "ï¿½sï¿½ï¿½ ";
                 }
                 else if (tempstring == "40")
                 {
-                    strPrint += "©ç½æ²{ªÑ ";
+                    strPrint += "ï¿½ï¿½ï¿½{ï¿½ï¿½ ";
                 }
 
-                // [3] I/R/F  IOC / ROD / FOK 
+                // [3] I/R/F  IOC / ROD / FOK
                 if (str[3] == 'I')
                 {
-                    strPrint += "IOC¡@";
+                    strPrint += "IOCï¿½@";
                 }
                 else if (str[3] == 'R')
                 {
-                    strPrint += "ROD¡@";
+                    strPrint += "RODï¿½@";
                 }
                 else if (str[3] == 'F')
                 {
-                    strPrint += "FOK¡@";
+                    strPrint += "FOKï¿½@";
                 }
-                // [4] 1/2¡@¥«»ù/­­»ù
+                // [4] 1/2ï¿½@ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½
                 if (str[4] == '1')
                 {
-                    strPrint += "¥«»ù¡@";
+                    strPrint += "ï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
                 else if (str[4] == '2')
                 {
-                    strPrint += "­­»ù¡@";
+                    strPrint += "ï¿½ï¿½ï¿½ï¿½ï¿½@";
                 }
             }
             mDataRow["BuySell"] = strPrint;
 
-            //©e°U»ù
+            // ï¿½eï¿½Uï¿½ï¿½
             mDataRow["Price"] = strValue[11];
 
-            //©e°U¶q
+            // ï¿½eï¿½Uï¿½q
             mDataRow["Qty"] = strValue[20];
 
-            //¦¨¥æ¶q 
-            //«Ý¸É
+            // ï¿½ï¿½ï¿½ï¿½q
+            // ï¿½ï¿½
 
-
-
-            //©e°U®Ñ
+            // ï¿½eï¿½Uï¿½ï¿½
             mDataRow["OrederNo"] = strValue[10];
 
-            //©e°U®É¶¡
-            mDataRow["TradeData"] = strValue[23]->Substring(0, 4)+"/"+ strValue[23]->Substring(4, 2)+"/" + strValue[23]->Substring(6, 2)+ strValue[24];
+            // ï¿½eï¿½ï¿½É¶ï¿½
+            mDataRow["TradeData"] = strValue[23]->Substring(0, 4) + "/" + strValue[23]->Substring(4, 2) + "/" + strValue[23]->Substring(6, 2) + strValue[24];
 
+            // ï¿½eï¿½ï¿½ï¿½ï¿½Ä¤ï¿½ï¿½
+            mDataRow["OrderEffective"] = strValue[29]->Substring(0, 4) + "/" + strValue[29]->Substring(4, 2) + "/" + strValue[29]->Substring(6, 2);
 
-
-            //©e°U¦³®Ä¤é´Á
-            mDataRow["OrderEffective"] = strValue[29]->Substring(0, 4)+"/"+strValue[29]->Substring(4, 2)+"/"+strValue[29]->Substring(6, 2);
-
-            //½L§O
+            // ï¿½Lï¿½O
             mDataRow["Reserved"] = strValue[31];
 
             if (strValue[31] == "A")
             {
-                mDataRow["Reserved"] = "T½L";
+                mDataRow["Reserved"] = "Tï¿½L";
             }
             else if (strValue[31] == "B")
             {
-                mDataRow["Reserved"] = "T+1½L";
+                mDataRow["Reserved"] = "T+1ï¿½L";
             }
-
 
             myDataTable->Rows->Add(mDataRow);
         }
@@ -580,63 +566,61 @@ Void CppCLITester::SKReply::ShowDetail(System::String^ type)
     DataIndex = 0;
 }
 
-Void CppCLITester::SKReply::InitialDataGridView(System::String^ type)
+Void CppCLITester::SKReply::InitialDataGridView(System::String ^ type)
 {
     myDataTable->Clear();
     dataGridView1->ClearSelection();
     dataGridView1->DataSource = myDataTable;
-   //¯Á¤Þ
+    // ï¿½ï¿½ï¿½ï¿½
     dataGridView1->Columns["Index"]->HeaderText = " ";
 
-    //©e°U§Ç¸¹
-    dataGridView1->Columns["KeyNo"]->HeaderText = "©e°U§Ç¸¹";
+    // ï¿½eï¿½ï¿½Ç¸ï¿½
+    dataGridView1->Columns["KeyNo"]->HeaderText = "ï¿½eï¿½ï¿½Ç¸ï¿½";
 
-    //ª¬ºA
-    dataGridView1->Columns["Type"]->HeaderText = "ª¬ºA";
+    // ï¿½ï¿½ï¿½A
+    dataGridView1->Columns["Type"]->HeaderText = "ï¿½ï¿½ï¿½A";
 
-    // ¥«³õ§O
-    dataGridView1->Columns["MarketType"]->HeaderText = "¥«³õ§O";
+    // ï¿½ï¿½ï¿½ï¿½ï¿½O
+    dataGridView1->Columns["MarketType"]->HeaderText = "ï¿½ï¿½ï¿½ï¿½ï¿½O";
 
-    //±b¸¹
-    dataGridView1->Columns["CustNo"]->HeaderText = "±b¸¹";
+    // ï¿½bï¿½ï¿½
+    dataGridView1->Columns["CustNo"]->HeaderText = "ï¿½bï¿½ï¿½";
 
-    //°Ó«~¥N½X
-    dataGridView1->Columns["ComId"]->HeaderText = "°Ó«~¥N½X";
+    // ï¿½~ï¿½Nï¿½X
+    dataGridView1->Columns["ComId"]->HeaderText = "ï¿½~ï¿½Nï¿½X";
 
-    //¦WºÙ 
-    //«Ý¸É
+    // ï¿½Wï¿½ï¿½
+    // ï¿½ï¿½
 
-    //©e°UÁ`Ãþ
-    dataGridView1->Columns["BuySell"]->HeaderText = "©e°UÁ`Ãþ";
+    // ï¿½eï¿½Uï¿½`ï¿½ï¿½
+    dataGridView1->Columns["BuySell"]->HeaderText = "ï¿½eï¿½Uï¿½`ï¿½ï¿½";
 
-    //©e°U»ù
-    dataGridView1->Columns["Price"]->HeaderText = "©e°U»ù";
+    // ï¿½eï¿½Uï¿½ï¿½
+    dataGridView1->Columns["Price"]->HeaderText = "ï¿½eï¿½Uï¿½ï¿½";
 
-    //©e°U¶q
-    dataGridView1->Columns["Qty"]->HeaderText = "©e°U¶q";
+    // ï¿½eï¿½Uï¿½q
+    dataGridView1->Columns["Qty"]->HeaderText = "ï¿½eï¿½Uï¿½q";
 
-    //¦¨¥æ¶q 
-    //«Ý¸É
+    // ï¿½ï¿½ï¿½ï¿½q
+    // ï¿½ï¿½
 
+    // ï¿½eï¿½Uï¿½ï¿½
+    dataGridView1->Columns["OrederNo"]->HeaderText = "ï¿½eï¿½Uï¿½ï¿½";
 
+    // ï¿½eï¿½ï¿½É¶ï¿½
+    dataGridView1->Columns["TradeData"]->HeaderText = "ï¿½eï¿½ï¿½É¶ï¿½";
 
-    //©e°U®Ñ
-    dataGridView1->Columns["OrederNo"]->HeaderText = "©e°U®Ñ";
+    // ï¿½eï¿½ï¿½ï¿½ï¿½Ä¤ï¿½ï¿½
+    dataGridView1->Columns["OrderEffective"]->HeaderText = "ï¿½eï¿½ï¿½ï¿½ï¿½Ä¤ï¿½ï¿½";
 
-    //©e°U®É¶¡
-    dataGridView1->Columns["TradeData"]->HeaderText = "©e°U®É¶¡";
+    // ï¿½Lï¿½O
+    dataGridView1->Columns["Reserved"]->HeaderText = "ï¿½Lï¿½O";
 
-    //©e°U¦³®Ä¤é´Á
-    dataGridView1->Columns["OrderEffective"]->HeaderText = "©e°U¦³®Ä¤é´Á";
-
-    //½L§O
-    dataGridView1->Columns["Reserved"]->HeaderText = "½L§O";
-
-    // ±N¸ê®Æ©ñ¤J¸ê®Æªí¸Ì
+    // ï¿½Nï¿½Æ©ï¿½Jï¿½Æªï¿½ï¿½ï¿½
     ShowDetail(type);
 }
 
-System::Void CppCLITester::SKReply::btnConnect_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::SKReply::btnConnect_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_first == true)
     {
@@ -644,35 +628,34 @@ System::Void CppCLITester::SKReply::btnConnect_Click(System::Object^ sender, Sys
         m_pSKReply->OnDisconnect += gcnew SKCOMLib::_ISKReplyLibEvents_OnDisconnectEventHandler(this, &CppCLITester::SKReply::OnDisconnect);
         m_pSKReply->OnComplete += gcnew SKCOMLib::_ISKReplyLibEvents_OnCompleteEventHandler(this, &CppCLITester::SKReply::OnComplete);
         m_pSKReply->OnNewData += gcnew SKCOMLib::_ISKReplyLibEvents_OnNewDataEventHandler(this, &CppCLITester::SKReply::OnNewData);
-       
     }
     int n_mCode = m_pSKReply->SKReplyLib_ConnectByID(m_UserID);
 
     GetMessage("SKReply", n_mCode, "SKReplyLib_ConnectByID");
 }
 
-System::Void CppCLITester::SKReply::btnDisconnect_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::SKReply::btnDisconnect_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     int n_mCode = m_pSKReply->SKReplyLib_CloseByID(m_UserID);
 
     GetMessage("SKReply", n_mCode, "SKReplyLib_CloseByID");
 }
 
-System::Void CppCLITester::SKReply::btnIsConnected_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::SKReply::btnIsConnected_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     int n_mCode = m_pSKReply->SKReplyLib_IsConnectedByID(m_UserID);
 
-    if (n_mCode == 0) //Â_½u
+    if (n_mCode == 0) // ï¿½_ï¿½u
     {
         ConnectedLabel->Text = "False";
         ConnectedLabel->BackColor = Color::Red;
     }
-    else if (n_mCode == 1) //³s½u¤¤
+    else if (n_mCode == 1) // ï¿½sï¿½uï¿½ï¿½
     {
         ConnectedLabel->Text = "True";
         ConnectedLabel->BackColor = Color::Green;
     }
-    else if (n_mCode == 2) //¤U¸ü¤¤
+    else if (n_mCode == 2) // ï¿½Uï¿½ï¿½ï¿½ï¿½
     {
         ConnectedLabel->Text = "False";
         ConnectedLabel->BackColor = Color::Yellow;
@@ -685,7 +668,7 @@ System::Void CppCLITester::SKReply::btnIsConnected_Click(System::Object^ sender,
     GetMessage("SKReply", n_mCode, "SKReplyLib_IsConnectedByID");
 }
 
-System::Void CppCLITester::SKReply::comboBox1_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::SKReply::comboBox1_SelectedIndexChanged(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (comboBox1->SelectedIndex == 0)
     {
@@ -720,4 +703,3 @@ System::Void CppCLITester::SKReply::comboBox1_SelectedIndexChanged(System::Objec
         InitialDataGridView("S");
     }
 }
-

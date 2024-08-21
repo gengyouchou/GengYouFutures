@@ -1,0 +1,5 @@
+// config.h.in
+
+#pragma once
+
+#define DATABASE_PATH "@DATABASE_PATH@"

@@ -1,9 +1,9 @@
 #include "Logger.h"
 #include <iostream>
 
-#ifndef NDEBUG
+// #ifndef NDEBUG
 #define LOGGING_ENABLED
-#endif
+// #endif
 
 Logger::Logger(const std::string &filename) : logFile(filename, std::ios::out | std::ios::app)
 {
@@ -24,5 +24,3 @@ Logger::~Logger()
     }
 #endif
 }
-
-

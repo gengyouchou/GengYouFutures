@@ -231,7 +231,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_EnterMonitorLONG.Name = "buttonSKQuoteLib_EnterMonitorLONG";
             this.buttonSKQuoteLib_EnterMonitorLONG.Size = new System.Drawing.Size(187, 30);
             this.buttonSKQuoteLib_EnterMonitorLONG.TabIndex = 15;
-            this.buttonSKQuoteLib_EnterMonitorLONG.Text = "連線報價主機";
+            this.buttonSKQuoteLib_EnterMonitorLONG.Text = "";
             this.buttonSKQuoteLib_EnterMonitorLONG.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_EnterMonitorLONG.Click += new System.EventHandler(this.buttonEnterMonitor_Click);
             // 
@@ -251,7 +251,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_LeaveMonitor.Name = "buttonSKQuoteLib_LeaveMonitor";
             this.buttonSKQuoteLib_LeaveMonitor.Size = new System.Drawing.Size(187, 30);
             this.buttonSKQuoteLib_LeaveMonitor.TabIndex = 17;
-            this.buttonSKQuoteLib_LeaveMonitor.Text = "斷線報價主機(ALL)";
+            this.buttonSKQuoteLib_LeaveMonitor.Text = "(ALL)";
             this.buttonSKQuoteLib_LeaveMonitor.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_LeaveMonitor.Click += new System.EventHandler(this.buttonSKQuoteLib_LeaveMonitor_Click);
             // 
@@ -283,7 +283,7 @@ namespace WindowsFormsApp1
             this.tabPageSKQuoteLib_GetMarketBuySellUpDown.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageSKQuoteLib_GetMarketBuySellUpDown.Size = new System.Drawing.Size(1362, 316);
             this.tabPageSKQuoteLib_GetMarketBuySellUpDown.TabIndex = 0;
-            this.tabPageSKQuoteLib_GetMarketBuySellUpDown.Text = "大盤資訊";
+            this.tabPageSKQuoteLib_GetMarketBuySellUpDown.Text = "";
             this.tabPageSKQuoteLib_GetMarketBuySellUpDown.UseVisualStyleBackColor = true;
             // 
             // buttonSKQuoteLib_GetMarketBuySellUpDown
@@ -293,7 +293,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_GetMarketBuySellUpDown.Name = "buttonSKQuoteLib_GetMarketBuySellUpDown";
             this.buttonSKQuoteLib_GetMarketBuySellUpDown.Size = new System.Drawing.Size(95, 30);
             this.buttonSKQuoteLib_GetMarketBuySellUpDown.TabIndex = 74;
-            this.buttonSKQuoteLib_GetMarketBuySellUpDown.Text = "大盤資訊";
+            this.buttonSKQuoteLib_GetMarketBuySellUpDown.Text = "";
             this.buttonSKQuoteLib_GetMarketBuySellUpDown.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_GetMarketBuySellUpDown.Click += new System.EventHandler(this.buttonSKQuoteLib_GetMarketBuySellUpDown_Click);
             // 
@@ -318,7 +318,7 @@ namespace WindowsFormsApp1
             this.tabPageMarket1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageMarket1.Size = new System.Drawing.Size(649, 270);
             this.tabPageMarket1.TabIndex = 0;
-            this.tabPageMarket1.Text = "上市";
+            this.tabPageMarket1.Text = "";
             this.tabPageMarket1.UseVisualStyleBackColor = true;
             // 
             // panelMarket1
@@ -357,7 +357,7 @@ namespace WindowsFormsApp1
             this.labelnTotv.Name = "labelnTotv";
             this.labelnTotv.Size = new System.Drawing.Size(100, 24);
             this.labelnTotv.TabIndex = 34;
-            this.labelnTotv.Text = "成交值(億)";
+            this.labelnTotv.Text = "()";
             // 
             // labelnNoChangeNoW
             // 
@@ -367,7 +367,7 @@ namespace WindowsFormsApp1
             this.labelnNoChangeNoW.Name = "labelnNoChangeNoW";
             this.labelnNoChangeNoW.Size = new System.Drawing.Size(176, 24);
             this.labelnNoChangeNoW.TabIndex = 70;
-            this.labelnNoChangeNoW.Text = "(不含權證)平盤家數";
+            this.labelnNoChangeNoW.Text = "()";
             // 
             // labelnLowNoW
             // 
@@ -377,7 +377,7 @@ namespace WindowsFormsApp1
             this.labelnLowNoW.Name = "labelnLowNoW";
             this.labelnLowNoW.Size = new System.Drawing.Size(214, 24);
             this.labelnLowNoW.TabIndex = 69;
-            this.labelnLowNoW.Text = "(不含權證)成交跌停家數";
+            this.labelnLowNoW.Text = "()";
             // 
             // labelnNoChange
             // 
@@ -387,7 +387,7 @@ namespace WindowsFormsApp1
             this.labelnNoChange.Name = "labelnNoChange";
             this.labelnNoChange.Size = new System.Drawing.Size(86, 24);
             this.labelnNoChange.TabIndex = 65;
-            this.labelnNoChange.Text = "平盤家數";
+            this.labelnNoChange.Text = "";
             // 
             // labelnTots
             // 
@@ -397,7 +397,7 @@ namespace WindowsFormsApp1
             this.labelnTots.Name = "labelnTots";
             this.labelnTots.Size = new System.Drawing.Size(86, 24);
             this.labelnTots.TabIndex = 35;
-            this.labelnTots.Text = "成交張數";
+            this.labelnTots.Text = "";
             // 
             // labelMarketTotTime
             // 
@@ -406,7 +406,7 @@ namespace WindowsFormsApp1
             this.labelMarketTotTime.Name = "labelMarketTotTime";
             this.labelMarketTotTime.Size = new System.Drawing.Size(124, 24);
             this.labelMarketTotTime.TabIndex = 47;
-            this.labelMarketTotTime.Text = "大盤成交時間";
+            this.labelMarketTotTime.Text = "";
             // 
             // labelnHighNoW
             // 
@@ -416,7 +416,7 @@ namespace WindowsFormsApp1
             this.labelnHighNoW.Name = "labelnHighNoW";
             this.labelnHighNoW.Size = new System.Drawing.Size(214, 24);
             this.labelnHighNoW.TabIndex = 68;
-            this.labelnHighNoW.Text = "(不含權證)成交漲停家數";
+            this.labelnHighNoW.Text = "()";
             // 
             // labelMarketTotPtr
             // 
@@ -425,7 +425,7 @@ namespace WindowsFormsApp1
             this.labelMarketTotPtr.Name = "labelMarketTotPtr";
             this.labelMarketTotPtr.Size = new System.Drawing.Size(134, 24);
             this.labelMarketTotPtr.TabIndex = 46;
-            this.labelMarketTotPtr.Text = "目前第x筆資料";
+            this.labelMarketTotPtr.Text = "x";
             // 
             // labelnTotc
             // 
@@ -435,7 +435,7 @@ namespace WindowsFormsApp1
             this.labelnTotc.Name = "labelnTotc";
             this.labelnTotc.Size = new System.Drawing.Size(86, 24);
             this.labelnTotc.TabIndex = 36;
-            this.labelnTotc.Text = "成交筆數";
+            this.labelnTotc.Text = "";
             // 
             // labelnDownNoW
             // 
@@ -445,7 +445,7 @@ namespace WindowsFormsApp1
             this.labelnDownNoW.Name = "labelnDownNoW";
             this.labelnDownNoW.Size = new System.Drawing.Size(214, 24);
             this.labelnDownNoW.TabIndex = 67;
-            this.labelnDownNoW.Text = "(不含權證)成交下跌家數";
+            this.labelnDownNoW.Text = "()";
             // 
             // labelnBs
             // 
@@ -455,7 +455,7 @@ namespace WindowsFormsApp1
             this.labelnBs.Name = "labelnBs";
             this.labelnBs.Size = new System.Drawing.Size(124, 24);
             this.labelnBs.TabIndex = 37;
-            this.labelnBs.Text = "成交買進張數";
+            this.labelnBs.Text = "";
             // 
             // labelnUpNoW
             // 
@@ -465,7 +465,7 @@ namespace WindowsFormsApp1
             this.labelnUpNoW.Name = "labelnUpNoW";
             this.labelnUpNoW.Size = new System.Drawing.Size(214, 24);
             this.labelnUpNoW.TabIndex = 66;
-            this.labelnUpNoW.Text = "(不含權證)成交上漲家數";
+            this.labelnUpNoW.Text = "()";
             // 
             // labelnSs
             // 
@@ -475,7 +475,7 @@ namespace WindowsFormsApp1
             this.labelnSs.Name = "labelnSs";
             this.labelnSs.Size = new System.Drawing.Size(124, 24);
             this.labelnSs.TabIndex = 38;
-            this.labelnSs.Text = "成交賣出張數";
+            this.labelnSs.Text = "";
             // 
             // labelnBc
             // 
@@ -485,7 +485,7 @@ namespace WindowsFormsApp1
             this.labelnBc.Name = "labelnBc";
             this.labelnBc.Size = new System.Drawing.Size(124, 24);
             this.labelnBc.TabIndex = 39;
-            this.labelnBc.Text = "成交買進筆數";
+            this.labelnBc.Text = "";
             // 
             // labelnLow
             // 
@@ -495,7 +495,7 @@ namespace WindowsFormsApp1
             this.labelnLow.Name = "labelnLow";
             this.labelnLow.Size = new System.Drawing.Size(124, 24);
             this.labelnLow.TabIndex = 64;
-            this.labelnLow.Text = "成交跌停家數";
+            this.labelnLow.Text = "";
             // 
             // labelnSc
             // 
@@ -505,7 +505,7 @@ namespace WindowsFormsApp1
             this.labelnSc.Name = "labelnSc";
             this.labelnSc.Size = new System.Drawing.Size(124, 24);
             this.labelnSc.TabIndex = 40;
-            this.labelnSc.Text = "成交賣出筆數";
+            this.labelnSc.Text = "";
             // 
             // labelnHigh
             // 
@@ -515,7 +515,7 @@ namespace WindowsFormsApp1
             this.labelnHigh.Name = "labelnHigh";
             this.labelnHigh.Size = new System.Drawing.Size(124, 24);
             this.labelnHigh.TabIndex = 63;
-            this.labelnHigh.Text = "成交漲停家數";
+            this.labelnHigh.Text = "";
             // 
             // labelnUp
             // 
@@ -525,7 +525,7 @@ namespace WindowsFormsApp1
             this.labelnUp.Name = "labelnUp";
             this.labelnUp.Size = new System.Drawing.Size(124, 24);
             this.labelnUp.TabIndex = 61;
-            this.labelnUp.Text = "成交上漲家數";
+            this.labelnUp.Text = "";
             // 
             // labelnDown
             // 
@@ -535,7 +535,7 @@ namespace WindowsFormsApp1
             this.labelnDown.Name = "labelnDown";
             this.labelnDown.Size = new System.Drawing.Size(124, 24);
             this.labelnDown.TabIndex = 62;
-            this.labelnDown.Text = "成交下跌家數";
+            this.labelnDown.Text = "";
             // 
             // tabPageMarket2
             // 
@@ -546,7 +546,7 @@ namespace WindowsFormsApp1
             this.tabPageMarket2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageMarket2.Size = new System.Drawing.Size(649, 270);
             this.tabPageMarket2.TabIndex = 3;
-            this.tabPageMarket2.Text = "上櫃";
+            this.tabPageMarket2.Text = "";
             this.tabPageMarket2.UseVisualStyleBackColor = true;
             // 
             // panelMarket2
@@ -585,7 +585,7 @@ namespace WindowsFormsApp1
             this.labelnNoChangeNoW2.Name = "labelnNoChangeNoW2";
             this.labelnNoChangeNoW2.Size = new System.Drawing.Size(176, 24);
             this.labelnNoChangeNoW2.TabIndex = 73;
-            this.labelnNoChangeNoW2.Text = "(不含權證)平盤家數";
+            this.labelnNoChangeNoW2.Text = "()";
             // 
             // labelnNoChange2
             // 
@@ -595,7 +595,7 @@ namespace WindowsFormsApp1
             this.labelnNoChange2.Name = "labelnNoChange2";
             this.labelnNoChange2.Size = new System.Drawing.Size(86, 24);
             this.labelnNoChange2.TabIndex = 72;
-            this.labelnNoChange2.Text = "平盤家數";
+            this.labelnNoChange2.Text = "";
             // 
             // labelMarketTotTime2
             // 
@@ -604,7 +604,7 @@ namespace WindowsFormsApp1
             this.labelMarketTotTime2.Name = "labelMarketTotTime2";
             this.labelMarketTotTime2.Size = new System.Drawing.Size(124, 24);
             this.labelMarketTotTime2.TabIndex = 71;
-            this.labelMarketTotTime2.Text = "大盤成交時間";
+            this.labelMarketTotTime2.Text = "";
             // 
             // labelMarketTotPtr2
             // 
@@ -613,7 +613,7 @@ namespace WindowsFormsApp1
             this.labelMarketTotPtr2.Name = "labelMarketTotPtr2";
             this.labelMarketTotPtr2.Size = new System.Drawing.Size(134, 24);
             this.labelMarketTotPtr2.TabIndex = 70;
-            this.labelMarketTotPtr2.Text = "目前第x筆資料";
+            this.labelMarketTotPtr2.Text = "x";
             // 
             // labelnTotv2
             // 
@@ -623,7 +623,7 @@ namespace WindowsFormsApp1
             this.labelnTotv2.Name = "labelnTotv2";
             this.labelnTotv2.Size = new System.Drawing.Size(100, 24);
             this.labelnTotv2.TabIndex = 34;
-            this.labelnTotv2.Text = "成交值(億)";
+            this.labelnTotv2.Text = "()";
             // 
             // labelnLowNoW2
             // 
@@ -633,7 +633,7 @@ namespace WindowsFormsApp1
             this.labelnLowNoW2.Name = "labelnLowNoW2";
             this.labelnLowNoW2.Size = new System.Drawing.Size(214, 24);
             this.labelnLowNoW2.TabIndex = 69;
-            this.labelnLowNoW2.Text = "(不含權證)成交跌停家數";
+            this.labelnLowNoW2.Text = "()";
             // 
             // labelnTots2
             // 
@@ -643,7 +643,7 @@ namespace WindowsFormsApp1
             this.labelnTots2.Name = "labelnTots2";
             this.labelnTots2.Size = new System.Drawing.Size(86, 24);
             this.labelnTots2.TabIndex = 35;
-            this.labelnTots2.Text = "成交張數";
+            this.labelnTots2.Text = "";
             // 
             // labelnHighNoW2
             // 
@@ -653,7 +653,7 @@ namespace WindowsFormsApp1
             this.labelnHighNoW2.Name = "labelnHighNoW2";
             this.labelnHighNoW2.Size = new System.Drawing.Size(214, 24);
             this.labelnHighNoW2.TabIndex = 68;
-            this.labelnHighNoW2.Text = "(不含權證)成交漲停家數";
+            this.labelnHighNoW2.Text = "()";
             // 
             // labelnTotc2
             // 
@@ -663,7 +663,7 @@ namespace WindowsFormsApp1
             this.labelnTotc2.Name = "labelnTotc2";
             this.labelnTotc2.Size = new System.Drawing.Size(86, 24);
             this.labelnTotc2.TabIndex = 36;
-            this.labelnTotc2.Text = "成交筆數";
+            this.labelnTotc2.Text = "";
             // 
             // labelnDownNoW2
             // 
@@ -673,7 +673,7 @@ namespace WindowsFormsApp1
             this.labelnDownNoW2.Name = "labelnDownNoW2";
             this.labelnDownNoW2.Size = new System.Drawing.Size(214, 24);
             this.labelnDownNoW2.TabIndex = 67;
-            this.labelnDownNoW2.Text = "(不含權證)成交下跌家數";
+            this.labelnDownNoW2.Text = "()";
             // 
             // labelnBs2
             // 
@@ -683,7 +683,7 @@ namespace WindowsFormsApp1
             this.labelnBs2.Name = "labelnBs2";
             this.labelnBs2.Size = new System.Drawing.Size(124, 24);
             this.labelnBs2.TabIndex = 37;
-            this.labelnBs2.Text = "成交買進張數";
+            this.labelnBs2.Text = "";
             // 
             // labelnUpNoW2
             // 
@@ -693,7 +693,7 @@ namespace WindowsFormsApp1
             this.labelnUpNoW2.Name = "labelnUpNoW2";
             this.labelnUpNoW2.Size = new System.Drawing.Size(214, 24);
             this.labelnUpNoW2.TabIndex = 66;
-            this.labelnUpNoW2.Text = "(不含權證)成交上漲家數";
+            this.labelnUpNoW2.Text = "()";
             // 
             // labelnSs2
             // 
@@ -703,7 +703,7 @@ namespace WindowsFormsApp1
             this.labelnSs2.Name = "labelnSs2";
             this.labelnSs2.Size = new System.Drawing.Size(124, 24);
             this.labelnSs2.TabIndex = 38;
-            this.labelnSs2.Text = "成交賣出張數";
+            this.labelnSs2.Text = "";
             // 
             // labelnBc2
             // 
@@ -713,7 +713,7 @@ namespace WindowsFormsApp1
             this.labelnBc2.Name = "labelnBc2";
             this.labelnBc2.Size = new System.Drawing.Size(124, 24);
             this.labelnBc2.TabIndex = 39;
-            this.labelnBc2.Text = "成交買進筆數";
+            this.labelnBc2.Text = "";
             // 
             // labelnLow2
             // 
@@ -723,7 +723,7 @@ namespace WindowsFormsApp1
             this.labelnLow2.Name = "labelnLow2";
             this.labelnLow2.Size = new System.Drawing.Size(124, 24);
             this.labelnLow2.TabIndex = 64;
-            this.labelnLow2.Text = "成交跌停家數";
+            this.labelnLow2.Text = "";
             // 
             // labelnSc2
             // 
@@ -733,7 +733,7 @@ namespace WindowsFormsApp1
             this.labelnSc2.Name = "labelnSc2";
             this.labelnSc2.Size = new System.Drawing.Size(124, 24);
             this.labelnSc2.TabIndex = 40;
-            this.labelnSc2.Text = "成交賣出筆數";
+            this.labelnSc2.Text = "";
             // 
             // labelnHigh2
             // 
@@ -743,7 +743,7 @@ namespace WindowsFormsApp1
             this.labelnHigh2.Name = "labelnHigh2";
             this.labelnHigh2.Size = new System.Drawing.Size(124, 24);
             this.labelnHigh2.TabIndex = 63;
-            this.labelnHigh2.Text = "成交漲停家數";
+            this.labelnHigh2.Text = "";
             // 
             // labelnUp2
             // 
@@ -753,7 +753,7 @@ namespace WindowsFormsApp1
             this.labelnUp2.Name = "labelnUp2";
             this.labelnUp2.Size = new System.Drawing.Size(124, 24);
             this.labelnUp2.TabIndex = 61;
-            this.labelnUp2.Text = "成交上漲家數";
+            this.labelnUp2.Text = "";
             // 
             // labelnDown2
             // 
@@ -763,7 +763,7 @@ namespace WindowsFormsApp1
             this.labelnDown2.Name = "labelnDown2";
             this.labelnDown2.Size = new System.Drawing.Size(124, 24);
             this.labelnDown2.TabIndex = 62;
-            this.labelnDown2.Text = "成交下跌家數";
+            this.labelnDown2.Text = "";
             // 
             // tabPageStockList
             // 
@@ -778,7 +778,7 @@ namespace WindowsFormsApp1
             this.tabPageStockList.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageStockList.Size = new System.Drawing.Size(1362, 316);
             this.tabPageStockList.TabIndex = 3;
-            this.tabPageStockList.Text = "商品清單";
+            this.tabPageStockList.Text = "";
             this.tabPageStockList.UseVisualStyleBackColor = true;
             // 
             // dataGridViewOnNotifyCommodityListWithTypeNo
@@ -810,7 +810,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_RequestStockList.Name = "buttonSKQuoteLib_RequestStockList";
             this.buttonSKQuoteLib_RequestStockList.Size = new System.Drawing.Size(91, 30);
             this.buttonSKQuoteLib_RequestStockList.TabIndex = 130;
-            this.buttonSKQuoteLib_RequestStockList.Text = "送出";
+            this.buttonSKQuoteLib_RequestStockList.Text = "";
             this.buttonSKQuoteLib_RequestStockList.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_RequestStockList.Click += new System.EventHandler(this.buttonSKQuoteLib_RequestStockList_Click);
             // 
@@ -833,7 +833,7 @@ namespace WindowsFormsApp1
             this.labelSKQuoteLib_RequestStockList.Name = "labelSKQuoteLib_RequestStockList";
             this.labelSKQuoteLib_RequestStockList.Size = new System.Drawing.Size(124, 24);
             this.labelSKQuoteLib_RequestStockList.TabIndex = 34;
-            this.labelSKQuoteLib_RequestStockList.Text = "請選擇市場別";
+            this.labelSKQuoteLib_RequestStockList.Text = "";
             // 
             // tabPageSKQuoteLib_GetStockByNoLONG
             // 
@@ -847,7 +847,7 @@ namespace WindowsFormsApp1
             this.tabPageSKQuoteLib_GetStockByNoLONG.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageSKQuoteLib_GetStockByNoLONG.Size = new System.Drawing.Size(1362, 316);
             this.tabPageSKQuoteLib_GetStockByNoLONG.TabIndex = 7;
-            this.tabPageSKQuoteLib_GetStockByNoLONG.Text = "個股資訊";
+            this.tabPageSKQuoteLib_GetStockByNoLONG.Text = "";
             this.tabPageSKQuoteLib_GetStockByNoLONG.UseVisualStyleBackColor = true;
             // 
             // dataGridViewSKQuoteLib_GetStockByNoLONG
@@ -886,7 +886,7 @@ namespace WindowsFormsApp1
             this.labelSKQuoteLib_GetStockByNoLONG.Name = "labelSKQuoteLib_GetStockByNoLONG";
             this.labelSKQuoteLib_GetStockByNoLONG.Size = new System.Drawing.Size(91, 24);
             this.labelSKQuoteLib_GetStockByNoLONG.TabIndex = 134;
-            this.labelSKQuoteLib_GetStockByNoLONG.Text = "商品代碼:";
+            this.labelSKQuoteLib_GetStockByNoLONG.Text = ":";
             // 
             // buttonSKQuoteLib_GetStockByNoLONG
             // 
@@ -895,7 +895,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_GetStockByNoLONG.Name = "buttonSKQuoteLib_GetStockByNoLONG";
             this.buttonSKQuoteLib_GetStockByNoLONG.Size = new System.Drawing.Size(105, 30);
             this.buttonSKQuoteLib_GetStockByNoLONG.TabIndex = 133;
-            this.buttonSKQuoteLib_GetStockByNoLONG.Text = "個股資訊";
+            this.buttonSKQuoteLib_GetStockByNoLONG.Text = "";
             this.buttonSKQuoteLib_GetStockByNoLONG.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_GetStockByNoLONG.Click += new System.EventHandler(this.buttonSKQuoteLib_GetStockByNoLONG_Click);
             // 
@@ -920,7 +920,7 @@ namespace WindowsFormsApp1
             this.tabPageRequest.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageRequest.Size = new System.Drawing.Size(1362, 316);
             this.tabPageRequest.TabIndex = 5;
-            this.tabPageRequest.Text = "即時報價";
+            this.tabPageRequest.Text = "";
             this.tabPageRequest.UseVisualStyleBackColor = true;
             // 
             // dataGridViewOnNotifyOddLotSpreadDeal
@@ -951,7 +951,7 @@ namespace WindowsFormsApp1
             this.checkBoxSKQuoteLib_RequestStocksWithMarketNo.Name = "checkBoxSKQuoteLib_RequestStocksWithMarketNo";
             this.checkBoxSKQuoteLib_RequestStocksWithMarketNo.Size = new System.Drawing.Size(93, 25);
             this.checkBoxSKQuoteLib_RequestStocksWithMarketNo.TabIndex = 123;
-            this.checkBoxSKQuoteLib_RequestStocksWithMarketNo.Text = "盤中零股";
+            this.checkBoxSKQuoteLib_RequestStocksWithMarketNo.Text = "";
             this.checkBoxSKQuoteLib_RequestStocksWithMarketNo.UseVisualStyleBackColor = true;
             this.checkBoxSKQuoteLib_RequestStocksWithMarketNo.CheckedChanged += new System.EventHandler(this.checkBoxSKQuoteLib_RequestStocksWithMarketNo_CheckedChanged);
             // 
@@ -962,7 +962,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_RequestStocksWithMarketNo.Name = "buttonSKQuoteLib_RequestStocksWithMarketNo";
             this.buttonSKQuoteLib_RequestStocksWithMarketNo.Size = new System.Drawing.Size(66, 30);
             this.buttonSKQuoteLib_RequestStocksWithMarketNo.TabIndex = 120;
-            this.buttonSKQuoteLib_RequestStocksWithMarketNo.Text = "訂閱";
+            this.buttonSKQuoteLib_RequestStocksWithMarketNo.Text = "";
             this.buttonSKQuoteLib_RequestStocksWithMarketNo.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_RequestStocksWithMarketNo.Visible = false;
             this.buttonSKQuoteLib_RequestStocksWithMarketNo.Click += new System.EventHandler(this.buttonSKQuoteLib_RequestStocksWithMarketNo_Click);
@@ -986,7 +986,7 @@ namespace WindowsFormsApp1
             this.labelSKQuoteLib11.Name = "labelSKQuoteLib11";
             this.labelSKQuoteLib11.Size = new System.Drawing.Size(138, 24);
             this.labelSKQuoteLib11.TabIndex = 45;
-            this.labelSKQuoteLib11.Text = "(不含盤中零股)";
+            this.labelSKQuoteLib11.Text = "()";
             // 
             // buttonSKQuoteLib_CancelRequestStocks
             // 
@@ -995,7 +995,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_CancelRequestStocks.Name = "buttonSKQuoteLib_CancelRequestStocks";
             this.buttonSKQuoteLib_CancelRequestStocks.Size = new System.Drawing.Size(96, 30);
             this.buttonSKQuoteLib_CancelRequestStocks.TabIndex = 44;
-            this.buttonSKQuoteLib_CancelRequestStocks.Text = "取消訂閱";
+            this.buttonSKQuoteLib_CancelRequestStocks.Text = "";
             this.buttonSKQuoteLib_CancelRequestStocks.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_CancelRequestStocks.Click += new System.EventHandler(this.buttonSKQuoteLib_CancelRequestStocks_Click);
             // 
@@ -1025,7 +1025,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_RequestStocks.Name = "buttonSKQuoteLib_RequestStocks";
             this.buttonSKQuoteLib_RequestStocks.Size = new System.Drawing.Size(66, 30);
             this.buttonSKQuoteLib_RequestStocks.TabIndex = 33;
-            this.buttonSKQuoteLib_RequestStocks.Text = "訂閱";
+            this.buttonSKQuoteLib_RequestStocks.Text = "";
             this.buttonSKQuoteLib_RequestStocks.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_RequestStocks.Click += new System.EventHandler(this.buttonSKQuoteLib_RequestStocks_Click);
             // 
@@ -1046,7 +1046,7 @@ namespace WindowsFormsApp1
             this.labelRequestStocks.Name = "labelRequestStocks";
             this.labelRequestStocks.Size = new System.Drawing.Size(313, 24);
             this.labelRequestStocks.TabIndex = 31;
-            this.labelRequestStocks.Text = "請輸入商品代號(每檔以\",\"做區隔)：";
+            this.labelRequestStocks.Text = "(\",\")：";
             // 
             // dataGridViewStocks
             // 
@@ -1090,7 +1090,7 @@ namespace WindowsFormsApp1
             this.tabPageTicks.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageTicks.Size = new System.Drawing.Size(1362, 316);
             this.tabPageTicks.TabIndex = 4;
-            this.tabPageTicks.Text = "五檔&成交明細";
+            this.tabPageTicks.Text = "&";
             this.tabPageTicks.UseVisualStyleBackColor = true;
             // 
             // checkBoxSKQuoteLib_RequestTicksWithMarketNos
@@ -1101,7 +1101,7 @@ namespace WindowsFormsApp1
             this.checkBoxSKQuoteLib_RequestTicksWithMarketNos.Name = "checkBoxSKQuoteLib_RequestTicksWithMarketNos";
             this.checkBoxSKQuoteLib_RequestTicksWithMarketNos.Size = new System.Drawing.Size(93, 25);
             this.checkBoxSKQuoteLib_RequestTicksWithMarketNos.TabIndex = 122;
-            this.checkBoxSKQuoteLib_RequestTicksWithMarketNos.Text = "盤中零股";
+            this.checkBoxSKQuoteLib_RequestTicksWithMarketNos.Text = "";
             this.checkBoxSKQuoteLib_RequestTicksWithMarketNos.UseVisualStyleBackColor = true;
             this.checkBoxSKQuoteLib_RequestTicksWithMarketNos.CheckedChanged += new System.EventHandler(this.checkBoxSKQuoteLib_RequestTicksWithMarketNos_CheckedChanged);
             // 
@@ -1133,7 +1133,7 @@ namespace WindowsFormsApp1
             this.labelnSimulate.Name = "labelnSimulate";
             this.labelnSimulate.Size = new System.Drawing.Size(74, 24);
             this.labelnSimulate.TabIndex = 120;
-            this.labelnSimulate.Text = "XX揭示";
+            this.labelnSimulate.Text = "XX";
             // 
             // comboBoxSKQuoteLib_RequestTicksWithMarketNosMarketNo
             // 
@@ -1153,7 +1153,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_RequestTicksWithMarketNo.Name = "buttonSKQuoteLib_RequestTicksWithMarketNo";
             this.buttonSKQuoteLib_RequestTicksWithMarketNo.Size = new System.Drawing.Size(66, 30);
             this.buttonSKQuoteLib_RequestTicksWithMarketNo.TabIndex = 44;
-            this.buttonSKQuoteLib_RequestTicksWithMarketNo.Text = "訂閱";
+            this.buttonSKQuoteLib_RequestTicksWithMarketNo.Text = "";
             this.buttonSKQuoteLib_RequestTicksWithMarketNo.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_RequestTicksWithMarketNo.Visible = false;
             this.buttonSKQuoteLib_RequestTicksWithMarketNo.Click += new System.EventHandler(this.buttonSKQuoteLib_RequestTicksWithMarketNo_Click);
@@ -1166,7 +1166,7 @@ namespace WindowsFormsApp1
             this.labelSKQuoteLib1.Name = "labelSKQuoteLib1";
             this.labelSKQuoteLib1.Size = new System.Drawing.Size(138, 24);
             this.labelSKQuoteLib1.TabIndex = 42;
-            this.labelSKQuoteLib1.Text = "(不含盤中零股)";
+            this.labelSKQuoteLib1.Text = "()";
             // 
             // labelPage
             // 
@@ -1194,7 +1194,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_CancelRequestTicks.Name = "buttonSKQuoteLib_CancelRequestTicks";
             this.buttonSKQuoteLib_CancelRequestTicks.Size = new System.Drawing.Size(96, 30);
             this.buttonSKQuoteLib_CancelRequestTicks.TabIndex = 39;
-            this.buttonSKQuoteLib_CancelRequestTicks.Text = "取消訂閱";
+            this.buttonSKQuoteLib_CancelRequestTicks.Text = "";
             this.buttonSKQuoteLib_CancelRequestTicks.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_CancelRequestTicks.Click += new System.EventHandler(this.buttonSKQuoteLib_CancelRequestTicks_Click);
             // 
@@ -1214,7 +1214,7 @@ namespace WindowsFormsApp1
             this.labelTicks.Name = "labelTicks";
             this.labelTicks.Size = new System.Drawing.Size(192, 24);
             this.labelTicks.TabIndex = 35;
-            this.labelTicks.Text = "輸入商品代碼(僅1檔):";
+            this.labelTicks.Text = "(1):";
             // 
             // buttonSKQuoteLib_RequestTicks
             // 
@@ -1223,7 +1223,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_RequestTicks.Name = "buttonSKQuoteLib_RequestTicks";
             this.buttonSKQuoteLib_RequestTicks.Size = new System.Drawing.Size(66, 30);
             this.buttonSKQuoteLib_RequestTicks.TabIndex = 37;
-            this.buttonSKQuoteLib_RequestTicks.Text = "訂閱";
+            this.buttonSKQuoteLib_RequestTicks.Text = "";
             this.buttonSKQuoteLib_RequestTicks.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_RequestTicks.Click += new System.EventHandler(this.buttonSKQuoteLib_RequestTicks_Click);
             // 
@@ -1260,7 +1260,7 @@ namespace WindowsFormsApp1
             this.tabPageKLine.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageKLine.Size = new System.Drawing.Size(1362, 316);
             this.tabPageKLine.TabIndex = 2;
-            this.tabPageKLine.Text = "技術分析";
+            this.tabPageKLine.Text = "";
             this.tabPageKLine.UseVisualStyleBackColor = true;
             // 
             // tabControlKLine
@@ -1376,7 +1376,7 @@ namespace WindowsFormsApp1
             this.labelsKLineType.Name = "labelsKLineType";
             this.labelsKLineType.Size = new System.Drawing.Size(79, 24);
             this.labelsKLineType.TabIndex = 118;
-            this.labelsKLineType.Text = "K線種類";
+            this.labelsKLineType.Text = "K";
             // 
             // dataGridViewKLine
             // 
@@ -1430,7 +1430,7 @@ namespace WindowsFormsApp1
             this.labelsOutType.Name = "labelsOutType";
             this.labelsOutType.Size = new System.Drawing.Size(86, 24);
             this.labelsOutType.TabIndex = 119;
-            this.labelsOutType.Text = "輸出格式";
+            this.labelsOutType.Text = "";
             // 
             // textBoxsMinuteNumber
             // 
@@ -1462,7 +1462,7 @@ namespace WindowsFormsApp1
             this.labelsMinuteNumber.Name = "labelsMinuteNumber";
             this.labelsMinuteNumber.Size = new System.Drawing.Size(112, 24);
             this.labelsMinuteNumber.TabIndex = 125;
-            this.labelsMinuteNumber.Text = "幾分K(分線)";
+            this.labelsMinuteNumber.Text = "K()";
             // 
             // textBoxbstrEndDate
             // 
@@ -1502,7 +1502,7 @@ namespace WindowsFormsApp1
             this.labelbstrEndDate.Name = "labelbstrEndDate";
             this.labelbstrEndDate.Size = new System.Drawing.Size(86, 24);
             this.labelbstrEndDate.TabIndex = 124;
-            this.labelbstrEndDate.Text = "結束日期";
+            this.labelbstrEndDate.Text = "";
             // 
             // labelsTradeSession
             // 
@@ -1512,7 +1512,7 @@ namespace WindowsFormsApp1
             this.labelsTradeSession.Name = "labelsTradeSession";
             this.labelsTradeSession.Size = new System.Drawing.Size(108, 24);
             this.labelsTradeSession.TabIndex = 121;
-            this.labelsTradeSession.Text = "全盤/AM盤";
+            this.labelsTradeSession.Text = "/AM";
             // 
             // labelbstrStartDate
             // 
@@ -1522,7 +1522,7 @@ namespace WindowsFormsApp1
             this.labelbstrStartDate.Name = "labelbstrStartDate";
             this.labelbstrStartDate.Size = new System.Drawing.Size(86, 24);
             this.labelbstrStartDate.TabIndex = 123;
-            this.labelbstrStartDate.Text = "起始日期";
+            this.labelbstrStartDate.Text = "";
             // 
             // textBoxbstrStockNo
             // 
@@ -1549,7 +1549,7 @@ namespace WindowsFormsApp1
             this.labelbstrStockNo.Name = "labelbstrStockNo";
             this.labelbstrStockNo.Size = new System.Drawing.Size(86, 24);
             this.labelbstrStockNo.TabIndex = 70;
-            this.labelbstrStockNo.Text = "商品代碼";
+            this.labelbstrStockNo.Text = "";
             // 
             // labelpsPageNo
             // 
@@ -1572,7 +1572,7 @@ namespace WindowsFormsApp1
             this.tabPageOptionTool.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageOptionTool.Size = new System.Drawing.Size(1362, 316);
             this.tabPageOptionTool.TabIndex = 1;
-            this.tabPageOptionTool.Text = "風險計算(選擇權)";
+            this.tabPageOptionTool.Text = "()";
             this.tabPageOptionTool.UseVisualStyleBackColor = true;
             // 
             // panelSKQuoteLib_Gamma
@@ -1605,7 +1605,7 @@ namespace WindowsFormsApp1
             this.labelS.Name = "labelS";
             this.labelS.Size = new System.Drawing.Size(48, 24);
             this.labelS.TabIndex = 52;
-            this.labelS.Text = "指數";
+            this.labelS.Text = "";
             // 
             // textBoxS
             // 
@@ -1621,7 +1621,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_Gamma.Name = "buttonSKQuoteLib_Gamma";
             this.buttonSKQuoteLib_Gamma.Size = new System.Drawing.Size(108, 34);
             this.buttonSKQuoteLib_Gamma.TabIndex = 64;
-            this.buttonSKQuoteLib_Gamma.Text = "計算";
+            this.buttonSKQuoteLib_Gamma.Text = "";
             this.buttonSKQuoteLib_Gamma.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_Gamma.Click += new System.EventHandler(this.buttonSKQuoteLib_Gamma_Click);
             // 
@@ -1661,7 +1661,7 @@ namespace WindowsFormsApp1
             this.labelK.Name = "labelK";
             this.labelK.Size = new System.Drawing.Size(67, 24);
             this.labelK.TabIndex = 53;
-            this.labelK.Text = "履約價";
+            this.labelK.Text = "";
             // 
             // textBoxR
             // 
@@ -1695,7 +1695,7 @@ namespace WindowsFormsApp1
             this.labelR.Name = "labelR";
             this.labelR.Size = new System.Drawing.Size(105, 24);
             this.labelR.TabIndex = 54;
-            this.labelR.Text = "無風險利率";
+            this.labelR.Text = "";
             // 
             // labelT
             // 
@@ -1705,7 +1705,7 @@ namespace WindowsFormsApp1
             this.labelT.Name = "labelT";
             this.labelT.Size = new System.Drawing.Size(86, 24);
             this.labelT.TabIndex = 55;
-            this.labelT.Text = "剩餘天數";
+            this.labelT.Text = "";
             // 
             // labelnCallPut
             // 
@@ -1715,7 +1715,7 @@ namespace WindowsFormsApp1
             this.labelnCallPut.Name = "labelnCallPut";
             this.labelnCallPut.Size = new System.Drawing.Size(86, 24);
             this.labelnCallPut.TabIndex = 51;
-            this.labelnCallPut.Text = "買賣權別";
+            this.labelnCallPut.Text = "";
             // 
             // panelGamma
             // 
@@ -1794,7 +1794,7 @@ namespace WindowsFormsApp1
             this.tabPageTradeInfo.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageTradeInfo.Size = new System.Drawing.Size(1362, 316);
             this.tabPageTradeInfo.TabIndex = 6;
-            this.tabPageTradeInfo.Text = "交易資訊(期選)";
+            this.tabPageTradeInfo.Text = "()";
             this.tabPageTradeInfo.UseVisualStyleBackColor = true;
             // 
             // panelSKQuoteLib_RequestFutureTradeInfo
@@ -1840,7 +1840,7 @@ namespace WindowsFormsApp1
             this.labelSKQuoteLib_RequestFutureTradeInfobstrStockNo.Name = "labelSKQuoteLib_RequestFutureTradeInfobstrStockNo";
             this.labelSKQuoteLib_RequestFutureTradeInfobstrStockNo.Size = new System.Drawing.Size(206, 24);
             this.labelSKQuoteLib_RequestFutureTradeInfobstrStockNo.TabIndex = 45;
-            this.labelSKQuoteLib_RequestFutureTradeInfobstrStockNo.Text = "請輸入商品代號(僅1檔)";
+            this.labelSKQuoteLib_RequestFutureTradeInfobstrStockNo.Text = "(1)";
             // 
             // dataGridViewOnNotifyFutureTradeInfoLONG
             // 
@@ -1877,7 +1877,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_RequestFutureTradeInfo.Name = "buttonSKQuoteLib_RequestFutureTradeInfo";
             this.buttonSKQuoteLib_RequestFutureTradeInfo.Size = new System.Drawing.Size(76, 30);
             this.buttonSKQuoteLib_RequestFutureTradeInfo.TabIndex = 131;
-            this.buttonSKQuoteLib_RequestFutureTradeInfo.Text = "期貨";
+            this.buttonSKQuoteLib_RequestFutureTradeInfo.Text = "";
             this.buttonSKQuoteLib_RequestFutureTradeInfo.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_RequestFutureTradeInfo.Click += new System.EventHandler(this.buttonSKQuoteLib_RequestFutureTradeInfo_Click);
             // 
@@ -1908,7 +1908,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_GetStrikePrices.Name = "buttonSKQuoteLib_GetStrikePrices";
             this.buttonSKQuoteLib_GetStrikePrices.Size = new System.Drawing.Size(76, 30);
             this.buttonSKQuoteLib_GetStrikePrices.TabIndex = 135;
-            this.buttonSKQuoteLib_GetStrikePrices.Text = "選擇權";
+            this.buttonSKQuoteLib_GetStrikePrices.Text = "";
             this.buttonSKQuoteLib_GetStrikePrices.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_GetStrikePrices.Click += new System.EventHandler(this.buttonSKQuoteLib_GetStrikePrices_Click);
             // 
@@ -1948,7 +1948,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_RequestServerTime.Name = "buttonSKQuoteLib_RequestServerTime";
             this.buttonSKQuoteLib_RequestServerTime.Size = new System.Drawing.Size(178, 23);
             this.buttonSKQuoteLib_RequestServerTime.TabIndex = 76;
-            this.buttonSKQuoteLib_RequestServerTime.Text = "報價主機現在時間";
+            this.buttonSKQuoteLib_RequestServerTime.Text = "";
             this.buttonSKQuoteLib_RequestServerTime.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_RequestServerTime.Click += new System.EventHandler(this.buttonSKQuoteLib_RequestServerTime_Click);
             // 
@@ -1968,7 +1968,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_GetQuoteStatus.Name = "buttonSKQuoteLib_GetQuoteStatus";
             this.buttonSKQuoteLib_GetQuoteStatus.Size = new System.Drawing.Size(187, 30);
             this.buttonSKQuoteLib_GetQuoteStatus.TabIndex = 48;
-            this.buttonSKQuoteLib_GetQuoteStatus.Text = "連線數資訊/限制";
+            this.buttonSKQuoteLib_GetQuoteStatus.Text = "/";
             this.buttonSKQuoteLib_GetQuoteStatus.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_GetQuoteStatus.Click += new System.EventHandler(this.buttonSKQuoteLib_GetQuoteStatus_Click);
             // 
@@ -1989,7 +1989,7 @@ namespace WindowsFormsApp1
             this.buttonSKQuoteLib_IsConnected.Name = "buttonSKQuoteLib_IsConnected";
             this.buttonSKQuoteLib_IsConnected.Size = new System.Drawing.Size(187, 30);
             this.buttonSKQuoteLib_IsConnected.TabIndex = 47;
-            this.buttonSKQuoteLib_IsConnected.Text = "檢查連線狀態";
+            this.buttonSKQuoteLib_IsConnected.Text = "";
             this.buttonSKQuoteLib_IsConnected.UseVisualStyleBackColor = true;
             this.buttonSKQuoteLib_IsConnected.Click += new System.EventHandler(this.buttonSKQuoteLib_IsConnected_Click);
             // 

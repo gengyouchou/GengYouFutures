@@ -5,7 +5,36 @@
 #include <string>
 #include <vector>
 
+#include <iostream>
+#include <sstream>
+
 using namespace std;
+
+// Format 1:
+
+// 1. Market Type
+// 2. Account Number
+// 3. Product
+// 4. Buy/Sell Indicator
+// 5. Open Position
+// 6. Day Trading Open Position
+// 7. Average Cost (Decimal Part Processed)
+// 8. Commission per Contract
+// 9. Transaction Tax (Ten-thousandths of X)
+// 10.LOGIN_ID
+
+OpenInterestInfo gOpenInterestInfo = {
+    "", // product
+    "", // Buy/Sell Indicator
+    0,  // openPosition 0
+    0,  // dayTradePosition 0
+    0.0 // avgCost 0.0
+};
+
+string g_strUserId = "";
+string gPwd = "";
+
+void ParseOpenInterestMessage(const std::string &strMessage);
 
 CSKOrderLib::CSKOrderLib()
 {
@@ -43,7 +72,7 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
     VariantInit(&varlValue);
     VariantClear(&varlValue);
 
-    DEBUG("dispidMember == %d", dispidMember);
+    DEBUG(DEBUG_LEVEL_DEBUG, "dispidMember == %d", dispidMember);
 
     switch (dispidMember)
     {
@@ -78,6 +107,15 @@ HRESULT CSKOrderLib::OnEventFiringObjectInvoke(
         }
         break;
     }
+    case 4:
+    {
+        if (pdispparams->cArgs == 1)
+        {
+            BSTR bstrData = pdispparams->rgvarg[0].bstrVal;
+            OnOpenInterest(bstrData);
+        }
+        break;
+    }
     }
 
     return S_OK;
@@ -96,7 +134,7 @@ long CSKOrderLib::GetUserAccount()
 
 long CSKOrderLib::GetFutureRights(string strLogInID)
 {
-    DEBUG("start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     string strFullAccount_TF = "";
 
@@ -113,9 +151,9 @@ long CSKOrderLib::GetFutureRights(string strLogInID)
 
     long res = m_pSKOrderLib->GetFutureRights(BstrUserId, BstrFullAccount, 0);
 
-    DEBUG("m_pSKOrderLib->GetFutureRights result = %d", res);
+    DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKOrderLib->GetFutureRights result = %d", res);
 
-    DEBUG("end");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 
     return res;
 }
@@ -181,6 +219,7 @@ long CSKOrderLib::SendFutureOrder(string strLogInID, bool bAsyncOrder, string st
     pFutures.bstrPrice = _bstr_t(strPrice.c_str()).Detach();
     pFutures.nQty = nQty;
     pFutures.sReserved = sReserved;
+    pFutures.nOrderPriceType = 3;
 
     BSTR bstrMessage;
     long m_nCode = m_pSKOrderLib->SendFutureOrderCLR(_bstr_t(strLogInID.c_str()), VARIANT_BOOL(bAsyncOrder), &pFutures, &bstrMessage);
@@ -188,9 +227,93 @@ long CSKOrderLib::SendFutureOrder(string strLogInID, bool bAsyncOrder, string st
     string StrMessage = string(_bstr_t(bstrMessage));
     cout << "SendFutureOrder : " << StrMessage << endl;
 
-    DEBUG("SendFutureOrder : %s", StrMessage);
+    DEBUG(DEBUG_LEVEL_INFO, "SendFutureOrder : %s", StrMessage);
 
     ::SysFreeString(bstrMessage);
+
+    return m_nCode;
+}
+
+// struct FUTUREORDER
+// {
+//     BSTR bstrFullAccount; // 7
+//     BSTR bstrStockNo;     //
+//     SHORT sTradeType;     // 0:ROD 3:IOC 4:FOK ,sTradeTypeRODnOrderPriceType
+//     SHORT sBuySell;  // 0: 1:
+//     SHORT sDayTrade; // 0: 1:
+//     SHORT sNewClose; // 0: 1: 2:
+//     BSTR bstrPrice;  // ()[OCO]
+//                      // nOrderPriceTypeP ,{}
+//     BSTR bstrPrice2; //[OCO]
+//     LONG nQty;           //
+//     BSTR bstrTrigger;    // [OCO]{MITOCO0P}
+//     BSTR bstrTrigger2; //[OCO]
+
+//     BSTR bstrMovingPoint; //{}
+//     SHORT sReserved;      // 0:(TT+1)1:T{MIT }
+//     BSTR bstrDealPrice;   //  {MIT0, }
+
+//     BSTR bstrSettlementMonth; // YYYYMM6(EX: 202206)
+//     LONG nOrderPriceType;     //   2: ; 3:
+//                               // sTradeTypeRODnOrderPriceType
+//     LONG nTriggerDirection;   //{MIT} 1:GTE, 2:LTE
+// };
+//  : TX00 MTX00bstrSettlementMonth
+
+long CSKOrderLib::SendFutureStop(string strLogInID,
+                                 bool bAsyncOrder,
+                                 string strStockNo,
+                                 short sTradeType,
+                                 short sBuySell,
+                                 short sDayTrade,
+                                 short sNewClose,
+                                 string strPrice,
+                                 string strTrigger,
+                                 long nQty,
+                                 short sReserved)
+{
+    DEBUG(DEBUG_LEVEL_INFO, "Start");
+
+    string strFullAccount_TF = "";
+
+    if (vec_strFullAccount_TF.size() > 0)
+        strFullAccount_TF = vec_strFullAccount_TF[0];
+    else
+    {
+        cout << "SendFutureStop Error : No Future Account.";
+        return -1;
+    }
+
+    DEBUG(DEBUG_LEVEL_INFO, "Consturt FUTUREORDER");
+
+    SKCOMLib::FUTUREORDER pFutures;
+    pFutures.bstrFullAccount = _bstr_t(strFullAccount_TF.c_str()).Detach();
+    pFutures.bstrStockNo = _bstr_t(strStockNo.c_str()).Detach();
+    pFutures.sTradeType = sTradeType;
+    pFutures.sBuySell = sBuySell;
+    pFutures.sDayTrade = sDayTrade;
+    pFutures.sNewClose = sNewClose;
+    // pFutures.bstrPrice = _bstr_t(strPrice.c_str()).Detach();
+    pFutures.bstrTrigger = _bstr_t(strTrigger.c_str()).Detach(); // For stop
+    pFutures.nQty = nQty;
+    pFutures.sReserved = sReserved;
+    pFutures.nOrderPriceType = 3;
+
+    DEBUG(DEBUG_LEVEL_INFO, "SendFutureStopLossOrder at %s", strTrigger);
+
+    BSTR bstrMessage;
+    long m_nCode = m_pSKOrderLib->SendFutureStopLossOrder(_bstr_t(strLogInID.c_str()), VARIANT_BOOL(bAsyncOrder), &pFutures, &bstrMessage);
+
+    DEBUG(DEBUG_LEVEL_INFO, "m_nCode=%ld", m_nCode);
+
+    string StrMessage = string(_bstr_t(bstrMessage));
+    cout << "SendFutureStop : " << StrMessage << endl;
+
+    DEBUG(DEBUG_LEVEL_INFO, "SendFutureStop : %s", StrMessage);
+
+    ::SysFreeString(bstrMessage);
+
+    DEBUG(DEBUG_LEVEL_INFO, "End");
 
     return m_nCode;
 }
@@ -223,6 +346,36 @@ long CSKOrderLib::SendOptionOrder(string strLogInID, bool bAsyncOrder, string st
     cout << "SendOptionOrder : " << string(_bstr_t(bstrMessage)) << endl;
 
     ::SysFreeString(bstrMessage);
+
+    return m_nCode;
+}
+
+long CSKOrderLib::GetOpenInterest(
+    string strLogInID,
+    long nFormat)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    string strFullAccount_TF = "";
+
+    if (vec_strFullAccount_TF.size() > 0)
+    {
+        strFullAccount_TF = vec_strFullAccount_TF[0];
+    }
+    else
+    {
+        cout << "GetOpenInterest Error : No Future Account.";
+        return -1;
+    }
+
+    BSTR bstrLogInID = _bstr_t(strLogInID.c_str());
+    BSTR bstrAccount = _bstr_t(strFullAccount_TF.c_str());
+
+    long m_nCode = m_pSKOrderLib->GetOpenInterestGW(bstrLogInID, bstrAccount, nFormat);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "GetOpenInterestGW=%ld", m_nCode);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "End");
 
     return m_nCode;
 }
@@ -402,7 +555,7 @@ void CSKOrderLib::OnAccount(string strLoginID, string strAccountData)
 
 void CSKOrderLib::OnFutureRights(BSTR bstrData)
 {
-    DEBUG("start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     string strMessage = string(_bstr_t(bstrData));
 
@@ -411,13 +564,101 @@ void CSKOrderLib::OnFutureRights(BSTR bstrData)
 
     cout << endl;
 
-    // CalculateLoss();
+    DEBUG(DEBUG_LEVEL_INFO, "%s", strMessage);
 
-    DEBUG("end");
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
 void CSKOrderLib::OnAsyncOrder(long nThreadID, long nCode, string strMessage)
 {
     cout << "On AsyncOrder ThreadID : " << nThreadID << ", nCode : " << nCode << ", Message : " << strMessage;
     cout << endl;
+}
+
+// ,
+// 1:
+// 1
+//
+// 2
+//
+// 3
+//
+// 4
+//
+// 5
+//
+// 6
+//
+// 7
+//  ()
+// 8
+//
+// 9
+//  (X)
+// 10
+//  LOGIN_ID
+
+void CSKOrderLib::OnOpenInterest(IN BSTR bstrData)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
+
+    string strMessage = string(_bstr_t(bstrData));
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "strMessage=%s", strMessage);
+
+    ParseOpenInterestMessage(strMessage);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
+}
+
+void ParseOpenInterestMessage(const std::string &strMessage)
+{
+    std::string message = strMessage.substr(strMessage.find('=') + 1); //  [OnOpenInterest] strMessage=
+    std::vector<std::string> items;
+    std::stringstream ss(message);
+    std::string item;
+
+    // [OnEventFiringObjectInvoke] dispidMember == 4
+    // [OnOpenInterest] strMessage=TF,F0200006358844,TM08,S,1,0,21236.00,,,F129305651
+    // [OnEventFiringObjectInvoke] dispidMember == 4
+    // [OnOpenInterest] strMessage=##,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
+    while (std::getline(ss, item, ','))
+    {
+        items.push_back(item);
+    }
+
+    std::string UnKnowMarket = "##";
+
+    if (!items.empty() && items[0] == UnKnowMarket)
+    {
+        return;
+    }
+
+    if (items.size() >= 7)
+    {
+        gOpenInterestInfo.product = items[2];                     // 3
+        gOpenInterestInfo.buySell = items[3];                     // 4
+        gOpenInterestInfo.openPosition = std::stol(items[4]);     // 5
+        gOpenInterestInfo.dayTradePosition = std::stol(items[5]); // 6
+        gOpenInterestInfo.avgCost = std::stod(items[6]);          // 7
+
+        LOG(DEBUG_LEVEL_INFO, "product: %s", gOpenInterestInfo.product);
+        LOG(DEBUG_LEVEL_INFO, "buySell: %s", gOpenInterestInfo.buySell);
+        LOG(DEBUG_LEVEL_INFO, "openPosition: %ld", gOpenInterestInfo.openPosition);
+        LOG(DEBUG_LEVEL_INFO, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
+        LOG(DEBUG_LEVEL_INFO, "avgCost: %f", gOpenInterestInfo.avgCost);
+    }
+    else
+    {
+        gOpenInterestInfo = {
+            "", // product
+            "", // Buy/Sell Indicator
+            0,  // openPosition 0
+            0,  // dayTradePosition 0
+            0.0 // avgCost 0.0
+        };
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "NO Open Position: %s", strMessage);
+    }
 }

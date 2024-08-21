@@ -1,108 +1,98 @@
 #include "StockOrderControl.h"
 
-
 #pragma region click
 
-System::Void CppCLITester::StockOrderControl::btnSendStockOrder_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::StockOrderControl::btnSendStockOrder_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
-	if (m_UserAccount == nullptr)
-	{
-		MessageBox::Show("½Ð¿ï¾ÜÃÒ¨é±b¸¹");
+    if (m_UserAccount == nullptr)
+    {
+        MessageBox::Show("ï¿½ï¿½ï¿½Ò¨ï¿½bï¿½ï¿½");
         return;
-	}
+    }
 
-    System::String^ strStockNo;
+    System::String ^ strStockNo;
     int nPrime;
     int nBidAsk;
     int nPeriod;
     int nFlag;
-    System::String^ strPrice;
+    System::String ^ strPrice;
     int nQty;
 
     if (txtStockNo->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J°Ó«~¥N½X");
+        MessageBox::Show("ï¿½ï¿½JÓ«~ï¿½Nï¿½X");
         return;
     }
     strStockNo = txtStockNo->Text->Trim();
 
     if (boxPrime->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¤W¥«Âd-¿³Âd");
+        MessageBox::Show("ï¿½ï¿½Wï¿½ï¿½ï¿½d-ï¿½ï¿½ï¿½d");
         return;
     }
     nPrime = boxPrime->SelectedIndex;
 
     if (boxBidAsk->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¶R½æ§O");
+        MessageBox::Show("ï¿½ï¿½Rï¿½ï¿½O");
         return;
     }
     nBidAsk = boxBidAsk->SelectedIndex;
 
     if (boxPeriod->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü©e°U±ø¥ó");
+        MessageBox::Show("ï¿½ï¿½eï¿½Uï¿½ï¿½ï¿½ï¿½");
         return;
     }
     nPeriod = boxPeriod->SelectedIndex;
 
     if (boxFlag->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü·í¨R»P§_");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½Rï¿½Pï¿½_");
         return;
     }
     nFlag = boxFlag->SelectedIndex;
 
-
     double dPrice = 0.0;
-    if (double::TryParse(txtPrice->Text->Trim(),  dPrice) == false
-        && txtPrice->Text->Trim() != "M"
-        && txtPrice->Text->Trim() != "H"
-        && txtPrice->Text->Trim() != "h"
-        && txtPrice->Text->Trim() != "C"
-        && txtPrice->Text->Trim() != "c"
-        && txtPrice->Text->Trim() != "L"
-        && txtPrice->Text->Trim() != "l")
+    if (double ::TryParse(txtPrice->Text->Trim(), dPrice) == false && txtPrice->Text->Trim() != "M" && txtPrice->Text->Trim() != "H" && txtPrice->Text->Trim() != "h" && txtPrice->Text->Trim() != "C" && txtPrice->Text->Trim() != "c" && txtPrice->Text->Trim() != "L" && txtPrice->Text->Trim() != "l")
     {
-        MessageBox::Show("©e°U»ù½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½Æ¦r");
         return;
     }
     strPrice = txtPrice->Text->Trim();
 
-    if (int::TryParse(txtQty->Text->Trim(), nQty) == false)
+    if (int ::TryParse(txtQty->Text->Trim(), nQty) == false)
     {
-        MessageBox::Show("©e°U¶q½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½eï¿½ï¿½qï¿½Ð¿Jï¿½Æ¦r");
         return;
     }
-    nQty = int::Parse(txtQty->Text->Trim());
+    nQty = int ::Parse(txtQty->Text->Trim());
 
     int nCond, nSpecTradeType;
 
     if (boxCond->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü©e°U±ø¥ó(R/I/F)");
+        MessageBox::Show("ï¿½ï¿½eï¿½Uï¿½ï¿½ï¿½ï¿½(R/I/F)");
         return;
     }
     nCond = boxCond->SelectedIndex;
 
     if (boxSpecialTradeType->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü©e°U»ù®æÃþ«¬(1¥«»ù/0_2­­»ù)");
+        MessageBox::Show("ï¿½ï¿½eï¿½Uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(1ï¿½ï¿½ï¿½ï¿½/0_2ï¿½ï¿½ï¿½ï¿½)");
         return;
     }
 
-    //if (boxSpecialTradeType->SelectedIndex == 1)
+    // if (boxSpecialTradeType->SelectedIndex == 1)
     nSpecTradeType = boxSpecialTradeType->SelectedIndex + 1;
-    //else
-    //    nSpecTradeType = boxSpecialTradeType->SelectedIndex+2; 
+    // else
+    //     nSpecTradeType = boxSpecialTradeType->SelectedIndex+2;
 
     bool boolAsyn = ckboxAsyn->Checked;
 
-    // «Å§iª«¥ó
+    // ï¿½iï¿½ï¿½ï¿½ï¿½
     SKCOMLib::STOCKORDER pOrder;
 
-    
     pOrder.bstrFullAccount = m_UserAccount;
     pOrder.bstrPrice = strPrice;
     pOrder.bstrStockNo = strStockNo;
@@ -114,97 +104,96 @@ System::Void CppCLITester::StockOrderControl::btnSendStockOrder_Click(System::Ob
     pOrder.nTradeType = nCond;
     pOrder.nSpecialTradeType = nSpecTradeType;
 
-   //if (OnOrderSignal != nullptr)
+    // if (OnOrderSignal != nullptr)
     //{
-        OnOrderSignal(m_UserID, boolAsyn, pOrder);
+    OnOrderSignal(m_UserID, boolAsyn, pOrder);
     //}
 }
 
-System::Void  CppCLITester::StockOrderControl::btnDecreaseQty_Click(System::Object^ sender, System::EventArgs^ e) {
+System::Void CppCLITester::StockOrderControl::btnDecreaseQty_Click(System::Object ^ sender, System::EventArgs ^ e)
+{
 
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾ÜÃÒ¨é±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½Ò¨ï¿½bï¿½ï¿½");
         return;
     }
 
-    if (txtDecreaseBookNo->Text->Trim() == "" ) {
-        MessageBox::Show("½Ð¿é¤J©e°U§Ç¸¹");
+    if (txtDecreaseBookNo->Text->Trim() == "")
+    {
+        MessageBox::Show("ï¿½ï¿½Jï¿½eUï¿½Ç¸ï¿½");
         return;
     }
-    System::String^ bstrSeqNo = txtDecreaseBookNo->Text->Trim();
+    System::String ^ bstrSeqNo = txtDecreaseBookNo->Text->Trim();
 
     int DecreaseQty;
-    if (int::TryParse(txtDecreaseQty->Text->Trim(), DecreaseQty) == false)
+    if (int ::TryParse(txtDecreaseQty->Text->Trim(), DecreaseQty) == false)
     {
-        MessageBox::Show("©e°U¶q½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½eï¿½ï¿½qï¿½Ð¿Jï¿½Æ¦r");
         return;
     }
-    DecreaseQty = int::Parse(txtDecreaseQty->Text->Trim());
-
-
+    DecreaseQty = int ::Parse(txtDecreaseQty->Text->Trim());
 
     bool boolAsyn = ckboxDecreaseAsyn->Checked;
     //([in] BSTR bstrLogInID, [in] VARIANT_BOOL bAsyncOrder, [in] BSTR bstrAccount, [in] BSTR bstrSeqNo, [in] LONG nDecreaseQty,[out] BSTR* bstrMessage);
 
-    OnDecreaseSignal(m_UserID, boolAsyn,m_UserAccount, bstrSeqNo,DecreaseQty);
+    OnDecreaseSignal(m_UserID, boolAsyn, m_UserAccount, bstrSeqNo, DecreaseQty);
 }
 
-System::Void CppCLITester::StockOrderControl::btnCancelOrder_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::StockOrderControl::btnCancelOrder_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾ÜÃÒ¨é±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½Ò¨ï¿½bï¿½ï¿½");
         return;
     }
 
     if (txtCancelStockNo->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J°Ó«~¥N½X");
+        MessageBox::Show("ï¿½ï¿½JÓ«~ï¿½Nï¿½X");
         return;
     }
 
-    OnCancelByStockNo(m_UserID,true,m_UserAccount, txtCancelStockNo->Text->Trim());
-
+    OnCancelByStockNo(m_UserID, true, m_UserAccount, txtCancelStockNo->Text->Trim());
 }
 
-System::Void CppCLITester::StockOrderControl::btnCancelOrderBySeqNo_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::StockOrderControl::btnCancelOrderBySeqNo_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾ÜÃÒ¨é±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½Ò¨ï¿½bï¿½ï¿½");
         return;
     }
 
     if (txtCancelSeqNo->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J©e°UÄò¸¹");
+        MessageBox::Show("ï¿½ï¿½Jï¿½eï¿½Uï¿½ï¿½");
         return;
     }
     OnCancelBySeqNo(m_UserID, true, m_UserAccount, txtCancelSeqNo->Text->Trim());
 }
 
-System::Void CppCLITester::StockOrderControl::btnCancelOrderByBookNo_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::StockOrderControl::btnCancelOrderByBookNo_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾ÜÃÒ¨é±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½Ò¨ï¿½bï¿½ï¿½");
         return;
     }
 
     if (txtCancelBookNo->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J©e°U®Ñ¸¹");
+        MessageBox::Show("ï¿½ï¿½Jï¿½eUï¿½Ñ¸ï¿½");
         return;
     }
     OnCancelByBookNo(m_UserID, true, m_UserAccount, txtCancelBookNo->Text->Trim());
 }
 
-System::Void CppCLITester::StockOrderControl::btnCorrectPriceBySeqNo_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::StockOrderControl::btnCorrectPriceBySeqNo_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾ÜÃÒ¨é±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½Ò¨ï¿½bï¿½ï¿½");
         return;
     }
 
@@ -214,142 +203,141 @@ System::Void CppCLITester::StockOrderControl::btnCorrectPriceBySeqNo_Click(Syste
 
     if (txtCorrectSeqNo->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J©e°U§Ç¸¹");
+        MessageBox::Show("ï¿½ï¿½Jï¿½eUï¿½Ç¸ï¿½");
         return;
     }
     strSeqNo = txtCorrectSeqNo->Text->Trim();
 
     double dPrice = 0.0;
-    if (double::TryParse(txtCorrectPrice->Text->Trim(), dPrice) == false)
+    if (double ::TryParse(txtCorrectPrice->Text->Trim(), dPrice) == false)
     {
-        MessageBox::Show("­×§ï»ù®æ½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½Ð¿ï¿½ï¿½Æ¦r");
         return;
     }
     strPrice = txtCorrectPrice->Text->Trim();
 
-
     if (boxCorrectTradeType->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü©e°U±ø¥ó");
+        MessageBox::Show("ï¿½ï¿½eï¿½Uï¿½ï¿½ï¿½ï¿½");
         return;
     }
     nTradeType = boxCorrectTradeType->SelectedIndex;
 
-    OnCorrectPriceBySeqNo(m_UserID,true,m_UserAccount,strSeqNo,strPrice,nTradeType);
+    OnCorrectPriceBySeqNo(m_UserID, true, m_UserAccount, strSeqNo, strPrice, nTradeType);
 }
 
-System::Void CppCLITester::StockOrderControl::btnCorrectPriceByBookNo_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::StockOrderControl::btnCorrectPriceByBookNo_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾ÜÃÒ¨é±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½Ò¨ï¿½bï¿½ï¿½");
         return;
     }
 
     int nTradeType;
-    System::String^ strBookNo;
-    System::String^ strPrice;
+    System::String ^ strBookNo;
+    System::String ^ strPrice;
 
     if (txtCorrectBookNo->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J©e°U®Ñ¸¹");
+        MessageBox::Show("ï¿½ï¿½Jï¿½eUï¿½Ñ¸ï¿½");
         return;
     }
     strBookNo = txtCorrectBookNo->Text->Trim();
 
     double dPrice = 0.0;
-    if (double::TryParse(txtCorrectPrice->Text->Trim(), dPrice) == false)   
+    if (double ::TryParse(txtCorrectPrice->Text->Trim(), dPrice) == false)
     {
-        MessageBox::Show("­×§ï»ù®æ½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½Ð¿ï¿½ï¿½Æ¦r");
         return;
     }
     strPrice = txtCorrectPrice->Text->Trim();
 
     if (boxCorrectSymbol->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¥«³õÂ²ºÙ");
+        MessageBox::Show("ï¿½ï¿½ï¿½ï¿½Â²ï¿½ï¿½");
         return;
     }
 
     if (boxCorrectTradeType->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü©e°U±ø¥ó");
+        MessageBox::Show("ï¿½ï¿½eï¿½Uï¿½ï¿½ï¿½ï¿½");
         return;
     }
     nTradeType = boxCorrectTradeType->SelectedIndex;
-    
+
     OnCorrectPriceByBookNo(m_UserID, true, m_UserAccount, boxCorrectSymbol->Text->Trim(), strBookNo, strPrice, nTradeType);
 }
 
-System:: Void CppCLITester::StockOrderControl::btnGetRealBalanceReport_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::StockOrderControl::btnGetRealBalanceReport_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾ÜÃÒ¨é±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½Ò¨ï¿½bï¿½ï¿½");
         return;
     }
 
-    OnGetRealBalanceReport(m_UserID,m_UserAccount);
+    OnGetRealBalanceReport(m_UserID, m_UserAccount);
 }
 
-System::Void CppCLITester::StockOrderControl::GetBalanceQueryReport_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::StockOrderControl::GetBalanceQueryReport_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾ÜÃÒ¨é±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½Ò¨ï¿½bï¿½ï¿½");
         return;
     }
 
-    if (txtBalanceQueryStockNo->Text->Trim() == "") {
-        MessageBox::Show("½Ð¿é¤J°Ó«~¥N½X");
+    if (txtBalanceQueryStockNo->Text->Trim() == "")
+    {
+        MessageBox::Show("ï¿½ï¿½JÓ«~ï¿½Nï¿½X");
         return;
     }
 
-    OnGetBalanceQuery(m_UserID,m_UserAccount, txtBalanceQueryStockNo->Text->Trim());
+    OnGetBalanceQuery(m_UserID, m_UserAccount, txtBalanceQueryStockNo->Text->Trim());
 }
 
-System::Void CppCLITester::StockOrderControl::btnGetAmountLimit_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::StockOrderControl::btnGetAmountLimit_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾ÜÃÒ¨é±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½Ò¨ï¿½bï¿½ï¿½");
         return;
     }
 
     if (txtAmountLimitStockNo->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J°Ó«~¥N½X");
+        MessageBox::Show("ï¿½ï¿½JÓ«~ï¿½Nï¿½X");
         return;
     }
 
     OnGetMarginPurchaseAmountLimit(m_UserID, m_UserAccount, txtAmountLimitStockNo->Text->Trim());
 }
-System::Void CppCLITester::StockOrderControl::btnGetRequestProfitReport_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::StockOrderControl::btnGetRequestProfitReport_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾ÜÃÒ¨é±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½Ò¨ï¿½bï¿½ï¿½");
         return;
     }
 
     OnGetRequestProfitReport(m_UserID, m_UserAccount);
 }
-System::Void CppCLITester::StockOrderControl::btn_GetProfitLossGW_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::StockOrderControl::btn_GetProfitLossGW_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾ÜÃÒ¨é±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½Ò¨ï¿½bï¿½ï¿½");
         return;
     }
 
-    SKCOMLib::TSPROFITLOSSGWQUERY pGWQuery ;
-
+    SKCOMLib::TSPROFITLOSSGWQUERY pGWQuery;
 
     pGWQuery.bstrFullAccount = m_UserAccount;
 
     if (box_QueryType->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¬d¸ß·l¯qÃþ§O");
+        MessageBox::Show("ï¿½ï¿½dï¿½lï¿½qï¿½ï¿½ï¿½O");
         return;
     }
     pGWQuery.nTPQueryType = box_QueryType->SelectedIndex;
@@ -358,7 +346,7 @@ System::Void CppCLITester::StockOrderControl::btn_GetProfitLossGW_Click(System::
 
     if (box_format->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¬d¸ß·l¯q®æ¦¡(0·JÁ`:1©ú²Ó)");
+        MessageBox::Show("ï¿½ï¿½dï¿½lï¿½ï¿½æ¦¡(0ï¿½Jï¿½`:1ï¿½ï¿½ï¿½ï¿½)");
         return;
     }
     nFormat = box_format->SelectedIndex;
@@ -370,8 +358,8 @@ System::Void CppCLITester::StockOrderControl::btn_GetProfitLossGW_Click(System::
 
     case 0:
     {
-        System::String^ strStockNo;
-        System::String^ strTradeType;
+        System::String ^ strStockNo;
+        System::String ^ strTradeType;
 
         if (nFormat == 1)
         {
@@ -379,7 +367,7 @@ System::Void CppCLITester::StockOrderControl::btn_GetProfitLossGW_Click(System::
             strStockNo = txt_ProfitLossStock->Text;
             if (box_format->SelectedIndex < 0)
             {
-                MessageBox::Show("½Ð¿ï¾Ü¬d¸ß·l¯q®æ¦¡(0·JÁ`:1©ú²Ó)");
+                MessageBox::Show("ï¿½ï¿½dï¿½lï¿½ï¿½æ¦¡(0ï¿½Jï¿½`:1ï¿½ï¿½ï¿½ï¿½)");
                 return;
             }
 
@@ -387,25 +375,23 @@ System::Void CppCLITester::StockOrderControl::btn_GetProfitLossGW_Click(System::
             if (box_TradeType->SelectedIndex == 7 || box_TradeType->SelectedIndex == 8)
                 strTradeType = (box_format->SelectedIndex + 1).ToString();
 
-
             if (box_TradeType->SelectedIndex == -1 || box_TradeType->SelectedIndex == 9)
                 strTradeType = " ";
-
 
             pGWQuery.bstrStockNo = strStockNo;
             pGWQuery.bstrTradeType = strTradeType;
         }
 
-        //if (OnProfitGWReportSignal != null)
-       // {
-            OnProfitGWReportSignal(m_UserID, pGWQuery);
+        // if (OnProfitGWReportSignal != null)
+        // {
+        OnProfitGWReportSignal(m_UserID, pGWQuery);
         //}
     }
     break;
 
     case 1:
     {
-        System::String^ strTradeType;
+        System::String ^ strTradeType;
         pGWQuery.bstrStartDate = txt_ProfitLossYMStart->Text;
 
         pGWQuery.bstrEndDate = txt_ProfitLossYMEnd->Text;
@@ -422,9 +408,6 @@ System::Void CppCLITester::StockOrderControl::btn_GetProfitLossGW_Click(System::
             else
                 strTradeType = box_TradeType->SelectedItem->ToString();
 
-
-
-
             pGWQuery.bstrTradeType = strTradeType;
             pGWQuery.bstrStockNo = txt_ProfitLossStock->Text;
             pGWQuery.bstrEndDate = " ";
@@ -433,98 +416,82 @@ System::Void CppCLITester::StockOrderControl::btn_GetProfitLossGW_Click(System::
         {
             pGWQuery.bstrStockNo = txt_ProfitLossStock->Text;
         }
-        //if (OnProfitGWReportSignal != null)
-       // {
-            OnProfitGWReportSignal(m_UserID, pGWQuery);
+        // if (OnProfitGWReportSignal != null)
+        // {
+        OnProfitGWReportSignal(m_UserID, pGWQuery);
         //}
-
     }
     break;
     case 2:
-    {//summary:1 //detail:2
+    { // summary:1 //detail:2
         nFormat = box_format->SelectedIndex + 1;
 
         pGWQuery.nFunc = nFormat;
         if (nFormat == 2)
         {
             pGWQuery.bstrStockNo = txt_ProfitLossStock->Text;
-
         }
-       ///if (OnProfitGWReportSignal != null)
+        /// if (OnProfitGWReportSignal != null)
         //{
-            OnProfitGWReportSignal(m_UserID, pGWQuery);
-       // }
+        OnProfitGWReportSignal(m_UserID, pGWQuery);
+        // }
     }
     break;
     default:
         break;
-
-
     }
 }
 
-System::Void CppCLITester::StockOrderControl::StockOddOrder_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::StockOrderControl::StockOddOrder_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾ÜÃÒ¨é±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½Ò¨ï¿½bï¿½ï¿½");
         return;
     }
 
-    System::String^ strStockNo;
+    System::String ^ strStockNo;
 
     int nBidAsk;
     int nPeriod;
 
-    System::String^ strPrice;
+    System::String ^ strPrice;
     int nQty;
 
     if (StockNoOdd->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J°Ó«~¥N½X");
+        MessageBox::Show("ï¿½ï¿½JÓ«~ï¿½Nï¿½X");
         return;
     }
     strStockNo = StockNoOdd->Text->Trim();
 
-
     if (BuySellBoxOdd->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¶R½æ§O");
+        MessageBox::Show("ï¿½ï¿½Rï¿½ï¿½O");
         return;
     }
     nBidAsk = BuySellBoxOdd->SelectedIndex;
 
     if (BoxOddPeriod->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü©e°U±ø¥ó");
+        MessageBox::Show("ï¿½ï¿½eï¿½Uï¿½ï¿½ï¿½ï¿½");
         return;
     }
     nPeriod = BoxOddPeriod->SelectedIndex + 4;
 
-
-
     double dPrice = 0.0;
-    if (double::TryParse(PriceOdd->Text->Trim(),  dPrice) == false
-        && PriceOdd->Text->Trim() != "M"
-        && PriceOdd->Text->Trim() != "H"
-        && PriceOdd->Text->Trim() != "h"
-        && PriceOdd->Text->Trim() != "C"
-        && PriceOdd->Text->Trim() != "c"
-        && PriceOdd->Text->Trim() != "L"
-        && PriceOdd->Text->Trim() != "l")
+    if (double ::TryParse(PriceOdd->Text->Trim(), dPrice) == false && PriceOdd->Text->Trim() != "M" && PriceOdd->Text->Trim() != "H" && PriceOdd->Text->Trim() != "h" && PriceOdd->Text->Trim() != "C" && PriceOdd->Text->Trim() != "c" && PriceOdd->Text->Trim() != "L" && PriceOdd->Text->Trim() != "l")
     {
-        MessageBox::Show("©e°U»ù½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½Æ¦r");
         return;
     }
     strPrice = PriceOdd->Text->Trim();
 
-    if (int::TryParse(QtyOdd->Text->Trim(), nQty) == false)
+    if (int ::TryParse(QtyOdd->Text->Trim(), nQty) == false)
     {
-        MessageBox::Show("©e°U¶q½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½eï¿½ï¿½qï¿½Ð¿Jï¿½Æ¦r");
         return;
     }
-
-
 
     SKCOMLib::STOCKORDER pOrder;
 
@@ -534,75 +501,61 @@ System::Void CppCLITester::StockOrderControl::StockOddOrder_Click(System::Object
     pOrder.nQty = nQty;
     pOrder.sPrime = 0;
     pOrder.sBuySell = (short)nBidAsk;
-    //pOrder.sFlag = (short)nFlag;
+    // pOrder.sFlag = (short)nFlag;
     pOrder.sPeriod = (short)nPeriod;
-
-
 
     OnOddOrderSignal(m_UserID, false, pOrder);
 }
-System::Void CppCLITester::StockOrderControl::StockOddOrderAsync_Click(System::Object^ sender, System::EventArgs^ e)
+System::Void CppCLITester::StockOrderControl::StockOddOrderAsync_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
     if (m_UserAccount == nullptr)
     {
-        MessageBox::Show("½Ð¿ï¾ÜÃÒ¨é±b¸¹");
+        MessageBox::Show("ï¿½ï¿½ï¿½Ò¨ï¿½bï¿½ï¿½");
         return;
     }
 
-    System::String^ strStockNo;
+    System::String ^ strStockNo;
 
     int nBidAsk;
     int nPeriod;
 
-    System::String^ strPrice;
+    System::String ^ strPrice;
     int nQty;
 
     if (StockNoOdd->Text->Trim() == "")
     {
-        MessageBox::Show("½Ð¿é¤J°Ó«~¥N½X");
+        MessageBox::Show("ï¿½ï¿½JÓ«~ï¿½Nï¿½X");
         return;
     }
     strStockNo = StockNoOdd->Text->Trim();
 
-
     if (BuySellBoxOdd->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü¶R½æ§O");
+        MessageBox::Show("ï¿½ï¿½Rï¿½ï¿½O");
         return;
     }
     nBidAsk = BuySellBoxOdd->SelectedIndex;
 
     if (BoxOddPeriod->SelectedIndex < 0)
     {
-        MessageBox::Show("½Ð¿ï¾Ü©e°U±ø¥ó");
+        MessageBox::Show("ï¿½ï¿½eï¿½Uï¿½ï¿½ï¿½ï¿½");
         return;
     }
     nPeriod = BoxOddPeriod->SelectedIndex + 4;
 
-
-
     double dPrice = 0.0;
-    if (double::TryParse(PriceOdd->Text->Trim(), dPrice) == false
-        && PriceOdd->Text->Trim() != "M"
-        && PriceOdd->Text->Trim() != "H"
-        && PriceOdd->Text->Trim() != "h"
-        && PriceOdd->Text->Trim() != "C"
-        && PriceOdd->Text->Trim() != "c"
-        && PriceOdd->Text->Trim() != "L"
-        && PriceOdd->Text->Trim() != "l")
+    if (double ::TryParse(PriceOdd->Text->Trim(), dPrice) == false && PriceOdd->Text->Trim() != "M" && PriceOdd->Text->Trim() != "H" && PriceOdd->Text->Trim() != "h" && PriceOdd->Text->Trim() != "C" && PriceOdd->Text->Trim() != "c" && PriceOdd->Text->Trim() != "L" && PriceOdd->Text->Trim() != "l")
     {
-        MessageBox::Show("©e°U»ù½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½Æ¦r");
         return;
     }
     strPrice = PriceOdd->Text->Trim();
 
-    if (int::TryParse(QtyOdd->Text->Trim(), nQty) == false)
+    if (int ::TryParse(QtyOdd->Text->Trim(), nQty) == false)
     {
-        MessageBox::Show("©e°U¶q½Ð¿é¤J¼Æ¦r");
+        MessageBox::Show("ï¿½eï¿½ï¿½qï¿½Ð¿Jï¿½Æ¦r");
         return;
     }
-
-
 
     SKCOMLib::STOCKORDER pOrder;
 
@@ -612,10 +565,8 @@ System::Void CppCLITester::StockOrderControl::StockOddOrderAsync_Click(System::O
     pOrder.nQty = nQty;
     pOrder.sPrime = 0;
     pOrder.sBuySell = (short)nBidAsk;
-    //pOrder.sFlag = (short)nFlag;
+    // pOrder.sFlag = (short)nFlag;
     pOrder.sPeriod = (short)nPeriod;
-
-
 
     OnOddOrderSignal(m_UserID, true, pOrder);
 }
