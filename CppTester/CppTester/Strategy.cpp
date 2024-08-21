@@ -330,10 +330,12 @@ VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo)
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // need to Sell to stop long position loss
         }
 
-        gOpenInterestInfo.profitAndLoss = profitAndLoss;
+        profitAndLoss = profitAndLoss * static_cast<double>(gOpenInterestInfo.openPosition);
+
+        gOpenInterestInfo.profitAndLoss = profitAndLoss; // assign new gOpenInterestInfo.profitAndLoss form local profitAndLoss
 
         LOG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
-            curPrice, gOpenInterestInfo.avgCost, profitAndLoss);
+            curPrice, gOpenInterestInfo.avgCost, gOpenInterestInfo.profitAndLoss);
 
         if (-profitAndLoss >= gStrategyConfig.MaximumLoss)
         {
@@ -352,11 +354,12 @@ VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo)
 
 #ifdef VIRTUAL_ACCOUNT_ORDER
             gOpenInterestInfo = {
-                "", // product
-                "", // Buy/Sell Indicator
-                0,  // openPosition 0
-                0,  // dayTradePosition 0
-                0.0 // avgCost 0.0
+                "",  // product
+                "",  // Buy/Sell Indicator
+                0,   // openPosition 0
+                0,   // dayTradePosition 0
+                0.0, // avgCost 0.0
+                0.0  // profitAndLoss
             };
 #endif
         }
@@ -415,11 +418,12 @@ VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo)
 
 #ifdef VIRTUAL_ACCOUNT_ORDER
             gOpenInterestInfo = {
-                "", // product
-                "", // Buy/Sell Indicator
-                0,  // openPosition 0
-                0,  // dayTradePosition 0
-                0.0 // avgCost 0.0
+                "",  // product
+                "",  // Buy/Sell Indicator
+                0,   // openPosition 0
+                0,   // dayTradePosition 0
+                0.0, // avgCost 0.0
+                0.0  // profitAndLoss
             };
 #endif
 

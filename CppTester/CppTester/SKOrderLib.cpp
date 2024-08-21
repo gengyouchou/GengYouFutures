@@ -24,11 +24,12 @@ using namespace std;
 // 10.LOGIN_ID
 
 OpenInterestInfo gOpenInterestInfo = {
-    "", // product
-    "", // Buy/Sell Indicator
-    0,  // openPosition 0
-    0,  // dayTradePosition 0
-    0.0 // avgCost 0.0
+    "",  // product
+    "",  // Buy/Sell Indicator
+    0,   // openPosition 0
+    0,   // dayTradePosition 0
+    0.0, // avgCost 0.0
+    0.0  // profitAndLoss
 };
 
 string g_strUserId = "";
@@ -652,11 +653,12 @@ void ParseOpenInterestMessage(const std::string &strMessage)
     else
     {
         gOpenInterestInfo = {
-            "", // product
-            "", // Buy/Sell Indicator
-            0,  // openPosition 0
-            0,  // dayTradePosition 0
-            0.0 // avgCost 0.0
+            "",  // product
+            "",  // Buy/Sell Indicator
+            0,   // openPosition 0
+            0,   // dayTradePosition 0
+            0.0, // avgCost 0.0
+            0.0  // profitAndLoss
         };
 
         DEBUG(DEBUG_LEVEL_DEBUG, "NO Open Position: %s", strMessage);
