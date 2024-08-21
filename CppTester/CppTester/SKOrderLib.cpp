@@ -655,7 +655,7 @@ void ParseOpenInterestMessage(const std::string &strMessage)
         LOG(DEBUG_LEVEL_DEBUG, "openPosition: %ld", gOpenInterestInfo.openPosition);
         LOG(DEBUG_LEVEL_DEBUG, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
         LOG(DEBUG_LEVEL_DEBUG, "avgCost: %f", gOpenInterestInfo.avgCost);
-        LOG(DEBUG_LEVEL_DEBUG, "NeedToUpdate: %d", gOpenInterestInfo.NeedToUpdate);
+        LOG(DEBUG_LEVEL_DEBUG, "NeedToUpdate = FALSE");
     }
     else
     {
