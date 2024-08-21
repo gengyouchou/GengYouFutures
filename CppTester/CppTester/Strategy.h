@@ -66,6 +66,8 @@ VOID AutoCalcuKeyPrices(VOID);
 
 // Order
 
+#define ORDER_BUY_LONG_POSITION 0   // 0: Buy, 1: Sell
+#define ORDER_SELL_SHORT_POSITION 1 // 0: Buy, 1: Sell
 #define ORDER_CLOSE_POSITION 1
 #define ORDER_NEW_POSITION 0
 #define DOLLARS_PER_TICK 10
