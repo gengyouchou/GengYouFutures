@@ -636,7 +636,7 @@ void ParseOpenInterestMessage(const std::string &strMessage)
 
     if (!items.empty() && items[0] == UnKnowMarket)
     {
-        LOG(DEBUG_LEVEL_INFO, "Message: %s", strMessage);
+        LOG(DEBUG_LEVEL_DEBUG, "Message: %s", strMessage);
         gOpenInterestInfo.NeedToUpdate = FALSE;
         return;
     }
@@ -650,12 +650,12 @@ void ParseOpenInterestMessage(const std::string &strMessage)
         gOpenInterestInfo.avgCost = std::stod(items[6]);          // 7
         gOpenInterestInfo.NeedToUpdate = FALSE;
 
-        LOG(DEBUG_LEVEL_INFO, "product: %s", gOpenInterestInfo.product);
-        LOG(DEBUG_LEVEL_INFO, "buySell: %s", gOpenInterestInfo.buySell);
-        LOG(DEBUG_LEVEL_INFO, "openPosition: %ld", gOpenInterestInfo.openPosition);
-        LOG(DEBUG_LEVEL_INFO, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
-        LOG(DEBUG_LEVEL_INFO, "avgCost: %f", gOpenInterestInfo.avgCost);
-        LOG(DEBUG_LEVEL_INFO, "NeedToUpdate: %d", gOpenInterestInfo.NeedToUpdate);
+        LOG(DEBUG_LEVEL_DEBUG, "product: %s", gOpenInterestInfo.product);
+        LOG(DEBUG_LEVEL_DEBUG, "buySell: %s", gOpenInterestInfo.buySell);
+        LOG(DEBUG_LEVEL_DEBUG, "openPosition: %ld", gOpenInterestInfo.openPosition);
+        LOG(DEBUG_LEVEL_DEBUG, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
+        LOG(DEBUG_LEVEL_DEBUG, "avgCost: %f", gOpenInterestInfo.avgCost);
+        LOG(DEBUG_LEVEL_DEBUG, "NeedToUpdate: %d", gOpenInterestInfo.NeedToUpdate);
     }
     else
     {
