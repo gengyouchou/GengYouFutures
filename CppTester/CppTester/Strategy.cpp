@@ -592,7 +592,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
             for (auto &x : vec)
             {
                 AutoOrder(x,
-                          ORDER_CLOSE_POSITION,   // Close
+                          ORDER_NEW_POSITION,     // New
                           ORDER_BUY_LONG_POSITION // Buy or sell
                 );
             }
@@ -626,7 +626,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
             for (auto &x : vec)
             {
                 AutoOrder(x,
-                          ORDER_CLOSE_POSITION,     // Close
+                          ORDER_NEW_POSITION,       // New
                           ORDER_SELL_SHORT_POSITION // Buy or sell
                 );
             }
@@ -805,8 +805,8 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
             for (auto &x : vec)
             {
                 AutoOrder(x,
-                          ORDER_CLOSE_POSITION, // Close
-                          BuySell               // Buy or sell
+                          ORDER_NEW_POSITION, // New
+                          BuySell             // Buy or sell
                 );
             }
 
