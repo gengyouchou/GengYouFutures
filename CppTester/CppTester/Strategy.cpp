@@ -418,6 +418,9 @@ VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo)
                     0.0 // avgCost 0.0
                 };
             }
+
+            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
+                curPrice, gCostMovingAverageVal, gBidOfferLongShort);
         }
     }
 
@@ -580,8 +583,8 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
         {
             BuySell = 0; // Long position
 
-            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f",
-                curPrice, gCostMovingAverageVal);
+            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
+                curPrice, gCostMovingAverageVal, gBidOfferLongShort);
 
             vector<string> vec = {COMMODITY_OTHER};
 
@@ -616,8 +619,8 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
 
             BuySell = 1; // Short position
 
-            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f",
-                curPrice, gCostMovingAverageVal);
+            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
+                curPrice, gCostMovingAverageVal, gBidOfferLongShort);
 
             vector<string> vec = {COMMODITY_OTHER};
 

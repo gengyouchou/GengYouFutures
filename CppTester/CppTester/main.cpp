@@ -172,7 +172,7 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
     }
     else
     {
-        DEBUG(DEBUG_LEVEL_INFO, "gBest5BidOffer[ProductIdxNo].size() < 10");
+        DEBUG(DEBUG_LEVEL_DEBUG, "gBest5BidOffer[ProductIdxNo].size() < 10");
     }
 }
 
