@@ -256,6 +256,10 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
+#ifdef VIRTUAL_ACCOUNT_ORDER
+    NewClose = ORDER_CLOSE_POSITION;
+#endif
+
     long g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
                                                 false, // bAsyncOrder
                                                 ProductNum,
@@ -263,9 +267,10 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
                                                 BuySell,  // BuySell
                                                 0,        // DayTrade
                                                 NewClose, // New position or close position, 0: New position, 1: Close position, 2: Auto (used for new futures and options)
-                                                "P",
-                                                1,
-                                                0);
+                                                "P",      //"P" for range market price
+                                                1,        // Number of contracts
+                                                0         // 0: Intraday (T session and T+1 session)
+    );
 
     pSKCenterLib->PrintfCodeMessage("AutoOrder", "SendFutureOrder", g_nCode);
 
