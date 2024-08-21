@@ -263,6 +263,7 @@ void thread_main()
     }
 
     DEBUG(DEBUG_LEVEL_INFO, "[ServerTime: %d: %d: %d]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+    LOG(DEBUG_LEVEL_INFO, "[ServerTime: %d: %d: %d]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
 
     LONG PrintInfoCount = 0, CheckConnected = 0;
 

@@ -262,8 +262,9 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
-    if (NewClose == ORDER_NEW_POSITION)
+    if (NewClose == ORDER_NEW_POSITION && gOpenInterestInfo.NeedToUpdate == FALSE)
     {
+        LOG(DEBUG_LEVEL_INFO, "gOpenInterestInfo.NeedToUpdate == FALSE");
         gOpenInterestInfo.NeedToUpdate = TRUE;
     }
 
@@ -558,6 +559,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
 
     if (gOpenInterestInfo.NeedToUpdate == TRUE)
     {
+        LOG(DEBUG_LEVEL_DEBUG, "gOpenInterestInfo.NeedToUpdate == TRUE");
         return;
     }
 
@@ -773,6 +775,7 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
 
     if (gOpenInterestInfo.NeedToUpdate == TRUE)
     {
+        LOG(DEBUG_LEVEL_DEBUG, "gOpenInterestInfo.NeedToUpdate == TRUE");
         return;
     }
 
