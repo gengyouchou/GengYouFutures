@@ -287,15 +287,16 @@ VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo)
     double profitAndLoss = 0;
     double curPrice = 0;
 
-    if (TEST_MODE == 0)
-    {
-        long res = pSKOrderLib->GetOpenInterest(strUserId, 1);
+#ifndef VIRTUAL_ACCOUNT_ORDER
 
-        if (res != 0)
-        {
-            DEBUG(DEBUG_LEVEL_DEBUG, "pSKOrderLib->GetOpenInterest(strUserId, 1)=%ld", res);
-        }
+    long res = pSKOrderLib->GetOpenInterest(strUserId, 1);
+
+    if (res != 0)
+    {
+        DEBUG(DEBUG_LEVEL_DEBUG, "pSKOrderLib->GetOpenInterest(strUserId, 1)=%ld", res);
     }
+
+#endif
 
     if (gCurCommPrice.count(MtxCommodtyInfo) != 0)
     {
@@ -344,16 +345,15 @@ VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo)
                 );
             }
 
-            if (TEST_MODE == 1)
-            {
-                gOpenInterestInfo = {
-                    "", // product
-                    "", // Buy/Sell Indicator
-                    0,  // openPosition 0
-                    0,  // dayTradePosition 0
-                    0.0 // avgCost 0.0
-                };
-            }
+#ifdef VIRTUAL_ACCOUNT_ORDER
+            gOpenInterestInfo = {
+                "", // product
+                "", // Buy/Sell Indicator
+                0,  // openPosition 0
+                0,  // dayTradePosition 0
+                0.0 // avgCost 0.0
+            };
+#endif
         }
     }
 
@@ -408,16 +408,15 @@ VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo)
                 );
             }
 
-            if (TEST_MODE == 1)
-            {
-                gOpenInterestInfo = {
-                    "", // product
-                    "", // Buy/Sell Indicator
-                    0,  // openPosition 0
-                    0,  // dayTradePosition 0
-                    0.0 // avgCost 0.0
-                };
-            }
+#ifdef VIRTUAL_ACCOUNT_ORDER
+            gOpenInterestInfo = {
+                "", // product
+                "", // Buy/Sell Indicator
+                0,  // openPosition 0
+                0,  // dayTradePosition 0
+                0.0 // avgCost 0.0
+            };
+#endif
 
             LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
                 curPrice, gCostMovingAverageVal, gBidOfferLongShort);
@@ -593,6 +592,8 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
                 );
             }
 
+            // Greedy assumptions always have positions
+
             {
                 gOpenInterestInfo.product = COMMODITY_OTHER;
                 gOpenInterestInfo.buySell = "B";
@@ -624,6 +625,8 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
                           ORDER_SELL_SHORT_POSITION // Buy or sell
                 );
             }
+
+            // Greedy assumptions always have positions
 
             {
                 gOpenInterestInfo.product = COMMODITY_OTHER;
