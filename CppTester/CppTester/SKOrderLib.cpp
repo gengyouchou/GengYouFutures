@@ -29,7 +29,8 @@ OpenInterestInfo gOpenInterestInfo = {
     0,   // openPosition 0
     0,   // dayTradePosition 0
     0.0, // avgCost 0.0
-    0.0  // profitAndLoss
+    0.0, // profitAndLoss
+    TRUE // NeedToUpdate
 };
 
 string g_strUserId = "";
@@ -643,22 +644,25 @@ void ParseOpenInterestMessage(const std::string &strMessage)
         gOpenInterestInfo.openPosition = std::stol(items[4]);     // 5
         gOpenInterestInfo.dayTradePosition = std::stol(items[5]); // 6
         gOpenInterestInfo.avgCost = std::stod(items[6]);          // 7
+        gOpenInterestInfo.NeedToUpdate = FALSE;
 
-        LOG(DEBUG_LEVEL_DEBUG, "product: %s", gOpenInterestInfo.product);
-        LOG(DEBUG_LEVEL_DEBUG, "buySell: %s", gOpenInterestInfo.buySell);
-        LOG(DEBUG_LEVEL_DEBUG, "openPosition: %ld", gOpenInterestInfo.openPosition);
-        LOG(DEBUG_LEVEL_DEBUG, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
-        LOG(DEBUG_LEVEL_DEBUG, "avgCost: %f", gOpenInterestInfo.avgCost);
+        LOG(DEBUG_LEVEL_INFO, "product: %s", gOpenInterestInfo.product);
+        LOG(DEBUG_LEVEL_INFO, "buySell: %s", gOpenInterestInfo.buySell);
+        LOG(DEBUG_LEVEL_INFO, "openPosition: %ld", gOpenInterestInfo.openPosition);
+        LOG(DEBUG_LEVEL_INFO, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
+        LOG(DEBUG_LEVEL_INFO, "avgCost: %f", gOpenInterestInfo.avgCost);
+        LOG(DEBUG_LEVEL_INFO, "NeedToUpdate: %d", gOpenInterestInfo.NeedToUpdate);
     }
     else
     {
         gOpenInterestInfo = {
-            "",  // product
-            "",  // Buy/Sell Indicator
-            0,   // openPosition 0
-            0,   // dayTradePosition 0
-            0.0, // avgCost 0.0
-            0.0  // profitAndLoss
+            "",   // product
+            "",   // Buy/Sell Indicator
+            0,    // openPosition 0
+            0,    // dayTradePosition 0
+            0.0,  // avgCost 0.0
+            0.0,  // profitAndLoss
+            FALSE // NeedToUpdate
         };
 
         DEBUG(DEBUG_LEVEL_DEBUG, "NO Open Position: %s", strMessage);

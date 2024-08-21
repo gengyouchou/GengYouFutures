@@ -262,6 +262,11 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
+    if (NewClose == ORDER_NEW_POSITION)
+    {
+        gOpenInterestInfo.NeedToUpdate = TRUE;
+    }
+
 #ifdef VIRTUAL_ACCOUNT_ORDER
     NewClose = ORDER_CLOSE_POSITION;
 #endif
@@ -365,8 +370,11 @@ VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo)
                 0,   // openPosition 0
                 0,   // dayTradePosition 0
                 0.0, // avgCost 0.0
-                0.0  // profitAndLoss
+                0.0, // profitAndLoss
+                TRUE
+
             };
+
 #endif
         }
     }
@@ -429,7 +437,9 @@ VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo)
                 0,   // openPosition 0
                 0,   // dayTradePosition 0
                 0.0, // avgCost 0.0
-                0.0  // profitAndLoss
+                0.0, // profitAndLoss
+                TRUE
+
             };
 #endif
 
@@ -545,6 +555,11 @@ LONG EstimatedShortSideKeyPrice(VOID)
 VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    if (gOpenInterestInfo.NeedToUpdate == TRUE)
+    {
+        return;
+    }
 
     double OpenPrice = 0;
 
@@ -755,6 +770,11 @@ LONG StrategyCaluBidOfferLongShort(VOID)
 VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    if (gOpenInterestInfo.NeedToUpdate == TRUE)
+    {
+        return;
+    }
 
     double CurAmp = 0;
 

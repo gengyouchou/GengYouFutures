@@ -78,6 +78,7 @@ struct OpenInterestInfo
     LONG dayTradePosition; //
     DOUBLE avgCost;        //
     DOUBLE profitAndLoss;
+    BOOLEAN NeedToUpdate;
 };
 
 // struct FUTUREORDER
