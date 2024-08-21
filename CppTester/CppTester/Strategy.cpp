@@ -330,7 +330,7 @@ VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo)
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // need to Sell to stop long position loss
         }
 
-        profitAndLoss = profitAndLoss * static_cast<double>(gOpenInterestInfo.openPosition);
+        profitAndLoss = profitAndLoss * abs(static_cast<double>(gOpenInterestInfo.openPosition));
 
         gOpenInterestInfo.profitAndLoss = profitAndLoss; // assign new gOpenInterestInfo.profitAndLoss form local profitAndLoss
 
