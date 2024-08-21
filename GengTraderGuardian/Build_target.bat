@@ -20,8 +20,8 @@ if exist "%SOURCE_DIR%\CMakeLists.txt" (
 
 REM 使用 CMake 和 Visual Studio 进行构建
 echo Building project...
-cmake --build "%BUILD_DIR%" --config Debug
-@REM cmake --build "%BUILD_DIR%" --config Release
+@REM cmake --build "%BUILD_DIR%" --config Debug
+cmake --build "%BUILD_DIR%" --config Release
 
 REM 打印构建结果
 if errorlevel 1 (

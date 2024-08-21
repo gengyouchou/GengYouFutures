@@ -5,9 +5,9 @@ setlocal enabledelayedexpansion
 set "currentDrive=%~d0"
 
 :: 设置程序路径
-set "cppTesterDir=%currentDrive%GengYouFutures\CppTester\x64\Debug"
+set "cppTesterDir=%currentDrive%GengYouFutures\CppTester\x64\Release"
 set "cppTesterPath=%cppTesterDir%\CppTester.exe"
-set "gengTraderGuardianDir=%currentDrive%GengYouFutures\GengTraderGuardian\x64\Debug"
+set "gengTraderGuardianDir=%currentDrive%GengYouFutures\GengTraderGuardian\x64\Release"
 set "gengTraderGuardianPath=%gengTraderGuardianDir%\GengTraderGuardian.exe"
 
 :: 输出路径信息，调试用

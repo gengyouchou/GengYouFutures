@@ -100,7 +100,7 @@ void PrintCurrentTime()
 int main()
 {
     std::filesystem::path currentDrive = std::filesystem::current_path().root_name();
-    std::wstring processPath = currentDrive.wstring() + L"\\GengYouFutures\\CppTester\\x64\\Debug\\CppTester.exe";
+    std::wstring processPath = currentDrive.wstring() + L"\\GengYouFutures\\CppTester\\x64\\Release\\CppTester.exe";
     int printCounter = 0;
 
     while (true)
