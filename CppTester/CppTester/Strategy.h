@@ -81,3 +81,5 @@ VOID AutoCalcuKeyPrices(VOID);
 #define VIRTUAL_ACCOUNT_ORDER
 
 #endif
+
+#define NIGHT_TRADING 0

@@ -294,12 +294,15 @@ void thread_main()
             StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
             StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
 
+#if NIGHT_TRADING
+
             if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 14)
             {
                 StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
                 StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
             }
             else
+#endif
             {
                 if (gBidOfferLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
                 {
