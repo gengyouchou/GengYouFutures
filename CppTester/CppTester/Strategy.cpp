@@ -150,7 +150,7 @@ VOID AutoCalcuKeyPrices(VOID)
         MtxCommodtyInfo = gCommodtyInfo.MTXIdxNoAM;
     }
 
-    int len = gDaysKlineDiff.size();
+    size_t len = gDaysKlineDiff.size();
 
     if (len == 0)
     {
@@ -168,7 +168,7 @@ VOID AutoCalcuKeyPrices(VOID)
         long accu = 0;
         long AvgAmp = 0, LargestAmp = LONG_MIN, SmallestAmp = LONG_MAX, LargerAmp = 0, SmallAmp = 0;
 
-        for (int i = 0; i < len; ++i)
+        for (size_t i = 0; i < len; ++i)
         {
             DEBUG(DEBUG_LEVEL_INFO, "Diff = %ld ", gDaysKlineDiff[i]);
 
@@ -178,7 +178,7 @@ VOID AutoCalcuKeyPrices(VOID)
             SmallestAmp = min(SmallestAmp, gDaysKlineDiff[i]);
         }
 
-        AvgAmp = accu / len;
+        AvgAmp = accu / static_cast<long>(len);
 
         LargerAmp = (AvgAmp + LargestAmp) / 2;
         SmallAmp = (AvgAmp + SmallestAmp) / 2;
