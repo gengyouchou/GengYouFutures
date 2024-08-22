@@ -250,6 +250,10 @@ void thread_main()
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 
+        system("cls");
+
+        printf("Waiting for host quotation...");
+
         if (gCurServerTime[0] >= 0 &&
             gCommodtyInfo.MTXIdxNoAM >= 0 &&
             gCommodtyInfo.MTXIdxNo >= 0 &&
