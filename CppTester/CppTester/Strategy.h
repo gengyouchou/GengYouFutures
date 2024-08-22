@@ -78,7 +78,7 @@ LONG EstimatedTodaysAmplitude(VOID);
 
 // Mode
 
-#define TEST_MODE 1
+#define TEST_MODE 0
 
 #if TEST_MODE
 

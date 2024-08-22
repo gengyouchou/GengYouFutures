@@ -705,10 +705,10 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 {
     static unordered_map<long, long> PrePtr;
 
-    // if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 30) || gCurServerTime[0] >= 14)
-    // {
-    //     return 0;
-    // }
+    if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 30) || gCurServerTime[0] >= 14)
+    {
+        return 0;
+    }
 
     if (gBest5BidOffer[nStockidx].size() < 10)
     {
@@ -740,15 +740,15 @@ LONG CountBidOfferLongShort(LONG nStockidx)
             totalOffer += gBest5BidOffer[nStockidx][i].second;
         }
 
-        // if (totalBid * 3 <= totalOffer * 2)
-        // {
-        //     ++countLong;
-        // }
+        if (totalBid * 3 <= totalOffer * 2)
+        {
+            ++countLong;
+        }
 
-        // if (totalOffer * 3 <= totalBid * 2)
-        // {
-        //     --countShort;
-        // }
+        if (totalOffer * 3 <= totalBid * 2)
+        {
+            --countShort;
+        }
     }
 
     // extern std::unordered_map<long, std::array<long, 5>> gTransactionList;
