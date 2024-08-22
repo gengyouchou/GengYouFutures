@@ -60,6 +60,10 @@ DOUBLE CountCostMovingAverage(VOID);
 LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);
 VOID AutoCalcuKeyPrices(VOID);
 
+LONG EstimatedLongSideKeyPrice(VOID);
+LONG EstimatedShortSideKeyPrice(VOID);
+LONG EstimatedTodaysAmplitude(VOID);
+
 // Strategy
 
 #define SWING_POINTS 20

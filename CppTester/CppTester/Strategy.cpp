@@ -438,7 +438,7 @@ LONG EstimatedLongSideKeyPrice(VOID)
 {
     if (gDayAmpAndKeyPrice.LongKey1 == 0)
     {
-        return LONG_MIN;
+        return LONG_MIN / 2;
     }
 
     switch (gStrategyConfig.ClosingKeyPriceLevel)
@@ -467,7 +467,7 @@ LONG EstimatedLongSideKeyPrice(VOID)
     default:
     {
         // Code for other cases
-        return LONG_MIN;
+        return LONG_MIN / 2;
         break;
     }
     }
@@ -477,7 +477,7 @@ LONG EstimatedShortSideKeyPrice(VOID)
 {
     if (gDayAmpAndKeyPrice.ShortKey1 == 0)
     {
-        return LONG_MAX;
+        return LONG_MAX / 2;
     }
 
     switch (gStrategyConfig.ClosingKeyPriceLevel)
@@ -506,7 +506,46 @@ LONG EstimatedShortSideKeyPrice(VOID)
     default:
     {
         // Code for other cases
-        return LONG_MAX;
+        return LONG_MAX / 2;
+        break;
+    }
+    }
+}
+
+LONG EstimatedTodaysAmplitude(VOID)
+{
+    if (gDayAmpAndKeyPrice.LongKey1 == 0)
+    {
+        return LONG_MIN / 2;
+    }
+
+    switch (gStrategyConfig.ClosingKeyPriceLevel)
+    {
+    case 1:
+    {
+        return gDayAmpAndKeyPrice.SmallestAmp + gStrategyConfig.ActivePoint;
+    }
+    case 2:
+    {
+        return gDayAmpAndKeyPrice.SmallAmp + gStrategyConfig.ActivePoint;
+    }
+    case 3:
+    {
+        return gDayAmpAndKeyPrice.AvgAmp + gStrategyConfig.ActivePoint;
+    }
+    case 4:
+    {
+        return gDayAmpAndKeyPrice.LargerAmp + gStrategyConfig.ActivePoint;
+    }
+    case 5:
+    {
+        return gDayAmpAndKeyPrice.LargestAmp + gStrategyConfig.ActivePoint;
+    }
+
+    default:
+    {
+        // Code for other cases
+        return LONG_MIN / 2;
         break;
     }
     }
@@ -578,7 +617,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
           curPrice, CurAvg, gCostMovingAverageVal);
 
     if (abs(CurAvg - gCostMovingAverageVal) <= SWING_POINTS ||
-        CurAmp > gDayAmpAndKeyPrice.SmallAmp + gStrategyConfig.ActivePoint)
+        CurAmp > EstimatedTodaysAmplitude())
     {
         return;
     }
@@ -780,13 +819,7 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
         curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
     }
 
-    BOOL IntervalAmpKStickMatch = FALSE;
-
-    if (CurAmp <= gDayAmpAndKeyPrice.SmallAmp + gStrategyConfig.ActivePoint)
-    {
-        IntervalAmpKStickMatch = TRUE;
-    }
-    else
+    if (CurAmp > EstimatedTodaysAmplitude())
     {
         return;
     }
