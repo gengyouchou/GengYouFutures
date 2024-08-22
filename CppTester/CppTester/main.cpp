@@ -351,10 +351,11 @@ void thread_main()
             //
             lastClearTime = now;
 
-            printf("[CurMtxPrice: %ld], ", gCurCommPrice[MtxCommodtyInfo]);
-            printf("[ServerTime: %d: %d: %d], ", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
-            printf("[TSEA prices: %ld, Valume: %ld: Buy: %ld Sell: %ld]\n",
-                   gCurCommPrice[gCommodtyInfo.TSEAIdxNo], gCurTaiexInfo[0][1], gCurTaiexInfo[0][2], gCurTaiexInfo[0][3]);
+            printf("[CurMtxPrice: %ld] ", gCurCommPrice[MtxCommodtyInfo] / 100);
+            printf("[TSEA prices: %ld, Valume: %ld: Buy: %ld Sell: %ld] ",
+                   gCurCommPrice[gCommodtyInfo.TSEAIdxNo] / 100, gCurTaiexInfo[0][1], gCurTaiexInfo[0][2], gCurTaiexInfo[0][3]);
+            printf("[Diff: %d] ", (gCurCommPrice[MtxCommodtyInfo] - gCurCommPrice[gCommodtyInfo.TSEAIdxNo]) / 100);
+            printf("[ServerTime: %d: %d: %d]\n", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
 
             printf("=========================================\n");
 
