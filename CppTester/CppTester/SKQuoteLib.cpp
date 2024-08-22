@@ -21,6 +21,8 @@ std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint; // Max len
 std::unordered_map<long, long> gCurCommPrice;
 std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
+std::unordered_map<long, std::array<long, 5>> gTransactionList;
+// long nPtr, long nBid, long nAsk, long nClose, long nQty,
 
 SHORT gCurServerTime[3] = {-1, -1, -1};
 
@@ -595,15 +597,11 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
     DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
-    if (gBest5BidOffer[nStockIndex].size() < 10)
-    {
-        return;
-    }
-
-    if (gBest5BidOffer.count(nStockIndex) && gBest5BidOffer[nStockIndex].size() >= 11)
-    {
-        gBest5BidOffer[nStockIndex][10] = {nClose, nQty};
-    }
+    gTransactionList[nStockIndex][0] = nPtr;
+    gTransactionList[nStockIndex][1] = nBid;
+    gTransactionList[nStockIndex][2] = nAsk;
+    gTransactionList[nStockIndex][3] = nClose;
+    gTransactionList[nStockIndex][4] = nQty;
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }

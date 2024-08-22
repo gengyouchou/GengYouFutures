@@ -1,5 +1,12 @@
 #pragma once
 
+#include <array>
+#include <deque>
+#include <iostream>
+#include <map>
+#include <string>
+#include <unordered_map>
+
 #include "SKCOM_reference.h"
 #include "TEventHandler.h"
 #include "config.h"
@@ -90,3 +97,6 @@ private:
 VOID GetCommodityIdx(VOID);
 void loadHighLowPoints();
 void updateHighLowPoints(const std::string &date, double dayHigh, double dayLow, double nightHigh, double nightLow);
+
+extern std::unordered_map<long, std::array<long, 5>> gTransactionList;
+// long nPtr, long nBid, long nAsk, long nClose, long nQty

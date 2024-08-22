@@ -738,36 +738,46 @@ LONG CountBidOfferLongShort(LONG nStockidx)
             totalOffer += gBest5BidOffer[nStockidx][i].second;
         }
 
-        if (totalBid * 3 <= totalOffer * 2)
+        // if (totalBid * 3 <= totalOffer * 2)
+        // {
+        //     ++countLong;
+        // }
+
+        // if (totalOffer * 3 <= totalBid * 2)
+        // {
+        //     --countShort;
+        // }
+    }
+
+    // extern std::unordered_map<long, std::array<long, 5>> gTransactionList;
+    // long nPtr, long nBid, long nAsk, long nClose, long nQty,
+
+    long prePtr = -1;
+
+    if (gTransactionList.count(nStockidx))
+    {
+        long nPtr = 0, nBid = 0, nAsk = 0, nClose = 0, nQty = 0;
+
+        nPtr = gTransactionList[nStockidx][0];
+        nBid = gTransactionList[nStockidx][1];
+        nAsk = gTransactionList[nStockidx][2];
+        nClose = gTransactionList[nStockidx][3];
+        nQty = gTransactionList[nStockidx][4];
+
+        if (prePtr != nPtr)
         {
-            ++countLong;
+            if (nClose > 0 && nClose <= nBid)
+            {
+                countShort -= nQty;
+            }
+
+            if (nClose > 0 && nClose >= nAsk)
+            {
+                countLong += nQty;
+            }
+
+            prePtr = nPtr;
         }
-
-        if (totalOffer * 3 <= totalBid * 2)
-        {
-            --countShort;
-        }
-    }
-
-    long nClose = 0, nQty = 0;
-
-    if (gBest5BidOffer.count(nStockidx) && gBest5BidOffer[nStockidx].size() >= 11)
-    {
-        nClose = gBest5BidOffer[nStockidx][10].first;
-        nQty = gBest5BidOffer[nStockidx][10].second;
-
-        // avoid recount
-        gBest5BidOffer[nStockidx][10].second = 0;
-    }
-
-    if (nClose > 0 && nClose <= gBest5BidOffer[nStockidx][0].first)
-    {
-        countLong -= nQty;
-    }
-
-    if (nClose > 0 && nClose >= gBest5BidOffer[nStockidx][5].first)
-    {
-        countShort += nQty;
     }
 
     LOG(DEBUG_LEVEL_DEBUG, "countLong = %ld, countShort=%ld", countLong, countShort);

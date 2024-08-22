@@ -21,6 +21,9 @@ extern SHORT gCurServerTime[3];
 extern std::unordered_map<long, long> gCurCommPrice;
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
+extern std::unordered_map<long, std::array<long, 5>> gTransactionList;
+// long nPtr, long nBid, long nAsk, long nClose, long nQty,
+
 extern COMMODITY_INFO gCommodtyInfo;
 extern DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice;
 extern OpenInterestInfo gOpenInterestInfo;
@@ -136,12 +139,15 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
                           gBest5BidOffer[ProductIdxNo][6].second +
                           gBest5BidOffer[ProductIdxNo][5].second;
 
-        long nClose = 0, nQty = 0;
+        long nPtr = 0, nBid = 0, nAsk = 0, nClose = 0, nQty = 0;
 
-        if (gBest5BidOffer.count(ProductIdxNo) && gBest5BidOffer[ProductIdxNo].size() >= 11)
+        if (gTransactionList.count(ProductIdxNo))
         {
-            nClose = gBest5BidOffer[ProductIdxNo][10].first;
-            nQty = gBest5BidOffer[ProductIdxNo][10].second;
+            nPtr = gTransactionList[ProductIdxNo][0];
+            nBid = gTransactionList[ProductIdxNo][1];
+            nAsk = gTransactionList[ProductIdxNo][2];
+            nClose = gTransactionList[ProductIdxNo][3];
+            nQty = gTransactionList[ProductIdxNo][4];
         }
 
         printf("Total Offer: [%ld]\n", TotalOffer);
@@ -151,14 +157,14 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
         printf("Ask3: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][7].first, gBest5BidOffer[ProductIdxNo][7].second);
         printf("Ask2: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][6].first, gBest5BidOffer[ProductIdxNo][6].second);
         printf("Ask1: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][5].first, gBest5BidOffer[ProductIdxNo][5].second);
-        if (nClose > 0 && nClose >= gBest5BidOffer[ProductIdxNo][5].first)
+        if (nClose > 0 && nClose >= nAsk)
         {
-            printf("Close: [%ld]: [%ld]\n", nClose, nQty);
+            printf("============================Close: [%ld]: [%ld]============\n", nClose, nQty);
         }
         printf("=========================================\n");
-        if (nClose > 0 && nClose <= gBest5BidOffer[ProductIdxNo][0].first)
+        if (nClose > 0 && nClose <= nBid)
         {
-            printf("Close: [%ld]: [%ld]\n", nClose, nQty);
+            printf("============================Close: [%ld]: [%ld]============\n", nClose, nQty);
         }
         printf("Bid1: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][0].first, gBest5BidOffer[ProductIdxNo][0].second);
         printf("Bid2: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][1].first, gBest5BidOffer[ProductIdxNo][1].second);
