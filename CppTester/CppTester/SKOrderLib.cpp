@@ -650,6 +650,11 @@ void ParseOpenInterestMessage(const std::string &strMessage)
         gOpenInterestInfo.avgCost = std::stod(items[6]);          // 7
         gOpenInterestInfo.NeedToUpdate = FALSE;
 
+        if (gOpenInterestInfo.buySell == "S")
+        {
+            gOpenInterestInfo.openPosition = -gOpenInterestInfo.openPosition;
+        }
+
         LOG(DEBUG_LEVEL_DEBUG, "product: %s", gOpenInterestInfo.product);
         LOG(DEBUG_LEVEL_DEBUG, "buySell: %s", gOpenInterestInfo.buySell);
         LOG(DEBUG_LEVEL_DEBUG, "openPosition: %ld", gOpenInterestInfo.openPosition);
