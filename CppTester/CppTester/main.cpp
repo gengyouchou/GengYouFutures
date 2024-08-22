@@ -217,6 +217,8 @@ void release()
 
 void thread_main()
 {
+    const int refreshInterval = 1000; // 1000 ms
+    std::chrono::steady_clock::time_point lastClearTime = std::chrono::steady_clock::now();
     AutoLogIn();
 
     AutoConnect();
@@ -231,9 +233,6 @@ void thread_main()
     DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
 
     pSKQuoteLib->GetCommodityIdx();
-
-    const int refreshInterval = 1000; // 1000
-    auto lastClearTime = std::chrono::steady_clock::now();
 
     std::string CommList;
 
@@ -273,6 +272,9 @@ void thread_main()
 
     while (true)
     {
+        auto now = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClearTime);
+
         // Determine whether to use day quotation or full day and night quotation
 
         LONG MtxCommodtyInfo = 0;
@@ -299,11 +301,10 @@ void thread_main()
             }
         }
 
-        auto now = std::chrono::steady_clock::now();
-        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClearTime);
-
         {
             // Strategy start:
+
+            StrategyCaluBidOfferLongShort();
 
             StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
             StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
@@ -337,6 +338,9 @@ void thread_main()
 
         if (elapsed.count() >= refreshInterval)
         {
+            system("cls");
+            lastClearTime = now;
+
             ++CheckConnected;
 
             if (CheckConnected == 30)
@@ -350,10 +354,6 @@ void thread_main()
 
                 CheckConnected = 0;
             }
-            system("cls");
-
-            //
-            lastClearTime = now;
 
             printf("[CurMtxPrice: %ld] ", gCurCommPrice[MtxCommodtyInfo] / 100);
             printf("[TSEA prices: %ld, Valume: %ld: Buy: %ld Sell: %ld] ",
@@ -415,8 +415,6 @@ void thread_main()
 
             AutoBest5Long(gCommodtyInfo.TSMCIdxNo, "TSMC");
             AutoBest5Long(gCommodtyInfo.HHIdxNo, "HHP");
-
-            StrategyCaluBidOfferLongShort();
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU

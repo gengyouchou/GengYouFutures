@@ -10,9 +10,9 @@
 #include <cstdlib> // For system("cls")
 #include <deque>
 #include <iostream>
+#include <map>
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
-#include <map>
 
 // Define the global logger instance
 Logger StrategyLog("Strategy.log");
@@ -699,12 +699,14 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
+std::chrono::steady_clock::time_point gLastClearTime = std::chrono::steady_clock::now();
+
 LONG CountBidOfferLongShort(LONG nStockidx)
 {
-    if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 30) || gCurServerTime[0] >= 14)
-    {
-        return 0;
-    }
+    // if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 30) || gCurServerTime[0] >= 14)
+    // {
+    //     return 0;
+    // }
 
     if (gBest5BidOffer[nStockidx].size() < 10)
     {
@@ -713,18 +715,38 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
     long countLong = 0, countShort = 0;
 
-    long totalBid = 0;
+    auto now = std::chrono::steady_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - gLastClearTime);
 
-    for (int i = 0; i < 5; ++i)
+    const int refreshInterval = 100; // 100 ms
+
+    if (elapsed.count() >= refreshInterval)
     {
-        totalBid += gBest5BidOffer[nStockidx][i].second;
-    }
+        gLastClearTime = now;
 
-    long totalOffer = 0;
+        long totalBid = 0;
 
-    for (int i = 5; i < 10; ++i)
-    {
-        totalOffer += gBest5BidOffer[nStockidx][i].second;
+        for (int i = 0; i < 5; ++i)
+        {
+            totalBid += gBest5BidOffer[nStockidx][i].second;
+        }
+
+        long totalOffer = 0;
+
+        for (int i = 5; i < 10; ++i)
+        {
+            totalOffer += gBest5BidOffer[nStockidx][i].second;
+        }
+
+        if (totalBid * 3 <= totalOffer * 2)
+        {
+            ++countLong;
+        }
+
+        if (totalOffer * 3 <= totalBid * 2)
+        {
+            --countShort;
+        }
     }
 
     long nClose = 0, nQty = 0;
@@ -733,26 +755,19 @@ LONG CountBidOfferLongShort(LONG nStockidx)
     {
         nClose = gBest5BidOffer[nStockidx][10].first;
         nQty = gBest5BidOffer[nStockidx][10].second;
+
+        // avoid recount
+        gBest5BidOffer[nStockidx][10].second = 0;
     }
 
-    if (totalBid * 3 <= totalOffer * 2)
+    if (nClose > 0 && nClose <= gBest5BidOffer[nStockidx][0].first)
     {
-        ++countLong;
+        countLong -= nQty;
     }
 
-    if (totalOffer * 3 <= totalBid * 2)
+    if (nClose > 0 && nClose >= gBest5BidOffer[nStockidx][5].first)
     {
-        --countShort;
-    }
-
-    if (nClose > 0 && nClose <= gBest5BidOffer[nStockidx][0].first && nQty >= 10)
-    {
-        countLong -= 10;
-    }
-
-    if (nClose > 0 && nClose >= gBest5BidOffer[nStockidx][5].first && nQty >= 10)
-    {
-        countShort += 10;
+        countShort += nQty;
     }
 
     LOG(DEBUG_LEVEL_DEBUG, "countLong = %ld, countShort=%ld", countLong, countShort);
