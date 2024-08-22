@@ -703,6 +703,8 @@ std::chrono::steady_clock::time_point gLastClearTime = std::chrono::steady_clock
 
 LONG CountBidOfferLongShort(LONG nStockidx)
 {
+    static unordered_map<long, long> PrePtr;
+
     // if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 30) || gCurServerTime[0] >= 14)
     // {
     //     return 0;
@@ -752,8 +754,6 @@ LONG CountBidOfferLongShort(LONG nStockidx)
     // extern std::unordered_map<long, std::array<long, 5>> gTransactionList;
     // long nPtr, long nBid, long nAsk, long nClose, long nQty,
 
-    long prePtr = -1;
-
     if (gTransactionList.count(nStockidx))
     {
         long nPtr = 0, nBid = 0, nAsk = 0, nClose = 0, nQty = 0;
@@ -764,7 +764,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
         nClose = gTransactionList[nStockidx][3];
         nQty = gTransactionList[nStockidx][4];
 
-        if (prePtr != nPtr)
+        if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
         {
             if (nClose > 0 && nClose <= nBid)
             {
@@ -776,7 +776,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                 countLong += nQty;
             }
 
-            prePtr = nPtr;
+            PrePtr[nStockidx] = nPtr;
         }
     }
 
