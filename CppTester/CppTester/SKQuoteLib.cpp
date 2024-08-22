@@ -589,7 +589,7 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
-    if (nSimulate == 1)
+    if (nSimulate == 1 || nBid == 0 || nAsk == 0)
     {
         return;
     }
