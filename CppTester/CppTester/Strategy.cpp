@@ -622,6 +622,8 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
         return;
     }
 
+    // Do Long
+
     if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
     {
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
@@ -629,6 +631,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
 
         if (CurAvg > gCostMovingAverageVal &&
             curPrice >= gCostMovingAverageVal &&
+            curPrice <= CurAvg &&
             curPrice <= EstimatedLongSideKeyPrice())
         {
 
@@ -656,6 +659,8 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
         }
     }
 
+    // Do Short
+
     if (LongShort == 0 && gOpenInterestInfo.openPosition >= 0)
     {
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
@@ -663,6 +668,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
 
         if (CurAvg < gCostMovingAverageVal &&
             curPrice <= gCostMovingAverageVal &&
+            curPrice >= CurAvg &&
             curPrice >= EstimatedShortSideKeyPrice())
         {
 
