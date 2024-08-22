@@ -10,8 +10,7 @@
 
 #define DayMA 10
 #define DAY_NIGHT_HIGH_LOW_K_LINE 20
-#define COST_DAY_MA 1
-// #define DATABASE_PATH "F:/GengYouFutures/CppTester/CppTester/database.yaml";
+#define COST_DAY_MA 3
 
 struct COMMODITY_INFO
 {

@@ -282,9 +282,18 @@ void thread_main()
             MtxCommodtyInfo = gCommodtyInfo.MTXIdxNoAM;
         }
 
-        AutoCalcuKeyPrices();
+        {
+            // Key prices start
 
-        gCostMovingAverageVal = CountCostMovingAverage();
+            AutoCalcuKeyPrices();
+
+            gCostMovingAverageVal = CountCostMovingAverage();
+
+            if (gCostMovingAverageVal < 0)
+            {
+                continue;
+            }
+        }
 
         auto now = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClearTime);
@@ -354,7 +363,7 @@ void thread_main()
 
                 long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
                 long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
-                long CostMovingAverage = static_cast<long>(CountCostMovingAverage());
+                long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
 
                 printf("Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, ", gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage);
 

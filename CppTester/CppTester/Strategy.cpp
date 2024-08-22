@@ -12,6 +12,7 @@
 #include <iostream>
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
+#include <map>
 
 // Define the global logger instance
 Logger StrategyLog("Strategy.log");
@@ -37,6 +38,9 @@ extern OpenInterestInfo gOpenInterestInfo;
 extern string g_strUserId;
 
 extern COMMODITY_INFO gCommodtyInfo;
+
+extern std::map<string, pair<double, double>> gDaysCommHighLowPoint;         // Max len: DAY_NIGHT_HIGH_LOW_K_LINE
+extern std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint; // Max len: DAY_NIGHT_HIGH_LOW_K_LINE
 
 DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
 BID_OFFER_LONG_AND_SHORT gBidOfferLongAndShort = {0};
@@ -69,6 +73,30 @@ void AutoKLineData(IN string ProductNum)
 
 DOUBLE CountCostMovingAverage(VOID)
 {
+
+    // Calculate CostMovingAverage
+
+    for (const auto &entry : gDaysNightAllCommHighLowPoint) // need ordered by date  from the past to the present
+    {
+        auto cur = entry.second;
+
+        long Avg = static_cast<long>((cur.first + cur.second) / 2.0);
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f, Avg: %ld", entry.first, cur.first, cur.second, Avg);
+
+        gCostMovingAverage.push_back(Avg);
+
+        if (gCostMovingAverage.size() > COST_DAY_MA)
+        {
+            gCostMovingAverage.pop_front();
+        }
+    }
+
+    if (gCostMovingAverage.empty())
+    {
+        return -1;
+    }
+
     double LocalCostMovingAverageVal = 0;
 
     double count = 0;
@@ -88,52 +116,6 @@ DOUBLE CountCostMovingAverage(VOID)
     }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "LocalCostMovingAverageVal = %f", LocalCostMovingAverageVal);
-
-    LONG MtxCommodtyInfo = 0;
-
-    double yesterdayAvg = 0;
-
-    if (gCurServerTime[0] < 8 || gCurServerTime[0] > 14)
-    {
-        MtxCommodtyInfo = gCommodtyInfo.MTXIdxNo;
-
-        if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM) != 0)
-        {
-            long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM][0] / 100;
-            long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM][1] / 100;
-
-            yesterdayAvg = static_cast<double>(CurHigh + CurLow) / 2.0;
-        }
-    }
-    else
-    {
-        MtxCommodtyInfo = gCommodtyInfo.MTXIdxNoAM;
-
-        if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) != 0)
-        {
-            long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0] / 100;
-            long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1] / 100;
-
-            yesterdayAvg = static_cast<double>(CurHigh + CurLow) / 2.0;
-        }
-    }
-
-    LocalCostMovingAverageVal = (LocalCostMovingAverageVal + yesterdayAvg) / 2.0;
-
-    double CurAvg = 0;
-
-    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) != 0)
-    {
-        long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
-        long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
-
-        CurAvg = static_cast<double>(CurHigh + CurLow) / 2.0;
-    }
-
-    if (CurAvg != 0)
-    {
-        return (LocalCostMovingAverageVal + CurAvg) / 2.0;
-    }
 
     return LocalCostMovingAverageVal;
 }

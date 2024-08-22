@@ -425,24 +425,6 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
             }
         }
     }
-
-    // Calculate CostMovingAverage
-
-    for (const auto &entry : gDaysNightAllCommHighLowPoint) // need ordered by date  from the past to the present
-    {
-        auto cur = entry.second;
-
-        long Avg = static_cast<long>((cur.first + cur.second) / 2.0);
-
-        DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f, Avg: %ld", entry.first, cur.first, cur.second, Avg);
-
-        gCostMovingAverage.push_back(Avg);
-
-        if (gCostMovingAverage.size() > COST_DAY_MA)
-        {
-            gCostMovingAverage.pop_front();
-        }
-    }
 }
 
 VOID CSKQuoteLib::GetCommodityIdx(VOID)
