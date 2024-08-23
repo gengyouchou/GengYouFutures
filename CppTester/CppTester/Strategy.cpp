@@ -840,6 +840,15 @@ LONG StrategyCaluBidOfferLongShort(VOID)
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 
+    if (gBidOfferLongShort > 0)
+    {
+        gBidOfferLongShort = min(gBidOfferLongShort, gStrategyConfig.BidOfferLongShortThreshold);
+    }
+    else
+    {
+        gBidOfferLongShort = max(gBidOfferLongShort, -gStrategyConfig.BidOfferLongShortThreshold);
+    }
+
     return gBidOfferLongShort;
 }
 
@@ -876,12 +885,21 @@ LONG StrategyCaluTransactionListLongShort(VOID)
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 
+    if (gTransactionListLongShort > 0)
+    {
+        gTransactionListLongShort = min(gTransactionListLongShort, gStrategyConfig.BidOfferLongShortThreshold);
+    }
+    else
+    {
+        gTransactionListLongShort = max(gTransactionListLongShort, -gStrategyConfig.BidOfferLongShortThreshold);
+    }
+
     return gTransactionListLongShort;
 }
 
 LONG StrategyCaluLongShort(VOID)
 {
-    return gTransactionListLongShort + gBidOfferLongShort;
+    return (gTransactionListLongShort + gBidOfferLongShort) / 2;
 }
 
 VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
