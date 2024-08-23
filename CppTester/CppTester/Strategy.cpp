@@ -605,10 +605,12 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
     double CurAvg = 0;
     double CurAmp = 0;
 
+    double CurHigh = 0, CurLow = 0;
+
     if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
     {
-        double CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100.0;
-        double CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100.0;
+        CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100.0;
+        CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100.0;
         CurAmp = CurHigh - CurLow;
         CurAvg = (CurHigh + CurLow) / 2;
     }
@@ -632,7 +634,10 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
         if (CurAvg > gCostMovingAverageVal &&
             curPrice >= gCostMovingAverageVal &&
             curPrice <= CurAvg &&
-            curPrice <= EstimatedLongSideKeyPrice())
+            curPrice <= EstimatedLongSideKeyPrice() &&
+            curPrice > CurLow // Don’t go short at new highs, don’t go long at new lows
+
+        )
         {
 
             LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
@@ -669,7 +674,10 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
         if (CurAvg < gCostMovingAverageVal &&
             curPrice <= gCostMovingAverageVal &&
             curPrice >= CurAvg &&
-            curPrice >= EstimatedShortSideKeyPrice())
+            curPrice >= EstimatedShortSideKeyPrice() &&
+            curPrice < CurHigh // Don’t go short at new highs, don’t go long at new lows
+
+        )
         {
 
             LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
