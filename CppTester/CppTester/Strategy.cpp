@@ -44,7 +44,7 @@ extern std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint; // 
 
 DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
 BID_OFFER_LONG_AND_SHORT gBidOfferLongAndShort = {0};
-LONG gBidOfferLongShort = 0;
+LONG gBidOfferLongShort = 0, gTransactionListLongShort = 0;
 double gCostMovingAverageVal = 0;
 
 STRATEGY_CONFIG gStrategyConfig = {
@@ -427,7 +427,7 @@ VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo)
 #endif
 
             LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
-                curPrice, gCostMovingAverageVal, gBidOfferLongShort);
+                curPrice, gCostMovingAverageVal, StrategyCaluLongShort());
         }
     }
 
@@ -673,7 +673,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
         {
 
             LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
-                curPrice, gCostMovingAverageVal, gBidOfferLongShort);
+                curPrice, gCostMovingAverageVal, StrategyCaluLongShort());
 
             vector<string> vec = {COMMODITY_OTHER};
 
@@ -703,8 +703,6 @@ std::chrono::steady_clock::time_point gLastClearTime = std::chrono::steady_clock
 
 LONG CountBidOfferLongShort(LONG nStockidx)
 {
-    static unordered_map<long, long> PrePtr;
-
     if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 30) || gCurServerTime[0] >= 14)
     {
         return 0;
@@ -751,6 +749,22 @@ LONG CountBidOfferLongShort(LONG nStockidx)
         }
     }
 
+    LOG(DEBUG_LEVEL_DEBUG, "countLong = %ld, countShort=%ld", countLong, countShort);
+
+    return countLong + countShort;
+}
+
+LONG CountTransactionListLongShort(LONG nStockidx)
+{
+    static unordered_map<long, long> PrePtr;
+
+    if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 30) || gCurServerTime[0] >= 14)
+    {
+        return 0;
+    }
+
+    long countLong = 0, countShort = 0;
+
     // extern std::unordered_map<long, std::array<long, 5>> gTransactionList;
     // long nPtr, long nBid, long nAsk, long nClose, long nQty,
 
@@ -789,7 +803,7 @@ LONG StrategyCaluBidOfferLongShort(VOID)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
-    if (gBidOfferLongShort >= INT_MAX || gBidOfferLongShort < INT_MIN)
+    if (gBidOfferLongShort >= INT_MAX || gBidOfferLongShort <= INT_MIN)
     {
         return gBidOfferLongShort;
     }
@@ -819,6 +833,47 @@ LONG StrategyCaluBidOfferLongShort(VOID)
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 
     return gBidOfferLongShort;
+}
+
+LONG StrategyCaluTransactionListLongShort(VOID)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    if (gTransactionListLongShort >= INT_MAX || gTransactionListLongShort < INT_MIN)
+    {
+        return gTransactionListLongShort;
+    }
+
+    // long MTXIdxNo;
+    // long MTXIdxNoAM;
+    // long TSMCIdxNo;
+    // long HHIdxNo;
+    // long TSEAIdxNo;
+
+    if (gCommodtyInfo.TSMCIdxNo != 0)
+    {
+        long nStockidx = gCommodtyInfo.TSMCIdxNo;
+
+        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+    }
+
+    if (gCommodtyInfo.HHIdxNo != 0)
+    {
+        long nStockidx = gCommodtyInfo.HHIdxNo;
+
+        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+    }
+
+    LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gTransactionListLongShort);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "End");
+
+    return gTransactionListLongShort;
+}
+
+LONG StrategyCaluLongShort(VOID)
+{
+    return gTransactionListLongShort + gBidOfferLongShort;
 }
 
 VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)

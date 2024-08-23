@@ -28,6 +28,7 @@ extern COMMODITY_INFO gCommodtyInfo;
 extern DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice;
 extern OpenInterestInfo gOpenInterestInfo;
 extern LONG gBidOfferLongShort;
+extern LONG gTransactionListLongShort;
 extern double gCostMovingAverageVal;
 extern STRATEGY_CONFIG gStrategyConfig;
 
@@ -311,6 +312,7 @@ void thread_main()
             // Strategy start:
 
             StrategyCaluBidOfferLongShort();
+            StrategyCaluTransactionListLongShort();
 
             StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
             StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
@@ -325,11 +327,11 @@ void thread_main()
             else
 #endif
             {
-                if (gBidOfferLongShort > gStrategyConfig.BidOfferLongShortThreshold)
+                if (StrategyCaluLongShort() > gStrategyConfig.BidOfferLongShortThreshold)
                 {
                     StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
                 }
-                else if (-gBidOfferLongShort > gStrategyConfig.BidOfferLongShortThreshold)
+                else if (-StrategyCaluLongShort() > gStrategyConfig.BidOfferLongShortThreshold)
                 {
                     StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
                 }
@@ -415,7 +417,8 @@ void thread_main()
 
             printf("=========================================\n");
 
-            printf("BidOfferLongShort : %ld\n", gBidOfferLongShort);
+            printf("[LongShortThreshold:%ld], StrategyCaluLongShort:%ld, BidOfferLongShort:%ld, TransactionListLongShort:%ld\n",
+                   gStrategyConfig.BidOfferLongShortThreshold, StrategyCaluLongShort(), gBidOfferLongShort, gTransactionListLongShort);
 
             printf("=========================================\n");
 

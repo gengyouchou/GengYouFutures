@@ -54,6 +54,7 @@ VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo);
 VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo);
 VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort);
 LONG StrategyCaluBidOfferLongShort(VOID);
+LONG StrategyCaluTransactionListLongShort(VOID);
 VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort);
 DOUBLE CountCostMovingAverage(VOID);
 
@@ -63,6 +64,8 @@ VOID AutoCalcuKeyPrices(VOID);
 LONG EstimatedLongSideKeyPrice(VOID);
 LONG EstimatedShortSideKeyPrice(VOID);
 LONG EstimatedTodaysAmplitude(VOID);
+
+LONG StrategyCaluLongShort(VOID);
 
 // Strategy
 
