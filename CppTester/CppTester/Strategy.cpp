@@ -144,6 +144,18 @@ DOUBLE CountCostMovingAverage(VOID)
 
     DEBUG(DEBUG_LEVEL_DEBUG, "LocalCostMovingAverageVal = %f", LocalCostMovingAverageVal);
 
+    if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNoAM))
+    {
+        LocalCostMovingAverageVal = LocalCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNoAM]) / 100.0;
+        LocalCostMovingAverageVal /= 2.0;
+    }
+
+    if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo))
+    {
+        LocalCostMovingAverageVal = LocalCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
+        LocalCostMovingAverageVal /= 2.0;
+    }
+
     return LocalCostMovingAverageVal;
 }
 
