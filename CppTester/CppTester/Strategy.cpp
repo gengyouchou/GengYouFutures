@@ -751,7 +751,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
     LOG(DEBUG_LEVEL_DEBUG, "countLong = %ld, countShort=%ld", countLong, countShort);
 
-    return countLong + countShort;
+    return gBidOfferLongShort += (countLong + countShort);
 }
 
 LONG CountTransactionListLongShort(LONG nStockidx)
@@ -818,14 +818,14 @@ LONG StrategyCaluBidOfferLongShort(VOID)
     {
         long nStockidx = gCommodtyInfo.TSMCIdxNo;
 
-        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
+        CountBidOfferLongShort(nStockidx);
     }
 
     if (gCommodtyInfo.HHIdxNo != 0)
     {
         long nStockidx = gCommodtyInfo.HHIdxNo;
 
-        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
+        CountBidOfferLongShort(nStockidx);
     }
 
     LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gBidOfferLongShort);
