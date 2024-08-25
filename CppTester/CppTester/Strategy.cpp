@@ -750,10 +750,6 @@ std::chrono::steady_clock::time_point gLastClearTime = std::chrono::steady_clock
 
 LONG CountBidOfferLongShort(LONG nStockidx)
 {
-    if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 30) || gCurServerTime[0] >= 14)
-    {
-        return 0;
-    }
 
     if (gBest5BidOffer[nStockidx].size() < 10)
     {
@@ -805,11 +801,6 @@ LONG CountTransactionListLongShort(LONG nStockidx)
 {
     static unordered_map<long, long> PrePtr;
 
-    if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 30) || gCurServerTime[0] >= 14)
-    {
-        return 0;
-    }
-
     long countLong = 0, countShort = 0;
 
     // extern std::unordered_map<long, std::array<long, 5>> gTransactionList;
@@ -827,12 +818,12 @@ LONG CountTransactionListLongShort(LONG nStockidx)
 
         if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
         {
-            if (nClose > 0 && nClose <= nBid)
+            if (nClose > 0 && nClose <= nBid && nQty >= 10)
             {
                 countShort -= nQty;
             }
 
-            if (nClose > 0 && nClose >= nAsk)
+            if (nClose > 0 && nClose >= nAsk && nQty >= 10)
             {
                 countLong += nQty;
             }
@@ -883,7 +874,7 @@ LONG StrategyCaluBidOfferLongShort(VOID)
     {
         gBidOfferLongShort = min(gBidOfferLongShort, gStrategyConfig.BidOfferLongShortThreshold);
     }
-    else
+    else if (gBidOfferLongShort < 0)
     {
         gBidOfferLongShort = max(gBidOfferLongShort, -gStrategyConfig.BidOfferLongShortThreshold);
     }
@@ -895,7 +886,7 @@ LONG StrategyCaluTransactionListLongShort(VOID)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
-    if (gTransactionListLongShort >= INT_MAX || gTransactionListLongShort < INT_MIN)
+    if (gTransactionListLongShort >= INT_MAX || gTransactionListLongShort <= INT_MIN)
     {
         return gTransactionListLongShort;
     }
@@ -928,7 +919,7 @@ LONG StrategyCaluTransactionListLongShort(VOID)
     {
         gTransactionListLongShort = min(gTransactionListLongShort, gStrategyConfig.BidOfferLongShortThreshold);
     }
-    else
+    else if (gTransactionListLongShort < 0)
     {
         gTransactionListLongShort = max(gTransactionListLongShort, -gStrategyConfig.BidOfferLongShortThreshold);
     }
@@ -938,6 +929,11 @@ LONG StrategyCaluTransactionListLongShort(VOID)
 
 LONG StrategyCaluLongShort(VOID)
 {
+    if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 30) || gCurServerTime[0] >= 14)
+    {
+        return 0;
+    }
+
     return (gTransactionListLongShort + gBidOfferLongShort) / 2;
 }
 
