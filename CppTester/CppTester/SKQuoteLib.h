@@ -17,7 +17,7 @@
 
 #define DayMA 10
 #define DAY_NIGHT_HIGH_LOW_K_LINE 20
-#define COST_DAY_MA 2
+#define COST_DAY_MA 5 // weekly contract cost
 
 struct COMMODITY_INFO
 {

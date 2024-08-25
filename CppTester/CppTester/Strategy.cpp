@@ -74,87 +74,97 @@ void AutoKLineData(IN string ProductNum)
 DOUBLE CountCostMovingAverage(VOID)
 {
 
-    // Calculate CostMovingAverage
+    static bool init = FALSE;
+    static double LocalCostMovingAverageVal = 0;
 
-    for (const auto &entry : gDaysNightAllCommHighLowPoint) // need ordered by date  from the past to the present
+    if (init == FALSE)
     {
-        auto cur = entry.second;
 
-        long Avg = static_cast<long>((cur.first + cur.second) / 2.0);
+        // Calculate CostMovingAverage
 
-        DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f, Avg: %ld", entry.first, cur.first, cur.second, Avg);
-
-        gCostMovingAverage.push_back(Avg);
-
-        if (gCostMovingAverage.size() > COST_DAY_MA)
+        for (const auto &entry : gDaysNightAllCommHighLowPoint) // need ordered by date  from the past to the present
         {
-            gCostMovingAverage.pop_front();
+            auto cur = entry.second;
+
+            long Avg = static_cast<long>((cur.first + cur.second) / 2.0);
+
+            DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f, Avg: %ld", entry.first, cur.first, cur.second, Avg);
+
+            gCostMovingAverage.push_back(Avg);
+
+            if (gCostMovingAverage.size() > COST_DAY_MA)
+            {
+                gCostMovingAverage.pop_front();
+            }
         }
-    }
 
-    std::deque<long> tempCostMovingAverage;
+        std::deque<long> tempCostMovingAverage;
 
-    for (const auto &entry : gDaysCommHighLowPoint) // need ordered by date  from the past to the present
-    {
-        auto cur = entry.second;
-
-        long Avg = static_cast<long>((cur.first + cur.second) / 2.0);
-
-        DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f, Avg: %ld", entry.first, cur.first, cur.second, Avg);
-
-        tempCostMovingAverage.push_back(Avg);
-
-        if (tempCostMovingAverage.size() > COST_DAY_MA)
+        for (const auto &entry : gDaysCommHighLowPoint) // need ordered by date  from the past to the present
         {
-            tempCostMovingAverage.pop_front();
+            auto cur = entry.second;
+
+            long Avg = static_cast<long>((cur.first + cur.second) / 2.0);
+
+            DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f, Avg: %ld", entry.first, cur.first, cur.second, Avg);
+
+            tempCostMovingAverage.push_back(Avg);
+
+            if (tempCostMovingAverage.size() > COST_DAY_MA)
+            {
+                tempCostMovingAverage.pop_front();
+            }
         }
+
+        if (gCostMovingAverage.empty() || tempCostMovingAverage.empty())
+        {
+            return -1;
+        }
+
+        double count = 0;
+
+        for (auto &Avg : gCostMovingAverage)
+        {
+            DEBUG(DEBUG_LEVEL_INFO, "Avg = %ld", Avg);
+
+            ++count;
+
+            LocalCostMovingAverageVal += static_cast<double>(Avg);
+        }
+
+        for (auto &Avg : tempCostMovingAverage)
+        {
+            DEBUG(DEBUG_LEVEL_INFO, "Avg = %ld", Avg);
+
+            ++count;
+
+            LocalCostMovingAverageVal += static_cast<double>(Avg);
+        }
+
+        if (count != 0)
+        {
+            LocalCostMovingAverageVal /= count;
+        }
+
+        init = TRUE;
     }
 
-    if (gCostMovingAverage.empty() || tempCostMovingAverage.empty())
+    if (LocalCostMovingAverageVal != 0)
     {
-        return -1;
-    }
+        if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNoAM))
+        {
+            LocalCostMovingAverageVal = LocalCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNoAM]) / 100.0;
+            LocalCostMovingAverageVal /= 2.0;
+        }
 
-    double LocalCostMovingAverageVal = 0;
-
-    double count = 0;
-
-    for (auto &Avg : gCostMovingAverage)
-    {
-        DEBUG(DEBUG_LEVEL_DEBUG, "Avg = %ld", Avg);
-
-        ++count;
-
-        LocalCostMovingAverageVal += static_cast<double>(Avg);
-    }
-
-    for (auto &Avg : tempCostMovingAverage)
-    {
-        DEBUG(DEBUG_LEVEL_DEBUG, "Avg = %ld", Avg);
-
-        ++count;
-
-        LocalCostMovingAverageVal += static_cast<double>(Avg);
-    }
-
-    if (count != 0)
-    {
-        LocalCostMovingAverageVal /= count;
+        if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo))
+        {
+            LocalCostMovingAverageVal = LocalCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
+            LocalCostMovingAverageVal /= 2.0;
+        }
     }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "LocalCostMovingAverageVal = %f", LocalCostMovingAverageVal);
-
-    if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNoAM))
-    {
-        LocalCostMovingAverageVal = LocalCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNoAM]) / 100.0;
-        LocalCostMovingAverageVal /= 2.0;
-    }
-
-    if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo))
-    {
-        LocalCostMovingAverageVal = LocalCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
-        LocalCostMovingAverageVal /= 2.0;
-    }
 
     return LocalCostMovingAverageVal;
 }
