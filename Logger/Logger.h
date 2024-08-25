@@ -4,7 +4,7 @@
 #include <chrono> // for current time
 #include <ctime>  // for std::localtime
 #include <fstream>
-#include <iomanip> // for std::hex, std::setprecision
+#include <iomanip> // for std::hex, std::setprecision, std::put_time
 #include <sstream>
 #include <stdexcept> // for std::runtime_error
 #include <string>
@@ -26,7 +26,7 @@
 class Logger
 {
 public:
-    Logger(const std::string &filename);
+    Logger(const std::string &filename_prefix);
     ~Logger();
 
     void log(const std::string &message, const std::string &functionName);
@@ -64,6 +64,22 @@ public:
 
 private:
     std::ofstream logFile;
+
+    std::string get_current_date()
+    {
+        auto now = std::chrono::system_clock::now();
+        std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+        std::tm local_tm;
+        errno_t err = _localtime64_s(&local_tm, &now_time);
+        if (err != 0)
+        {
+            throw std::runtime_error("Error obtaining current date");
+        }
+
+        std::ostringstream date_stream;
+        date_stream << std::put_time(&local_tm, "%Y%m%d"); // Format as YYYYMMDD
+        return date_stream.str();
+    }
 
     void format_string(std::ostringstream &oss, const char *format)
     {
@@ -139,6 +155,27 @@ private:
         }
     }
 };
+
+// Constructor: Automatically add date to the log file name
+Logger::Logger(const std::string &filename_prefix)
+{
+    std::string date = get_current_date();
+    std::string filename = date + "_" + filename_prefix + ".log";
+    logFile.open(filename, std::ios::app);
+
+    if (!logFile)
+    {
+        throw std::runtime_error("Failed to open log file: " + filename);
+    }
+}
+
+Logger::~Logger()
+{
+    if (logFile.is_open())
+    {
+        logFile.close();
+    }
+}
 
 extern Logger logger;
 extern Logger StrategyLog;
