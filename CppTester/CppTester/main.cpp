@@ -33,7 +33,7 @@ extern double gCostMovingAverageVal;
 extern STRATEGY_CONFIG gStrategyConfig;
 
 // Define the global logger instance
-Logger logger("debug.log");
+Logger logger("debug");
 
 CSKCenterLib *pSKCenterLib;
 CSKQuoteLib *pSKQuoteLib;
@@ -363,8 +363,8 @@ void thread_main()
                 CheckConnected = 0;
             }
 
-            printf("[UserId:%s], [LongShortThreshold:%ld], [BidOfferLongShortThreshold:%ld], [ActivePoint:%ld], [MaximumLoss:%ld]\n",
-                   g_strUserId, gStrategyConfig.ClosingKeyPriceLevel, gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss);
+            printf("[UserId:%s], [LongShortThreshold:%ld], [BidOfferLongShortThreshold:%ld], [ActivePoint:%ld], [MaximumLoss:%f]\n",
+                   g_strUserId.c_str(), gStrategyConfig.ClosingKeyPriceLevel, gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss);
             printf("=========================================\n");
             printf("[CurMtxPrice: %ld] ", gCurCommPrice[MtxCommodtyInfo] / 100);
             printf("[TSEA prices: %ld, Valume: %ld] ",

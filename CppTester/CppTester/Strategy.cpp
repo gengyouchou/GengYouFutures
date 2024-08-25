@@ -15,7 +15,7 @@
 #include <unordered_map>
 
 // Define the global logger instance
-Logger StrategyLog("Strategy.log");
+Logger StrategyLog("Strategy");
 
 // Object pointer
 

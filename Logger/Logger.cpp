@@ -1,3 +1,4 @@
+// Logger.cpp
 #include "Logger.h"
 #include <iostream>
 
@@ -5,22 +6,23 @@
 #define LOGGING_ENABLED
 // #endif
 
-Logger::Logger(const std::string &filename) : logFile(filename, std::ios::out | std::ios::app)
+// Constructor: Automatically add date to the log file name
+Logger::Logger(const std::string &filename_prefix)
 {
-#ifdef LOGGING_ENABLED
-    if (!logFile.is_open())
+    std::string date = get_current_date();
+    std::string filename = date + "_" + filename_prefix + ".log";
+    logFile.open(filename, std::ios::app);
+
+    if (!logFile)
     {
-        std::cerr << "Failed to open log file: " << filename << std::endl;
+        throw std::runtime_error("Failed to open log file: " + filename);
     }
-#endif
 }
 
 Logger::~Logger()
 {
-#ifdef LOGGING_ENABLED
     if (logFile.is_open())
     {
         logFile.close();
     }
-#endif
 }
