@@ -146,27 +146,31 @@ DOUBLE CountCostMovingAverage(VOID)
             LocalCostMovingAverageVal /= count;
         }
 
+        DEBUG(DEBUG_LEVEL_INFO, "LocalCostMovingAverageVal = %f", LocalCostMovingAverageVal);
+
         init = TRUE;
     }
 
-    if (LocalCostMovingAverageVal != 0)
+    gCostMovingAverageVal = LocalCostMovingAverageVal;
+
+    if (gCostMovingAverageVal != 0)
     {
         if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNoAM))
         {
-            LocalCostMovingAverageVal = LocalCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNoAM]) / 100.0;
-            LocalCostMovingAverageVal /= 2.0;
+            gCostMovingAverageVal = gCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNoAM]) / 100.0;
+            gCostMovingAverageVal /= 2.0;
         }
 
         if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo))
         {
-            LocalCostMovingAverageVal = LocalCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
-            LocalCostMovingAverageVal /= 2.0;
+            gCostMovingAverageVal = gCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
+            gCostMovingAverageVal /= 2.0;
         }
     }
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "LocalCostMovingAverageVal = %f", LocalCostMovingAverageVal);
+    DEBUG(DEBUG_LEVEL_DEBUG, "gCostMovingAverageVal = %f", gCostMovingAverageVal);
 
-    return LocalCostMovingAverageVal;
+    return gCostMovingAverageVal;
 }
 
 VOID AutoCalcuKeyPrices(VOID)

@@ -300,7 +300,7 @@ void thread_main()
 
             AutoCalcuKeyPrices();
 
-            gCostMovingAverageVal = CountCostMovingAverage();
+            CountCostMovingAverage(); // apply to gCostMovingAverageVal
 
             if (gCostMovingAverageVal < 0)
             {
