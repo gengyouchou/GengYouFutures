@@ -76,6 +76,7 @@ DOUBLE CountCostMovingAverage(VOID)
 
     static bool init = FALSE;
     static double LocalCostMovingAverageVal = 0;
+    static double count = 0;
 
     if (init == FALSE)
     {
@@ -121,8 +122,6 @@ DOUBLE CountCostMovingAverage(VOID)
             return -1;
         }
 
-        double count = 0;
-
         for (auto &Avg : gCostMovingAverage)
         {
             DEBUG(DEBUG_LEVEL_INFO, "Avg = %ld", Avg);
@@ -141,34 +140,33 @@ DOUBLE CountCostMovingAverage(VOID)
             LocalCostMovingAverageVal += static_cast<double>(Avg);
         }
 
-        if (count != 0)
-        {
-            LocalCostMovingAverageVal /= count;
-        }
-
-        DEBUG(DEBUG_LEVEL_INFO, "LocalCostMovingAverageVal = %f", LocalCostMovingAverageVal);
-
         init = TRUE;
     }
 
-    gCostMovingAverageVal = LocalCostMovingAverageVal;
-
-    if (gCostMovingAverageVal != 0)
+    if (count != 0)
     {
-        if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNoAM))
+        double CurCount = 0;
+        gCostMovingAverageVal = LocalCostMovingAverageVal;
+
+        if (gCostMovingAverageVal != 0)
         {
-            gCostMovingAverageVal = gCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNoAM]) / 100.0;
-            gCostMovingAverageVal /= 2.0;
+            if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNoAM))
+            {
+                gCostMovingAverageVal = gCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNoAM]) / 100.0;
+                ++CurCount;
+            }
+
+            if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo))
+            {
+                gCostMovingAverageVal = gCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
+                ++CurCount;
+            }
         }
 
-        if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo))
-        {
-            gCostMovingAverageVal = gCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
-            gCostMovingAverageVal /= 2.0;
-        }
+        gCostMovingAverageVal = gCostMovingAverageVal / (count + CurCount);
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "gCostMovingAverageVal = %f", gCostMovingAverageVal);
     }
-
-    DEBUG(DEBUG_LEVEL_DEBUG, "gCostMovingAverageVal = %f", gCostMovingAverageVal);
 
     return gCostMovingAverageVal;
 }
