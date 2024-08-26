@@ -145,25 +145,31 @@ DOUBLE CountCostMovingAverage(VOID)
 
     if (count != 0)
     {
-        double CurCount = 0;
+        double latestClosingPriceAvg = 0;
         gCostMovingAverageVal = LocalCostMovingAverageVal;
+        double CurCount = 0;
 
         if (gCostMovingAverageVal != 0)
         {
             if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNoAM))
             {
-                gCostMovingAverageVal = gCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNoAM]) / 100.0;
+                latestClosingPriceAvg = latestClosingPriceAvg + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNoAM]) / 100.0;
                 ++CurCount;
             }
 
             if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo))
             {
-                gCostMovingAverageVal = gCostMovingAverageVal + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
+                latestClosingPriceAvg = latestClosingPriceAvg + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
                 ++CurCount;
             }
+
+            latestClosingPriceAvg = latestClosingPriceAvg / CurCount;
         }
 
-        gCostMovingAverageVal = gCostMovingAverageVal / (count + CurCount);
+        if (CurCount != 0)
+        {
+            gCostMovingAverageVal = (gCostMovingAverageVal + latestClosingPriceAvg) / (count + 1);
+        }
 
         DEBUG(DEBUG_LEVEL_DEBUG, "gCostMovingAverageVal = %f", gCostMovingAverageVal);
     }
