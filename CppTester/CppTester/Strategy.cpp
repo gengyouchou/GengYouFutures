@@ -688,7 +688,8 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
             curPrice >= gCostMovingAverageVal &&
             curPrice <= CurAvg &&
             curPrice <= EstimatedLongSideKeyPrice() &&
-            curPrice > CurLow // Don’t go short at new highs, don’t go long at new lows
+            curPrice > CurLow &&                                          // Don’t go short at new highs, don’t go long at new lows
+            (EstimatedLongSideKeyPrice() - curPrice) >= ONE_STRIKE_PRICES // Earn at least one strike price
 
         )
         {
@@ -728,7 +729,8 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
             curPrice <= gCostMovingAverageVal &&
             curPrice >= CurAvg &&
             curPrice >= EstimatedShortSideKeyPrice() &&
-            curPrice < CurHigh // Don’t go short at new highs, don’t go long at new lows
+            curPrice < CurHigh &&                                         // Don’t go short at new highs, don’t go long at new lows
+            (curPrice - EstimatedLongSideKeyPrice()) >= ONE_STRIKE_PRICES // Earn at least one strike price
 
         )
         {
