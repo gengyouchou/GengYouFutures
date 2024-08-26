@@ -327,11 +327,11 @@ void thread_main()
             else
 #endif
             {
-                if (StrategyCaluLongShort() > gStrategyConfig.BidOfferLongShortThreshold)
+                if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
                 {
                     StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
                 }
-                else if (-StrategyCaluLongShort() > gStrategyConfig.BidOfferLongShortThreshold)
+                else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
                 {
                     StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
                 }
