@@ -892,11 +892,11 @@ LONG StrategyCaluBidOfferLongShort(VOID)
 
     if (gBidOfferLongShort > 0)
     {
-        gBidOfferLongShort = min(gBidOfferLongShort, gStrategyConfig.BidOfferLongShortThreshold);
+        gBidOfferLongShort = min(gBidOfferLongShort, gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE);
     }
     else if (gBidOfferLongShort < 0)
     {
-        gBidOfferLongShort = max(gBidOfferLongShort, -gStrategyConfig.BidOfferLongShortThreshold);
+        gBidOfferLongShort = max(gBidOfferLongShort, -(gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE));
     }
 
     return gBidOfferLongShort;
@@ -937,11 +937,11 @@ LONG StrategyCaluTransactionListLongShort(VOID)
 
     if (gTransactionListLongShort > 0)
     {
-        gTransactionListLongShort = min(gTransactionListLongShort, gStrategyConfig.BidOfferLongShortThreshold);
+        gTransactionListLongShort = min(gTransactionListLongShort, gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE);
     }
     else if (gTransactionListLongShort < 0)
     {
-        gTransactionListLongShort = max(gTransactionListLongShort, -gStrategyConfig.BidOfferLongShortThreshold);
+        gTransactionListLongShort = max(gTransactionListLongShort, -(gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE));
     }
 
     return gTransactionListLongShort;
