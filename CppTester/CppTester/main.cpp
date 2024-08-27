@@ -44,13 +44,25 @@ long g_nCode = 0;
 extern string g_strUserId;
 extern string gPwd;
 
+void release();
+
 void AutoConnect()
 {
+    long count = 0;
+
     while (pSKQuoteLib->IsConnected() != 1)
     {
         g_nCode = pSKQuoteLib->EnterMonitorLONG();
         pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
         std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
+        ++count;
+
+        if (count == 5)
+        {
+            DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");
+            release();
+            exit(0);
+        }
     }
 }
 
