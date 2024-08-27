@@ -508,7 +508,7 @@ void CSKQuoteLib::OnConnection(long nKind, long nCode)
 //     LONG nStockidx; // Custom stock index code
 //     SHORT sDecimal; // Decimal places
 //     SHORT sTypeNo;  // EX: (Securities) Category type, 1 Cement, 2 Food, etc.
-//     // …etc.
+//     etc.
 //     BSTR bstrMarketNo;  // Market code
 //     BSTR bstrStockNo;   // Stock code, e.g., 1101 Taiwan Cement, TX12 Taiwan Index Futures December, etc.
 //     BSTR bstrStockName; // Stock name
