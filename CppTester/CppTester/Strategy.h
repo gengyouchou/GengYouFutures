@@ -70,6 +70,8 @@ LONG StrategyCaluLongShort(VOID);
 // Strategy
 
 #define SWING_POINTS 20
+#define ATTACK_RANGE 20
+#define LONG_AND_SHORT_BUFFER_DIFFERENCE 200
 
 // Order
 
