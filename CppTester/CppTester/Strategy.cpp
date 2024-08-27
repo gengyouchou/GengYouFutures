@@ -143,11 +143,12 @@ DOUBLE CountCostMovingAverage(VOID)
         init = TRUE;
     }
 
+    double latestClosingPriceAvg = 0;
+    double CurCount = 0;
+
     if (count != 0)
     {
-        double latestClosingPriceAvg = 0;
         gCostMovingAverageVal = LocalCostMovingAverageVal;
-        double CurCount = 0;
 
         if (gCostMovingAverageVal != 0)
         {
@@ -162,13 +163,11 @@ DOUBLE CountCostMovingAverage(VOID)
                 latestClosingPriceAvg = latestClosingPriceAvg + static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0;
                 ++CurCount;
             }
-
-            latestClosingPriceAvg = latestClosingPriceAvg / CurCount;
         }
 
-        if (CurCount != 0)
+        if (CurCount != 0 && latestClosingPriceAvg != 0)
         {
-            gCostMovingAverageVal = (gCostMovingAverageVal + latestClosingPriceAvg) / (count + 1);
+            gCostMovingAverageVal = (gCostMovingAverageVal + latestClosingPriceAvg) / (count + CurCount);
         }
 
         DEBUG(DEBUG_LEVEL_DEBUG, "gCostMovingAverageVal = %f", gCostMovingAverageVal);
