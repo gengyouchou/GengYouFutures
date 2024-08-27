@@ -770,7 +770,7 @@ std::chrono::steady_clock::time_point gLastClearTime = std::chrono::steady_clock
 LONG CountBidOfferLongShort(LONG nStockidx)
 {
 
-    if (gBest5BidOffer[nStockidx].size() < 10)
+    if (gBest5BidOffer.count(nStockidx) <= 0 || gBest5BidOffer[nStockidx].size() < 10)
     {
         return 0;
     }
