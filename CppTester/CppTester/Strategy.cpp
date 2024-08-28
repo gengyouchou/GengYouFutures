@@ -218,9 +218,6 @@ DOUBLE CountWeeklyAndMonthlyCosts(VOID)
         init = TRUE;
     }
 
-    double latestClosingPriceAvg = 0;
-    double CurCount = 0;
-
     if (WeeklyHigh != INT_MIN && WeeklyLow != INT_MAX)
     {
         if (gCostMovingAverageVal != 0)
