@@ -176,6 +176,76 @@ DOUBLE CountCostMovingAverage(VOID)
     return gCostMovingAverageVal;
 }
 
+DOUBLE CountWeeklyAndMonthlyCosts(VOID)
+{
+
+    static bool init = FALSE;
+    static double WeeklyHigh = INT_MIN, WeeklyLow = INT_MAX;
+
+    if (init == FALSE)
+    {
+        // Calculate CostMovingAverage
+
+        std::deque<pair<double, double>> DaysNightCostHighLow;
+
+        for (const auto &entry : gDaysNightAllCommHighLowPoint) // need ordered by date  from the past to the present
+        {
+            auto cur = entry.second;
+
+            DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f", entry.first, cur.first, cur.second);
+
+            DaysNightCostHighLow.push_back({cur.first, cur.second});
+
+            if (DaysNightCostHighLow.size() > COST_DAY_MA)
+            {
+                DaysNightCostHighLow.pop_front();
+            }
+        }
+
+        if (DaysNightCostHighLow.empty())
+        {
+            return -1;
+        }
+
+        for (auto &x : DaysNightCostHighLow)
+        {
+            DEBUG(DEBUG_LEVEL_INFO, "High: %f, Low: %f", x.first, x.second);
+
+            WeeklyHigh = max(WeeklyHigh, x.first);
+            WeeklyLow = min(WeeklyLow, x.second);
+        }
+
+        init = TRUE;
+    }
+
+    double latestClosingPriceAvg = 0;
+    double CurCount = 0;
+
+    if (WeeklyHigh != INT_MIN && WeeklyLow != INT_MAX)
+    {
+        if (gCostMovingAverageVal != 0)
+        {
+            if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNoAM))
+            {
+                WeeklyHigh = max(WeeklyHigh, static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNoAM]) / 100.0);
+                WeeklyLow = min(WeeklyLow, static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNoAM]) / 100.0);
+            }
+
+            if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo))
+            {
+                WeeklyHigh = max(WeeklyHigh, static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0);
+                WeeklyLow = min(WeeklyLow, static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0);
+            }
+        }
+
+        gCostMovingAverageVal = (WeeklyHigh + WeeklyLow) / 2.0;
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "gCostMovingAverageVal = %f", gCostMovingAverageVal);
+    }
+
+    return gCostMovingAverageVal;
+}
+
 VOID AutoCalcuKeyPrices(VOID)
 {
 
@@ -732,7 +802,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
             curPrice <= gCostMovingAverageVal &&
             (curPrice >= CurAvg - ATTACK_RANGE && curPrice <= CurAvg + ATTACK_RANGE) && // Use attack range(ATTACK_RANGE) to control the chance of entering the field
             curPrice >= EstimatedShortSideKeyPrice() &&
-            curPrice < CurHigh &&                                         // Dont go short at new highs, dont go long at new lows
+            curPrice < CurHigh &&                                          // Dont go short at new highs, dont go long at new lows
             (curPrice - EstimatedShortSideKeyPrice()) >= ONE_STRIKE_PRICES // Earn at least one strike price
 
         )
