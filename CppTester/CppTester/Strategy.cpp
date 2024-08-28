@@ -1050,67 +1050,73 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
         curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
     }
 
-    if (CurAmp > EstimatedTodaysAmplitude())
-    {
-        return;
-    }
-
     if (curPrice > 0)
     {
-        DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
-              curPrice, gOpenInterestInfo.avgCost);
-
-        SHORT BuySell = -1;
+        // Do Long
 
         if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
         {
-            if (gDayAmpAndKeyPrice.ShortKey2 > 0 && curPrice <= gDayAmpAndKeyPrice.ShortKey2 && curPrice >= gDayAmpAndKeyPrice.ShortKey1 - gStrategyConfig.ActivePoint)
-            {
-                BuySell = ORDER_BUY_LONG_POSITION; // Long position
-            }
-        }
-        else if (LongShort == 0 && gOpenInterestInfo.openPosition >= 0)
-        {
-            if (gDayAmpAndKeyPrice.LongKey2 > 0 && curPrice >= gDayAmpAndKeyPrice.LongKey2 && curPrice <= gDayAmpAndKeyPrice.LongKey2 + gStrategyConfig.ActivePoint)
-            {
-                BuySell = ORDER_SELL_SHORT_POSITION; // Short position
-            }
-        }
+            DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
+                  curPrice, gOpenInterestInfo.avgCost);
 
-        if (BuySell != -1)
-        {
-            vector<string> vec = {COMMODITY_OTHER};
-
-            for (auto &x : vec)
+            if ((curPrice - EstimatedShortSideKeyPrice()) < ONE_STRIKE_PRICES)
             {
-                AutoOrder(x,
-                          ORDER_NEW_POSITION, // New
-                          BuySell             // Buy or sell
-                );
-            }
 
-            {
-                gOpenInterestInfo.product = COMMODITY_OTHER;
+                vector<string> vec = {COMMODITY_OTHER};
 
-                if (BuySell == 1)
+                for (auto &x : vec)
                 {
-                    gOpenInterestInfo.buySell = "S";
-                    gOpenInterestInfo.openPosition -= 1;
-
-                    LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f",
-                        curPrice);
+                    AutoOrder(x,
+                              ORDER_NEW_POSITION,     // New
+                              ORDER_BUY_LONG_POSITION // Buy or sell
+                    );
                 }
 
-                if (BuySell == 0)
+                // Greedy assumptions always have positions
+
                 {
+                    gOpenInterestInfo.product = COMMODITY_OTHER;
                     gOpenInterestInfo.buySell = "B";
                     gOpenInterestInfo.openPosition += 1;
-
-                    LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f",
-                        curPrice);
+                    gOpenInterestInfo.avgCost = curPrice;
                 }
 
-                gOpenInterestInfo.avgCost = curPrice;
+                LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, StrategyCaluLongShort: %ld",
+                    curPrice, gCostMovingAverageVal, StrategyCaluLongShort());
+            }
+        }
+
+        // Do Short
+
+        if (LongShort == 0 && gOpenInterestInfo.openPosition >= 0)
+        {
+            DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
+                  curPrice, gOpenInterestInfo.avgCost);
+
+            if ((EstimatedLongSideKeyPrice() - curPrice) < ONE_STRIKE_PRICES)
+            {
+
+                vector<string> vec = {COMMODITY_OTHER};
+
+                for (auto &x : vec)
+                {
+                    AutoOrder(x,
+                              ORDER_NEW_POSITION,       // New
+                              ORDER_SELL_SHORT_POSITION // Buy or sell
+                    );
+                }
+
+                // Greedy assumptions always have positions
+
+                {
+                    gOpenInterestInfo.product = COMMODITY_OTHER;
+                    gOpenInterestInfo.buySell = "S";
+                    gOpenInterestInfo.openPosition -= 1;
+                    gOpenInterestInfo.avgCost = curPrice;
+                }
+
+                LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, StrategyCaluLongShort: %ld",
+                    curPrice, gCostMovingAverageVal, StrategyCaluLongShort());
             }
         }
     }
