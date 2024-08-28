@@ -763,9 +763,6 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
         )
         {
 
-            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
-                curPrice, gCostMovingAverageVal, gBidOfferLongShort);
-
             vector<string> vec = {COMMODITY_OTHER};
 
             for (auto &x : vec)
@@ -784,6 +781,9 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
                 gOpenInterestInfo.openPosition += 1;
                 gOpenInterestInfo.avgCost = curPrice;
             }
+
+            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
+                curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
         }
     }
 
@@ -803,9 +803,6 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
         )
         {
 
-            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
-                curPrice, gCostMovingAverageVal, StrategyCaluLongShort());
-
             vector<string> vec = {COMMODITY_OTHER};
 
             for (auto &x : vec)
@@ -824,6 +821,9 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
                 gOpenInterestInfo.openPosition -= 1;
                 gOpenInterestInfo.avgCost = curPrice;
             }
+
+            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
+                curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
         }
     }
 
