@@ -333,8 +333,16 @@ void thread_main()
 
             if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 22)
             {
+#if STRATEGY_1 == 1
                 StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
                 StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+#endif
+
+#if STRATEGY_2 == 1
+
+                StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
+                StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+#endif
             }
             else
 #endif

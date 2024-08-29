@@ -93,6 +93,8 @@ LONG StrategyCaluLongShort(VOID);
 #endif
 
 #define NIGHT_TRADING 1
+#define STRATEGY_1 0
+#define STRATEGY_2 1
 
 // default config
 
