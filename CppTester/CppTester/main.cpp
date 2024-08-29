@@ -312,7 +312,7 @@ void thread_main()
 
             AutoCalcuKeyPrices();
 
-            CountWeeklyAndMonthlyCosts(); // apply to gCostMovingAverageVal
+            CountWeeklyAndMonthlyCosts(MtxCommodtyInfo); // apply to gCostMovingAverageVal
 
             if (gCostMovingAverageVal < 0)
             {

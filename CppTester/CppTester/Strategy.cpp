@@ -176,7 +176,7 @@ DOUBLE CountCostMovingAverage(VOID)
     return gCostMovingAverageVal;
 }
 
-DOUBLE CountWeeklyAndMonthlyCosts(VOID)
+DOUBLE CountWeeklyAndMonthlyCosts(LONG MtxCommodtyInfo)
 {
 
     static bool init = FALSE;
@@ -273,7 +273,12 @@ DOUBLE CountWeeklyAndMonthlyCosts(VOID)
             }
         }
 
-        gCostMovingAverageVal = (WeeklyHigh + WeeklyLow) / 2.0;
+        double CurHigh = static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][0]) / 100.0;
+        double CurLow = static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][1]) / 100.0;
+
+        double CurAvg = (CurHigh + CurLow) / 2.0;
+
+        gCostMovingAverageVal = ((WeeklyHigh + WeeklyLow) / 2.0 + CurAvg) / 2;
 
         DEBUG(DEBUG_LEVEL_DEBUG, "gCostMovingAverageVal = %f", gCostMovingAverageVal);
     }

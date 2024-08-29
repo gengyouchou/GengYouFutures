@@ -57,7 +57,7 @@ LONG StrategyCaluBidOfferLongShort(VOID);
 LONG StrategyCaluTransactionListLongShort(VOID);
 VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort);
 DOUBLE CountCostMovingAverage(VOID);
-DOUBLE CountWeeklyAndMonthlyCosts(VOID);
+DOUBLE CountWeeklyAndMonthlyCosts(LONG MtxCommodtyInfo);
 
 LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell);
 VOID AutoCalcuKeyPrices(VOID);
