@@ -780,6 +780,7 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
           curPrice, CurAvg, gCostMovingAverageVal);
 
     if (abs(CurAvg - gCostMovingAverageVal) <= SWING_POINTS ||
+        abs(CurAvg - gCostMovingAverageVal) >= MAXIMUM_COST_AVG_BIAS_RATIO ||
         CurAmp > EstimatedTodaysAmplitude())
     {
         return;
