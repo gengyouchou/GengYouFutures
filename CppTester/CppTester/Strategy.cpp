@@ -1097,7 +1097,7 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
             DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
                   curPrice, gOpenInterestInfo.avgCost);
 
-            if ((curPrice - EstimatedShortSideKeyPrice()) < ONE_STRIKE_PRICES)
+            if (curPrice < EstimatedShortSideKeyPrice())
             {
 
                 vector<string> vec = {COMMODITY_OTHER};
@@ -1131,7 +1131,7 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
             DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
                   curPrice, gOpenInterestInfo.avgCost);
 
-            if ((EstimatedLongSideKeyPrice() - curPrice) < ONE_STRIKE_PRICES)
+            if (curPrice > EstimatedLongSideKeyPrice())
             {
 
                 vector<string> vec = {COMMODITY_OTHER};
