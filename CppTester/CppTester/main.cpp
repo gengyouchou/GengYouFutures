@@ -331,7 +331,7 @@ void thread_main()
 
 #if NIGHT_TRADING
 
-            if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 21)
+            if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 22)
             {
                 StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
                 StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
