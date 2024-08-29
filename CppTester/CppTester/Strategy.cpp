@@ -184,7 +184,7 @@ DOUBLE CountWeeklyAndMonthlyCosts(VOID)
 
     if (init == FALSE)
     {
-        // Calculate CostMovingAverage
+        // Calculate CostMovingAverage by gDaysNightAllCommHighLowPoint
 
         std::deque<pair<double, double>> DaysNightCostHighLow;
 
@@ -215,6 +215,37 @@ DOUBLE CountWeeklyAndMonthlyCosts(VOID)
             WeeklyLow = min(WeeklyLow, x.second);
         }
 
+        // Calculate CostMovingAverage by gDaysCommHighLowPoint
+
+        std::deque<pair<double, double>> DaysCostHighLow;
+
+        for (const auto &entry : gDaysCommHighLowPoint) // need ordered by date  from the past to the present
+        {
+            auto cur = entry.second;
+
+            DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f", entry.first, cur.first, cur.second);
+
+            DaysCostHighLow.push_back({cur.first, cur.second});
+
+            if (DaysCostHighLow.size() > COST_DAY_MA)
+            {
+                DaysCostHighLow.pop_front();
+            }
+        }
+
+        if (DaysCostHighLow.empty())
+        {
+            return -1;
+        }
+
+        for (auto &x : DaysCostHighLow)
+        {
+            DEBUG(DEBUG_LEVEL_INFO, "High: %f, Low: %f", x.first, x.second);
+
+            WeeklyHigh = max(WeeklyHigh, x.first);
+            WeeklyLow = min(WeeklyLow, x.second);
+        }
+
         init = TRUE;
     }
 
@@ -222,16 +253,23 @@ DOUBLE CountWeeklyAndMonthlyCosts(VOID)
     {
         if (gCostMovingAverageVal != 0)
         {
+
             if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNoAM))
             {
-                WeeklyHigh = max(WeeklyHigh, static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNoAM]) / 100.0);
-                WeeklyLow = min(WeeklyLow, static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNoAM]) / 100.0);
+                long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM][0];
+                long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM][1];
+
+                WeeklyHigh = max(WeeklyHigh, static_cast<double>(CurHigh) / 100.0);
+                WeeklyLow = min(WeeklyLow, static_cast<double>(CurLow) / 100.0);
             }
 
             if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo))
             {
-                WeeklyHigh = max(WeeklyHigh, static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0);
-                WeeklyLow = min(WeeklyLow, static_cast<double>(gCurCommPrice[gCommodtyInfo.MTXIdxNo]) / 100.0);
+                long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0];
+                long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1];
+
+                WeeklyHigh = max(WeeklyHigh, static_cast<double>(CurHigh) / 100.0);
+                WeeklyLow = min(WeeklyLow, static_cast<double>(CurLow) / 100.0);
             }
         }
 
