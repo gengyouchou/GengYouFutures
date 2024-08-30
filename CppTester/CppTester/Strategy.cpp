@@ -886,38 +886,28 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
     long countLong = 0, countShort = 0;
 
-    auto now = std::chrono::steady_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - gLastClearTime);
+    long totalBid = 0;
 
-    const int refreshInterval = 100; // 100 ms
-
-    if (elapsed.count() >= refreshInterval)
+    for (int i = 0; i < 5; ++i)
     {
-        gLastClearTime = now;
+        totalBid += gBest5BidOffer[nStockidx][i].second;
+    }
 
-        long totalBid = 0;
+    long totalOffer = 0;
 
-        for (int i = 0; i < 5; ++i)
-        {
-            totalBid += gBest5BidOffer[nStockidx][i].second;
-        }
+    for (int i = 5; i < 10; ++i)
+    {
+        totalOffer += gBest5BidOffer[nStockidx][i].second;
+    }
 
-        long totalOffer = 0;
+    if (totalBid * 3 <= totalOffer * 2)
+    {
+        ++countLong;
+    }
 
-        for (int i = 5; i < 10; ++i)
-        {
-            totalOffer += gBest5BidOffer[nStockidx][i].second;
-        }
-
-        if (totalBid * 3 <= totalOffer * 2)
-        {
-            ++countLong;
-        }
-
-        if (totalOffer * 3 <= totalBid * 2)
-        {
-            --countShort;
-        }
+    if (totalOffer * 3 <= totalBid * 2)
+    {
+        --countShort;
     }
 
     LOG(DEBUG_LEVEL_DEBUG, "countLong = %ld, countShort=%ld", countLong, countShort);
@@ -969,6 +959,11 @@ LONG StrategyCaluBidOfferLongShort(VOID)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
+    auto now = std::chrono::steady_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - gLastClearTime);
+
+    const int refreshInterval = 100; // 100 ms
+
     if (gBidOfferLongShort >= INT_MAX || gBidOfferLongShort <= INT_MIN)
     {
         return gBidOfferLongShort;
@@ -980,31 +975,36 @@ LONG StrategyCaluBidOfferLongShort(VOID)
     // long HHIdxNo;
     // long TSEAIdxNo;
 
-    if (gCommodtyInfo.TSMCIdxNo != 0)
+    if (elapsed.count() >= refreshInterval)
     {
-        long nStockidx = gCommodtyInfo.TSMCIdxNo;
+        gLastClearTime = now;
 
-        CountBidOfferLongShort(nStockidx);
-    }
+        if (gCommodtyInfo.TSMCIdxNo != 0)
+        {
+            long nStockidx = gCommodtyInfo.TSMCIdxNo;
 
-    if (gCommodtyInfo.HHIdxNo != 0)
-    {
-        long nStockidx = gCommodtyInfo.HHIdxNo;
+            CountBidOfferLongShort(nStockidx);
+        }
 
-        CountBidOfferLongShort(nStockidx);
-    }
+        if (gCommodtyInfo.HHIdxNo != 0)
+        {
+            long nStockidx = gCommodtyInfo.HHIdxNo;
 
-    LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gBidOfferLongShort);
+            CountBidOfferLongShort(nStockidx);
+        }
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "End");
+        LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gBidOfferLongShort);
 
-    if (gBidOfferLongShort > 0)
-    {
-        gBidOfferLongShort = min(gBidOfferLongShort, gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE);
-    }
-    else if (gBidOfferLongShort < 0)
-    {
-        gBidOfferLongShort = max(gBidOfferLongShort, -(gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE));
+        DEBUG(DEBUG_LEVEL_DEBUG, "End");
+
+        if (gBidOfferLongShort > 0)
+        {
+            gBidOfferLongShort = min(gBidOfferLongShort, gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE);
+        }
+        else if (gBidOfferLongShort < 0)
+        {
+            gBidOfferLongShort = max(gBidOfferLongShort, -(gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE));
+        }
     }
 
     return gBidOfferLongShort;
