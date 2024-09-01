@@ -611,23 +611,23 @@ LONG EstimatedLongSideKeyPrice(VOID)
     {
     case 1:
     {
-        return gDayAmpAndKeyPrice.LongKey1 + gStrategyConfig.ActivePoint;
+        return gDayAmpAndKeyPrice.LongKey1;
     }
     case 2:
     {
-        return gDayAmpAndKeyPrice.LongKey2 + gStrategyConfig.ActivePoint;
+        return gDayAmpAndKeyPrice.LongKey2;
     }
     case 3:
     {
-        return gDayAmpAndKeyPrice.LongKey3 + gStrategyConfig.ActivePoint;
+        return gDayAmpAndKeyPrice.LongKey3;
     }
     case 4:
     {
-        return gDayAmpAndKeyPrice.LongKey4 + gStrategyConfig.ActivePoint;
+        return gDayAmpAndKeyPrice.LongKey4;
     }
     case 5:
     {
-        return gDayAmpAndKeyPrice.LongKey5 + gStrategyConfig.ActivePoint;
+        return gDayAmpAndKeyPrice.LongKey5;
     }
 
     default:
@@ -650,23 +650,23 @@ LONG EstimatedShortSideKeyPrice(VOID)
     {
     case 1:
     {
-        return gDayAmpAndKeyPrice.ShortKey1 - gStrategyConfig.ActivePoint;
+        return gDayAmpAndKeyPrice.ShortKey1;
     }
     case 2:
     {
-        return gDayAmpAndKeyPrice.ShortKey2 - gStrategyConfig.ActivePoint;
+        return gDayAmpAndKeyPrice.ShortKey2;
     }
     case 3:
     {
-        return gDayAmpAndKeyPrice.ShortKey3 - gStrategyConfig.ActivePoint;
+        return gDayAmpAndKeyPrice.ShortKey3;
     }
     case 4:
     {
-        return gDayAmpAndKeyPrice.ShortKey4 - gStrategyConfig.ActivePoint;
+        return gDayAmpAndKeyPrice.ShortKey4;
     }
     case 5:
     {
-        return gDayAmpAndKeyPrice.ShortKey5 - gStrategyConfig.ActivePoint;
+        return gDayAmpAndKeyPrice.ShortKey5;
     }
 
     default:
@@ -689,23 +689,23 @@ LONG EstimatedTodaysAmplitude(VOID)
     {
     case 1:
     {
-        return gDayAmpAndKeyPrice.SmallestAmp + gStrategyConfig.ActivePoint;
+        return gDayAmpAndKeyPrice.SmallestAmp;
     }
     case 2:
     {
-        return gDayAmpAndKeyPrice.SmallAmp + gStrategyConfig.ActivePoint;
+        return gDayAmpAndKeyPrice.SmallAmp;
     }
     case 3:
     {
-        return gDayAmpAndKeyPrice.AvgAmp + gStrategyConfig.ActivePoint;
+        return gDayAmpAndKeyPrice.AvgAmp;
     }
     case 4:
     {
-        return gDayAmpAndKeyPrice.LargerAmp + gStrategyConfig.ActivePoint;
+        return gDayAmpAndKeyPrice.LargerAmp;
     }
     case 5:
     {
-        return gDayAmpAndKeyPrice.LargestAmp + gStrategyConfig.ActivePoint;
+        return gDayAmpAndKeyPrice.LargestAmp;
     }
 
     default:
