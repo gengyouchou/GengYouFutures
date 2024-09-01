@@ -48,6 +48,7 @@ struct STRATEGY_CONFIG
     LONG BidOfferLongShortThreshold;
     LONG ActivePoint;
     DOUBLE MaximumLoss;
+    LONG StrategyMode;
 };
 
 VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo);
@@ -103,3 +104,4 @@ LONG StrategyCaluLongShort(VOID);
 #define MAXIMUM_LOSS 3000.0
 #define ACTIVITY_POINT 0
 #define BID_OFFER_LONG_SHORT_THRESHOLD 100
+#define STRATEGY_MODE -1

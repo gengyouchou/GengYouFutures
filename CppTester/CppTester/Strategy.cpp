@@ -51,7 +51,8 @@ STRATEGY_CONFIG gStrategyConfig = {
     CLOSING_KEY_PRICE_LEVEL,
     BID_OFFER_LONG_SHORT_THRESHOLD,
     ACTIVITY_POINT,
-    MAXIMUM_LOSS
+    MAXIMUM_LOSS,
+    STRATEGY_MODE
 
 };
 
@@ -1240,4 +1241,57 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
     }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
+}
+
+VOID StrategySwitch(LONG Mode)
+{
+    switch (Mode)
+    {
+    case 1:
+    {
+        // Strategy start:
+
+        StrategyCaluBidOfferLongShort();
+        StrategyCaluTransactionListLongShort();
+
+        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
+        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
+
+#if NIGHT_TRADING
+
+        if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 22)
+        {
+#if STRATEGY_1 == 1
+            StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
+            StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+#endif
+
+#if STRATEGY_2 == 1
+
+            StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
+            StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+#endif
+        }
+        else
+#endif
+        {
+            if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
+            {
+                StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
+            }
+            else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
+            {
+                StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+            }
+        }
+
+        // StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+
+        // Strategy End:
+        break;
+    }
+
+    default:
+        break;
+    }
 }
