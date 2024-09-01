@@ -1426,8 +1426,8 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
-        if ((CurHigh - curPrice) > ONE_STRIKE_PRICES // Earn at least one strike price
-
+        if ((CurHigh - curPrice) > ONE_STRIKE_PRICES && // Earn at least one strike price
+            curPrice > CurLow                           // Dont go short at new highs, dont go long at new lows
         )
         {
 
@@ -1462,8 +1462,8 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
-        if ((curPrice - CurLow) > ONE_STRIKE_PRICES // Earn at least one strike price
-
+        if ((curPrice - CurLow) > ONE_STRIKE_PRICES && // Earn at least one strike price
+            curPrice < CurHigh                         // Dont go short at new highs, dont go long at new lows
         )
         {
 
