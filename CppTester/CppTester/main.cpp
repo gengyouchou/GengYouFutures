@@ -320,7 +320,7 @@ void thread_main()
             }
         }
 
-        StrategySwitch();
+        StrategySwitch(2, MtxCommodtyInfo);
 
         // Ouput start
 

@@ -68,6 +68,7 @@ LONG EstimatedShortSideKeyPrice(VOID);
 LONG EstimatedTodaysAmplitude(VOID);
 
 LONG StrategyCaluLongShort(VOID);
+VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 
 // Strategy
 

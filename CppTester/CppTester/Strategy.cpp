@@ -532,11 +532,11 @@ VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo)
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
-VOID StrategyClosePositionOnDayTrade(string strUserId, LONG MtxCommodtyInfo)
+VOID StrategyClosePositionOnDayTrade(string strUserId, LONG MtxCommodtyInfo, SHORT StopTime)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
-    if (gCurServerTime[0] != 13)
+    if (gCurServerTime[0] != StopTime)
     {
         return;
     }
@@ -1243,37 +1243,31 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
-VOID StrategySwitch(LONG Mode)
+VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 {
     switch (Mode)
     {
+
+    // The middle-aged man's trading method
+    // Trend plate (positions can be left), rely on the relative position of the average price and cost price, and the imbalance of the main orders to judge the direction.
+    // If today's amplitude does not meet the standard to open a position, at least push it to the checkpoint price before exiting.
     case 1:
     {
-        // Strategy start:
+        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
+        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
 
         StrategyCaluBidOfferLongShort();
         StrategyCaluTransactionListLongShort();
 
-        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
-        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
-
+        if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 15)
+        {
 #if NIGHT_TRADING
 
-        if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 22)
-        {
-#if STRATEGY_1 == 1
             StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
             StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
 #endif
-
-#if STRATEGY_2 == 1
-
-            StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
-            StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
-#endif
         }
         else
-#endif
         {
             if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
             {
@@ -1285,13 +1279,51 @@ VOID StrategySwitch(LONG Mode)
             }
         }
 
-        // StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+        break;
+    }
 
-        // Strategy End:
+        // Long and short divergence money brushing strategy(current night trading strategy)
+        // In shock trading(positions can be left),
+        // open a counter - trend position at the opposite checkpoint price and exit at the relative checkpoint price.
+
+    case 2:
+    {
+
+        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
+        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
+
+        if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 15)
+        {
+            StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
+            StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+        }
+
+        break;
+    }
+
+        // The main short term strategy is to pass the previous high and break the previous low.
+        // A shock or trend order(when used as a day trading order) records the previous high or low of the day,
+        // and pulls back or rebounds by more than one execution price,
+        // and the current price is not the current low or the current high, and the five levels of pending orders are obviously unbalanced,
+        // open a position, and exceed the previous price.Exit low before breaking high
+
+    case 3:
+    {
+
+        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
+        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
+        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13);
+
+        if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
+        {
+        }
+
         break;
     }
 
     default:
+    {
         break;
+    }
     }
 }
