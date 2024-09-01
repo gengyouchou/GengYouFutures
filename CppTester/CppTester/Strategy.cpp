@@ -566,8 +566,8 @@ VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo)
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
         }
 
-        if ((BuySell == 0 && curPrice >= EstimatedLongSideKeyPrice()) ||
-            (BuySell == 1 && curPrice <= EstimatedShortSideKeyPrice()))
+        if ((BuySell == 0 && (curPrice >= EstimatedLongSideKeyPrice() - gStrategyConfig.ActivePoint)) ||
+            (BuySell == 1 && (curPrice <= EstimatedShortSideKeyPrice() + gStrategyConfig.ActivePoint)))
         {
             vector<string> vec = {COMMODITY_OTHER};
 
@@ -800,9 +800,9 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
 
         if (CurAvg > gCostMovingAverageVal &&
             curPrice >= gCostMovingAverageVal &&
-            (curPrice <= CurAvg + ATTACK_RANGE && curPrice >= CurAvg - ATTACK_RANGE) && // Use attack range (ATTACK_RANGE) to control the chance of entering the field
-            curPrice > CurLow &&                                                        // Dont go short at new highs, dont go long at new lows
-            (EstimatedLongSideKeyPrice() - curPrice) >= ONE_STRIKE_PRICES               // Earn at least one strike price
+            (curPrice <= CurAvg + ATTACK_RANGE) &&                        // Use attack range (ATTACK_RANGE) to control the chance of entering the field
+            curPrice > CurLow &&                                          // Dont go short at new highs, dont go long at new lows
+            (EstimatedLongSideKeyPrice() - curPrice) >= ONE_STRIKE_PRICES // Earn at least one strike price
 
         )
         {
@@ -840,9 +840,9 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
 
         if (CurAvg < gCostMovingAverageVal &&
             curPrice <= gCostMovingAverageVal &&
-            (curPrice >= CurAvg - ATTACK_RANGE && curPrice <= CurAvg + ATTACK_RANGE) && // Use attack range(ATTACK_RANGE) to control the chance of entering the field
-            curPrice < CurHigh &&                                                       // Dont go short at new highs, dont go long at new lows
-            (curPrice - EstimatedShortSideKeyPrice()) >= ONE_STRIKE_PRICES              // Earn at least one strike price
+            (curPrice >= CurAvg - ATTACK_RANGE) &&                         // Use attack range(ATTACK_RANGE) to control the chance of entering the field
+            curPrice < CurHigh &&                                          // Dont go short at new highs, dont go long at new lows
+            (curPrice - EstimatedShortSideKeyPrice()) >= ONE_STRIKE_PRICES // Earn at least one strike price
 
         )
         {
@@ -1103,7 +1103,7 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
             DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
                   curPrice, gOpenInterestInfo.avgCost);
 
-            if (curPrice < EstimatedShortSideKeyPrice())
+            if (curPrice <= EstimatedShortSideKeyPrice() + gStrategyConfig.ActivePoint)
             {
 
                 vector<string> vec = {COMMODITY_OTHER};
@@ -1137,7 +1137,7 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
             DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
                   curPrice, gOpenInterestInfo.avgCost);
 
-            if (curPrice > EstimatedLongSideKeyPrice())
+            if (curPrice >= EstimatedLongSideKeyPrice() - gStrategyConfig.ActivePoint)
             {
 
                 vector<string> vec = {COMMODITY_OTHER};
