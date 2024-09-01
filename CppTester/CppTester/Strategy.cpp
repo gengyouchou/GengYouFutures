@@ -1551,18 +1551,13 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
     DEBUG(DEBUG_LEVEL_DEBUG, "Median price (maxHeap) = %f", medianPriceMaxHeap);
     DEBUG(DEBUG_LEVEL_DEBUG, "Median price (minHeap) = %f", medianPriceMinHeap);
 
-    // Choose the median price based on the strategy (here using maxHeap's median)
-    double medianPrice = (maxHeap.size() >= minHeap.size()) ? medianPriceMaxHeap : medianPriceMinHeap;
-
-    DEBUG(DEBUG_LEVEL_DEBUG, "Median price = %f", medianPrice);
-
     // Strategy for going long
     if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
     {
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
-        if ((medianPrice - curPrice) > ONE_STRIKE_PRICES && curPrice > CurLow)
+        if ((medianPriceMaxHeap - curPrice) > ONE_STRIKE_PRICES && curPrice > CurLow)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
@@ -1588,7 +1583,7 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
-        if ((curPrice - medianPrice) > ONE_STRIKE_PRICES && curPrice < CurHigh)
+        if ((curPrice - medianPriceMinHeap) > ONE_STRIKE_PRICES && curPrice < CurHigh)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
