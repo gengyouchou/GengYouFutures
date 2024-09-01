@@ -1548,8 +1548,8 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
     double medianPriceMaxHeap = getMedianPriceForMaxheap(maxHeap);
     double medianPriceMinHeap = getMedianPriceForMinHeap(minHeap);
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "Median price (maxHeap) = %f", medianPriceMaxHeap);
-    DEBUG(DEBUG_LEVEL_DEBUG, "Median price (minHeap) = %f", medianPriceMinHeap);
+    DEBUG(DEBUG_LEVEL_INFO, "Median price (maxHeap) = %f", medianPriceMaxHeap);
+    DEBUG(DEBUG_LEVEL_INFO, "Median price (minHeap) = %f", medianPriceMinHeap);
 
     // Strategy for going long
     if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)

@@ -234,6 +234,23 @@ void release()
 // Estimated trading volume
 // Instant profit and loss
 
+// Function to generate random price
+long getRandomPrice()
+{
+    // Generate a random number in the range of 2000000 to 2500000
+    return rand() % 500001 + 2000000; // 500001 is because 2500000 - 2000000 = 500000 + 1
+}
+
+// Function to update the price periodically (every second)
+void updatePricePeriodically(long MtxCommodtyInfo)
+{
+    while (true)
+    {
+        // Generate a random price and update the corresponding value in the global variable
+        gCurCommPrice[MtxCommodtyInfo] = getRandomPrice();
+    }
+}
+
 void thread_main()
 {
     const int refreshInterval = 1000; // 1000 ms
@@ -319,6 +336,10 @@ void thread_main()
                 continue;
             }
         }
+
+        // Strategy Start
+
+        updatePricePeriodically(MtxCommodtyInfo);
 
         StrategySwitch(gStrategyConfig.StrategyMode, MtxCommodtyInfo);
 
