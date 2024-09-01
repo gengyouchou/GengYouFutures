@@ -14,6 +14,9 @@
 #include <yaml-cpp/yaml.h>
 
 #include "Strategy.h"
+#pragma comment(lib, "Ws2_32.lib")
+
+#define PORT 30666
 
 extern std::deque<long> gDaysKlineDiff;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
@@ -43,6 +46,9 @@ CSKOrderLib *pSKOrderLib;
 long g_nCode = 0;
 extern string g_strUserId;
 extern string gPwd;
+
+char buffer[10240]  = {0};
+
 
 void release();
 
@@ -126,11 +132,14 @@ void AutoQuoteTicks(IN string ProductNum, short sPageNo)
 
 void AutoBest5Long(LONG ProductIdxNo, string ProductName)
 {
+    long CurHigh = gCurCommHighLowPoint[ProductIdxNo][0];
+    long CurLow = gCurCommHighLowPoint[ProductIdxNo][1];
+    long Open = gCurCommHighLowPoint[ProductIdxNo][2];
     if (gCurCommHighLowPoint.count(ProductIdxNo) > 0)
     {
-        long CurHigh = gCurCommHighLowPoint[ProductIdxNo][0];
-        long CurLow = gCurCommHighLowPoint[ProductIdxNo][1];
-        long Open = gCurCommHighLowPoint[ProductIdxNo][2];
+        // long CurHigh = gCurCommHighLowPoint[ProductIdxNo][0];
+        // long CurLow = gCurCommHighLowPoint[ProductIdxNo][1];
+        // long Open = gCurCommHighLowPoint[ProductIdxNo][2];
 
         DEBUG(DEBUG_LEVEL_DEBUG, "IdxNo: %ld. High: %ld, Low: %ld", ProductIdxNo, CurHigh, CurLow);
 
@@ -162,14 +171,20 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
             nClose = gTransactionList[ProductIdxNo][3];
             nQty = gTransactionList[ProductIdxNo][4];
         }
+                      
+
+
+
 
         printf("Total Offer: [%ld]\n", TotalOffer);
-
         printf("Ask5: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][9].first, gBest5BidOffer[ProductIdxNo][9].second);
         printf("Ask4: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][8].first, gBest5BidOffer[ProductIdxNo][8].second);
         printf("Ask3: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][7].first, gBest5BidOffer[ProductIdxNo][7].second);
         printf("Ask2: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][6].first, gBest5BidOffer[ProductIdxNo][6].second);
         printf("Ask1: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][5].first, gBest5BidOffer[ProductIdxNo][5].second);
+
+       
+        sprintf(buffer+strlen(buffer),"%s : %ld Open: %ld, CurHigh: %ld, CurLow: %ld\nTotal Offer: [%ld]\nAsk5: [%ld]: [%ld]\nAsk4: [%ld]: [%ld]\nAsk3: [%ld]: [%ld]\nAsk2: [%ld]: [%ld]\nAsk1: [%ld]: [%ld]\n",ProductName.c_str(), gCurCommPrice[ProductIdxNo],Open, CurHigh, CurLow,TotalOffer,gBest5BidOffer[ProductIdxNo][9].first, gBest5BidOffer[ProductIdxNo][9].second,gBest5BidOffer[ProductIdxNo][8].first, gBest5BidOffer[ProductIdxNo][8].second,gBest5BidOffer[ProductIdxNo][7].first, gBest5BidOffer[ProductIdxNo][7].second,gBest5BidOffer[ProductIdxNo][6].first, gBest5BidOffer[ProductIdxNo][6].second,gBest5BidOffer[ProductIdxNo][5].first, gBest5BidOffer[ProductIdxNo][5].second);    
         if (nClose > 0 && nClose >= nAsk)
         {
             printf("============================Close: [%ld]: [%ld]============\n", nClose, nQty);
@@ -179,15 +194,18 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
         {
             printf("============================Close: [%ld]: [%ld]============\n", nClose, nQty);
         }
+
+         sprintf(buffer+strlen(buffer),"=========================================\n");
+
         printf("Bid1: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][0].first, gBest5BidOffer[ProductIdxNo][0].second);
         printf("Bid2: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][1].first, gBest5BidOffer[ProductIdxNo][1].second);
         printf("Bid3: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][2].first, gBest5BidOffer[ProductIdxNo][2].second);
         printf("Bid4: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][3].first, gBest5BidOffer[ProductIdxNo][3].second);
         printf("Bid5: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][4].first, gBest5BidOffer[ProductIdxNo][4].second);
-
         printf("Total Bid:   [%ld]\n", TotalBid);
-
         printf("=========================================\n");
+
+        sprintf(buffer+strlen(buffer),"Bid1: [%ld]: [%ld]\nBid2: [%ld]: [%ld]\nBid3: [%ld]: [%ld]\nBid4: [%ld]: [%ld]\nBid5: [%ld]: [%ld]\nTotal Bid:   [%ld]\n=========================================\n",gBest5BidOffer[ProductIdxNo][0].first, gBest5BidOffer[ProductIdxNo][0].second,gBest5BidOffer[ProductIdxNo][1].first, gBest5BidOffer[ProductIdxNo][1].second,gBest5BidOffer[ProductIdxNo][2].first, gBest5BidOffer[ProductIdxNo][2].second,gBest5BidOffer[ProductIdxNo][3].first, gBest5BidOffer[ProductIdxNo][3].second,gBest5BidOffer[ProductIdxNo][4].first, gBest5BidOffer[ProductIdxNo][4].second,TotalBid);
     }
     else
     {
@@ -394,20 +412,23 @@ void thread_main()
 
             printf("=========================================\n");
 
+            long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
+            long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
+            long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
             if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
             {
 
-                long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
-                long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
-                long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
-
+                // long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
+                // long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
+                // long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
                 printf("Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, ", gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage);
-
                 printf("CurAvg: %ld, CurAmp : %ld\n", (CurHigh + CurLow) / 2, CurHigh - CurLow);
             }
 
             printf("=========================================\n");
 
+
+           
             if (gOpenInterestInfo.NeedToUpdate == FALSE && gOpenInterestInfo.openPosition != 0)
             {
                 printf("Open Position: %d, AvgCost:%f, ProfitAndLoss: %f\n",
@@ -445,10 +466,15 @@ void thread_main()
 
             printf("=========================================\n");
 
+            snprintf(buffer, sizeof(buffer),"[UserId:%s], [LongShortThreshold:%ld], [BidOfferLongShortThreshold:%ld], [ActivePoint:%ld], [MaximumLoss:%f]\n=========================================\n[CurMtxPrice: %ld],[TSEA prices: %ld, Valume: %ld],[Diff: %d],[ServerTime: %d: %d: %d]\n=========================================\nOpen: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld,CurAvg: %ld, CurAmp : %ld\n=========================================\nOpen Position: %d, AvgCost:%f, ProfitAndLoss: %f\n=========================================\nLong Key 5: %ld\nLong Key 4: %ld\nLong Key 3: %ld\nLong Key 2: %ld\nLong Key 1: %ld\n=========================================\nShort Key 1: %ld\nShort Key 2: %ld\nShort Key 3: %ld\nShort Key 4: %ld\nShort Key 5: %ld\n=========================================\nSmallestAmp : %ld, SmallAmp : %ld,AvgAmp : %ld, LargerAmp : %ld,LargestAmp : %ld\n=========================================\n[LongShortThreshold:%ld], StrategyCaluLongShort:%ld, BidOfferLongShort:%ld, TransactionListLongShort:%ld\n=========================================\n",
+                                                            g_strUserId.c_str(), gStrategyConfig.ClosingKeyPriceLevel, gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss,gCurCommPrice[MtxCommodtyInfo] / 100,gCurCommPrice[gCommodtyInfo.TSEAIdxNo] / 100, gCurTaiexInfo[0][1],(gCurCommPrice[MtxCommodtyInfo] - gCurCommPrice[gCommodtyInfo.TSEAIdxNo]) / 100,gCurServerTime[0], gCurServerTime[1], gCurServerTime[2],gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage,(CurHigh + CurLow) / 2, CurHigh - CurLow,gOpenInterestInfo.openPosition,
+                                            gOpenInterestInfo.avgCost,
+                                            gOpenInterestInfo.profitAndLoss,gDayAmpAndKeyPrice.LongKey5,gDayAmpAndKeyPrice.LongKey4,gDayAmpAndKeyPrice.LongKey3,gDayAmpAndKeyPrice.LongKey2,gDayAmpAndKeyPrice.LongKey1,gDayAmpAndKeyPrice.ShortKey1,gDayAmpAndKeyPrice.ShortKey2,gDayAmpAndKeyPrice.ShortKey3,gDayAmpAndKeyPrice.ShortKey4,gDayAmpAndKeyPrice.ShortKey5,gDayAmpAndKeyPrice.SmallestAmp,gDayAmpAndKeyPrice.SmallAmp,gDayAmpAndKeyPrice.AvgAmp,gDayAmpAndKeyPrice.LargerAmp,gDayAmpAndKeyPrice.LargestAmp,gStrategyConfig.BidOfferLongShortThreshold, StrategyCaluLongShort(), gBidOfferLongShort, gTransactionListLongShort);
             AutoBest5Long(gCommodtyInfo.TSMCIdxNo, "TSMC");
             AutoBest5Long(gCommodtyInfo.HHIdxNo, "HHP");
-        }
 
+           
+        }
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU
     }
 }
@@ -505,6 +531,105 @@ void readConfig()
     }
 }
 
+
+
+
+void thread_socket()
+{
+    WSADATA wsaData;
+    SOCKET server_fd, new_socket;
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+    
+    const char *greeting = "Connected to server";
+
+    // 初始化 Winsock
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+        std::cerr << "WSAStartup failed" << std::endl;
+      
+    }
+
+    // 创建套接字文件描述符
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
+        std::cerr << "Socket creation failed" << std::endl;
+        WSACleanup();
+        
+    }
+
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+
+    // 绑定套接字到端口
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) == SOCKET_ERROR) {
+        std::cerr << "Bind failed" << std::endl;
+        closesocket(server_fd);
+        WSACleanup();
+       
+    }
+
+    // 监听传入连接
+    if (listen(server_fd, 3) == SOCKET_ERROR) {
+        std::cerr << "Listen failed" << std::endl;
+        closesocket(server_fd);
+        WSACleanup();
+       
+    }
+
+    std::cout << "Server is listening on port " << PORT << std::endl;
+
+    // string temp = "[UserId:], [LongShortThreshold:%], [BidOfferLongShortThreshold:], [ActivePoint:], [MaximumLoss:]\n";
+    // char tab2[1024];
+    // strncpy(tab2, temp.c_str(), sizeof(tab2));
+    // tab2[sizeof(tab2) - 1] = 0;
+
+
+
+    char buffer_empty[4096]={0};
+
+    while (true) {
+        std::cout << "Waiting for new connection..." << std::endl;
+        // 接受客户端连接
+        new_socket = accept(server_fd, (struct sockaddr *)&address, &addrlen);
+        if (new_socket == INVALID_SOCKET) {
+            std::cerr << "Accept failed" << std::endl;
+            continue; // 继续等待其他客户端连接
+        }
+
+        send(new_socket, greeting, strlen(greeting), 0); // 发送初始连接消息
+
+        while (true) {
+            std::cout<<"client in";
+            // Sleep(500);
+            // int valread = 1023;
+            int valread = recv(new_socket, buffer_empty, 4096, 0); // 读取客户端消息
+            if (valread > 0) {
+
+                buffer_empty[valread] = '\0'; // 确保字符串以 null 结尾
+                std::cout << "Message from client: " << buffer_empty << std::endl;
+
+                send(new_socket, buffer, 4095, 0); // 发送消息回客户端
+                // send(new_socket, tab2, 1023, 0); // 发送消息回客户端
+            } else if (valread == 0) {
+                std::cout << "Client disconnected" << std::endl;
+                break; // 客户端断开连接，退出内循环
+            } else {
+                std::cerr << "recv failed" << std::endl;
+                break;
+            }
+        }
+
+        closesocket(new_socket); // 关闭与当前客户端的连接
+    }
+    closesocket(server_fd);
+    WSACleanup();
+}
+
+
+
+
+
+
 int main()
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
@@ -534,6 +659,11 @@ int main()
     thread tMain(thread_main);
     if (tMain.joinable())
         tMain.detach();
+
+    thread tMain2(thread_socket);
+    if (tMain2.joinable())
+        tMain2.detach();
+
 
     MSG msg;
     while (GetMessageW(&msg, NULL, 0, 0)) // Get SendMessage loop
