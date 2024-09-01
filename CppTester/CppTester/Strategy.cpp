@@ -1562,7 +1562,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     {
 
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
-        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13);
         StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(g_strUserId, MtxCommodtyInfo);
 
