@@ -1566,6 +1566,9 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13);
         StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(g_strUserId, MtxCommodtyInfo);
 
+        StrategyCaluBidOfferLongShort();
+        StrategyCaluTransactionListLongShort();
+
         if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
         {
             if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
