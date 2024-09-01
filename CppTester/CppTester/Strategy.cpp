@@ -1151,6 +1151,7 @@ LONG StrategyCaluTransactionListLongShort(VOID)
 
 LONG StrategyCaluLongShort(VOID)
 {
+    return 1000;
     if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 30) || gCurServerTime[0] >= 14)
     {
         return 0;
@@ -1557,7 +1558,7 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
-        if ((medianPriceMaxHeap - curPrice) > ONE_STRIKE_PRICES && curPrice > CurLow)
+        if ((medianPriceMinHeap - curPrice) > ONE_STRIKE_PRICES && curPrice > CurLow)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
@@ -1583,7 +1584,7 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
-        if ((curPrice - medianPriceMinHeap) > ONE_STRIKE_PRICES && curPrice < CurHigh)
+        if ((curPrice - medianPriceMaxHeap) > ONE_STRIKE_PRICES && curPrice < CurHigh)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
