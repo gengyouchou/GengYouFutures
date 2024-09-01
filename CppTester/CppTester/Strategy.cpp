@@ -1264,6 +1264,107 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
+// Function to add price to maxHeap or minHeap while maintaining unique prices and a minimum tick difference
+void addPriceToHeap(double price,
+                    priority_queue<double> &maxHeap,
+                    priority_queue<double, vector<double>, greater_compare> &minHeap,
+                    set<double> &maxHeapUniquePrices,
+                    set<double> &minHeapUniquePrices)
+{
+    // Check for duplicate prices in maxHeap
+    if (maxHeapUniquePrices.find(price) != maxHeapUniquePrices.end())
+    {
+        return;
+    }
+
+    // Check for duplicate prices in minHeap
+    if (minHeapUniquePrices.find(price) != minHeapUniquePrices.end())
+    {
+        return;
+    }
+
+    // Check tick difference for maxHeap
+    if (!maxHeap.empty() && fabs(maxHeap.top() - price) < MIN_TICK_DIFF)
+    {
+        return;
+    }
+
+    // Check tick difference for minHeap
+    if (!minHeap.empty() && fabs(minHeap.top() - price) < MIN_TICK_DIFF)
+    {
+        return;
+    }
+
+    // Add to maxHeap
+    if (maxHeap.size() < MAX_ELEMENTS)
+    {
+        maxHeap.push(price);
+        maxHeapUniquePrices.insert(price); // Track unique prices for maxHeap
+    }
+    else if (price < maxHeap.top())
+    {
+        maxHeapUniquePrices.erase(maxHeap.top()); // Remove old price from unique set
+        maxHeap.pop();
+        maxHeap.push(price);
+        maxHeapUniquePrices.insert(price); // Add new price to unique set
+    }
+
+    // Add to minHeap
+    if (minHeap.size() < MAX_ELEMENTS)
+    {
+        minHeap.push(price);
+        minHeapUniquePrices.insert(price); // Track unique prices for minHeap
+    }
+    else if (price > minHeap.top())
+    {
+        minHeapUniquePrices.erase(minHeap.top()); // Remove old price from unique set
+        minHeap.pop();
+        minHeap.push(price);
+        minHeapUniquePrices.insert(price); // Add new price to unique set
+    }
+}
+// Function to extract the 5th element as median price from a max heap
+double getMedianPriceForMaxheap(priority_queue<double> MaxHeap)
+{
+    vector<double> sortedHeap;
+
+    DEBUG(DEBUG_LEVEL_INFO, "MaxHeap size = %d", MaxHeap.size());
+
+    // Transfer heap elements to vector
+    while (!MaxHeap.empty())
+    {
+        sortedHeap.push_back(MaxHeap.top());
+        MaxHeap.pop();
+    }
+
+    // Sort the heap elements in descending order
+    sort(sortedHeap.begin(), sortedHeap.end(), greater<double>());
+
+    // Return the 5th element or the last element if the heap size is less than 5
+    return (sortedHeap.size() >= 5) ? sortedHeap[4] : sortedHeap.back();
+}
+
+// Function to extract the 5th element as median price from a min heap
+double getMedianPriceForMinHeap(priority_queue<double, vector<double>, greater_compare> minHeap)
+{
+    vector<double> sortedHeap;
+
+    DEBUG(DEBUG_LEVEL_INFO, "MinHeap size = %d", minHeap.size());
+
+    // Transfer heap elements to vector
+    while (!minHeap.empty())
+    {
+        sortedHeap.push_back(minHeap.top());
+        minHeap.pop();
+    }
+
+    // Sort the heap elements in ascending order
+    sort(sortedHeap.begin(), sortedHeap.end());
+
+    // Return the 5th element or the last element if the heap size is less than 5
+    return (sortedHeap.size() >= 5) ? sortedHeap[4] : sortedHeap.back();
+}
+
 /**
  * @brief Implements a futures trading strategy based on the relationship between the cost line and the moving average line.
  *
@@ -1297,6 +1398,22 @@ VOID StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(string strUserId, L
     {
         curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
     }
+
+    // Static maxHeap and minHeap to store prices across function calls
+    static priority_queue<double> maxHeap;                                  // Max heap for storing the top 10 lowest prices
+    static priority_queue<double, vector<double>, greater_compare> minHeap; // Min heap for storing the top 10 highest prices
+    static set<double> maxHeapUniquePrices;                                 // Set to track unique prices for maxHeap
+    static set<double> minHeapUniquePrices;                                 // Set to track unique prices for minHeap
+
+    // Add the current price to the heaps
+    addPriceToHeap(curPrice, maxHeap, minHeap, maxHeapUniquePrices, minHeapUniquePrices);
+
+    // Calculate median prices for both heaps
+    double medianPriceMaxHeap = getMedianPriceForMaxheap(maxHeap);
+    double medianPriceMinHeap = getMedianPriceForMinHeap(minHeap);
+
+    DEBUG(DEBUG_LEVEL_INFO, "Median price (maxHeap) = %f", medianPriceMaxHeap);
+    DEBUG(DEBUG_LEVEL_INFO, "Median price (minHeap) = %f", medianPriceMinHeap);
 
     double CurHigh = 0, CurLow = 0;
     static double PreHigh = INT_MIN, PreLow = INT_MAX;
@@ -1363,103 +1480,6 @@ VOID StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(string strUserId, L
     }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
-}
-
-// Function to add price to maxHeap or minHeap while maintaining unique prices and a minimum tick difference
-void addPriceToHeap(double price,
-                    priority_queue<double> &maxHeap,
-                    priority_queue<double, vector<double>, greater_compare> &minHeap,
-                    set<double> &maxHeapUniquePrices,
-                    set<double> &minHeapUniquePrices)
-{
-    // Check for duplicate prices in maxHeap
-    if (maxHeapUniquePrices.find(price) != maxHeapUniquePrices.end())
-    {
-        return;
-    }
-
-    // Check for duplicate prices in minHeap
-    if (minHeapUniquePrices.find(price) != minHeapUniquePrices.end())
-    {
-        return;
-    }
-
-    // Check tick difference for maxHeap
-    if (!maxHeap.empty() && fabs(maxHeap.top() - price) < MIN_TICK_DIFF)
-    {
-        return;
-    }
-
-    // Check tick difference for minHeap
-    if (!minHeap.empty() && fabs(minHeap.top() - price) < MIN_TICK_DIFF)
-    {
-        return;
-    }
-
-    // Add to maxHeap
-    if (maxHeap.size() < MAX_ELEMENTS)
-    {
-        maxHeap.push(price);
-        maxHeapUniquePrices.insert(price); // Track unique prices for maxHeap
-    }
-    else if (price < maxHeap.top())
-    {
-        maxHeapUniquePrices.erase(maxHeap.top()); // Remove old price from unique set
-        maxHeap.pop();
-        maxHeap.push(price);
-        maxHeapUniquePrices.insert(price); // Add new price to unique set
-    }
-
-    // Add to minHeap
-    if (minHeap.size() < MAX_ELEMENTS)
-    {
-        minHeap.push(price);
-        minHeapUniquePrices.insert(price); // Track unique prices for minHeap
-    }
-    else if (price > minHeap.top())
-    {
-        minHeapUniquePrices.erase(minHeap.top()); // Remove old price from unique set
-        minHeap.pop();
-        minHeap.push(price);
-        minHeapUniquePrices.insert(price); // Add new price to unique set
-    }
-}
-// Function to extract the 5th element as median price from a max heap
-double getMedianPriceForMaxheap(priority_queue<double> MaxHeap)
-{
-    vector<double> sortedHeap;
-
-    // Transfer heap elements to vector
-    while (!MaxHeap.empty())
-    {
-        sortedHeap.push_back(MaxHeap.top());
-        MaxHeap.pop();
-    }
-
-    // Sort the heap elements in descending order
-    sort(sortedHeap.begin(), sortedHeap.end(), greater<double>());
-
-    // Return the 5th element or the last element if the heap size is less than 5
-    return (sortedHeap.size() >= 5) ? sortedHeap[4] : sortedHeap.back();
-}
-
-// Function to extract the 5th element as median price from a min heap
-double getMedianPriceForMinHeap(priority_queue<double, vector<double>, greater_compare> minHeap)
-{
-    vector<double> sortedHeap;
-
-    // Transfer heap elements to vector
-    while (!minHeap.empty())
-    {
-        sortedHeap.push_back(minHeap.top());
-        minHeap.pop();
-    }
-
-    // Sort the heap elements in ascending order
-    sort(sortedHeap.begin(), sortedHeap.end());
-
-    // Return the 5th element or the last element if the heap size is less than 5
-    return (sortedHeap.size() >= 5) ? sortedHeap[4] : sortedHeap.back();
 }
 
 /**
