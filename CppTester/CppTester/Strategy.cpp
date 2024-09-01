@@ -4,15 +4,33 @@
 #include "SKQuoteLib.h"
 #include "SKReplyLib.h"
 #include <Logger.h>
+#include <algorithm>
 #include <array>
-#include <chrono>  // For std::chrono::steady_clock
+#include <chrono> // For std::chrono::steady_clock
+#include <cmath>
 #include <conio.h> // For kbhit() and _getch()
 #include <cstdlib> // For system("cls")
 #include <deque>
 #include <iostream>
 #include <map>
+#include <queue>
+#include <set>
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
+#include <vector>
+
+using namespace std;
+
+const int MAX_ELEMENTS = 10;
+const double MIN_TICK_DIFF = 5.0;
+
+struct greater_compare
+{
+    bool operator()(const double &lhs, const double &rhs) const
+    {
+        return lhs > rhs;
+    }
+};
 
 // Define the global logger instance
 Logger StrategyLog("Strategy");
@@ -1346,6 +1364,103 @@ VOID StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(string strUserId, L
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
+// Function to add price to maxHeap or minHeap while maintaining unique prices and a minimum tick difference
+void addPriceToHeap(double price,
+                    priority_queue<double> &maxHeap,
+                    priority_queue<double, vector<double>, greater_compare> &minHeap,
+                    set<double> &maxHeapUniquePrices,
+                    set<double> &minHeapUniquePrices)
+{
+    // Check for duplicate prices in maxHeap
+    if (maxHeapUniquePrices.find(price) != maxHeapUniquePrices.end())
+    {
+        return;
+    }
+
+    // Check for duplicate prices in minHeap
+    if (minHeapUniquePrices.find(price) != minHeapUniquePrices.end())
+    {
+        return;
+    }
+
+    // Check tick difference for maxHeap
+    if (!maxHeap.empty() && fabs(maxHeap.top() - price) < MIN_TICK_DIFF)
+    {
+        return;
+    }
+
+    // Check tick difference for minHeap
+    if (!minHeap.empty() && fabs(minHeap.top() - price) < MIN_TICK_DIFF)
+    {
+        return;
+    }
+
+    // Add to maxHeap
+    if (maxHeap.size() < MAX_ELEMENTS)
+    {
+        maxHeap.push(price);
+        maxHeapUniquePrices.insert(price); // Track unique prices for maxHeap
+    }
+    else if (price < maxHeap.top())
+    {
+        maxHeapUniquePrices.erase(maxHeap.top()); // Remove old price from unique set
+        maxHeap.pop();
+        maxHeap.push(price);
+        maxHeapUniquePrices.insert(price); // Add new price to unique set
+    }
+
+    // Add to minHeap
+    if (minHeap.size() < MAX_ELEMENTS)
+    {
+        minHeap.push(price);
+        minHeapUniquePrices.insert(price); // Track unique prices for minHeap
+    }
+    else if (price > minHeap.top())
+    {
+        minHeapUniquePrices.erase(minHeap.top()); // Remove old price from unique set
+        minHeap.pop();
+        minHeap.push(price);
+        minHeapUniquePrices.insert(price); // Add new price to unique set
+    }
+}
+// Function to extract the 5th element as median price from a max heap
+double getMedianPriceForMaxheap(priority_queue<double> MaxHeap)
+{
+    vector<double> sortedHeap;
+
+    // Transfer heap elements to vector
+    while (!MaxHeap.empty())
+    {
+        sortedHeap.push_back(MaxHeap.top());
+        MaxHeap.pop();
+    }
+
+    // Sort the heap elements in descending order
+    sort(sortedHeap.begin(), sortedHeap.end(), greater<double>());
+
+    // Return the 5th element or the last element if the heap size is less than 5
+    return (sortedHeap.size() >= 5) ? sortedHeap[4] : sortedHeap.back();
+}
+
+// Function to extract the 5th element as median price from a min heap
+double getMedianPriceForMinHeap(priority_queue<double, vector<double>, greater_compare> minHeap)
+{
+    vector<double> sortedHeap;
+
+    // Transfer heap elements to vector
+    while (!minHeap.empty())
+    {
+        sortedHeap.push_back(minHeap.top());
+        minHeap.pop();
+    }
+
+    // Sort the heap elements in ascending order
+    sort(sortedHeap.begin(), sortedHeap.end());
+
+    // Return the 5th element or the last element if the heap size is less than 5
+    return (sortedHeap.size() >= 5) ? sortedHeap[4] : sortedHeap.back();
+}
+
 /**
  * @brief Implements a futures trading strategy based on the relationship between the cost line and the moving average line.
  *
@@ -1368,20 +1483,25 @@ VOID StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(string strUserId, L
  * @param currentPrice The current market price.
  * @return The trading action to be taken (e.g., buy, sell, hold).
  */
-
 VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
+    // Static maxHeap and minHeap to store prices across function calls
+    static priority_queue<double> maxHeap;                                  // Max heap for storing the top 10 lowest prices
+    static priority_queue<double, vector<double>, greater_compare> minHeap; // Min heap for storing the top 10 highest prices
+    static set<double> maxHeapUniquePrices;                                 // Set to track unique prices for maxHeap
+    static set<double> minHeapUniquePrices;                                 // Set to track unique prices for minHeap
+
     if (gOpenInterestInfo.NeedToUpdate == TRUE)
     {
-        // Only new positions need to be checked
         LOG(DEBUG_LEVEL_DEBUG, "gOpenInterestInfo.NeedToUpdate == TRUE");
         return;
     }
 
     double OpenPrice = 0;
 
+    // Check if the commodity information is present
     if (gCurCommHighLowPoint.count(MtxCommodtyInfo) == 0)
     {
         return;
@@ -1393,6 +1513,7 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
 
     double curPrice = 0;
 
+    // Get the current price for the commodity
     if (gCurCommPrice.count(MtxCommodtyInfo) != 0)
     {
         curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
@@ -1400,9 +1521,9 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
 
     double CurAvg = 0;
     double CurAmp = 0;
-
     double CurHigh = 0, CurLow = 0;
 
+    // Calculate the current high, low, amplitude, and average
     if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
     {
         CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100.0;
@@ -1414,77 +1535,73 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
     DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, CurAvg= %f, gCostMovingAverageVal=%f",
           curPrice, CurAvg, gCostMovingAverageVal);
 
+    // Check if the current amplitude is within the estimated amplitude
     if (CurAmp > EstimatedTodaysAmplitude())
     {
         return;
     }
 
-    // Do Long
+    // Add the current price to the heaps
+    addPriceToHeap(curPrice, maxHeap, minHeap, maxHeapUniquePrices, minHeapUniquePrices);
 
+    // Calculate median prices for both heaps
+    double medianPriceMaxHeap = getMedianPriceForMaxheap(maxHeap);
+    double medianPriceMinHeap = getMedianPriceForMinHeap(minHeap);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "Median price (maxHeap) = %f", medianPriceMaxHeap);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Median price (minHeap) = %f", medianPriceMinHeap);
+
+    // Choose the median price based on the strategy (here using maxHeap's median)
+    double medianPrice = (maxHeap.size() >= minHeap.size()) ? medianPriceMaxHeap : medianPriceMinHeap;
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "Median price = %f", medianPrice);
+
+    // Strategy for going long
     if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
     {
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
-        if ((CurHigh - curPrice) > ONE_STRIKE_PRICES && // Earn at least one strike price
-            curPrice > CurLow                           // Dont go short at new highs, dont go long at new lows
-        )
+        if ((medianPrice - curPrice) > ONE_STRIKE_PRICES && curPrice > CurLow)
         {
-
             vector<string> vec = {COMMODITY_OTHER};
 
-            for (auto &x : vec)
+            for (size_t i = 0; i < vec.size(); ++i)
             {
-                AutoOrder(x,
-                          ORDER_NEW_POSITION,     // New
-                          ORDER_BUY_LONG_POSITION // Buy or sell
-                );
+                AutoOrder(vec[i], ORDER_NEW_POSITION, ORDER_BUY_LONG_POSITION);
             }
 
-            // Greedy assumptions always have positions
-
-            {
-                gOpenInterestInfo.product = COMMODITY_OTHER;
-                gOpenInterestInfo.buySell = "B";
-                gOpenInterestInfo.openPosition += 1;
-                gOpenInterestInfo.avgCost = curPrice;
-            }
+            // Update position and average cost
+            gOpenInterestInfo.product = COMMODITY_OTHER;
+            gOpenInterestInfo.buySell = "B";
+            gOpenInterestInfo.openPosition += 1;
+            gOpenInterestInfo.avgCost = curPrice;
 
             LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
                 curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
         }
     }
 
-    // Do Short
-
+    // Strategy for going short
     if (LongShort == 0 && gOpenInterestInfo.openPosition >= 0)
     {
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
-        if ((curPrice - CurLow) > ONE_STRIKE_PRICES && // Earn at least one strike price
-            curPrice < CurHigh                         // Dont go short at new highs, dont go long at new lows
-        )
+        if ((curPrice - medianPrice) > ONE_STRIKE_PRICES && curPrice < CurHigh)
         {
-
             vector<string> vec = {COMMODITY_OTHER};
 
-            for (auto &x : vec)
+            for (size_t i = 0; i < vec.size(); ++i)
             {
-                AutoOrder(x,
-                          ORDER_NEW_POSITION,       // New
-                          ORDER_SELL_SHORT_POSITION // Buy or sell
-                );
+                AutoOrder(vec[i], ORDER_NEW_POSITION, ORDER_SELL_SHORT_POSITION);
             }
 
-            // Greedy assumptions always have positions
-
-            {
-                gOpenInterestInfo.product = COMMODITY_OTHER;
-                gOpenInterestInfo.buySell = "S";
-                gOpenInterestInfo.openPosition -= 1;
-                gOpenInterestInfo.avgCost = curPrice;
-            }
+            // Update position and average cost
+            gOpenInterestInfo.product = COMMODITY_OTHER;
+            gOpenInterestInfo.buySell = "S";
+            gOpenInterestInfo.openPosition -= 1;
+            gOpenInterestInfo.avgCost = curPrice;
 
             LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
                 curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
