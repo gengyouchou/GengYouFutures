@@ -531,6 +531,80 @@ VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo)
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
+VOID StrategyClosePositionOnDayTrade(string strUserId, LONG MtxCommodtyInfo)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    if (gCurServerTime[0] != 13)
+    {
+        return;
+    }
+
+    double curPrice = 0;
+
+    if (gCurCommPrice.count(MtxCommodtyInfo) != 0)
+    {
+        curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
+    }
+
+    if (gOpenInterestInfo.product != "" && gOpenInterestInfo.avgCost != 0)
+    {
+        LOG(DEBUG_LEVEL_DEBUG, "product: %s", gOpenInterestInfo.product);
+        LOG(DEBUG_LEVEL_DEBUG, "buySell: %s", gOpenInterestInfo.buySell);
+        LOG(DEBUG_LEVEL_DEBUG, "openPosition: %ld", gOpenInterestInfo.openPosition);
+        LOG(DEBUG_LEVEL_DEBUG, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
+        LOG(DEBUG_LEVEL_DEBUG, "avgCost: %f", gOpenInterestInfo.avgCost);
+
+        LOG(DEBUG_LEVEL_DEBUG, "gOpenInterestInfo.avgCost= %f",
+            gOpenInterestInfo.avgCost);
+
+        SHORT CloseBuySell = -1, BuySell = -1;
+
+        if (gOpenInterestInfo.buySell == "S")
+        {
+            BuySell = 1;
+            CloseBuySell = ORDER_BUY_LONG_POSITION; // short position
+        }
+        else if (gOpenInterestInfo.buySell == "B")
+        {
+            BuySell = 0;
+            CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
+        }
+
+        if (BuySell == 0 ||
+            BuySell == 1)
+        {
+            vector<string> vec = {COMMODITY_OTHER};
+
+            for (auto &x : vec)
+            {
+                AutoOrder(x,
+                          ORDER_CLOSE_POSITION, // Close
+                          CloseBuySell          // Buy or sell
+                );
+            }
+
+#ifdef VIRTUAL_ACCOUNT_ORDER
+            gOpenInterestInfo = {
+                "",  // product
+                "",  // Buy/Sell Indicator
+                0,   // openPosition 0
+                0,   // dayTradePosition 0
+                0.0, // avgCost 0.0
+                0.0, // profitAndLoss
+                TRUE
+
+            };
+#endif
+
+            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
+                curPrice, gCostMovingAverageVal, StrategyCaluLongShort());
+        }
+    }
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "End");
+}
+
 VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
