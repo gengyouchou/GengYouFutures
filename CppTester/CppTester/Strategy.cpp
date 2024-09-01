@@ -1328,7 +1328,7 @@ double getMedianPriceForMaxheap(priority_queue<double> MaxHeap)
 {
     vector<double> sortedHeap;
 
-    DEBUG(DEBUG_LEVEL_INFO, "MaxHeap size = %d", MaxHeap.size());
+    DEBUG(DEBUG_LEVEL_DEBUG, "MaxHeap size = %d", MaxHeap.size());
 
     // Transfer heap elements to vector
     while (!MaxHeap.empty())
@@ -1349,7 +1349,7 @@ double getMedianPriceForMinHeap(priority_queue<double, vector<double>, greater_c
 {
     vector<double> sortedHeap;
 
-    DEBUG(DEBUG_LEVEL_INFO, "MinHeap size = %d", minHeap.size());
+    DEBUG(DEBUG_LEVEL_DEBUG, "MinHeap size = %d", minHeap.size());
 
     // Transfer heap elements to vector
     while (!minHeap.empty())
@@ -1412,8 +1412,8 @@ VOID StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(string strUserId, L
     double medianPriceMaxHeap = getMedianPriceForMaxheap(maxHeap);
     double medianPriceMinHeap = getMedianPriceForMinHeap(minHeap);
 
-    DEBUG(DEBUG_LEVEL_INFO, "Median price (maxHeap) = %f", medianPriceMaxHeap);
-    DEBUG(DEBUG_LEVEL_INFO, "Median price (minHeap) = %f", medianPriceMinHeap);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Median price (maxHeap) = %f", medianPriceMaxHeap);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Median price (minHeap) = %f", medianPriceMinHeap);
 
     double CurHigh = 0, CurLow = 0;
     static double PreHigh = INT_MIN, PreLow = INT_MAX;
@@ -1569,8 +1569,8 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
     double medianPriceMaxHeap = getMedianPriceForMaxheap(maxHeap);
     double medianPriceMinHeap = getMedianPriceForMinHeap(minHeap);
 
-    DEBUG(DEBUG_LEVEL_INFO, "Median price (maxHeap) = %f", medianPriceMaxHeap);
-    DEBUG(DEBUG_LEVEL_INFO, "Median price (minHeap) = %f", medianPriceMinHeap);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Median price (maxHeap) = %f", medianPriceMaxHeap);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Median price (minHeap) = %f", medianPriceMinHeap);
 
     // Strategy for going long
     if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
