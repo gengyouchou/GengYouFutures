@@ -244,11 +244,8 @@ long getRandomPrice()
 // Function to update the price periodically (every second)
 void updatePricePeriodically(long MtxCommodtyInfo)
 {
-    while (true)
-    {
-        // Generate a random price and update the corresponding value in the global variable
-        gCurCommPrice[MtxCommodtyInfo] = getRandomPrice();
-    }
+    // Generate a random price and update the corresponding value in the global variable
+    gCurCommPrice[MtxCommodtyInfo] = getRandomPrice();
 }
 
 void thread_main()
