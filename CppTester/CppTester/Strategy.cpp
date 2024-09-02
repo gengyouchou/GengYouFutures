@@ -1721,6 +1721,12 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
         }
 
+        if (gCurServerTime[0] > 8 && gCurServerTime[0] < 14)
+        {
+            StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
+            StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+        }
+
         break;
     }
 
