@@ -1780,6 +1780,11 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyCloseIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo);
 
+        // for review
+
+        StrategyCaluBidOfferLongShort();
+        StrategyCaluTransactionListLongShort();
+
         if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 15)
         {
             StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
