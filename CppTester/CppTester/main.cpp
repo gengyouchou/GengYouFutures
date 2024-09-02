@@ -382,9 +382,11 @@ void thread_main()
                 long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
                 long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
                 long OpenPrice = gCurCommHighLowPoint[MtxCommodtyInfo][2] / 100;
+                double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2;
+                double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2;
 
                 printf("Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, ", OpenPrice, CurHigh, CurLow, CostMovingAverage);
-
+                printf("LongExtremeValue: %ld, ShortExtremeValue: %ld, ", static_cast<long>(ShockLongExtremeValue), static_cast<long>(ShockShortExtremeValue));
                 printf("CurAvg: %ld, CurAmp : %ld\n", (CurHigh + CurLow) / 2, CurHigh - CurLow);
             }
 

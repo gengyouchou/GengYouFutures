@@ -1214,9 +1214,10 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
             DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
                   curPrice, gOpenInterestInfo.avgCost);
 
-            if (curPrice <= (gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2 + gStrategyConfig.ActivePoint))
-            {
+            double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2.0;
 
+            if (curPrice <= ShockLongExtremeValue + gStrategyConfig.ActivePoint)
+            {
                 vector<string> vec = {COMMODITY_OTHER};
 
                 for (auto &x : vec)
@@ -1248,9 +1249,10 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
             DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
                   curPrice, gOpenInterestInfo.avgCost);
 
-            if (curPrice >= (gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2 - gStrategyConfig.ActivePoint))
-            {
+            double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2.0;
 
+            if (curPrice >= ShockShortExtremeValue - gStrategyConfig.ActivePoint)
+            {
                 vector<string> vec = {COMMODITY_OTHER};
 
                 for (auto &x : vec)
