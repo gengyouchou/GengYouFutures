@@ -1340,7 +1340,7 @@ double getMedianPriceForMaxheap(priority_queue<double> MaxHeap)
     sort(sortedHeap.begin(), sortedHeap.end(), greater<double>());
 
     // Return the 5th element or the last element if the heap size is less than 5
-    return (sortedHeap.size() >= 5) ? sortedHeap[4] : sortedHeap.back();
+    return (sortedHeap.size() >= MAX_ELEMENTS) ? sortedHeap[MAX_ELEMENTS / 2] : INT_MAX;
 }
 
 // Function to extract the 5th element as median price from a min heap
@@ -1361,7 +1361,7 @@ double getMedianPriceForMinHeap(priority_queue<double, vector<double>, greater_c
     sort(sortedHeap.begin(), sortedHeap.end());
 
     // Return the 5th element or the last element if the heap size is less than 5
-    return (sortedHeap.size() >= 5) ? sortedHeap[4] : sortedHeap.back();
+    return (sortedHeap.size() >= MAX_ELEMENTS) ? sortedHeap[MAX_ELEMENTS / 2] : INT_MIN;
 }
 
 /**
