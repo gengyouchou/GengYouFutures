@@ -1193,16 +1193,9 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
         return;
     }
 
-    double CurAmp = 0;
-
     if (gCurCommHighLowPoint.count(MtxCommodtyInfo) == 0)
     {
         return;
-    }
-    else
-    {
-        CurAmp = static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][0]) / 100.0 -
-                 static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][1]) / 100.0;
     }
 
     double curPrice = 0;
@@ -1212,7 +1205,7 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
         curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
     }
 
-    if (curPrice > 0)
+    if (curPrice > 0 && gCostMovingAverageVal > 0)
     {
         // Do Long
 
@@ -1221,7 +1214,7 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
             DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
                   curPrice, gOpenInterestInfo.avgCost);
 
-            if (curPrice <= EstimatedShortSideKeyPrice() + gStrategyConfig.ActivePoint)
+            if (curPrice <= (gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2 + gStrategyConfig.ActivePoint))
             {
 
                 vector<string> vec = {COMMODITY_OTHER};
@@ -1255,7 +1248,7 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
             DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
                   curPrice, gOpenInterestInfo.avgCost);
 
-            if (curPrice >= EstimatedLongSideKeyPrice() - gStrategyConfig.ActivePoint)
+            if (curPrice >= (gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2 - gStrategyConfig.ActivePoint))
             {
 
                 vector<string> vec = {COMMODITY_OTHER};
