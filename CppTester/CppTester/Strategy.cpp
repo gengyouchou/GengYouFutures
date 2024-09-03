@@ -1607,27 +1607,6 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
-    // Static maxHeap and minHeap to store prices across function calls
-    static priority_queue<double> maxHeap;                                  // Max heap for storing the top 10 lowest prices
-    static priority_queue<double, vector<double>, greater_compare> minHeap; // Min heap for storing the top 10 highest prices
-    static set<double> maxHeapUniquePrices;                                 // Set to track unique prices for maxHeap
-    static set<double> minHeapUniquePrices;                                 // Set to track unique prices for minHeap
-
-    if (gCurServerTime[1] == 30 || gCurServerTime[1] == 00)
-    {
-        // Clear maxHeap by swapping it with an empty priority_queue
-        maxHeap = priority_queue<double>(); // Create a new empty priority_queue for maxHeap
-
-        // Clear minHeap by swapping it with an empty priority_queue
-        minHeap = priority_queue<double, vector<double>, greater_compare>(); // Create a new empty priority_queue for minHeap
-
-        // Clear maxHeapUniquePrices by using the clear() function of the set
-        maxHeapUniquePrices.clear(); // Clear the set that tracks unique prices for maxHeap
-
-        // Clear minHeapUniquePrices by using the clear() function of the set
-        minHeapUniquePrices.clear(); // Clear the set that tracks unique prices for minHeap
-    }
-
     if (gOpenInterestInfo.NeedToUpdate == TRUE)
     {
         LOG(DEBUG_LEVEL_DEBUG, "gOpenInterestInfo.NeedToUpdate == TRUE");
@@ -1667,6 +1646,11 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         CurAvg = (CurHigh + CurLow) / 2;
     }
 
+    if (curPrice <= 0 || CurHigh <= 0 || CurLow <= 0)
+    {
+        return;
+    }
+
     DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, CurAvg= %f, gCostMovingAverageVal=%f",
           curPrice, CurAvg, gCostMovingAverageVal);
 
@@ -1676,23 +1660,13 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         return;
     }
 
-    // Add the current price to the heaps
-    addPriceToHeap(curPrice, maxHeap, minHeap, maxHeapUniquePrices, minHeapUniquePrices);
-
-    // Calculate median prices for both heaps
-    double medianPriceMaxHeap = getMedianPriceForMaxheap(maxHeap);
-    double medianPriceMinHeap = getMedianPriceForMinHeap(minHeap);
-
-    DEBUG(DEBUG_LEVEL_DEBUG, "Median price (maxHeap) = %f", medianPriceMaxHeap);
-    DEBUG(DEBUG_LEVEL_DEBUG, "Median price (minHeap) = %f", medianPriceMinHeap);
-
     // Strategy for going long
     if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
     {
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
-        if ((medianPriceMinHeap - curPrice) > ONE_STRIKE_PRICES && curPrice > CurLow)
+        if ((CurHigh - curPrice) > ONE_STRIKE_PRICES && curPrice > CurLow)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
@@ -1718,7 +1692,7 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
-        if ((curPrice - medianPriceMaxHeap) > ONE_STRIKE_PRICES && curPrice < CurHigh)
+        if ((curPrice - CurLow) > ONE_STRIKE_PRICES && curPrice < CurHigh)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
