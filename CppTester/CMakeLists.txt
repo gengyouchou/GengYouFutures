@@ -19,6 +19,8 @@ set(SOURCES
     CppTester/SKReplyLib.cpp
     CppTester/Strategy.cpp
     ../Logger/Logger.cpp
+    cmdCaptureClinet/socketClinet.cpp
+    cmdCaptureServer/socketServer.cpp
 )
 
 # 添加头文件
@@ -31,6 +33,7 @@ set(HEADERS
     CppTester/TEventHandler.h
     CppTester/Strategy.h
     ../Logger/Logger.h
+    cmdCaptureServer/socketServer.h
 )
 
 # 添加头文件目录

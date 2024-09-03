@@ -1,4 +1,3 @@
-
 #include "SKCenterLib.h"
 #include "SKOrderLib.h"
 #include "SKQuoteLib.h"
@@ -124,15 +123,4 @@ void thread_socket()
     }
     closesocket(server_fd);
     WSACleanup();
-}
-void printfToClinet(){
-  
-    snprintf(buffer, sizeof(buffer),"[UserId:%s], [LongShortThreshold:%ld], [BidOfferLongShortThreshold:%ld], [ActivePoint:%ld], [MaximumLoss:%f]\n=========================================\n[CurMtxPrice: %ld],[TSEA prices: %ld, Valume: %ld],[Diff: %d],[ServerTime: %d: %d: %d]\n=========================================\nOpen: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld,CurAvg: %ld, CurAmp : %ld\n=========================================\nOpen Position: %d, AvgCost:%f, ProfitAndLoss: %f\n=========================================\nLong Key 5: %ld\nLong Key 4: %ld\nLong Key 3: %ld\nLong Key 2: %ld\nLong Key 1: %ld\n=========================================\nShort Key 1: %ld\nShort Key 2: %ld\nShort Key 3: %ld\nShort Key 4: %ld\nShort Key 5: %ld\n=========================================\nSmallestAmp : %ld, SmallAmp : %ld,AvgAmp : %ld, LargerAmp : %ld,LargestAmp : %ld\n=========================================\n[LongShortThreshold:%ld], StrategyCaluLongShort:%ld, BidOfferLongShort:%ld, TransactionListLongShort:%ld\n=========================================\n",
-                                                            g_strUserId.c_str(), gStrategyConfig.ClosingKeyPriceLevel, gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss,gCurCommPrice[MtxCommodtyInfo] / 100,gCurCommPrice[gCommodtyInfo.TSEAIdxNo] / 100, gCurTaiexInfo[0][1],(gCurCommPrice[MtxCommodtyInfo] - gCurCommPrice[gCommodtyInfo.TSEAIdxNo]) / 100,gCurServerTime[0], gCurServerTime[1], gCurServerTime[2],gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage,(CurHigh + CurLow) / 2, CurHigh - CurLow,gOpenInterestInfo.openPosition,
-                                            gOpenInterestInfo.avgCost,
-                                            gOpenInterestInfo.profitAndLoss,gDayAmpAndKeyPrice.LongKey5,gDayAmpAndKeyPrice.LongKey4,gDayAmpAndKeyPrice.LongKey3,gDayAmpAndKeyPrice.LongKey2,gDayAmpAndKeyPrice.LongKey1,gDayAmpAndKeyPrice.ShortKey1,gDayAmpAndKeyPrice.ShortKey2,gDayAmpAndKeyPrice.ShortKey3,gDayAmpAndKeyPrice.ShortKey4,gDayAmpAndKeyPrice.ShortKey5,gDayAmpAndKeyPrice.SmallestAmp,gDayAmpAndKeyPrice.SmallAmp,gDayAmpAndKeyPrice.AvgAmp,gDayAmpAndKeyPrice.LargerAmp,gDayAmpAndKeyPrice.LargestAmp,gStrategyConfig.BidOfferLongShortThreshold, StrategyCaluLongShort(), gBidOfferLongShort, gTransactionListLongShort);
-
-    sprintf(buffer+strlen(buffer),"%s : %ld Open: %ld, CurHigh: %ld, CurLow: %ld\nTotal Offer: [%ld]\nAsk5: [%ld]: [%ld]\nAsk4: [%ld]: [%ld]\nAsk3: [%ld]: [%ld]\nAsk2: [%ld]: [%ld]\nAsk1: [%ld]: [%ld]\n",ProductName.c_str(), gCurCommPrice[ProductIdxNo],Open, CurHigh, CurLow,TotalOffer,gBest5BidOffer[ProductIdxNo][9].first, gBest5BidOffer[ProductIdxNo][9].second,gBest5BidOffer[ProductIdxNo][8].first, gBest5BidOffer[ProductIdxNo][8].second,gBest5BidOffer[ProductIdxNo][7].first, gBest5BidOffer[ProductIdxNo][7].second,gBest5BidOffer[ProductIdxNo][6].first, gBest5BidOffer[ProductIdxNo][6].second,gBest5BidOffer[ProductIdxNo][5].first, gBest5BidOffer[ProductIdxNo][5].second);    
-    sprintf(buffer+strlen(buffer),"=========================================\n");
-    sprintf(buffer+strlen(buffer),"Bid1: [%ld]: [%ld]\nBid2: [%ld]: [%ld]\nBid3: [%ld]: [%ld]\nBid4: [%ld]: [%ld]\nBid5: [%ld]: [%ld]\nTotal Bid:   [%ld]\n=========================================\n",gBest5BidOffer[ProductIdxNo][0].first, gBest5BidOffer[ProductIdxNo][0].second,gBest5BidOffer[ProductIdxNo][1].first, gBest5BidOffer[ProductIdxNo][1].second,gBest5BidOffer[ProductIdxNo][2].first, gBest5BidOffer[ProductIdxNo][2].second,gBest5BidOffer[ProductIdxNo][3].first, gBest5BidOffer[ProductIdxNo][3].second,gBest5BidOffer[ProductIdxNo][4].first, gBest5BidOffer[ProductIdxNo][4].second,TotalBid);
 }

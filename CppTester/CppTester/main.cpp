@@ -12,10 +12,9 @@
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 #include <yaml-cpp/yaml.h>
-#include <socketServer.h>
-
 #include "Strategy.h"
 
+#include "cmdCaptureServer/socketServer.h"
 
 extern std::deque<long> gDaysKlineDiff;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
@@ -131,12 +130,14 @@ void AutoQuoteTicks(IN string ProductNum, short sPageNo)
 
 void AutoBest5Long(LONG ProductIdxNo, string ProductName)
 {
-
+    long CurHigh = gCurCommHighLowPoint[ProductIdxNo][0];
+    long CurLow = gCurCommHighLowPoint[ProductIdxNo][1];
+    long Open = gCurCommHighLowPoint[ProductIdxNo][2];
     if (gCurCommHighLowPoint.count(ProductIdxNo) > 0)
     {
-        long CurHigh = gCurCommHighLowPoint[ProductIdxNo][0];
-        long CurLow = gCurCommHighLowPoint[ProductIdxNo][1];
-        long Open = gCurCommHighLowPoint[ProductIdxNo][2];
+        // long CurHigh = gCurCommHighLowPoint[ProductIdxNo][0];
+        // long CurLow = gCurCommHighLowPoint[ProductIdxNo][1];
+        // long Open = gCurCommHighLowPoint[ProductIdxNo][2];
 
         DEBUG(DEBUG_LEVEL_DEBUG, "IdxNo: %ld. High: %ld, Low: %ld", ProductIdxNo, CurHigh, CurLow);
 
@@ -181,7 +182,7 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
         printf("Ask1: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][5].first, gBest5BidOffer[ProductIdxNo][5].second);
 
        
-        
+        sprintf(buffer+strlen(buffer),"%s : %ld Open: %ld, CurHigh: %ld, CurLow: %ld\nTotal Offer: [%ld]\nAsk5: [%ld]: [%ld]\nAsk4: [%ld]: [%ld]\nAsk3: [%ld]: [%ld]\nAsk2: [%ld]: [%ld]\nAsk1: [%ld]: [%ld]\n",ProductName.c_str(), gCurCommPrice[ProductIdxNo],Open, CurHigh, CurLow,TotalOffer,gBest5BidOffer[ProductIdxNo][9].first, gBest5BidOffer[ProductIdxNo][9].second,gBest5BidOffer[ProductIdxNo][8].first, gBest5BidOffer[ProductIdxNo][8].second,gBest5BidOffer[ProductIdxNo][7].first, gBest5BidOffer[ProductIdxNo][7].second,gBest5BidOffer[ProductIdxNo][6].first, gBest5BidOffer[ProductIdxNo][6].second,gBest5BidOffer[ProductIdxNo][5].first, gBest5BidOffer[ProductIdxNo][5].second);    
         if (nClose > 0 && nClose >= nAsk)
         {
             printf("============================Close: [%ld]: [%ld]============\n", nClose, nQty);
@@ -192,7 +193,7 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
             printf("============================Close: [%ld]: [%ld]============\n", nClose, nQty);
         }
 
-         
+         sprintf(buffer+strlen(buffer),"=========================================\n");
 
         printf("Bid1: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][0].first, gBest5BidOffer[ProductIdxNo][0].second);
         printf("Bid2: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][1].first, gBest5BidOffer[ProductIdxNo][1].second);
@@ -202,7 +203,7 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
         printf("Total Bid:   [%ld]\n", TotalBid);
         printf("=========================================\n");
 
-        
+        sprintf(buffer+strlen(buffer),"Bid1: [%ld]: [%ld]\nBid2: [%ld]: [%ld]\nBid3: [%ld]: [%ld]\nBid4: [%ld]: [%ld]\nBid5: [%ld]: [%ld]\nTotal Bid:   [%ld]\n=========================================\n",gBest5BidOffer[ProductIdxNo][0].first, gBest5BidOffer[ProductIdxNo][0].second,gBest5BidOffer[ProductIdxNo][1].first, gBest5BidOffer[ProductIdxNo][1].second,gBest5BidOffer[ProductIdxNo][2].first, gBest5BidOffer[ProductIdxNo][2].second,gBest5BidOffer[ProductIdxNo][3].first, gBest5BidOffer[ProductIdxNo][3].second,gBest5BidOffer[ProductIdxNo][4].first, gBest5BidOffer[ProductIdxNo][4].second,TotalBid);
     }
     else
     {
@@ -409,13 +410,15 @@ void thread_main()
 
             printf("=========================================\n");
 
-
+            long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
+            long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
+            long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
             if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
             {
 
-                long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
-                long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
-                long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
+                // long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
+                // long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
+                // long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
                 printf("Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, ", gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage);
                 printf("CurAvg: %ld, CurAmp : %ld\n", (CurHigh + CurLow) / 2, CurHigh - CurLow);
             }
@@ -461,10 +464,13 @@ void thread_main()
 
             printf("=========================================\n");
 
-            
+            snprintf(buffer, sizeof(buffer),"[UserId:%s], [LongShortThreshold:%ld], [BidOfferLongShortThreshold:%ld], [ActivePoint:%ld], [MaximumLoss:%f]\n=========================================\n[CurMtxPrice: %ld],[TSEA prices: %ld, Valume: %ld],[Diff: %d],[ServerTime: %d: %d: %d]\n=========================================\nOpen: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld,CurAvg: %ld, CurAmp : %ld\n=========================================\nOpen Position: %d, AvgCost:%f, ProfitAndLoss: %f\n=========================================\nLong Key 5: %ld\nLong Key 4: %ld\nLong Key 3: %ld\nLong Key 2: %ld\nLong Key 1: %ld\n=========================================\nShort Key 1: %ld\nShort Key 2: %ld\nShort Key 3: %ld\nShort Key 4: %ld\nShort Key 5: %ld\n=========================================\nSmallestAmp : %ld, SmallAmp : %ld,AvgAmp : %ld, LargerAmp : %ld,LargestAmp : %ld\n=========================================\n[LongShortThreshold:%ld], StrategyCaluLongShort:%ld, BidOfferLongShort:%ld, TransactionListLongShort:%ld\n=========================================\n",
+                                                            g_strUserId.c_str(), gStrategyConfig.ClosingKeyPriceLevel, gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss,gCurCommPrice[MtxCommodtyInfo] / 100,gCurCommPrice[gCommodtyInfo.TSEAIdxNo] / 100, gCurTaiexInfo[0][1],(gCurCommPrice[MtxCommodtyInfo] - gCurCommPrice[gCommodtyInfo.TSEAIdxNo]) / 100,gCurServerTime[0], gCurServerTime[1], gCurServerTime[2],gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage,(CurHigh + CurLow) / 2, CurHigh - CurLow,gOpenInterestInfo.openPosition,
+                                            gOpenInterestInfo.avgCost,
+                                            gOpenInterestInfo.profitAndLoss,gDayAmpAndKeyPrice.LongKey5,gDayAmpAndKeyPrice.LongKey4,gDayAmpAndKeyPrice.LongKey3,gDayAmpAndKeyPrice.LongKey2,gDayAmpAndKeyPrice.LongKey1,gDayAmpAndKeyPrice.ShortKey1,gDayAmpAndKeyPrice.ShortKey2,gDayAmpAndKeyPrice.ShortKey3,gDayAmpAndKeyPrice.ShortKey4,gDayAmpAndKeyPrice.ShortKey5,gDayAmpAndKeyPrice.SmallestAmp,gDayAmpAndKeyPrice.SmallAmp,gDayAmpAndKeyPrice.AvgAmp,gDayAmpAndKeyPrice.LargerAmp,gDayAmpAndKeyPrice.LargestAmp,gStrategyConfig.BidOfferLongShortThreshold, StrategyCaluLongShort(), gBidOfferLongShort, gTransactionListLongShort);
             AutoBest5Long(gCommodtyInfo.TSMCIdxNo, "TSMC");
             AutoBest5Long(gCommodtyInfo.HHIdxNo, "HHP");
-            printfToClinet()
+
            
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU
@@ -522,7 +528,6 @@ void readConfig()
         exit(1);
     }
 }
-
 
 int main()
 {
