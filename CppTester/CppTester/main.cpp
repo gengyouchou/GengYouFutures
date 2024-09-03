@@ -14,7 +14,7 @@
 #include <yaml-cpp/yaml.h>
 #include "Strategy.h"
 
-#include "cmdCaptureServer/socketServer.h"
+#include "socketServer.h"
 
 extern std::deque<long> gDaysKlineDiff;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
@@ -42,10 +42,11 @@ CSKReplyLib *pSKReplyLib;
 CSKOrderLib *pSKOrderLib;
 
 long g_nCode = 0;
+
 extern string g_strUserId;
 extern string gPwd;
 
-char buffer[10240]  = {0};
+extern char buffer[10240] ;
 
 
 void release();

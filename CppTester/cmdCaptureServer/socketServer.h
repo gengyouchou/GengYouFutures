@@ -7,5 +7,5 @@
 
 #define PORT 30666
 
-char buffer[10240]  = {0};
+extern char buffer[10240];
 void thread_socket();

@@ -19,7 +19,6 @@ set(SOURCES
     CppTester/SKReplyLib.cpp
     CppTester/Strategy.cpp
     ../Logger/Logger.cpp
-    cmdCaptureClinet/socketClinet.cpp
     cmdCaptureServer/socketServer.cpp
 )
 
@@ -39,6 +38,7 @@ set(HEADERS
 # 添加头文件目录
 include_directories(${CMAKE_SOURCE_DIR}/CppTester)
 include_directories("../Logger")
+include_directories("cmdCaptureServer")
 include_directories("../../")
 
 # 设置不同配置的编译选项

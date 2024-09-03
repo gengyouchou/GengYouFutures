@@ -14,7 +14,11 @@
 #include <yaml-cpp/yaml.h>
 #include "Strategy.h"
 
+#include "socketServer.h"
+
+
 #pragma comment(lib, "Ws2_32.lib")
+
 char buffer[10240]  = {0};
 
 
