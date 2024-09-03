@@ -273,7 +273,7 @@ DOUBLE CountWeeklyAndMonthlyCosts(LONG MtxCommodtyInfo)
         if (gCostMovingAverageVal != 0)
         {
 
-            if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNoAM))
+            if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM))
             {
                 long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM][0];
                 long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNoAM][1];
@@ -282,7 +282,7 @@ DOUBLE CountWeeklyAndMonthlyCosts(LONG MtxCommodtyInfo)
                 WeeklyLow = min(WeeklyLow, static_cast<double>(CurLow) / 100.0);
             }
 
-            if (gCurCommPrice.count(gCommodtyInfo.MTXIdxNo))
+            if (gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo))
             {
                 long CurHigh = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][0];
                 long CurLow = gCurCommHighLowPoint[gCommodtyInfo.MTXIdxNo][1];
@@ -292,12 +292,15 @@ DOUBLE CountWeeklyAndMonthlyCosts(LONG MtxCommodtyInfo)
             }
         }
 
-        double CurHigh = static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][0]) / 100.0;
-        double CurLow = static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][1]) / 100.0;
+        if (gCurCommHighLowPoint.count(MtxCommodtyInfo))
+        {
+            double CurHigh = static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][0]) / 100.0;
+            double CurLow = static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][1]) / 100.0;
 
-        double CurAvg = (CurHigh + CurLow) / 2.0;
+            double CurAvg = (CurHigh + CurLow) / 2.0;
 
-        gCostMovingAverageVal = ((WeeklyHigh + WeeklyLow) / 2.0 + CurAvg) / 2;
+            gCostMovingAverageVal = ((WeeklyHigh + WeeklyLow) / 2.0 + CurAvg) / 2;
+        }
 
         DEBUG(DEBUG_LEVEL_DEBUG, "gCostMovingAverageVal = %f", gCostMovingAverageVal);
     }
@@ -696,6 +699,11 @@ VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo)
 VOID StrategyCloseIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyInfo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    if (gCostMovingAverageVal == 0)
+    {
+        return;
+    }
 
     double curPrice = 0;
 
