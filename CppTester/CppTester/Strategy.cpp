@@ -1296,7 +1296,8 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
 
             double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2.0;
 
-            if (curPrice <= ShockLongExtremeValue + gStrategyConfig.ActivePoint)
+            if (curPrice <= ShockLongExtremeValue + gStrategyConfig.ActivePoint &&
+                curPrice >= ShockLongExtremeValue - ATTACK_RANGE)
             {
                 vector<string> vec = {COMMODITY_OTHER};
 
@@ -1331,7 +1332,8 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
 
             double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2.0;
 
-            if (curPrice >= ShockShortExtremeValue - gStrategyConfig.ActivePoint)
+            if (curPrice >= ShockShortExtremeValue - gStrategyConfig.ActivePoint &&
+                curPrice <= ShockShortExtremeValue + ATTACK_RANGE)
             {
                 vector<string> vec = {COMMODITY_OTHER};
 
