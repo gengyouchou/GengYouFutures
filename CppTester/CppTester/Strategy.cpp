@@ -1741,7 +1741,7 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
 
 VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 {
-    if (!(gCurServerTime[0] < 8 || gCurServerTime[0] >= 15) &&
+    if (!(gCurServerTime[0] <= 5 || gCurServerTime[0] >= 15) &&
         !(gCurServerTime[0] >= 8 && gCurServerTime[0] < 14))
     {
         return;
