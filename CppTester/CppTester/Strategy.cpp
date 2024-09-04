@@ -1650,7 +1650,7 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
-        if ((CurHigh - curPrice > ONE_STRIKE_PRICES || curPrice - CurLow > ONE_STRIKE_PRICES) &&
+        if ((CurHigh - curPrice > ONE_STRIKE_PRICES && curPrice - CurLow > ONE_STRIKE_PRICES) &&
             curPrice > CurLow)
         {
             vector<string> vec = {COMMODITY_OTHER};
@@ -1677,7 +1677,7 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
-        if ((curPrice - CurLow > ONE_STRIKE_PRICES || CurHigh - curPrice > ONE_STRIKE_PRICES) &&
+        if ((curPrice - CurLow > ONE_STRIKE_PRICES && CurHigh - curPrice > ONE_STRIKE_PRICES) &&
             curPrice < CurHigh)
         {
             vector<string> vec = {COMMODITY_OTHER};
