@@ -76,6 +76,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 #define ATTACK_RANGE 20
 #define LONG_AND_SHORT_BUFFER_DIFFERENCE 400
 #define MAXIMUM_COST_AVG_BIAS_RATIO 200
+#define BIG_ORDER 5
 
 // Order
 

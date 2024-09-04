@@ -1133,12 +1133,12 @@ LONG CountTransactionListLongShort(LONG nStockidx)
 
         if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
         {
-            if (nClose > 0 && nClose <= nBid && nQty >= 10)
+            if (nClose > 0 && nClose <= nBid && nQty >= BIG_ORDER)
             {
                 countShort -= nQty;
             }
 
-            if (nClose > 0 && nClose >= nAsk && nQty >= 10)
+            if (nClose > 0 && nClose >= nAsk && nQty >= BIG_ORDER)
             {
                 countLong += nQty;
             }
