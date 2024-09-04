@@ -272,13 +272,13 @@ void thread_main()
     std::string CommList;
 
     std::ostringstream oss;
-    oss << COMMODITY_MAIN << "AM" << "," << COMMODITY_MAIN << "," << "TSEA" << "," << TSMC << "," << FOXCONN;
+    oss << COMMODITY_MAIN << "AM" << "," << COMMODITY_MAIN << "," << "TSEA" << "," << TSMC << "," << MEDIATEK;
     CommList = oss.str();
 
     AutoQuote(CommList, 1);
 
     AutoQuoteTicks(TSMC, 2);
-    AutoQuoteTicks(FOXCONN, 3);
+    AutoQuoteTicks(MEDIATEK, 3);
 
     while (true)
     {
@@ -429,8 +429,8 @@ void thread_main()
 
             printf("=========================================\n");
 
-            AutoBest5Long(gCommodtyInfo.TSMCIdxNo, "TSMC");
-            AutoBest5Long(gCommodtyInfo.FOXCONNIdxNo, "HHP");
+            AutoBest5Long(gCommodtyInfo.TSMCIdxNo, TSMC);
+            AutoBest5Long(gCommodtyInfo.MediaTekIdxNo, MEDIATEK);
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU

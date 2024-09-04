@@ -1174,9 +1174,9 @@ LONG StrategyCaluBidOfferLongShort(VOID)
             CountBidOfferLongShort(nStockidx);
         }
 
-        if (gCommodtyInfo.FOXCONNIdxNo != 0)
+        if (gCommodtyInfo.MediaTekIdxNo != 0)
         {
-            long nStockidx = gCommodtyInfo.FOXCONNIdxNo;
+            long nStockidx = gCommodtyInfo.MediaTekIdxNo;
 
             CountBidOfferLongShort(nStockidx);
         }
@@ -1220,9 +1220,9 @@ LONG StrategyCaluTransactionListLongShort(VOID)
         gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
     }
 
-    if (gCommodtyInfo.FOXCONNIdxNo != 0)
+    if (gCommodtyInfo.MediaTekIdxNo != 0)
     {
-        long nStockidx = gCommodtyInfo.FOXCONNIdxNo;
+        long nStockidx = gCommodtyInfo.MediaTekIdxNo;
 
         gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
     }
