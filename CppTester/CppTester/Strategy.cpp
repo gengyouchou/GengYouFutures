@@ -1591,6 +1591,126 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
+/**
+ * @brief Implements a futures trading strategy based on the relationship between the cost line and the moving average line.
+ *
+ * Strategy Overview:
+ *
+ * 1. Cost Line Above the Moving Average Line:
+ *    - Bearish Bias: Short the market when the price falls below the cost line, with the moving average line trending downward.
+ *    - If the price rebounds and breaks through the moving average line, followed by a breakthrough of the cost line, switch to a bullish bias.
+ *
+ * 2. Cost Line Below the Moving Average Line:
+ *    - Bullish Bias: Go long when the price breaks above the cost line, with the moving average line trending upward.
+ *    - If the price declines, breaking below the moving average line, and continues to fall below the cost line, switch to a bearish bias.
+ *
+ * 3. Cost Line Equals the Moving Average Line:
+ *    - Range-Bound Market: The market is considered range-bound, with the price oscillating between the cost line and the moving average line.
+ *    - If the distance between the two lines is less than 20 points, refrain from trading.
+ *
+ * @param costLine The cost line value.
+ * @param movingAverageLine The moving average line value.
+ * @param currentPrice The current market price.
+ * @return The trading action to be taken (e.g., buy, sell, hold).
+ */
+VOID StrategyNewDailyAmplitudeAchievesReverse(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    if (gOpenInterestInfo.NeedToUpdate == TRUE)
+    {
+        LOG(DEBUG_LEVEL_DEBUG, "gOpenInterestInfo.NeedToUpdate == TRUE");
+        return;
+    }
+
+    double curPrice = 0;
+
+    // Get the current price for the commodity
+    if (gCurCommPrice.count(MtxCommodtyInfo) != 0)
+    {
+        curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
+    }
+
+    double CurAvg = 0;
+    double CurAmp = 0;
+    double CurHigh = 0, CurLow = 0;
+
+    // Calculate the current high, low, amplitude, and average
+    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
+    {
+        CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100.0;
+        CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100.0;
+        CurAmp = CurHigh - CurLow;
+        CurAvg = (CurHigh + CurLow) / 2;
+    }
+
+    if (curPrice <= 0 || CurHigh <= 0 || CurLow <= 0)
+    {
+        return;
+    }
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, CurAvg= %f, gCostMovingAverageVal=%f",
+          curPrice, CurAvg, gCostMovingAverageVal);
+
+    // Strategy for going long
+    if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
+    {
+        DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
+              curPrice, gOpenInterestInfo.avgCost);
+
+        if (curPrice - ATTACK_RANGE < EstimatedShortSideKeyPrice() &&
+            curPrice + ATTACK_RANGE > EstimatedShortSideKeyPrice() &&
+            curPrice > CurLow)
+        {
+            vector<string> vec = {COMMODITY_OTHER};
+
+            for (size_t i = 0; i < vec.size(); ++i)
+            {
+                AutoOrder(vec[i], ORDER_NEW_POSITION, ORDER_BUY_LONG_POSITION);
+            }
+
+            // Update position and average cost
+            gOpenInterestInfo.product = COMMODITY_OTHER;
+            gOpenInterestInfo.buySell = "B";
+            gOpenInterestInfo.openPosition += 1;
+            gOpenInterestInfo.avgCost = curPrice;
+
+            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
+                curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
+        }
+    }
+
+    // Strategy for going short
+    if (LongShort == 0 && gOpenInterestInfo.openPosition >= 0)
+    {
+        DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
+              curPrice, gOpenInterestInfo.avgCost);
+
+        if (curPrice - ATTACK_RANGE < EstimatedLongSideKeyPrice() &&
+            curPrice + ATTACK_RANGE > EstimatedLongSideKeyPrice() &&
+            curPrice < CurHigh)
+        {
+            vector<string> vec = {COMMODITY_OTHER};
+
+            for (size_t i = 0; i < vec.size(); ++i)
+            {
+                AutoOrder(vec[i], ORDER_NEW_POSITION, ORDER_SELL_SHORT_POSITION);
+            }
+
+            // Update position and average cost
+            gOpenInterestInfo.product = COMMODITY_OTHER;
+            gOpenInterestInfo.buySell = "S";
+            gOpenInterestInfo.openPosition -= 1;
+            gOpenInterestInfo.avgCost = curPrice;
+
+            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
+                curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
+        }
+    }
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "End");
+}
+
 VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 {
     if (!(gCurServerTime[0] <= 5 || gCurServerTime[0] >= 15) &&
@@ -1691,6 +1811,30 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
             {
                 StrategyNewMainForcePassPreHighAndBreakPreLow(g_strUserId, MtxCommodtyInfo, 0);
+            }
+        }
+
+        break;
+    }
+
+    case 4:
+    {
+        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
+        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
+        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
+
+        StrategyCaluBidOfferLongShort();
+        StrategyCaluTransactionListLongShort();
+
+        if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
+        {
+            if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
+            {
+                StrategyNewDailyAmplitudeAchievesReverse(g_strUserId, MtxCommodtyInfo, 1);
+            }
+            else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
+            {
+                StrategyNewDailyAmplitudeAchievesReverse(g_strUserId, MtxCommodtyInfo, 0);
             }
         }
 
