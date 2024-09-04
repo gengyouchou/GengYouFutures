@@ -1160,7 +1160,7 @@ LONG StrategyCaluBidOfferLongShort(VOID)
     // long MTXIdxNo;
     // long MTXIdxNoAM;
     // long TSMCIdxNo;
-    // long HHIdxNo;
+    // long FOXCONNIdxNo;
     // long TSEAIdxNo;
 
     if (elapsed.count() >= refreshInterval)
@@ -1174,9 +1174,9 @@ LONG StrategyCaluBidOfferLongShort(VOID)
             CountBidOfferLongShort(nStockidx);
         }
 
-        if (gCommodtyInfo.HHIdxNo != 0)
+        if (gCommodtyInfo.FOXCONNIdxNo != 0)
         {
-            long nStockidx = gCommodtyInfo.HHIdxNo;
+            long nStockidx = gCommodtyInfo.FOXCONNIdxNo;
 
             CountBidOfferLongShort(nStockidx);
         }
@@ -1210,7 +1210,7 @@ LONG StrategyCaluTransactionListLongShort(VOID)
     // long MTXIdxNo;
     // long MTXIdxNoAM;
     // long TSMCIdxNo;
-    // long HHIdxNo;
+    // long FOXCONNIdxNo;
     // long TSEAIdxNo;
 
     if (gCommodtyInfo.TSMCIdxNo != 0)
@@ -1220,9 +1220,9 @@ LONG StrategyCaluTransactionListLongShort(VOID)
         gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
     }
 
-    if (gCommodtyInfo.HHIdxNo != 0)
+    if (gCommodtyInfo.FOXCONNIdxNo != 0)
     {
-        long nStockidx = gCommodtyInfo.HHIdxNo;
+        long nStockidx = gCommodtyInfo.FOXCONNIdxNo;
 
         gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
     }

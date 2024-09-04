@@ -101,3 +101,9 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 #define ACTIVITY_POINT 0
 #define BID_OFFER_LONG_SHORT_THRESHOLD 100
 #define STRATEGY_MODE -1
+
+// leading stocks
+
+#define TSMC "2330"
+#define FOXCONN "2317"
+#define MEDIATEK "2454"
