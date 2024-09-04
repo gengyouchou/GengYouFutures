@@ -1159,7 +1159,7 @@ LONG StrategyCaluBidOfferLongShort(VOID)
     auto now = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - gLastClearTime);
 
-    const int refreshInterval = 100; // 100 ms
+    const int refreshInterval = BID_OFFER_REFRESH_INTERVAL; // 50 ms
 
     if (gBidOfferLongShort >= INT_MAX || gBidOfferLongShort <= INT_MIN)
     {
