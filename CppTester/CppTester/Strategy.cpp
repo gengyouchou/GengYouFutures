@@ -553,11 +553,11 @@ VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo)
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
-VOID StrategyClosePositionOnDayTrade(string strUserId, LONG MtxCommodtyInfo, SHORT StopTime)
+VOID StrategyClosePositionOnDayTrade(string strUserId, LONG MtxCommodtyInfo, SHORT StopHour, SHORT StopMinute)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
-    if (gCurServerTime[0] != StopTime)
+    if (gCurServerTime[0] != StopHour || gCurServerTime[1] != StopMinute)
     {
         return;
     }
@@ -1786,7 +1786,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     {
 
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
-        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13);
+        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
         StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(g_strUserId, MtxCommodtyInfo);
 
         StrategyCaluBidOfferLongShort();
