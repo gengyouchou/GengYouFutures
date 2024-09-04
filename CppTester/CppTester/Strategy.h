@@ -35,13 +35,6 @@ struct DAY_AMP_AND_KEY_PRICE
     long ShortKey5;
 };
 
-struct BID_OFFER_LONG_AND_SHORT
-{
-    LONG Tsmc;
-    LONG Foxconn;
-    LONG MediaTek;
-};
-
 struct STRATEGY_CONFIG
 {
     LONG ClosingKeyPriceLevel;

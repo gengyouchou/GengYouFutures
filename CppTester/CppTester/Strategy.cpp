@@ -21,16 +21,7 @@
 
 using namespace std;
 
-const int MAX_ELEMENTS = 10;
-const double MIN_TICK_DIFF = 5.0;
-
-struct greater_compare
-{
-    bool operator()(const double &lhs, const double &rhs) const
-    {
-        return lhs > rhs;
-    }
-};
+std::chrono::steady_clock::time_point gLastClearTime = std::chrono::steady_clock::now();
 
 // Define the global logger instance
 Logger StrategyLog("Strategy");
@@ -61,7 +52,7 @@ extern std::map<string, pair<double, double>> gDaysCommHighLowPoint;         // 
 extern std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint; // Max len: DAY_NIGHT_HIGH_LOW_K_LINE
 
 DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
-BID_OFFER_LONG_AND_SHORT gBidOfferLongAndShort = {0};
+
 LONG gBidOfferLongShort = 0, gTransactionListLongShort = 0;
 double gCostMovingAverageVal = 0;
 
@@ -76,6 +67,8 @@ STRATEGY_CONFIG gStrategyConfig = {
 
 LONG EstimatedLongSideKeyPrice(VOID);
 LONG EstimatedShortSideKeyPrice(VOID);
+LONG CountBidOfferLongShort(LONG nStockidx);
+LONG CountTransactionListLongShort(LONG nStockidx);
 
 void AutoKLineData(IN string ProductNum)
 {
@@ -1047,8 +1040,6 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
-
-std::chrono::steady_clock::time_point gLastClearTime = std::chrono::steady_clock::now();
 
 LONG CountBidOfferLongShort(LONG nStockidx)
 {
