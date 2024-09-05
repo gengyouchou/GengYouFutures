@@ -35,13 +35,6 @@ struct DAY_AMP_AND_KEY_PRICE
     long ShortKey5;
 };
 
-struct BID_OFFER_LONG_AND_SHORT
-{
-    LONG Tsmc;
-    LONG Foxconn;
-    LONG MediaTek;
-};
-
 struct STRATEGY_CONFIG
 {
     LONG ClosingKeyPriceLevel;
@@ -74,8 +67,10 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 
 #define SWING_POINTS 20
 #define ATTACK_RANGE 20
-#define LONG_AND_SHORT_BUFFER_DIFFERENCE 400
+#define LONG_AND_SHORT_BUFFER_DIFFERENCE 300
 #define MAXIMUM_COST_AVG_BIAS_RATIO 200
+#define BIG_ORDER 5
+#define BID_OFFER_REFRESH_INTERVAL 50 // 50 ms
 
 // Order
 
@@ -106,3 +101,9 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 #define ACTIVITY_POINT 0
 #define BID_OFFER_LONG_SHORT_THRESHOLD 100
 #define STRATEGY_MODE -1
+
+// leading stocks
+
+#define TSMC "2330"
+#define FOXCONN "2317"
+#define MEDIATEK "2454"

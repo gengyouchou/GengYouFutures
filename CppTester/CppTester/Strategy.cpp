@@ -21,16 +21,7 @@
 
 using namespace std;
 
-const int MAX_ELEMENTS = 10;
-const double MIN_TICK_DIFF = 5.0;
-
-struct greater_compare
-{
-    bool operator()(const double &lhs, const double &rhs) const
-    {
-        return lhs > rhs;
-    }
-};
+std::chrono::steady_clock::time_point gLastClearTime = std::chrono::steady_clock::now();
 
 // Define the global logger instance
 Logger StrategyLog("Strategy");
@@ -61,7 +52,7 @@ extern std::map<string, pair<double, double>> gDaysCommHighLowPoint;         // 
 extern std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint; // Max len: DAY_NIGHT_HIGH_LOW_K_LINE
 
 DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
-BID_OFFER_LONG_AND_SHORT gBidOfferLongAndShort = {0};
+
 LONG gBidOfferLongShort = 0, gTransactionListLongShort = 0;
 double gCostMovingAverageVal = 0;
 
@@ -76,6 +67,8 @@ STRATEGY_CONFIG gStrategyConfig = {
 
 LONG EstimatedLongSideKeyPrice(VOID);
 LONG EstimatedShortSideKeyPrice(VOID);
+LONG CountBidOfferLongShort(LONG nStockidx);
+LONG CountTransactionListLongShort(LONG nStockidx);
 
 void AutoKLineData(IN string ProductNum)
 {
@@ -553,11 +546,11 @@ VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo)
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
-VOID StrategyClosePositionOnDayTrade(string strUserId, LONG MtxCommodtyInfo, SHORT StopTime)
+VOID StrategyClosePositionOnDayTrade(string strUserId, LONG MtxCommodtyInfo, SHORT StopHour, SHORT StopMinute)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
-    if (gCurServerTime[0] != StopTime)
+    if (gCurServerTime[0] != StopHour || gCurServerTime[1] != StopMinute)
     {
         return;
     }
@@ -1048,8 +1041,6 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
-std::chrono::steady_clock::time_point gLastClearTime = std::chrono::steady_clock::now();
-
 LONG CountBidOfferLongShort(LONG nStockidx)
 {
 
@@ -1122,12 +1113,12 @@ LONG CountTransactionListLongShort(LONG nStockidx)
 
         if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
         {
-            if (nClose > 0 && nClose <= nBid && nQty >= 10)
+            if (nClose > 0 && nClose <= nBid && nQty >= BIG_ORDER)
             {
                 countShort -= nQty;
             }
 
-            if (nClose > 0 && nClose >= nAsk && nQty >= 10)
+            if (nClose > 0 && nClose >= nAsk && nQty >= BIG_ORDER)
             {
                 countLong += nQty;
             }
@@ -1148,7 +1139,7 @@ LONG StrategyCaluBidOfferLongShort(VOID)
     auto now = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - gLastClearTime);
 
-    const int refreshInterval = 100; // 100 ms
+    const int refreshInterval = BID_OFFER_REFRESH_INTERVAL; // 50 ms
 
     if (gBidOfferLongShort >= INT_MAX || gBidOfferLongShort <= INT_MIN)
     {
@@ -1158,7 +1149,7 @@ LONG StrategyCaluBidOfferLongShort(VOID)
     // long MTXIdxNo;
     // long MTXIdxNoAM;
     // long TSMCIdxNo;
-    // long HHIdxNo;
+    // long FOXCONNIdxNo;
     // long TSEAIdxNo;
 
     if (elapsed.count() >= refreshInterval)
@@ -1172,9 +1163,9 @@ LONG StrategyCaluBidOfferLongShort(VOID)
             CountBidOfferLongShort(nStockidx);
         }
 
-        if (gCommodtyInfo.HHIdxNo != 0)
+        if (gCommodtyInfo.MediaTekIdxNo != 0)
         {
-            long nStockidx = gCommodtyInfo.HHIdxNo;
+            long nStockidx = gCommodtyInfo.MediaTekIdxNo;
 
             CountBidOfferLongShort(nStockidx);
         }
@@ -1208,7 +1199,7 @@ LONG StrategyCaluTransactionListLongShort(VOID)
     // long MTXIdxNo;
     // long MTXIdxNoAM;
     // long TSMCIdxNo;
-    // long HHIdxNo;
+    // long FOXCONNIdxNo;
     // long TSEAIdxNo;
 
     if (gCommodtyInfo.TSMCIdxNo != 0)
@@ -1218,9 +1209,9 @@ LONG StrategyCaluTransactionListLongShort(VOID)
         gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
     }
 
-    if (gCommodtyInfo.HHIdxNo != 0)
+    if (gCommodtyInfo.MediaTekIdxNo != 0)
     {
-        long nStockidx = gCommodtyInfo.HHIdxNo;
+        long nStockidx = gCommodtyInfo.MediaTekIdxNo;
 
         gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
     }
@@ -1350,107 +1341,6 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
     }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
-}
-
-// Function to add price to maxHeap or minHeap while maintaining unique prices and a minimum tick difference
-void addPriceToHeap(double price,
-                    priority_queue<double> &maxHeap,
-                    priority_queue<double, vector<double>, greater_compare> &minHeap,
-                    set<double> &maxHeapUniquePrices,
-                    set<double> &minHeapUniquePrices)
-{
-    // Check for duplicate prices in maxHeap
-    if (maxHeapUniquePrices.find(price) != maxHeapUniquePrices.end())
-    {
-        return;
-    }
-
-    // Check for duplicate prices in minHeap
-    if (minHeapUniquePrices.find(price) != minHeapUniquePrices.end())
-    {
-        return;
-    }
-
-    // Check tick difference for maxHeap
-    if (!maxHeap.empty() && fabs(maxHeap.top() - price) < MIN_TICK_DIFF)
-    {
-        return;
-    }
-
-    // Check tick difference for minHeap
-    if (!minHeap.empty() && fabs(minHeap.top() - price) < MIN_TICK_DIFF)
-    {
-        return;
-    }
-
-    // Add to maxHeap
-    if (maxHeap.size() < MAX_ELEMENTS)
-    {
-        maxHeap.push(price);
-        maxHeapUniquePrices.insert(price); // Track unique prices for maxHeap
-    }
-    else if (price < maxHeap.top())
-    {
-        maxHeapUniquePrices.erase(maxHeap.top()); // Remove old price from unique set
-        maxHeap.pop();
-        maxHeap.push(price);
-        maxHeapUniquePrices.insert(price); // Add new price to unique set
-    }
-
-    // Add to minHeap
-    if (minHeap.size() < MAX_ELEMENTS)
-    {
-        minHeap.push(price);
-        minHeapUniquePrices.insert(price); // Track unique prices for minHeap
-    }
-    else if (price > minHeap.top())
-    {
-        minHeapUniquePrices.erase(minHeap.top()); // Remove old price from unique set
-        minHeap.pop();
-        minHeap.push(price);
-        minHeapUniquePrices.insert(price); // Add new price to unique set
-    }
-}
-// Function to extract the 5th element as median price from a max heap
-double getMedianPriceForMaxheap(priority_queue<double> MaxHeap)
-{
-    vector<double> sortedHeap;
-
-    DEBUG(DEBUG_LEVEL_DEBUG, "MaxHeap size = %d", MaxHeap.size());
-
-    // Transfer heap elements to vector
-    while (!MaxHeap.empty())
-    {
-        sortedHeap.push_back(MaxHeap.top());
-        MaxHeap.pop();
-    }
-
-    // Sort the heap elements in descending order
-    sort(sortedHeap.begin(), sortedHeap.end(), greater<double>());
-
-    // Return the 5th element or the last element if the heap size is less than 5
-    return (sortedHeap.size() >= MAX_ELEMENTS) ? sortedHeap[MAX_ELEMENTS / 2] : INT_MAX;
-}
-
-// Function to extract the 5th element as median price from a min heap
-double getMedianPriceForMinHeap(priority_queue<double, vector<double>, greater_compare> minHeap)
-{
-    vector<double> sortedHeap;
-
-    DEBUG(DEBUG_LEVEL_DEBUG, "MinHeap size = %d", minHeap.size());
-
-    // Transfer heap elements to vector
-    while (!minHeap.empty())
-    {
-        sortedHeap.push_back(minHeap.top());
-        minHeap.pop();
-    }
-
-    // Sort the heap elements in ascending order
-    sort(sortedHeap.begin(), sortedHeap.end());
-
-    // Return the 5th element or the last element if the heap size is less than 5
-    return (sortedHeap.size() >= MAX_ELEMENTS) ? sortedHeap[MAX_ELEMENTS / 2] : INT_MIN;
 }
 
 /**
@@ -1639,7 +1529,126 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
-        if ((CurHigh - curPrice > ONE_STRIKE_PRICES && curPrice - CurLow > ONE_STRIKE_PRICES) &&
+        if (CurHigh - curPrice > ONE_STRIKE_PRICES &&
+            curPrice - CurLow > ONE_STRIKE_PRICES)
+        {
+            vector<string> vec = {COMMODITY_OTHER};
+
+            for (size_t i = 0; i < vec.size(); ++i)
+            {
+                AutoOrder(vec[i], ORDER_NEW_POSITION, ORDER_BUY_LONG_POSITION);
+            }
+
+            // Update position and average cost
+            gOpenInterestInfo.product = COMMODITY_OTHER;
+            gOpenInterestInfo.buySell = "B";
+            gOpenInterestInfo.openPosition += 1;
+            gOpenInterestInfo.avgCost = curPrice;
+
+            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
+                curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
+        }
+    }
+
+    // Strategy for going short
+    if (LongShort == 0 && gOpenInterestInfo.openPosition >= 0)
+    {
+        DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
+              curPrice, gOpenInterestInfo.avgCost);
+
+        if (CurHigh - curPrice > ONE_STRIKE_PRICES &&
+            curPrice - CurLow > ONE_STRIKE_PRICES)
+        {
+            vector<string> vec = {COMMODITY_OTHER};
+
+            for (size_t i = 0; i < vec.size(); ++i)
+            {
+                AutoOrder(vec[i], ORDER_NEW_POSITION, ORDER_SELL_SHORT_POSITION);
+            }
+
+            // Update position and average cost
+            gOpenInterestInfo.product = COMMODITY_OTHER;
+            gOpenInterestInfo.buySell = "S";
+            gOpenInterestInfo.openPosition -= 1;
+            gOpenInterestInfo.avgCost = curPrice;
+
+            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
+                curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
+        }
+    }
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "End");
+}
+
+/**
+ * @brief Implements a futures trading strategy based on the relationship between the cost line and the moving average line.
+ *
+ * Strategy Overview:
+ *
+ * 1. Cost Line Above the Moving Average Line:
+ *    - Bearish Bias: Short the market when the price falls below the cost line, with the moving average line trending downward.
+ *    - If the price rebounds and breaks through the moving average line, followed by a breakthrough of the cost line, switch to a bullish bias.
+ *
+ * 2. Cost Line Below the Moving Average Line:
+ *    - Bullish Bias: Go long when the price breaks above the cost line, with the moving average line trending upward.
+ *    - If the price declines, breaking below the moving average line, and continues to fall below the cost line, switch to a bearish bias.
+ *
+ * 3. Cost Line Equals the Moving Average Line:
+ *    - Range-Bound Market: The market is considered range-bound, with the price oscillating between the cost line and the moving average line.
+ *    - If the distance between the two lines is less than 20 points, refrain from trading.
+ *
+ * @param costLine The cost line value.
+ * @param movingAverageLine The moving average line value.
+ * @param currentPrice The current market price.
+ * @return The trading action to be taken (e.g., buy, sell, hold).
+ */
+VOID StrategyNewDailyAmplitudeAchievesReverse(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    if (gOpenInterestInfo.NeedToUpdate == TRUE)
+    {
+        LOG(DEBUG_LEVEL_DEBUG, "gOpenInterestInfo.NeedToUpdate == TRUE");
+        return;
+    }
+
+    double curPrice = 0;
+
+    // Get the current price for the commodity
+    if (gCurCommPrice.count(MtxCommodtyInfo) != 0)
+    {
+        curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
+    }
+
+    double CurAvg = 0;
+    double CurAmp = 0;
+    double CurHigh = 0, CurLow = 0;
+
+    // Calculate the current high, low, amplitude, and average
+    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
+    {
+        CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100.0;
+        CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100.0;
+        CurAmp = CurHigh - CurLow;
+        CurAvg = (CurHigh + CurLow) / 2;
+    }
+
+    if (curPrice <= 0 || CurHigh <= 0 || CurLow <= 0)
+    {
+        return;
+    }
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, CurAvg= %f, gCostMovingAverageVal=%f",
+          curPrice, CurAvg, gCostMovingAverageVal);
+
+    // Strategy for going long
+    if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
+    {
+        DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
+              curPrice, gOpenInterestInfo.avgCost);
+
+        if (curPrice - ATTACK_RANGE < EstimatedShortSideKeyPrice() &&
+            curPrice + ATTACK_RANGE > EstimatedShortSideKeyPrice() &&
             curPrice > CurLow)
         {
             vector<string> vec = {COMMODITY_OTHER};
@@ -1666,7 +1675,8 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
-        if ((curPrice - CurLow > ONE_STRIKE_PRICES && CurHigh - curPrice > ONE_STRIKE_PRICES) &&
+        if (curPrice - ATTACK_RANGE < EstimatedLongSideKeyPrice() &&
+            curPrice + ATTACK_RANGE > EstimatedLongSideKeyPrice() &&
             curPrice < CurHigh)
         {
             vector<string> vec = {COMMODITY_OTHER};
@@ -1775,7 +1785,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     {
 
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
-        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13);
+        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
         StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(g_strUserId, MtxCommodtyInfo);
 
         StrategyCaluBidOfferLongShort();
@@ -1790,6 +1800,57 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
             {
                 StrategyNewMainForcePassPreHighAndBreakPreLow(g_strUserId, MtxCommodtyInfo, 0);
+            }
+        }
+
+        break;
+    }
+
+    case 4:
+    {
+        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
+        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
+        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
+
+        StrategyCaluBidOfferLongShort();
+        StrategyCaluTransactionListLongShort();
+
+        if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
+        {
+            if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
+            {
+                StrategyNewDailyAmplitudeAchievesReverse(g_strUserId, MtxCommodtyInfo, 1);
+            }
+            else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
+            {
+                StrategyNewDailyAmplitudeAchievesReverse(g_strUserId, MtxCommodtyInfo, 0);
+            }
+        }
+
+        break;
+    }
+
+    case 5:
+    {
+        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
+        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
+        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
+        StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(g_strUserId, MtxCommodtyInfo);
+
+        StrategyCaluBidOfferLongShort();
+        StrategyCaluTransactionListLongShort();
+
+        if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
+        {
+            if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
+            {
+                StrategyNewMainForcePassPreHighAndBreakPreLow(g_strUserId, MtxCommodtyInfo, 1);
+                StrategyNewDailyAmplitudeAchievesReverse(g_strUserId, MtxCommodtyInfo, 1);
+            }
+            else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
+            {
+                StrategyNewMainForcePassPreHighAndBreakPreLow(g_strUserId, MtxCommodtyInfo, 0);
+                StrategyNewDailyAmplitudeAchievesReverse(g_strUserId, MtxCommodtyInfo, 0);
             }
         }
 
