@@ -425,7 +425,7 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
-    if (NewClose == ORDER_NEW_POSITION && gOpenInterestInfo.NeedToUpdate == FALSE)
+    if (NewClose != ORDER_CLOSE_POSITION && gOpenInterestInfo.NeedToUpdate == FALSE)
     {
         LOG(DEBUG_LEVEL_INFO, "gOpenInterestInfo.NeedToUpdate == FALSE");
         gOpenInterestInfo.NeedToUpdate = TRUE;
@@ -1581,7 +1581,7 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
 
             for (size_t i = 0; i < vec.size(); ++i)
             {
-                AutoOrder(vec[i], ORDER_NEW_POSITION, ORDER_BUY_LONG_POSITION);
+                AutoOrder(vec[i], ORDER_AUTO_POSITION, ORDER_BUY_LONG_POSITION);
             }
 
             // Update position and average cost
@@ -1611,7 +1611,7 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
 
             for (size_t i = 0; i < vec.size(); ++i)
             {
-                AutoOrder(vec[i], ORDER_NEW_POSITION, ORDER_SELL_SHORT_POSITION);
+                AutoOrder(vec[i], ORDER_AUTO_POSITION, ORDER_SELL_SHORT_POSITION);
             }
 
             // Update position and average cost
@@ -1703,7 +1703,7 @@ VOID StrategyNewDailyAmplitudeAchievesReverse(string strUserId, LONG MtxCommodty
 
             for (size_t i = 0; i < vec.size(); ++i)
             {
-                AutoOrder(vec[i], ORDER_NEW_POSITION, ORDER_BUY_LONG_POSITION);
+                AutoOrder(vec[i], ORDER_AUTO_POSITION, ORDER_BUY_LONG_POSITION);
             }
 
             // Update position and average cost
@@ -1731,7 +1731,7 @@ VOID StrategyNewDailyAmplitudeAchievesReverse(string strUserId, LONG MtxCommodty
 
             for (size_t i = 0; i < vec.size(); ++i)
             {
-                AutoOrder(vec[i], ORDER_NEW_POSITION, ORDER_SELL_SHORT_POSITION);
+                AutoOrder(vec[i], ORDER_AUTO_POSITION, ORDER_SELL_SHORT_POSITION);
             }
 
             // Update position and average cost
