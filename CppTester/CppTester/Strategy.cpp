@@ -1074,22 +1074,11 @@ LONG CountBidOfferLongShort(LONG nStockidx)
         totalOffer += gBest5BidOffer[nStockidx][i].second;
     }
 
-    if (totalBid * 2 <= totalOffer)
-    {
-        ++countLong;
-    }
-
-    if (totalOffer * 2 <= totalBid)
-    {
-        --countShort;
-    }
-
-    long AvgBid = totalBid / 5;
-    long AvgOffer = totalOffer / 5;
+    long AvgBidOffer = (totalBid + totalOffer) / 10;
 
     for (int i = 0; i < 5; ++i)
     {
-        if (AvgBid * 2 < gBest5BidOffer[nStockidx][i].second)
+        if (AvgBidOffer * 2 < gBest5BidOffer[nStockidx][i].second)
         {
             // Find unusual pending big Bid orders
 
@@ -1099,7 +1088,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
     for (int i = 5; i < 10; ++i)
     {
-        if (AvgOffer * 2 < gBest5BidOffer[nStockidx][i].second)
+        if (AvgBidOffer * 2 < gBest5BidOffer[nStockidx][i].second)
         {
             // Find unusual pending big Offer orders
 
