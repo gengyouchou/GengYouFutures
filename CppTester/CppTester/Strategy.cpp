@@ -1065,35 +1065,67 @@ LONG CountBidOfferLongShort(LONG nStockidx)
         totalOffer += gBest5BidOffer[nStockidx][i].second;
     }
 
-    if (totalBid * 3 <= totalOffer * 2)
-    {
-        ++countLong;
-    }
+    static unordered_map<long, long> PrePtr;
 
-    if (totalOffer * 3 <= totalBid * 2)
+    if (gTransactionList.count(nStockidx))
     {
-        --countShort;
-    }
+        long nPtr = 0, nBid = 0, nAsk = 0, nClose = 0, nQty = 0;
 
-    long AvgBidOffer = (totalBid + totalOffer) / 10;
+        nPtr = gTransactionList[nStockidx][0];
+        nBid = gTransactionList[nStockidx][1];
+        nAsk = gTransactionList[nStockidx][2];
+        nClose = gTransactionList[nStockidx][3];
+        nQty = gTransactionList[nStockidx][4];
 
-    for (int i = 0; i < 5; ++i)
-    {
-        if (AvgBidOffer * 2 < gBest5BidOffer[nStockidx][i].second)
+        if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
         {
-            // Find unusual pending big Bid orders
 
-            --countShort;
-        }
-    }
+            if (nClose > 0 && nClose <= nBid)
+            {
+                // Support Bid buying and force everyone to sell Bid.
+                // The purpose is to sell Bid in large quantities.
+                long AvgBid = totalBid / 5;
 
-    for (int i = 5; i < 10; ++i)
-    {
-        if (AvgBidOffer * 2 < gBest5BidOffer[nStockidx][i].second)
-        {
-            // Find unusual pending big Offer orders
+                if (totalOffer * 3 <= totalBid * 2)
+                {
+                    --countShort;
+                }
 
-            ++countLong;
+                for (int i = 0; i < 5; ++i)
+                {
+                    if (AvgBid * 2 < gBest5BidOffer[nStockidx][i].second)
+                    {
+                        // Find unusual pending big Bid orders
+
+                        --countShort;
+                    }
+                }
+            }
+
+            if (nClose > 0 && nClose >= nAsk)
+            {
+                // Suppress Offer selling and force everyone to buy Offer.
+                // The purpose is to buy Offer in large quantities.
+
+                long AvgOffer = totalOffer / 5;
+
+                if (totalBid * 3 <= totalOffer * 2)
+                {
+                    ++countLong;
+                }
+
+                for (int i = 5; i < 10; ++i)
+                {
+                    if (AvgOffer * 2 < gBest5BidOffer[nStockidx][i].second)
+                    {
+                        // Find unusual pending big Offer orders
+
+                        ++countLong;
+                    }
+                }
+            }
+
+            PrePtr[nStockidx] = nPtr;
         }
     }
 
@@ -1186,11 +1218,11 @@ LONG StrategyCaluBidOfferLongShort(VOID)
 
         if (gBidOfferLongShort > 0)
         {
-            gBidOfferLongShort = min(gBidOfferLongShort, gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE);
+            gBidOfferLongShort = min(gBidOfferLongShort, gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT);
         }
         else if (gBidOfferLongShort < 0)
         {
-            gBidOfferLongShort = max(gBidOfferLongShort, -(gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE));
+            gBidOfferLongShort = max(gBidOfferLongShort, -(gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT));
         }
     }
 
@@ -1232,11 +1264,11 @@ LONG StrategyCaluTransactionListLongShort(VOID)
 
     if (gTransactionListLongShort > 0)
     {
-        gTransactionListLongShort = min(gTransactionListLongShort, gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE);
+        gTransactionListLongShort = min(gTransactionListLongShort, gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT);
     }
     else if (gTransactionListLongShort < 0)
     {
-        gTransactionListLongShort = max(gTransactionListLongShort, -(gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE));
+        gTransactionListLongShort = max(gTransactionListLongShort, -(gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT));
     }
 
     return gTransactionListLongShort;
@@ -1249,7 +1281,7 @@ LONG StrategyCaluLongShort(VOID)
         return 0;
     }
 
-    return (gTransactionListLongShort + gBidOfferLongShort) / 2;
+    return (gTransactionListLongShort + gBidOfferLongShort) / LONG_AND_SHORT_TARGET_COUNT;
 }
 
 VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
