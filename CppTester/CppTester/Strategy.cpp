@@ -1529,8 +1529,11 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
+        double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2.0;
+
         if (CurHigh - curPrice > ONE_STRIKE_PRICES &&
-            curPrice - CurLow > ONE_STRIKE_PRICES)
+            curPrice - CurLow > ONE_STRIKE_PRICES &&
+            curPrice < ShockShortExtremeValue - ONE_STRIKE_PRICES)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
@@ -1556,8 +1559,11 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
+        double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2.0;
+
         if (CurHigh - curPrice > ONE_STRIKE_PRICES &&
-            curPrice - CurLow > ONE_STRIKE_PRICES)
+            curPrice - CurLow > ONE_STRIKE_PRICES &&
+            curPrice > ShockLongExtremeValue + ONE_STRIKE_PRICES)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
