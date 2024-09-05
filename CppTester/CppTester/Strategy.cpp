@@ -1051,20 +1051,6 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
     long countLong = 0, countShort = 0;
 
-    long totalBid = 0;
-
-    for (int i = 0; i < 5; ++i)
-    {
-        totalBid += gBest5BidOffer[nStockidx][i].second;
-    }
-
-    long totalOffer = 0;
-
-    for (int i = 5; i < 10; ++i)
-    {
-        totalOffer += gBest5BidOffer[nStockidx][i].second;
-    }
-
     static unordered_map<long, long> PrePtr;
 
     if (gTransactionList.count(nStockidx))
@@ -1079,6 +1065,19 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
         if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
         {
+            long totalBid = 0;
+
+            for (int i = 0; i < 5; ++i)
+            {
+                totalBid += gBest5BidOffer[nStockidx][i].second;
+            }
+
+            long totalOffer = 0;
+
+            for (int i = 5; i < 10; ++i)
+            {
+                totalOffer += gBest5BidOffer[nStockidx][i].second;
+            }
 
             if (nClose > 0 && nClose <= nBid)
             {
