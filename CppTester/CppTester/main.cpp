@@ -174,7 +174,7 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
         {
             printf("============================Close: [%ld]: [%ld]============\n", nClose, nQty);
         }
-        printf("=========================================\n");
+        printf("***********************************************************************\n");
         if (nClose > 0 && nClose <= nBid)
         {
             printf("============================Close: [%ld]: [%ld]============\n", nClose, nQty);
