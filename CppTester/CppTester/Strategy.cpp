@@ -1065,6 +1065,16 @@ LONG CountBidOfferLongShort(LONG nStockidx)
         totalOffer += gBest5BidOffer[nStockidx][i].second;
     }
 
+    if (totalBid * 2 <= totalOffer)
+    {
+        ++countLong;
+    }
+
+    if (totalOffer * 2 <= totalBid)
+    {
+        --countShort;
+    }
+
     long AvgBidOffer = (totalBid + totalOffer) / 10;
 
     for (int i = 0; i < 5; ++i)
