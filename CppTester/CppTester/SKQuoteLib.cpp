@@ -1,4 +1,5 @@
 #include "SKQuoteLib.h"
+#include "Strategy.h"
 #include <array>
 #include <deque>
 #include <iostream>
@@ -433,7 +434,7 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
 {
     SKCOMLib::SKSTOCKLONG skStock;
 
-    long MTXIdxNo = 0, MTXIdxNoAM = 0, TSMCIdxNo = 0, HHIdxNo = 0, TSEAIdxNo = 0;
+    long MTXIdxNo = 0, MTXIdxNoAM = 0, TSMCIdxNo = 0, FOXCONNIdxNo = 0, TSEAIdxNo = 0, MediaTekIdxNo = 0;
 
     std::string CommList;
 
@@ -453,16 +454,16 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
 
     DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, MTXIdxNo=%d", res, MTXIdxNo);
 
-    res = RequestStockIndexMap("2330", &skStock);
+    res = RequestStockIndexMap(TSMC, &skStock);
 
     TSMCIdxNo = skStock.nStockIdx;
     DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, TSMCIdxNo=%d", res, TSMCIdxNo);
 
-    res = RequestStockIndexMap("2317", &skStock);
+    res = RequestStockIndexMap(FOXCONN, &skStock);
 
-    HHIdxNo = skStock.nStockIdx;
+    FOXCONNIdxNo = skStock.nStockIdx;
 
-    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, HHIdxNo=%d", res, HHIdxNo);
+    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, FOXCONNIdxNo=%d", res, FOXCONNIdxNo);
 
     res = RequestStockIndexMap("TSEA", &skStock);
 
@@ -470,11 +471,18 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
 
     DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, TSEAIdxNo=%d", res, TSEAIdxNo);
 
-    gCommodtyInfo.HHIdxNo = HHIdxNo;
+    res = RequestStockIndexMap(MEDIATEK, &skStock);
+
+    MediaTekIdxNo = skStock.nStockIdx;
+
+    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, MediaTekIdxNo=%d", res, MediaTekIdxNo);
+
+    gCommodtyInfo.FOXCONNIdxNo = FOXCONNIdxNo;
     gCommodtyInfo.MTXIdxNo = MTXIdxNo;
     gCommodtyInfo.MTXIdxNoAM = MTXIdxNoAM;
     gCommodtyInfo.TSEAIdxNo = TSEAIdxNo;
     gCommodtyInfo.TSMCIdxNo = TSMCIdxNo;
+    gCommodtyInfo.MediaTekIdxNo = MediaTekIdxNo;
 }
 
 // Events

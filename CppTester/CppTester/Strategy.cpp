@@ -425,7 +425,7 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
-    if (NewClose == ORDER_NEW_POSITION && gOpenInterestInfo.NeedToUpdate == FALSE)
+    if (NewClose != ORDER_CLOSE_POSITION && gOpenInterestInfo.NeedToUpdate == FALSE)
     {
         LOG(DEBUG_LEVEL_INFO, "gOpenInterestInfo.NeedToUpdate == FALSE");
         gOpenInterestInfo.NeedToUpdate = TRUE;
@@ -1051,56 +1051,86 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
     long countLong = 0, countShort = 0;
 
-    long totalBid = 0;
+    static unordered_map<long, long> PrePtr;
 
-    for (int i = 0; i < 5; ++i)
+    if (gTransactionList.count(nStockidx))
     {
-        totalBid += gBest5BidOffer[nStockidx][i].second;
-    }
+        long nPtr = 0, nBid = 0, nAsk = 0, nClose = 0, nQty = 0;
 
-    long totalOffer = 0;
+        nPtr = gTransactionList[nStockidx][0];
+        nBid = gTransactionList[nStockidx][1];
+        nAsk = gTransactionList[nStockidx][2];
+        nClose = gTransactionList[nStockidx][3];
+        nQty = gTransactionList[nStockidx][4];
 
-    for (int i = 5; i < 10; ++i)
-    {
-        totalOffer += gBest5BidOffer[nStockidx][i].second;
-    }
-
-    if (totalBid * 2 <= totalOffer)
-    {
-        ++countLong;
-    }
-
-    if (totalOffer * 2 <= totalBid)
-    {
-        --countShort;
-    }
-
-    long AvgBid = totalBid / 5;
-    long AvgOffer = totalOffer / 5;
-
-    for (int i = 0; i < 5; ++i)
-    {
-        if (AvgBid * 2 < gBest5BidOffer[nStockidx][i].second)
+        if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
         {
-            // Find unusual pending big Bid orders
+            long totalBid = 0;
 
-            --countShort;
-        }
-    }
+            for (int i = 0; i < 5; ++i)
+            {
+                totalBid += gBest5BidOffer[nStockidx][i].second;
+            }
 
-    for (int i = 5; i < 10; ++i)
-    {
-        if (AvgOffer * 2 < gBest5BidOffer[nStockidx][i].second)
-        {
-            // Find unusual pending big Offer orders
+            long totalOffer = 0;
 
-            ++countLong;
+            for (int i = 5; i < 10; ++i)
+            {
+                totalOffer += gBest5BidOffer[nStockidx][i].second;
+            }
+
+            if (nClose > 0 && nClose <= nBid)
+            {
+                // Support Bid buying and force everyone to sell Bid.
+                // The purpose is to sell Bid in large quantities.
+                long AvgBid = totalBid / 5;
+
+                if (totalOffer * 3 <= totalBid * 2)
+                {
+                    --countShort;
+                }
+
+                for (int i = 0; i < 5; ++i)
+                {
+                    if (AvgBid * 2 < gBest5BidOffer[nStockidx][i].second)
+                    {
+                        // Find unusual pending big Bid orders
+
+                        --countShort;
+                    }
+                }
+            }
+
+            if (nClose > 0 && nClose >= nAsk)
+            {
+                // Suppress Offer selling and force everyone to buy Offer.
+                // The purpose is to buy Offer in large quantities.
+
+                long AvgOffer = totalOffer / 5;
+
+                if (totalBid * 3 <= totalOffer * 2)
+                {
+                    ++countLong;
+                }
+
+                for (int i = 5; i < 10; ++i)
+                {
+                    if (AvgOffer * 2 < gBest5BidOffer[nStockidx][i].second)
+                    {
+                        // Find unusual pending big Offer orders
+
+                        ++countLong;
+                    }
+                }
+            }
+
+            PrePtr[nStockidx] = nPtr;
         }
     }
 
     LOG(DEBUG_LEVEL_DEBUG, "countLong = %ld, countShort=%ld", countLong, countShort);
 
-    return gBidOfferLongShort += (countLong + countShort);
+    return BID_OFFER_LONG_SHORT_WEIGHT_RATIO * (countLong + countShort);
 }
 
 LONG CountTransactionListLongShort(LONG nStockidx)
@@ -1140,59 +1170,50 @@ LONG CountTransactionListLongShort(LONG nStockidx)
 
     LOG(DEBUG_LEVEL_DEBUG, "countLong = %ld, countShort=%ld", countLong, countShort);
 
-    return countLong + countShort;
+    return TRANSACTION_LIST_LONG_SHORT_WEIGHT_RATIO * (countLong + countShort);
 }
 
 LONG StrategyCaluBidOfferLongShort(VOID)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
-    auto now = std::chrono::steady_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - gLastClearTime);
-
-    const int refreshInterval = BID_OFFER_REFRESH_INTERVAL; // 50 ms
-
     if (gBidOfferLongShort >= INT_MAX || gBidOfferLongShort <= INT_MIN)
     {
         return gBidOfferLongShort;
     }
 
-    // long MTXIdxNo;
-    // long MTXIdxNoAM;
-    // long TSMCIdxNo;
-    // long HHIdxNo;
-    // long TSEAIdxNo;
-
-    if (elapsed.count() >= refreshInterval)
+    if (gCommodtyInfo.TSMCIdxNo != 0)
     {
-        gLastClearTime = now;
+        long nStockidx = gCommodtyInfo.TSMCIdxNo;
 
-        if (gCommodtyInfo.TSMCIdxNo != 0)
-        {
-            long nStockidx = gCommodtyInfo.TSMCIdxNo;
+        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
+    }
 
-            CountBidOfferLongShort(nStockidx);
-        }
+    if (gCommodtyInfo.MediaTekIdxNo != 0)
+    {
+        long nStockidx = gCommodtyInfo.MediaTekIdxNo;
 
-        if (gCommodtyInfo.HHIdxNo != 0)
-        {
-            long nStockidx = gCommodtyInfo.HHIdxNo;
+        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
+    }
 
-            CountBidOfferLongShort(nStockidx);
-        }
+    if (gCommodtyInfo.FOXCONNIdxNo != 0)
+    {
+        long nStockidx = gCommodtyInfo.FOXCONNIdxNo;
 
-        LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gBidOfferLongShort);
+        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
+    }
 
-        DEBUG(DEBUG_LEVEL_DEBUG, "End");
+    LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gBidOfferLongShort);
 
-        if (gBidOfferLongShort > 0)
-        {
-            gBidOfferLongShort = min(gBidOfferLongShort, gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE);
-        }
-        else if (gBidOfferLongShort < 0)
-        {
-            gBidOfferLongShort = max(gBidOfferLongShort, -(gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE));
-        }
+    DEBUG(DEBUG_LEVEL_DEBUG, "End");
+
+    if (gBidOfferLongShort > 0)
+    {
+        gBidOfferLongShort = min(gBidOfferLongShort, gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT);
+    }
+    else if (gBidOfferLongShort < 0)
+    {
+        gBidOfferLongShort = max(gBidOfferLongShort, -(gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT));
     }
 
     return gBidOfferLongShort;
@@ -1210,7 +1231,7 @@ LONG StrategyCaluTransactionListLongShort(VOID)
     // long MTXIdxNo;
     // long MTXIdxNoAM;
     // long TSMCIdxNo;
-    // long HHIdxNo;
+    // long FOXCONNIdxNo;
     // long TSEAIdxNo;
 
     if (gCommodtyInfo.TSMCIdxNo != 0)
@@ -1220,9 +1241,16 @@ LONG StrategyCaluTransactionListLongShort(VOID)
         gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
     }
 
-    if (gCommodtyInfo.HHIdxNo != 0)
+    if (gCommodtyInfo.MediaTekIdxNo != 0)
     {
-        long nStockidx = gCommodtyInfo.HHIdxNo;
+        long nStockidx = gCommodtyInfo.MediaTekIdxNo;
+
+        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+    }
+
+    if (gCommodtyInfo.FOXCONNIdxNo != 0)
+    {
+        long nStockidx = gCommodtyInfo.FOXCONNIdxNo;
 
         gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
     }
@@ -1233,11 +1261,11 @@ LONG StrategyCaluTransactionListLongShort(VOID)
 
     if (gTransactionListLongShort > 0)
     {
-        gTransactionListLongShort = min(gTransactionListLongShort, gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE);
+        gTransactionListLongShort = min(gTransactionListLongShort, gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT);
     }
     else if (gTransactionListLongShort < 0)
     {
-        gTransactionListLongShort = max(gTransactionListLongShort, -(gStrategyConfig.BidOfferLongShortThreshold + LONG_AND_SHORT_BUFFER_DIFFERENCE));
+        gTransactionListLongShort = max(gTransactionListLongShort, -(gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT));
     }
 
     return gTransactionListLongShort;
@@ -1250,7 +1278,7 @@ LONG StrategyCaluLongShort(VOID)
         return 0;
     }
 
-    return (gTransactionListLongShort + gBidOfferLongShort) / 2;
+    return (gTransactionListLongShort + gBidOfferLongShort) / LONG_AND_SHORT_TARGET_COUNT;
 }
 
 VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
@@ -1421,8 +1449,8 @@ VOID StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(string strUserId, L
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
         }
 
-        if ((BuySell == 0 && curPrice > CurHigh) ||
-            (BuySell == 1 && curPrice < CurLow))
+        if ((BuySell == 0 && curPrice >= CurHigh) ||
+            (BuySell == 1 && curPrice <= CurLow))
         {
             vector<string> vec = {COMMODITY_OTHER};
 
@@ -1540,14 +1568,17 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
+        double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2.0;
+
         if (CurHigh - curPrice > ONE_STRIKE_PRICES &&
-            curPrice - CurLow > ONE_STRIKE_PRICES)
+            curPrice - CurLow > ONE_STRIKE_PRICES &&
+            curPrice < ShockShortExtremeValue - ONE_STRIKE_PRICES)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
             for (size_t i = 0; i < vec.size(); ++i)
             {
-                AutoOrder(vec[i], ORDER_NEW_POSITION, ORDER_BUY_LONG_POSITION);
+                AutoOrder(vec[i], ORDER_AUTO_POSITION, ORDER_BUY_LONG_POSITION);
             }
 
             // Update position and average cost
@@ -1567,14 +1598,17 @@ VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCom
         DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
               curPrice, gOpenInterestInfo.avgCost);
 
+        double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2.0;
+
         if (CurHigh - curPrice > ONE_STRIKE_PRICES &&
-            curPrice - CurLow > ONE_STRIKE_PRICES)
+            curPrice - CurLow > ONE_STRIKE_PRICES &&
+            curPrice > ShockLongExtremeValue + ONE_STRIKE_PRICES)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
             for (size_t i = 0; i < vec.size(); ++i)
             {
-                AutoOrder(vec[i], ORDER_NEW_POSITION, ORDER_SELL_SHORT_POSITION);
+                AutoOrder(vec[i], ORDER_AUTO_POSITION, ORDER_SELL_SHORT_POSITION);
             }
 
             // Update position and average cost
@@ -1666,7 +1700,7 @@ VOID StrategyNewDailyAmplitudeAchievesReverse(string strUserId, LONG MtxCommodty
 
             for (size_t i = 0; i < vec.size(); ++i)
             {
-                AutoOrder(vec[i], ORDER_NEW_POSITION, ORDER_BUY_LONG_POSITION);
+                AutoOrder(vec[i], ORDER_AUTO_POSITION, ORDER_BUY_LONG_POSITION);
             }
 
             // Update position and average cost
@@ -1694,7 +1728,7 @@ VOID StrategyNewDailyAmplitudeAchievesReverse(string strUserId, LONG MtxCommodty
 
             for (size_t i = 0; i < vec.size(); ++i)
             {
-                AutoOrder(vec[i], ORDER_NEW_POSITION, ORDER_SELL_SHORT_POSITION);
+                AutoOrder(vec[i], ORDER_AUTO_POSITION, ORDER_SELL_SHORT_POSITION);
             }
 
             // Update position and average cost
@@ -1834,6 +1868,32 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             }
             else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
             {
+                StrategyNewDailyAmplitudeAchievesReverse(g_strUserId, MtxCommodtyInfo, 0);
+            }
+        }
+
+        break;
+    }
+
+    case 5:
+    {
+        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
+        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
+        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
+
+        StrategyCaluBidOfferLongShort();
+        StrategyCaluTransactionListLongShort();
+
+        if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
+        {
+            if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
+            {
+                StrategyNewMainForcePassPreHighAndBreakPreLow(g_strUserId, MtxCommodtyInfo, 1);
+                StrategyNewDailyAmplitudeAchievesReverse(g_strUserId, MtxCommodtyInfo, 1);
+            }
+            else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
+            {
+                StrategyNewMainForcePassPreHighAndBreakPreLow(g_strUserId, MtxCommodtyInfo, 0);
                 StrategyNewDailyAmplitudeAchievesReverse(g_strUserId, MtxCommodtyInfo, 0);
             }
         }

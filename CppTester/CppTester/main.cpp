@@ -184,7 +184,7 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
         {
             sprintf(buffer+strlen(buffer),"============================Close: [%ld]: [%ld]============\n", nClose, nQty);
         }
-        sprintf(buffer+strlen(buffer),"=========================================\n");
+        sprintf(buffer+strlen(buffer),"***********************************************************************\n");
         if (nClose > 0 && nClose <= nBid)
         {
             sprintf(buffer+strlen(buffer),"============================Close: [%ld]: [%ld]============\n", nClose, nQty);
@@ -268,13 +268,14 @@ void thread_main()
     std::string CommList;
 
     std::ostringstream oss;
-    oss << COMMODITY_MAIN << "AM" << "," << COMMODITY_MAIN << "," << "TSEA" << "," << "2330" << "," << "2317";
+    oss << COMMODITY_MAIN << "AM" << "," << COMMODITY_MAIN << "," << "TSEA" << "," << TSMC << "," << MEDIATEK << "," << FOXCONN;
     CommList = oss.str();
 
-    AutoQuote(CommList, 1);
+    AutoQuote(CommList, -1);
 
-    AutoQuoteTicks("2330", 2);
-    AutoQuoteTicks("2317", 3);
+    AutoQuoteTicks(TSMC, -1);
+    AutoQuoteTicks(MEDIATEK, -1);
+    AutoQuoteTicks(FOXCONN, -1);
 
     while (true)
     {
@@ -460,13 +461,9 @@ void thread_main()
 
             sprintf(buffer+strlen(buffer),"=========================================\n");
 
-            // snsprintf(buffer+strlen(buffer),buffer, sizeof(buffer),"[UserId:%s], [LongShortThreshold:%ld], [BidOfferLongShortThreshold:%ld], [ActivePoint:%ld], [MaximumLoss:%f]\n=========================================\n[CurMtxPrice: %ld],[TSEA prices: %ld, Valume: %ld],[Diff: %d],[ServerTime: %d: %d: %d]\n=========================================\nOpen: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld,CurAvg: %ld, CurAmp : %ld\n=========================================\nOpen Position: %d, AvgCost:%f, ProfitAndLoss: %f\n=========================================\nLong Key 5: %ld\nLong Key 4: %ld\nLong Key 3: %ld\nLong Key 2: %ld\nLong Key 1: %ld\n=========================================\nShort Key 1: %ld\nShort Key 2: %ld\nShort Key 3: %ld\nShort Key 4: %ld\nShort Key 5: %ld\n=========================================\nSmallestAmp : %ld, SmallAmp : %ld,AvgAmp : %ld, LargerAmp : %ld,LargestAmp : %ld\n=========================================\n[LongShortThreshold:%ld], StrategyCaluLongShort:%ld, BidOfferLongShort:%ld, TransactionListLongShort:%ld\n=========================================\n",
-            //                                                 g_strUserId.c_str(), gStrategyConfig.ClosingKeyPriceLevel, gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss,gCurCommPrice[MtxCommodtyInfo] / 100,gCurCommPrice[gCommodtyInfo.TSEAIdxNo] / 100, gCurTaiexInfo[0][1],(gCurCommPrice[MtxCommodtyInfo] - gCurCommPrice[gCommodtyInfo.TSEAIdxNo]) / 100,gCurServerTime[0], gCurServerTime[1], gCurServerTime[2],gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage,(CurHigh + CurLow) / 2, CurHigh - CurLow,gOpenInterestInfo.openPosition,
-            //                                 gOpenInterestInfo.avgCost,
-            //                                 gOpenInterestInfo.profitAndLoss,gDayAmpAndKeyPrice.LongKey5,gDayAmpAndKeyPrice.LongKey4,gDayAmpAndKeyPrice.LongKey3,gDayAmpAndKeyPrice.LongKey2,gDayAmpAndKeyPrice.LongKey1,gDayAmpAndKeyPrice.ShortKey1,gDayAmpAndKeyPrice.ShortKey2,gDayAmpAndKeyPrice.ShortKey3,gDayAmpAndKeyPrice.ShortKey4,gDayAmpAndKeyPrice.ShortKey5,gDayAmpAndKeyPrice.SmallestAmp,gDayAmpAndKeyPrice.SmallAmp,gDayAmpAndKeyPrice.AvgAmp,gDayAmpAndKeyPrice.LargerAmp,gDayAmpAndKeyPrice.LargestAmp,gStrategyConfig.BidOfferLongShortThreshold, StrategyCaluLongShort(), gBidOfferLongShort, gTransactionListLongShort);
-            AutoBest5Long(gCommodtyInfo.TSMCIdxNo, "TSMC");
-            AutoBest5Long(gCommodtyInfo.HHIdxNo, "HHP");
-          
+            AutoBest5Long(gCommodtyInfo.TSMCIdxNo, TSMC);
+            AutoBest5Long(gCommodtyInfo.FOXCONNIdxNo, FOXCONN);
+            AutoBest5Long(gCommodtyInfo.MediaTekIdxNo, MEDIATEK);
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU
     }
