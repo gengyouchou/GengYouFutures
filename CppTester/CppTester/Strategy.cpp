@@ -1177,59 +1177,43 @@ LONG StrategyCaluBidOfferLongShort(VOID)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
-    auto now = std::chrono::steady_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - gLastClearTime);
-
-    const int refreshInterval = BID_OFFER_REFRESH_INTERVAL; // 50 ms
-
     if (gBidOfferLongShort >= INT_MAX || gBidOfferLongShort <= INT_MIN)
     {
         return gBidOfferLongShort;
     }
 
-    // long MTXIdxNo;
-    // long MTXIdxNoAM;
-    // long TSMCIdxNo;
-    // long FOXCONNIdxNo;
-    // long TSEAIdxNo;
-
-    if (elapsed.count() >= refreshInterval)
+    if (gCommodtyInfo.TSMCIdxNo != 0)
     {
-        gLastClearTime = now;
+        long nStockidx = gCommodtyInfo.TSMCIdxNo;
 
-        if (gCommodtyInfo.TSMCIdxNo != 0)
-        {
-            long nStockidx = gCommodtyInfo.TSMCIdxNo;
+        CountBidOfferLongShort(nStockidx);
+    }
 
-            CountBidOfferLongShort(nStockidx);
-        }
+    if (gCommodtyInfo.MediaTekIdxNo != 0)
+    {
+        long nStockidx = gCommodtyInfo.MediaTekIdxNo;
 
-        if (gCommodtyInfo.MediaTekIdxNo != 0)
-        {
-            long nStockidx = gCommodtyInfo.MediaTekIdxNo;
+        CountBidOfferLongShort(nStockidx);
+    }
 
-            CountBidOfferLongShort(nStockidx);
-        }
+    if (gCommodtyInfo.FOXCONNIdxNo != 0)
+    {
+        long nStockidx = gCommodtyInfo.FOXCONNIdxNo;
 
-        if (gCommodtyInfo.FOXCONNIdxNo != 0)
-        {
-            long nStockidx = gCommodtyInfo.FOXCONNIdxNo;
+        CountBidOfferLongShort(nStockidx);
+    }
 
-            CountBidOfferLongShort(nStockidx);
-        }
+    LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gBidOfferLongShort);
 
-        LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gBidOfferLongShort);
+    DEBUG(DEBUG_LEVEL_DEBUG, "End");
 
-        DEBUG(DEBUG_LEVEL_DEBUG, "End");
-
-        if (gBidOfferLongShort > 0)
-        {
-            gBidOfferLongShort = min(gBidOfferLongShort, gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT);
-        }
-        else if (gBidOfferLongShort < 0)
-        {
-            gBidOfferLongShort = max(gBidOfferLongShort, -(gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT));
-        }
+    if (gBidOfferLongShort > 0)
+    {
+        gBidOfferLongShort = min(gBidOfferLongShort, gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT);
+    }
+    else if (gBidOfferLongShort < 0)
+    {
+        gBidOfferLongShort = max(gBidOfferLongShort, -(gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT));
     }
 
     return gBidOfferLongShort;
