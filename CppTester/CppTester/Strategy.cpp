@@ -1130,7 +1130,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
     LOG(DEBUG_LEVEL_DEBUG, "countLong = %ld, countShort=%ld", countLong, countShort);
 
-    return gBidOfferLongShort += (countLong + countShort);
+    return BID_OFFER_LONG_SHORT_WEIGHT_RATIO * (countLong + countShort);
 }
 
 LONG CountTransactionListLongShort(LONG nStockidx)
@@ -1170,7 +1170,7 @@ LONG CountTransactionListLongShort(LONG nStockidx)
 
     LOG(DEBUG_LEVEL_DEBUG, "countLong = %ld, countShort=%ld", countLong, countShort);
 
-    return countLong + countShort;
+    return TRANSACTION_LIST_LONG_SHORT_WEIGHT_RATIO * (countLong + countShort);
 }
 
 LONG StrategyCaluBidOfferLongShort(VOID)
@@ -1186,21 +1186,21 @@ LONG StrategyCaluBidOfferLongShort(VOID)
     {
         long nStockidx = gCommodtyInfo.TSMCIdxNo;
 
-        CountBidOfferLongShort(nStockidx);
+        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
     }
 
     if (gCommodtyInfo.MediaTekIdxNo != 0)
     {
         long nStockidx = gCommodtyInfo.MediaTekIdxNo;
 
-        CountBidOfferLongShort(nStockidx);
+        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
     }
 
     if (gCommodtyInfo.FOXCONNIdxNo != 0)
     {
         long nStockidx = gCommodtyInfo.FOXCONNIdxNo;
 
-        CountBidOfferLongShort(nStockidx);
+        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
     }
 
     LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gBidOfferLongShort);
