@@ -2088,7 +2088,7 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
         for (auto &x : vec)
         {
             AutoOrder(x,
-                      ORDER_NEW_POSITION,     // New
+                      ORDER_AUTO_POSITION,    // New
                       ORDER_BUY_LONG_POSITION // Buy or sell
             );
         }
@@ -2115,7 +2115,7 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
         for (auto &x : vec)
         {
             AutoOrder(x,
-                      ORDER_NEW_POSITION,       // New
+                      ORDER_AUTO_POSITION,      // New
                       ORDER_SELL_SHORT_POSITION // Buy or sell
             );
         }
