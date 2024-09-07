@@ -73,7 +73,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 #define MAXIMUM_COST_AVG_BIAS_RATIO 100
 #define BIG_ORDER 20
 #define BID_OFFER_REFRESH_INTERVAL 100 // 100 ms
-#define 5MA_SLOUP
+#define FIVE_MINUTE_MA_SLOPE_LONG_SHORT 10
 
 // Order
 
