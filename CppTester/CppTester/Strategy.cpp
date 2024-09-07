@@ -88,7 +88,6 @@ static double calculate5MA(std::deque<double> &closePrices)
     double sum = std::accumulate(closePrices.begin(), closePrices.end(), 0.0);
     return sum / closePrices.size();
 }
-
 // Function to handle new tick data and calculate 5MA
 int Count5MaForNewLongShortPosition(LONG nIndex, LONG nPtr,
                                     LONG nTimehms, LONG nBid,
@@ -104,7 +103,7 @@ int Count5MaForNewLongShortPosition(LONG nIndex, LONG nPtr,
     int currentMinute = nTimehms / 100; // Extract hh:mm (ignores seconds)
 
     // Convert closing price to double
-    double closePrice = static_cast<double>(nClose) / 100.0;
+    double tickPrice = static_cast<double>(nClose) / 100.0;
 
     // If this is a new minute, update the deque with the last minute's closing price
     if (currentMinute != lastMinute)
@@ -124,7 +123,7 @@ int Count5MaForNewLongShortPosition(LONG nIndex, LONG nPtr,
     }
 
     // Update the most recent price for this minute
-    currentMinutePrice = closePrice;
+    currentMinutePrice = tickPrice;
 
     // Calculate the 5MA only if we have enough data
     double ma5 = calculate5MA(closePrices);
@@ -133,45 +132,41 @@ int Count5MaForNewLongShortPosition(LONG nIndex, LONG nPtr,
         return -1; // Not enough data yet, return -1 for no action
     }
 
-    // Get the current bid and ask prices
-    double bidPrice = static_cast<double>(nBid) / 100.0;
-    double askPrice = static_cast<double>(nAsk) / 100.0;
-
-    // Strategy logic
+    // Strategy logic based on the relationship between closing price and 5MA
     if (tradePos.openPosition == 0)
     {
         // If there is no open position, determine the direction based on MA crossover
-        if (closePrice > ma5 && bidPrice > askPrice)
+        if (currentMinutePrice > ma5)
         {
-            // Go long: Price crosses above 5MA, bid confirms strength
+            // Go long: Price crosses above 5MA
             tradePos.openPosition = 1;
-            tradePos.avgCost = closePrice;
-            DEBUG(DEBUG_LEVEL_INFO, "Opening long position at: %f", closePrice);
+            tradePos.avgCost = currentMinutePrice;
+            DEBUG(DEBUG_LEVEL_INFO, "Opening long position at: %f", currentMinutePrice);
             return 1; // Return 1 for long position
         }
-        else if (closePrice < ma5 && bidPrice < askPrice)
+        else if (currentMinutePrice < ma5)
         {
-            // Go short: Price crosses below 5MA, ask confirms weakness
+            // Go short: Price crosses below 5MA
             tradePos.openPosition = -1;
-            tradePos.avgCost = closePrice;
-            DEBUG(DEBUG_LEVEL_INFO, "Opening short position at: %f", closePrice);
+            tradePos.avgCost = currentMinutePrice;
+            DEBUG(DEBUG_LEVEL_INFO, "Opening short position at: %f", currentMinutePrice);
             return 0; // Return 0 for short position
         }
     }
     else
     {
         // If already in a position, handle position management
-        if (tradePos.openPosition == 1 && closePrice < ma5)
+        if (tradePos.openPosition == 1 && currentMinutePrice < ma5)
         {
             // Close long position if price crosses back below 5MA
-            DEBUG(DEBUG_LEVEL_INFO, "Closing long position at: %f", closePrice);
+            DEBUG(DEBUG_LEVEL_INFO, "Closing long position at: %f", currentMinutePrice);
             tradePos.openPosition = 0;
             return -1; // No new action, position closed
         }
-        else if (tradePos.openPosition == -1 && closePrice > ma5)
+        else if (tradePos.openPosition == -1 && currentMinutePrice > ma5)
         {
             // Close short position if price crosses back above 5MA
-            DEBUG(DEBUG_LEVEL_INFO, "Closing short position at: %f", closePrice);
+            DEBUG(DEBUG_LEVEL_INFO, "Closing short position at: %f", currentMinutePrice);
             tradePos.openPosition = 0;
             return -1; // No new action, position closed
         }
