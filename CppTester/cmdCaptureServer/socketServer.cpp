@@ -20,8 +20,7 @@
 #pragma comment(lib, "Ws2_32.lib")
 
 char buffer[10240]  = {0};
-
-
+char buffer2[10240] ={0};
 extern std::deque<long> gDaysKlineDiff;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
 extern SHORT gCurServerTime[3];
@@ -112,7 +111,7 @@ void thread_socket()
                 buffer_empty[valread] = '\0'; // 确保字符串以 null 结尾
                 std::cout << "Message from client: " << buffer_empty << std::endl;
 
-                send(new_socket, buffer, 4095, 0); // 发送消息回客户端
+                send(new_socket, buffer2, 4095, 0); // 发送消息回客户端
                 // send(new_socket, tab2, 1023, 0); // 发送消息回客户端
             } else if (valread == 0) {
                 std::cout << "Client disconnected" << std::endl;

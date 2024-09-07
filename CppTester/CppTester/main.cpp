@@ -47,6 +47,7 @@ extern string g_strUserId;
 extern string gPwd;
 
 extern char buffer[10240] ;
+extern char buffer2[10240];
 
 void release();
 
@@ -178,8 +179,6 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
         sprintf(buffer+strlen(buffer),"Ask2: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][6].first, gBest5BidOffer[ProductIdxNo][6].second);
         sprintf(buffer+strlen(buffer),"Ask1: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][5].first, gBest5BidOffer[ProductIdxNo][5].second);
 
-       
-        (buffer+strlen(buffer),"%s : %ld Open: %ld, CurHigh: %ld, CurLow: %ld\nTotal Offer: [%ld]\nAsk5: [%ld]: [%ld]\nAsk4: [%ld]: [%ld]\nAsk3: [%ld]: [%ld]\nAsk2: [%ld]: [%ld]\nAsk1: [%ld]: [%ld]\n",ProductName.c_str(), gCurCommPrice[ProductIdxNo],Open, CurHigh, CurLow,TotalOffer,gBest5BidOffer[ProductIdxNo][9].first, gBest5BidOffer[ProductIdxNo][9].second,gBest5BidOffer[ProductIdxNo][8].first, gBest5BidOffer[ProductIdxNo][8].second,gBest5BidOffer[ProductIdxNo][7].first, gBest5BidOffer[ProductIdxNo][7].second,gBest5BidOffer[ProductIdxNo][6].first, gBest5BidOffer[ProductIdxNo][6].second,gBest5BidOffer[ProductIdxNo][5].first, gBest5BidOffer[ProductIdxNo][5].second);    
         if (nClose > 0 && nClose >= nAsk)
         {
             sprintf(buffer+strlen(buffer),"============================Close: [%ld]: [%ld]============\n", nClose, nQty);
@@ -464,6 +463,10 @@ void thread_main()
             AutoBest5Long(gCommodtyInfo.TSMCIdxNo, TSMC);
             AutoBest5Long(gCommodtyInfo.FOXCONNIdxNo, FOXCONN);
             AutoBest5Long(gCommodtyInfo.MediaTekIdxNo, MEDIATEK);
+            
+            snprintf(buffer2,sizeof(buffer2),buffer);
+            buffer[0] = '\0';
+
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU
     }
@@ -531,10 +534,6 @@ int main()
 
     init();
 
-    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
-    DWORD mode = 0;
-    GetConsoleMode(hStdin, &mode);
-    SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
 
     g_nCode = pSKCenterLib->Login(g_strUserId.c_str(), gPwd.c_str());
 
@@ -544,8 +543,6 @@ int main()
     {
         return 0;
     }
-
-    SetConsoleMode(hStdin, mode);
 
     thread tMain(thread_main);
     if (tMain.joinable())
