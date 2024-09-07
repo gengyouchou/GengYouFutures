@@ -2333,6 +2333,30 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         break;
     }
 
+    case 8:
+    {
+        // For only applicable during periods of large fluctuations
+        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
+        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
+        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
+
+        StrategyCaluBidOfferLongShort();
+        StrategyCaluTransactionListLongShort();
+
+        int LongShort = Count5MaForNewLongShortPosition(MtxCommodtyInfo);
+
+        if (LongShort == 1)
+        {
+            StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
+        }
+        else if (LongShort == 0)
+        {
+            StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+        }
+
+        break;
+    }
+
     default:
     {
         break;
