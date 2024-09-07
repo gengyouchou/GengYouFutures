@@ -21,7 +21,7 @@ extern SHORT gCurServerTime[3];
 extern std::unordered_map<long, long> gCurCommPrice;
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
-extern std::unordered_map<long, std::array<long, 5>> gTransactionList;
+extern std::unordered_map<long, std::array<long, 6>> gTransactionList;
 // long nPtr, long nBid, long nAsk, long nClose, long nQty,
 
 extern COMMODITY_INFO gCommodtyInfo;

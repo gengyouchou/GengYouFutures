@@ -71,12 +71,6 @@ LONG EstimatedShortSideKeyPrice(VOID);
 LONG CountBidOfferLongShort(LONG nStockidx);
 LONG CountTransactionListLongShort(LONG nStockidx);
 
-struct TradePosition
-{
-    int openPosition = 0; // Positive for long, negative for short
-    double avgCost = 0;   // Average price of the current position
-};
-
 // Function to calculate the 5-minute moving average (5MA)
 static double calculate5MA(std::deque<double> &closePrices)
 {
@@ -89,86 +83,79 @@ static double calculate5MA(std::deque<double> &closePrices)
     return sum / closePrices.size();
 }
 // Function to handle new tick data and calculate 5MA
-int Count5MaForNewLongShortPosition(LONG nIndex, LONG nPtr,
-                                    LONG nTimehms, LONG nBid,
-                                    LONG nAsk, LONG nClose, LONG nQty, LONG nSimulate)
+int Count5MaForNewLongShortPosition(LONG nStockidx)
 {
     // Static variables to retain state between function calls
+    static unordered_map<long, long> PrePtr;
     static std::deque<double> closePrices; // Stores last 5 minutes of closing prices
-    static TradePosition tradePos;         // Stores the trade position
     static int lastMinute = -1;            // Tracks the last processed minute
-    static double currentMinutePrice = 0;  // The most recent closing price for the current minute
+    static double lastMinutePrice = 0;     // The most recent price in the last minute
 
-    // Extract the current minute from nTimehms (formatted as hhmmss)
-    int currentMinute = nTimehms / 100; // Extract hh:mm (ignores seconds)
-
-    // Convert closing price to double
-    double tickPrice = static_cast<double>(nClose) / 100.0;
-
-    // If this is a new minute, update the deque with the last minute's closing price
-    if (currentMinute != lastMinute)
+    if (gTransactionList.count(nStockidx))
     {
-        if (lastMinute != -1)
-        { // Avoid pushing on the first call
-            // Push the last minute's closing price to the deque
-            if (closePrices.size() >= 5)
+        long nPtr = 0, nBid = 0, nAsk = 0, nClose = 0, nQty = 0, nTimehms = 0;
+
+        nPtr = gTransactionList[nStockidx][0];
+        nBid = gTransactionList[nStockidx][1];
+        nAsk = gTransactionList[nStockidx][2];
+        nClose = gTransactionList[nStockidx][3];
+        nQty = gTransactionList[nStockidx][4];
+        nTimehms = gTransactionList[nStockidx][5];
+
+        if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
+        {
+
+            // Extract the current minute from nTimehms (formatted as hhmmss)
+            int currentMinute = nTimehms / 100; // Extract hh:mm (ignores seconds)
+
+            // Convert closing price to double
+            double tickPrice = static_cast<double>(nClose) / 100.0;
+
+            // Check if we've entered a new minute
+            if (currentMinute != lastMinute)
             {
-                closePrices.pop_front(); // Remove the oldest closing price
+                if (lastMinute != -1)
+                {
+                    // If we have already processed at least one minute
+                    // Push the last minute's closing price to the deque
+                    if (closePrices.size() >= 5)
+                    {
+                        closePrices.pop_front(); // Remove the oldest closing price
+                    }
+                    closePrices.push_back(lastMinutePrice); // Push the final price of the last minute
+                }
+
+                // Update the minute and reset the lastMinutePrice for the new minute
+                lastMinute = currentMinute;
             }
-            closePrices.push_back(currentMinutePrice); // Push the final price of the last minute
-        }
 
-        // Update for the new minute
-        lastMinute = currentMinute;
-    }
+            // Update the most recent price in the current minute (i.e., every tick updates the "closing" price)
+            lastMinutePrice = tickPrice;
 
-    // Update the most recent price for this minute
-    currentMinutePrice = tickPrice;
+            // Calculate the 5MA only if we have enough data (at least 5 minutes of closing prices)
+            double ma5 = calculate5MA(closePrices);
+            if (std::isnan(ma5))
+            {
+                return -1; // Not enough data yet, return -1 for no action
+            }
 
-    // Calculate the 5MA only if we have enough data
-    double ma5 = calculate5MA(closePrices);
-    if (std::isnan(ma5))
-    {
-        return -1; // Not enough data yet, return -1 for no action
-    }
+            // If there is no open position, determine the direction based on MA crossover
+            if (tickPrice > ma5)
+            {
+                // Go long: Price crosses above 5MA
 
-    // Strategy logic based on the relationship between closing price and 5MA
-    if (tradePos.openPosition == 0)
-    {
-        // If there is no open position, determine the direction based on MA crossover
-        if (currentMinutePrice > ma5)
-        {
-            // Go long: Price crosses above 5MA
-            tradePos.openPosition = 1;
-            tradePos.avgCost = currentMinutePrice;
-            DEBUG(DEBUG_LEVEL_INFO, "Opening long position at: %f", currentMinutePrice);
-            return 1; // Return 1 for long position
-        }
-        else if (currentMinutePrice < ma5)
-        {
-            // Go short: Price crosses below 5MA
-            tradePos.openPosition = -1;
-            tradePos.avgCost = currentMinutePrice;
-            DEBUG(DEBUG_LEVEL_INFO, "Opening short position at: %f", currentMinutePrice);
-            return 0; // Return 0 for short position
-        }
-    }
-    else
-    {
-        // If already in a position, handle position management
-        if (tradePos.openPosition == 1 && currentMinutePrice < ma5)
-        {
-            // Close long position if price crosses back below 5MA
-            DEBUG(DEBUG_LEVEL_INFO, "Closing long position at: %f", currentMinutePrice);
-            tradePos.openPosition = 0;
-            return -1; // No new action, position closed
-        }
-        else if (tradePos.openPosition == -1 && currentMinutePrice > ma5)
-        {
-            // Close short position if price crosses back above 5MA
-            DEBUG(DEBUG_LEVEL_INFO, "Closing short position at: %f", currentMinutePrice);
-            tradePos.openPosition = 0;
-            return -1; // No new action, position closed
+                DEBUG(DEBUG_LEVEL_INFO, "Opening long position at: %f", tickPrice);
+                return 1; // Return 1 for long position
+            }
+            else if (tickPrice < ma5)
+            {
+                // Go short: Price crosses below 5MA
+
+                DEBUG(DEBUG_LEVEL_INFO, "Opening short position at: %f", tickPrice);
+                return 0; // Return 0 for short position
+            }
+
+            PrePtr[nStockidx] = nPtr;
         }
     }
 
