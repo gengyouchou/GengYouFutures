@@ -13,12 +13,12 @@
 #include <deque>
 #include <iostream>
 #include <map>
+#include <numeric> // This header is needed for std::accumulate
 #include <queue>
 #include <set>
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 #include <vector>
-#include <numeric> // This header is needed for std::accumulate
 
 using namespace std;
 
@@ -83,15 +83,15 @@ static double calculate5MA(std::deque<double> &closePrices)
     return sum / closePrices.size();
 }
 /**
- * @brief Handle new tick data and calculate 5MA for opening long/short positions based on 1-minute close prices.
+ * @brief Handle new tick data and calculate 5MA slope for opening long/short positions based on 1-minute close prices.
  *
  * This function processes tick data for a specific stock index (nStockidx), computes the 5-minute moving average (5MA)
  * using the closing prices of the past 5 minutes, and determines whether to open long or short positions based on the
- * relationship between the current minute's close price and the 5MA.
+ * slope of the 5MA (i.e., the difference between the current and previous 5MA values).
  *
  * The strategy is as follows:
- * - Open a long position when the previous minute's closing price crosses above the 5MA.
- * - Open a short position when the previous minute's closing price crosses below the 5MA.
+ * - Open a long position when the 5MA slope is positive.
+ * - Open a short position when the 5MA slope is negative.
  *
  * The function tracks the last processed minute and updates the closing prices deque when a new minute begins.
  * Only the last tick of the minute is used to represent the closing price for that minute.
@@ -109,6 +109,7 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
     static std::deque<double> closePrices;   // Stores the last 5 minutes of closing prices
     static int lastMinute = -1;              // Tracks the last processed minute
     static double lastMinutePrice = 0;       // The most recent price in the last minute
+    static double lastMa5 = 0;               // Stores the previous 5MA value for slope calculation
 
     // Ensure that there is data for the given stock index
     if (gTransactionList.count(nStockidx))
@@ -159,21 +160,24 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
                 // Calculate the 5MA
                 double ma5 = calculate5MA(closePrices);
 
-                // Use the last known close price to compare against 5MA
-                double closePrice = closePrices.back(); // Previous minute's closing price
+                // Determine the slope of the 5MA
+                double ma5Slope = ma5 - lastMa5;
 
-                // Strategy: Open positions based on the relationship between the closing price and the 5MA
-                if (closePrice > ma5)
+                // Store the current 5MA for the next comparison
+                lastMa5 = ma5;
+
+                // Strategy: Open positions based on the slope of the 5MA
+                if (ma5Slope > 0)
                 {
-                    // Go long: Previous minute's closing price crosses above 5MA
-                    DEBUG(DEBUG_LEVEL_INFO, "Opening long position at: %f", closePrice);
+                    // Go long: 5MA slope is positive
+                    DEBUG(DEBUG_LEVEL_INFO, "Opening long position. 5MA: %f, Slope: %f", ma5, ma5Slope);
                     PrePtr[nStockidx] = nPtr; // Update the last processed pointer
                     return 1;                 // Return 1 for long position
                 }
-                else if (closePrice < ma5)
+                else if (ma5Slope < 0)
                 {
-                    // Go short: Previous minute's closing price crosses below 5MA
-                    DEBUG(DEBUG_LEVEL_INFO, "Opening short position at: %f", closePrice);
+                    // Go short: 5MA slope is negative
+                    DEBUG(DEBUG_LEVEL_INFO, "Opening short position. 5MA: %f, Slope: %f", ma5, ma5Slope);
                     PrePtr[nStockidx] = nPtr; // Update the last processed pointer
                     return 0;                 // Return 0 for short position
                 }
