@@ -281,6 +281,9 @@ void thread_main()
     AutoQuoteTicks(MEDIATEK, -1);
     AutoQuoteTicks(FOXCONN, -1);
 
+    // For calculate 5MA
+    AutoQuoteTicks(COMMODITY_MAIN, -1);
+
     while (true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
