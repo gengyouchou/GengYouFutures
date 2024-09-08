@@ -2,6 +2,7 @@
 #include "SKOrderLib.h"
 #include "SKQuoteLib.h"
 #include "SKReplyLib.h"
+#include "Strategy.h"
 #include <Logger.h>
 #include <array>
 #include <chrono>  // For std::chrono::steady_clock
@@ -12,7 +13,6 @@
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 #include <yaml-cpp/yaml.h>
-#include "Strategy.h"
 
 #include "socketServer.h"
 
@@ -25,7 +25,7 @@ extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
 extern SHORT gCurServerTime[3];
 extern std::unordered_map<long, long> gCurCommPrice;
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
-extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
+extern std::unordered_map<long, std::vector<std::pair<long, long>>> gBest5BidOffer;
 extern std::unordered_map<long, std::array<long, 6>> gTransactionList;
 
 extern COMMODITY_INFO gCommodtyInfo;
@@ -36,8 +36,8 @@ extern LONG gTransactionListLongShort;
 extern double gCostMovingAverageVal;
 extern STRATEGY_CONFIG gStrategyConfig;
 
-extern string g_strUserId;
-extern string gPwd;
+extern std::string g_strUserId;
+extern std::string gPwd;
 
 void thread_socket()
 {
@@ -48,95 +48,103 @@ void thread_socket()
 
     const char *greeting = "Connected to server";
 
-    // 初始化 Winsock
+    // Initialize Winsock
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
     {
         std::cerr << "WSAStartup failed" << std::endl;
+        return;
     }
 
-    // 创建套接字文件描述符
+    // Create socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
     {
         std::cerr << "Socket creation failed" << std::endl;
         WSACleanup();
+        return;
     }
 
+    // Set socket options (optional)
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
-    // 绑定套接字到端口
+
+    // Bind the socket to the port
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) == SOCKET_ERROR)
     {
         std::cerr << "Bind failed" << std::endl;
         closesocket(server_fd);
         WSACleanup();
+        return;
     }
-    // 监听传入连接
+
+    // Start listening for incoming connections
     if (listen(server_fd, 3) == SOCKET_ERROR)
     {
         std::cerr << "Listen failed" << std::endl;
         closesocket(server_fd);
         WSACleanup();
+        return;
     }
+
     std::cout << "Server is listening on port " << PORT << std::endl;
-
-    // string temp = "[UserId:], [LongShortThreshold:%], [BidOfferLongShortThreshold:], [ActivePoint:], [MaximumLoss:]\n";
-    // char tab2[1024];
-    // strncpy(tab2, temp.c_str(), sizeof(tab2));
-    // tab2[sizeof(tab2) - 1] = 0;
-
-    char buffer_empty[4096] = {0};
 
     while (true)
     {
         std::cout << "Waiting for new connection..." << std::endl;
-        // 接受客户端连接
+
+        // Accept a new client connection
         new_socket = accept(server_fd, (struct sockaddr *)&address, &addrlen);
         if (new_socket == INVALID_SOCKET)
         {
             std::cerr << "Accept failed" << std::endl;
-            continue; // 继续等待其他客户端连接
+            continue; // Continue to wait for another client
         }
 
+        std::cout << "Client connected" << std::endl;
+
+        // Send a greeting message to the client
         size_t length = strlen(greeting);
         if (length > INT_MAX)
         {
-            // 處理錯誤，例如打印錯誤消息或截斷數據
+            std::cerr << "Error: Greeting message is too long" << std::endl;
         }
         else
         {
-            send(new_socket, greeting, static_cast<int>(length), 0); // 发送初始连接消息
+            send(new_socket, greeting, static_cast<int>(length), 0);
         }
 
+        // Handle communication with the connected client
+        char buffer_empty[4096] = {0};
         while (true)
         {
-            std::cout << "client in";
-            // Sleep(500);
-            // int valread = 1023;
-            int valread = recv(new_socket, buffer_empty, 4096, 0); // 读取客户端消息
+            // Receive message from client
+            int valread = recv(new_socket, buffer_empty, 4096, 0);
             if (valread > 0)
             {
-
-                buffer_empty[valread] = '\0'; // 确保字符串以 null 结尾
+                buffer_empty[valread] = '\0'; // Ensure null-terminated string
                 std::cout << "Message from client: " << buffer_empty << std::endl;
 
-                send(new_socket, buffer2, 4095, 0); // 发送消息回客户端
-                // send(new_socket, tab2, 1023, 0); // 发送消息回客户端
+                // Send a response back to the client
+                send(new_socket, buffer2, 4095, 0);
             }
             else if (valread == 0)
             {
+                // Client disconnected
                 std::cout << "Client disconnected" << std::endl;
-                break; // 客户端断开连接，退出内循环
+                break; // Exit the inner loop and wait for a new connection
             }
             else
             {
                 std::cerr << "recv failed" << std::endl;
-                break;
+                break; // Handle recv error and exit the inner loop
             }
         }
 
-        closesocket(new_socket); // 关闭与当前客户端的连接
+        // Close the connection with the current client
+        closesocket(new_socket);
     }
+
+    // Cleanup Winsock
     closesocket(server_fd);
     WSACleanup();
 }
