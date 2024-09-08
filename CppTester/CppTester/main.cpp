@@ -470,10 +470,16 @@ void readConfig()
             gStrategyConfig.MaximumLoss = config["MAXIMUM_LOSS"].as<DOUBLE>();
         }
 
+        if (config["STRATEGY_MODE"])
+        {
+            gStrategyConfig.StrategyMode = config["STRATEGY_MODE"].as<LONG>();
+        }
+
         DEBUG(DEBUG_LEVEL_INFO, "Closing Key Price Level: %ld", gStrategyConfig.ClosingKeyPriceLevel);
         DEBUG(DEBUG_LEVEL_INFO, "Bid Offer Long Short Threshold: %ld", gStrategyConfig.BidOfferLongShortThreshold);
         DEBUG(DEBUG_LEVEL_INFO, "Activity Point: %ld", gStrategyConfig.ActivePoint);
         DEBUG(DEBUG_LEVEL_INFO, "Maximum Loss: %f", gStrategyConfig.MaximumLoss);
+        DEBUG(DEBUG_LEVEL_INFO, "STRATEGY_MODE: %ld", gStrategyConfig.StrategyMode);
     }
     catch (const YAML::BadFile &e)
     {
