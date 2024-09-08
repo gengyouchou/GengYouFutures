@@ -328,47 +328,11 @@ void thread_main()
             }
         }
 
-        {
-            // Strategy start:
+        // Strategy Start
 
-            StrategyCaluBidOfferLongShort();
-            StrategyCaluTransactionListLongShort();
+        // updatePricePeriodically(MtxCommodtyInfo);
 
-            StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
-            StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
-
-#if NIGHT_TRADING
-
-            if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 22)
-            {
-#if STRATEGY_1 == 1
-                StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
-                StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
-#endif
-
-#if STRATEGY_2 == 1
-
-                StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
-                StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
-#endif
-            }
-            else
-#endif
-            {
-                if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
-                {
-                    StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
-                }
-                else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
-                {
-                    StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
-                }
-            }
-
-            // StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
-
-            // Strategy End:
-        }
+        StrategySwitch(gStrategyConfig.StrategyMode, MtxCommodtyInfo);
 
         // Ouput start
 
@@ -391,8 +355,9 @@ void thread_main()
                 CheckConnected = 0;
             }
 
-            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "[UserId:%s], [LongShortThreshold:%ld], [BidOfferLongShortThreshold:%ld], [ActivePoint:%ld], [MaximumLoss:%f]\n",
-                      g_strUserId.c_str(), gStrategyConfig.ClosingKeyPriceLevel, gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "[UserId:%s], [StrategyMode:%ld], [ClosingKeyPriceLevel:%ld], [BidOfferLongShortThreshold:%ld], [ActivePoint:%ld], [MaximumLoss:%f]\n",
+                      g_strUserId.c_str(), gStrategyConfig.StrategyMode, gStrategyConfig.ClosingKeyPriceLevel,
+                      gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss);
             sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "=========================================\n");
             sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "[CurMtxPrice: %ld] ", gCurCommPrice[MtxCommodtyInfo] / 100);
             sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "[TSEA prices: %ld, Valume: %ld] ",
