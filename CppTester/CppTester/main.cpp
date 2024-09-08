@@ -12,8 +12,9 @@
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 #include <yaml-cpp/yaml.h>
-
 #include "Strategy.h"
+
+#include "socketServer.h"
 
 extern std::deque<long> gDaysKlineDiff;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
@@ -41,8 +42,12 @@ CSKReplyLib *pSKReplyLib;
 CSKOrderLib *pSKOrderLib;
 
 long g_nCode = 0;
+
 extern string g_strUserId;
 extern string gPwd;
+
+extern char buffer[10240];
+extern char buffer2[10240];
 
 void release();
 
@@ -134,9 +139,9 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
 
         DEBUG(DEBUG_LEVEL_DEBUG, "IdxNo: %ld. High: %ld, Low: %ld", ProductIdxNo, CurHigh, CurLow);
 
-        printf("%s : %ld, ", ProductName.c_str(), gCurCommPrice[ProductIdxNo]);
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "%s : %ld, ", ProductName.c_str(), gCurCommPrice[ProductIdxNo]);
 
-        printf("Open: %ld, CurHigh: %ld, CurLow: %ld\n", Open, CurHigh, CurLow);
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Open: %ld, CurHigh: %ld, CurLow: %ld\n", Open, CurHigh, CurLow);
     }
     if (gBest5BidOffer.count(ProductIdxNo) && gBest5BidOffer[ProductIdxNo].size() >= 10)
     {
@@ -163,31 +168,30 @@ void AutoBest5Long(LONG ProductIdxNo, string ProductName)
             nQty = gTransactionList[ProductIdxNo][4];
         }
 
-        printf("Total Offer: [%ld]\n", TotalOffer);
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Total Offer: [%ld]\n", TotalOffer);
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Ask5: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][9].first, gBest5BidOffer[ProductIdxNo][9].second);
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Ask4: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][8].first, gBest5BidOffer[ProductIdxNo][8].second);
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Ask3: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][7].first, gBest5BidOffer[ProductIdxNo][7].second);
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Ask2: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][6].first, gBest5BidOffer[ProductIdxNo][6].second);
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Ask1: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][5].first, gBest5BidOffer[ProductIdxNo][5].second);
 
-        printf("Ask5: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][9].first, gBest5BidOffer[ProductIdxNo][9].second);
-        printf("Ask4: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][8].first, gBest5BidOffer[ProductIdxNo][8].second);
-        printf("Ask3: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][7].first, gBest5BidOffer[ProductIdxNo][7].second);
-        printf("Ask2: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][6].first, gBest5BidOffer[ProductIdxNo][6].second);
-        printf("Ask1: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][5].first, gBest5BidOffer[ProductIdxNo][5].second);
         if (nClose > 0 && nClose >= nAsk)
         {
-            printf("============================Close: [%ld]: [%ld]============\n", nClose, nQty);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "============================Close: [%ld]: [%ld]============\n", nClose, nQty);
         }
-        printf("***********************************************************************\n");
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "***********************************************************************\n");
         if (nClose > 0 && nClose <= nBid)
         {
-            printf("============================Close: [%ld]: [%ld]============\n", nClose, nQty);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "============================Close: [%ld]: [%ld]============\n", nClose, nQty);
         }
-        printf("Bid1: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][0].first, gBest5BidOffer[ProductIdxNo][0].second);
-        printf("Bid2: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][1].first, gBest5BidOffer[ProductIdxNo][1].second);
-        printf("Bid3: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][2].first, gBest5BidOffer[ProductIdxNo][2].second);
-        printf("Bid4: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][3].first, gBest5BidOffer[ProductIdxNo][3].second);
-        printf("Bid5: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][4].first, gBest5BidOffer[ProductIdxNo][4].second);
 
-        printf("Total Bid:   [%ld]\n", TotalBid);
-
-        printf("=========================================\n");
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Bid1: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][0].first, gBest5BidOffer[ProductIdxNo][0].second);
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Bid2: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][1].first, gBest5BidOffer[ProductIdxNo][1].second);
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Bid3: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][2].first, gBest5BidOffer[ProductIdxNo][2].second);
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Bid4: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][3].first, gBest5BidOffer[ProductIdxNo][3].second);
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Bid5: [%ld]: [%ld]\n", gBest5BidOffer[ProductIdxNo][4].first, gBest5BidOffer[ProductIdxNo][4].second);
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Total Bid:   [%ld]\n", TotalBid);
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "=========================================\n");
     }
     else
     {
@@ -234,22 +238,6 @@ void release()
 // Estimated trading volume
 // Instant profit and loss
 
-// Test code:
-
-// Function to generate random price
-// long getRandomPrice()
-// {
-//     // Generate a random number in the range of 2000000 to 2500000
-//     return rand() % 500001 + 2000000; // 500001 is because 2500000 - 2000000 = 500000 + 1
-// }
-
-// // Function to update the price periodically (every second)
-// void updatePricePeriodically(long MtxCommodtyInfo)
-// {
-//     // Generate a random price and update the corresponding value in the global variable
-//     gCurCommPrice[MtxCommodtyInfo] = getRandomPrice();
-// }
-
 void thread_main()
 {
     const int refreshInterval = 1000; // 1000 ms
@@ -290,7 +278,7 @@ void thread_main()
 
         system("cls");
 
-        printf("Waiting for host quotation...");
+        sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Waiting for host quotation...");
 
         if (gCurServerTime[0] >= 0 &&
             gCommodtyInfo.MTXIdxNoAM >= 0 &&
@@ -367,17 +355,17 @@ void thread_main()
                 CheckConnected = 0;
             }
 
-            printf("[UserId:%s], [StrategyMode:%ld], [ClosingKeyPriceLevel:%ld], [BidOfferLongShortThreshold:%ld], [ActivePoint:%ld], [MaximumLoss:%f]\n",
-                   g_strUserId.c_str(), gStrategyConfig.StrategyMode, gStrategyConfig.ClosingKeyPriceLevel,
-                   gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss);
-            printf("=========================================\n");
-            printf("[CurMtxPrice: %ld] ", gCurCommPrice[MtxCommodtyInfo] / 100);
-            printf("[TSEA prices: %ld, Valume: %ld] ",
-                   gCurCommPrice[gCommodtyInfo.TSEAIdxNo] / 100, gCurTaiexInfo[0][1]);
-            printf("[Diff: %d] ", (gCurCommPrice[MtxCommodtyInfo] - gCurCommPrice[gCommodtyInfo.TSEAIdxNo]) / 100);
-            printf("[ServerTime: %d: %d: %d]\n", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "[UserId:%s], [StrategyMode:%ld], [ClosingKeyPriceLevel:%ld], [BidOfferLongShortThreshold:%ld], [ActivePoint:%ld], [MaximumLoss:%f]\n",
+                      g_strUserId.c_str(), gStrategyConfig.StrategyMode, gStrategyConfig.ClosingKeyPriceLevel,
+                      gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "=========================================\n");
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "[CurMtxPrice: %ld] ", gCurCommPrice[MtxCommodtyInfo] / 100);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "[TSEA prices: %ld, Valume: %ld] ",
+                      gCurCommPrice[gCommodtyInfo.TSEAIdxNo] / 100, gCurTaiexInfo[0][1]);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "[Diff: %d] ", (gCurCommPrice[MtxCommodtyInfo] - gCurCommPrice[gCommodtyInfo.TSEAIdxNo]) / 100);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "[ServerTime: %d: %d: %d]\n", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
 
-            printf("=========================================\n");
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "=========================================\n");
 
             if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
             {
@@ -385,59 +373,62 @@ void thread_main()
                 long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
                 long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
                 long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
+
                 long OpenPrice = gCurCommHighLowPoint[MtxCommodtyInfo][2] / 100;
                 double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2;
                 double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2;
 
-                printf("Open: %ld, CurHigh: %ld, CurLow: %ld, Ma5: %f, CostMovingAverage: %ld, ", OpenPrice, CurHigh, CurLow, gMa5, CostMovingAverage);
-                printf("CurAvg: %ld, CurAmp : %ld, ", (CurHigh + CurLow) / 2, CurHigh - CurLow);
-                printf("LongExtremeValue: %ld, ShortExtremeValue: %ld\n", static_cast<long>(ShockLongExtremeValue), static_cast<long>(ShockShortExtremeValue));
+                sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Open: %ld, CurHigh: %ld, CurLow: %ld, Ma5: %f, CostMovingAverage: %ld, ", OpenPrice, CurHigh, CurLow, gMa5, CostMovingAverage);
+                sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "CurAvg: %ld, CurAmp : %ld, ", (CurHigh + CurLow) / 2, CurHigh - CurLow);
+                sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "LongExtremeValue: %ld, ShortExtremeValue: %ld\n", static_cast<long>(ShockLongExtremeValue), static_cast<long>(ShockShortExtremeValue));
             }
 
-            printf("=========================================\n");
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "=========================================\n");
 
             if (gOpenInterestInfo.NeedToUpdate == FALSE && gOpenInterestInfo.openPosition != 0)
             {
-                printf("Open Position: %d, AvgCost:%f, ProfitAndLoss: %f\n",
-                       gOpenInterestInfo.openPosition,
-                       gOpenInterestInfo.avgCost,
-                       gOpenInterestInfo.profitAndLoss);
+                sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Open Position: %d, AvgCost:%f, ProfitAndLoss: %f\n",
+                          gOpenInterestInfo.openPosition,
+                          gOpenInterestInfo.avgCost,
+                          gOpenInterestInfo.profitAndLoss);
 
-                printf("=========================================\n");
+                sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "=========================================\n");
             }
 
-            printf("Long Key 5: %ld\n", gDayAmpAndKeyPrice.LongKey5);
-            printf("Long Key 4: %ld\n", gDayAmpAndKeyPrice.LongKey4);
-            printf("Long Key 3: %ld\n", gDayAmpAndKeyPrice.LongKey3);
-            printf("Long Key 2: %ld\n", gDayAmpAndKeyPrice.LongKey2);
-            printf("Long Key 1: %ld\n", gDayAmpAndKeyPrice.LongKey1);
-            printf("=========================================\n");
-            printf("Short Key 1: %ld\n", gDayAmpAndKeyPrice.ShortKey1);
-            printf("Short Key 2: %ld\n", gDayAmpAndKeyPrice.ShortKey2);
-            printf("Short Key 3: %ld\n", gDayAmpAndKeyPrice.ShortKey3);
-            printf("Short Key 4: %ld\n", gDayAmpAndKeyPrice.ShortKey4);
-            printf("Short Key 5: %ld\n", gDayAmpAndKeyPrice.ShortKey5);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Long Key 5: %ld\n", gDayAmpAndKeyPrice.LongKey5);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Long Key 4: %ld\n", gDayAmpAndKeyPrice.LongKey4);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Long Key 3: %ld\n", gDayAmpAndKeyPrice.LongKey3);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Long Key 2: %ld\n", gDayAmpAndKeyPrice.LongKey2);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Long Key 1: %ld\n", gDayAmpAndKeyPrice.LongKey1);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "=========================================\n");
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Short Key 1: %ld\n", gDayAmpAndKeyPrice.ShortKey1);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Short Key 2: %ld\n", gDayAmpAndKeyPrice.ShortKey2);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Short Key 3: %ld\n", gDayAmpAndKeyPrice.ShortKey3);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Short Key 4: %ld\n", gDayAmpAndKeyPrice.ShortKey4);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Short Key 5: %ld\n", gDayAmpAndKeyPrice.ShortKey5);
 
-            printf("=========================================\n");
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "=========================================\n");
 
-            printf("SmallestAmp : %ld, ", gDayAmpAndKeyPrice.SmallestAmp);
-            printf("SmallAmp : %ld, ", gDayAmpAndKeyPrice.SmallAmp);
-            printf("AvgAmp : %ld, ", gDayAmpAndKeyPrice.AvgAmp);
-            printf("LargerAmp : %ld, ", gDayAmpAndKeyPrice.LargerAmp);
-            printf("LargestAmp : %ld\n", gDayAmpAndKeyPrice.LargestAmp);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "SmallestAmp : %ld, ", gDayAmpAndKeyPrice.SmallestAmp);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "SmallAmp : %ld, ", gDayAmpAndKeyPrice.SmallAmp);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "AvgAmp : %ld, ", gDayAmpAndKeyPrice.AvgAmp);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "LargerAmp : %ld, ", gDayAmpAndKeyPrice.LargerAmp);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "LargestAmp : %ld\n", gDayAmpAndKeyPrice.LargestAmp);
 
-            printf("=========================================\n");
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "=========================================\n");
 
-            printf("[LongShortThreshold:%ld], StrategyCaluLongShort:%ld, BidOfferLongShort:%ld, TransactionListLongShort:%ld\n",
-                   gStrategyConfig.BidOfferLongShortThreshold, StrategyCaluLongShort(), gBidOfferLongShort, gTransactionListLongShort);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "[LongShortThreshold:%ld], StrategyCaluLongShort:%ld, BidOfferLongShort:%ld, TransactionListLongShort:%ld\n",
+                      gStrategyConfig.BidOfferLongShortThreshold, StrategyCaluLongShort(), gBidOfferLongShort, gTransactionListLongShort);
 
-            printf("=========================================\n");
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "=========================================\n");
 
             AutoBest5Long(gCommodtyInfo.TSMCIdxNo, TSMC);
             AutoBest5Long(gCommodtyInfo.FOXCONNIdxNo, FOXCONN);
             AutoBest5Long(gCommodtyInfo.MediaTekIdxNo, MEDIATEK);
-        }
 
+            snprintf(buffer2, sizeof(buffer2), buffer);
+            buffer[0] = '\0';
+        }
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU
     }
 }
@@ -510,11 +501,6 @@ int main()
 
     init();
 
-    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
-    DWORD mode = 0;
-    GetConsoleMode(hStdin, &mode);
-    SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
-
     g_nCode = pSKCenterLib->Login(g_strUserId.c_str(), gPwd.c_str());
 
     pSKCenterLib->PrintfCodeMessage("Center", "Login", g_nCode);
@@ -524,11 +510,13 @@ int main()
         return 0;
     }
 
-    SetConsoleMode(hStdin, mode);
-
     thread tMain(thread_main);
     if (tMain.joinable())
         tMain.detach();
+
+    thread tMain2(thread_socket);
+    if (tMain2.joinable())
+        tMain2.detach();
 
     MSG msg;
     while (GetMessageW(&msg, NULL, 0, 0)) // Get SendMessage loop
