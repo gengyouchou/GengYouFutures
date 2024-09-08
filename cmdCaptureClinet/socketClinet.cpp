@@ -75,6 +75,8 @@ int main()
 			std::cout << "Message from server: " << buffer << std::endl;
 		}
 
+		system("cls"); // Clear screen
+
 		// Start communication loop with server
 		std::string message = "Hello, server!";
 		while (true)
@@ -85,9 +87,15 @@ int main()
 			if (valread > 0)
 			{
 				buffer[valread] = '\0';
-				std::cout << "Message from server: " << buffer << std::endl;
+
+				// Move cursor to the top of the console and output buffer
+				gotoxy(0, 0);
+				std::cout << buffer;
+
+				// // Fill remaining space with blanks to erase any previous longer lines
+				// std::cout << std::string(buffer_size - valread, ' ') << std::flush;
+
 				std::this_thread::sleep_for(std::chrono::milliseconds(300));
-				system("cls"); // Clear screen
 			}
 			else if (valread == 0)
 			{
