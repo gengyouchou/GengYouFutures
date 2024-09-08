@@ -88,14 +88,10 @@ int main()
 			{
 				buffer[valread] = '\0';
 
-				// Move cursor to the top of the console and output buffer
-				gotoxy(0, 0);
 				std::cout << buffer;
 
-				// // Fill remaining space with blanks to erase any previous longer lines
-				// std::cout << std::string(buffer_size - valread, ' ') << std::flush;
-
 				std::this_thread::sleep_for(std::chrono::milliseconds(300));
+				system("cls"); // Clear screen
 			}
 			else if (valread == 0)
 			{
