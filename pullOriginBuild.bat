@@ -8,4 +8,4 @@ git checkout adslp/SSH_UI
 git branch --show-current
 git status
 
-call C:\GengYouFutures\pullOriginBuild.bat
+call C:\GengYouFutures\Build_target.bat
