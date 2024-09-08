@@ -2,11 +2,21 @@
 #include <ws2tcpip.h>
 #include <iostream>
 #include <string>
+#include <windows.h>
 
 #pragma comment(lib, "Ws2_32.lib")
 
 #define PORT 30666
 #define buffer_size  4096
+
+void gotoxy(int x, int y) {
+    COORD coord;
+    coord.X = x;
+    coord.Y = y;
+    // 获取控制台的句柄
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+
 int main() {
 	WSADATA wsaData;
 	SOCKET sock = INVALID_SOCKET;
@@ -79,8 +89,9 @@ int main() {
 		if (valread > 0) {
 			buffer[valread] = '\0';
 			std::cout << "Message from server: " << buffer << std::endl;
+			
 			Sleep(300);
-			system("cls");
+			system("cls");	
 		}
 		else {
 			std::cerr << "recv failed" << std::endl;
