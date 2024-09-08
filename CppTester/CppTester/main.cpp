@@ -355,8 +355,9 @@ void thread_main()
                 CheckConnected = 0;
             }
 
-            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "[UserId:%s], [LongShortThreshold:%ld], [BidOfferLongShortThreshold:%ld], [ActivePoint:%ld], [MaximumLoss:%f]\n",
-                      g_strUserId.c_str(), gStrategyConfig.ClosingKeyPriceLevel, gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss);
+            sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "[UserId:%s], [StrategyMode:%ld], [ClosingKeyPriceLevel:%ld], [BidOfferLongShortThreshold:%ld], [ActivePoint:%ld], [MaximumLoss:%f]\n",
+                      g_strUserId.c_str(), gStrategyConfig.StrategyMode, gStrategyConfig.ClosingKeyPriceLevel,
+                      gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss);
             sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "=========================================\n");
             sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "[CurMtxPrice: %ld] ", gCurCommPrice[MtxCommodtyInfo] / 100);
             sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "[TSEA prices: %ld, Valume: %ld] ",
