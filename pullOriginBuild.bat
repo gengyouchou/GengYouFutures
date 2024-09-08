@@ -1,10 +1,10 @@
-git checkout adslp/SSH_UI
+git checkout GengYou/main
 git pull origin
-git checkout adslp/SSH_UI
+git checkout GengYou/main
 git reset --hard head
 git status
 git fetch origin
-git checkout adslp/SSH_UI
+git checkout GengYou/main
 git branch --show-current
 git status
 
