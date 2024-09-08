@@ -3,10 +3,11 @@ set "currentDrive=%~d0"
 
 set "SOURCE_DIR=%currentDrive%\GengYouFutures"
 
-git checkout GengYou/main
+git reset --hard head
+git pull origin
+git checkout origin/GengYou/main
 git pull origin
 git checkout GengYou/main
-git reset --hard head
 git status
 git fetch origin
 git checkout GengYou/main
