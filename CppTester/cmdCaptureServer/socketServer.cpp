@@ -48,13 +48,13 @@ void thread_socket()
 
     const char *greeting = "Connected to server";
 
-    // 初始化 Winsock
+    // Initialize Winsock
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
     {
         std::cerr << "WSAStartup failed" << std::endl;
     }
 
-    // 创建套接字文件描述符
+    // Create a socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
     {
         std::cerr << "Socket creation failed" << std::endl;
@@ -64,14 +64,16 @@ void thread_socket()
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
-    // 绑定套接字到端口
+
+    // Bind the socket to the port
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) == SOCKET_ERROR)
     {
         std::cerr << "Bind failed" << std::endl;
         closesocket(server_fd);
         WSACleanup();
     }
-    // 监听传入连接
+
+    // Listen for incoming connections
     if (listen(server_fd, 3) == SOCKET_ERROR)
     {
         std::cerr << "Listen failed" << std::endl;
@@ -80,53 +82,47 @@ void thread_socket()
     }
     std::cout << "Server is listening on port " << PORT << std::endl;
 
-    // string temp = "[UserId:], [LongShortThreshold:%], [BidOfferLongShortThreshold:], [ActivePoint:], [MaximumLoss:]\n";
-    // char tab2[1024];
-    // strncpy(tab2, temp.c_str(), sizeof(tab2));
-    // tab2[sizeof(tab2) - 1] = 0;
-
+    // Define an empty buffer for incoming messages
     char buffer_empty[4096] = {0};
 
     while (true)
     {
         std::cout << "Waiting for new connection..." << std::endl;
-        // 接受客户端连接
+        // Accept a client connection
         new_socket = accept(server_fd, (struct sockaddr *)&address, &addrlen);
         if (new_socket == INVALID_SOCKET)
         {
             std::cerr << "Accept failed" << std::endl;
-            continue; // 继续等待其他客户端连接
+            continue; // Continue waiting for other client connections
         }
 
+        // Send an initial connection message to the client
         size_t length = strlen(greeting);
         if (length > INT_MAX)
         {
-            // 處理錯誤，例如打印錯誤消息或截斷數據
+            // Handle error, such as printing an error message or truncating data
         }
         else
         {
-            send(new_socket, greeting, static_cast<int>(length), 0); // 发送初始连接消息
+            send(new_socket, greeting, static_cast<int>(length), 0); // Send the initial connection message
         }
 
         while (true)
         {
-            std::cout << "client in";
-            // Sleep(500);
-            // int valread = 1023;
-            int valread = recv(new_socket, buffer_empty, 4096, 0); // 读取客户端消息
+            std::cout << "Client connected";
+            // Read the client message
+            int valread = recv(new_socket, buffer_empty, 4096, 0);
             if (valread > 0)
             {
-
-                buffer_empty[valread] = '\0'; // 确保字符串以 null 结尾
+                buffer_empty[valread] = '\0'; // Ensure the string is null-terminated
                 std::cout << "Message from client: " << buffer_empty << std::endl;
 
-                send(new_socket, buffer2, 4095, 0); // 发送消息回客户端
-                // send(new_socket, tab2, 1023, 0); // 发送消息回客户端
+                send(new_socket, buffer2, 4095, 0); // Send a response message back to the client
             }
             else if (valread == 0)
             {
                 std::cout << "Client disconnected" << std::endl;
-                break; // 客户端断开连接，退出内循环
+                break; // Client disconnected, exit the inner loop
             }
             else
             {
@@ -135,8 +131,8 @@ void thread_socket()
             }
         }
 
-        closesocket(new_socket); // 关闭与当前客户端的连接
+        closesocket(new_socket); // Close the connection with the current client
     }
-    closesocket(server_fd);
+    closesocket(server_fd); // Close the server socket
     WSACleanup();
 }
