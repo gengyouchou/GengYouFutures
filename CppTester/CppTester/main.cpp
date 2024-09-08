@@ -389,9 +389,9 @@ void thread_main()
                 double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2;
                 double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2;
 
-                printf("Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, ", OpenPrice, CurHigh, CurLow, CostMovingAverage);
-                printf("LongExtremeValue: %ld, ShortExtremeValue: %ld, ", static_cast<long>(ShockLongExtremeValue), static_cast<long>(ShockShortExtremeValue));
-                printf("CurAvg: %ld, CurAmp : %ld\n", (CurHigh + CurLow) / 2, CurHigh - CurLow);
+                printf("Open: %ld, CurHigh: %ld, CurLow: %ld, Ma5: %f, CostMovingAverage: %ld, ", OpenPrice, CurHigh, CurLow, gMa5, CostMovingAverage);
+                printf("CurAvg: %ld, CurAmp : %ld, ", (CurHigh + CurLow) / 2, CurHigh - CurLow);
+                printf("LongExtremeValue: %ld, ShortExtremeValue: %ld\n", static_cast<long>(ShockLongExtremeValue), static_cast<long>(ShockShortExtremeValue));
             }
 
             printf("=========================================\n");

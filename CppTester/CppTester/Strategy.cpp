@@ -56,6 +56,7 @@ DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
 
 LONG gBidOfferLongShort = 0, gTransactionListLongShort = 0;
 double gCostMovingAverageVal = 0;
+double gMa5 = 0;
 
 STRATEGY_CONFIG gStrategyConfig = {
     CLOSING_KEY_PRICE_LEVEL,
@@ -159,6 +160,7 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
             {
                 // Calculate the 5MA
                 double ma5 = calculate5MA(closePrices);
+                gMa5 = ma5;
 
                 // Determine the slope of the 5MA
                 double ma5Slope = ma5 - lastMa5;

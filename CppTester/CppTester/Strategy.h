@@ -111,3 +111,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 #define TSMC "2330"
 #define FOXCONN "2317"
 #define MEDIATEK "2454"
+
+extern double gCostMovingAverageVal;
+extern double gMa5;
