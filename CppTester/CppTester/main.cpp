@@ -406,15 +406,12 @@ void thread_main()
 
             sprintf(buffer+strlen(buffer),"=========================================\n");
 
-            long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
-            long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
-            long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
             if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
             {
 
-                // long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
-                // long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
-                // long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
+                long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
+                long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
+                long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
                 sprintf(buffer+strlen(buffer),"Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, ", gCurCommHighLowPoint[MtxCommodtyInfo][2], CurHigh, CurLow, CostMovingAverage);
                 sprintf(buffer+strlen(buffer),"CurAvg: %ld, CurAmp : %ld\n", (CurHigh + CurLow) / 2, CurHigh - CurLow);
             }
