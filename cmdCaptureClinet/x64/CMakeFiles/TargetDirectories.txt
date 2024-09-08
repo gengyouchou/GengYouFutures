@@ -1,3 +1,0 @@
-C:/GengYouFutures/cmdCaptureClinet/x64/CMakeFiles/cmdCaptureClinet.dir
-C:/GengYouFutures/cmdCaptureClinet/x64/CMakeFiles/ALL_BUILD.dir
-C:/GengYouFutures/cmdCaptureClinet/x64/CMakeFiles/ZERO_CHECK.dir

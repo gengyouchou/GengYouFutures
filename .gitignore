@@ -33,8 +33,6 @@ nupengl.core.redist.0.1.0.1
 *.user
 CppTester/x64/
 CppTester/CppTester/x64/Release
-cmdCaptureClinet/x64
-
 GengTraderGuardian/x64
 cmdCaptureClinet/x64
 
