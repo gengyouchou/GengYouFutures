@@ -19,6 +19,7 @@ set(SOURCES
     CppTester/SKReplyLib.cpp
     CppTester/Strategy.cpp
     ../Logger/Logger.cpp
+    cmdCaptureServer/socketServer.cpp
 )
 
 # 添加头文件
@@ -31,11 +32,13 @@ set(HEADERS
     CppTester/TEventHandler.h
     CppTester/Strategy.h
     ../Logger/Logger.h
+    cmdCaptureServer/socketServer.h
 )
 
 # 添加头文件目录
 include_directories(${CMAKE_SOURCE_DIR}/CppTester)
 include_directories("../Logger")
+include_directories("cmdCaptureServer")
 include_directories("../../")
 
 # 设置不同配置的编译选项
