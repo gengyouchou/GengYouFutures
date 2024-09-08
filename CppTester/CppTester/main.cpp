@@ -21,7 +21,7 @@ extern SHORT gCurServerTime[3];
 extern std::unordered_map<long, long> gCurCommPrice;
 extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
-extern std::unordered_map<long, std::array<long, 5>> gTransactionList;
+extern std::unordered_map<long, std::array<long, 6>> gTransactionList;
 // long nPtr, long nBid, long nAsk, long nClose, long nQty,
 
 extern COMMODITY_INFO gCommodtyInfo;
@@ -281,6 +281,9 @@ void thread_main()
     AutoQuoteTicks(MEDIATEK, -1);
     AutoQuoteTicks(FOXCONN, -1);
 
+    // For calculate 5MA
+    AutoQuoteTicks(COMMODITY_MAIN, -1);
+
     while (true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
@@ -386,9 +389,9 @@ void thread_main()
                 double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2;
                 double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2;
 
-                printf("Open: %ld, CurHigh: %ld, CurLow: %ld, CostMovingAverage: %ld, ", OpenPrice, CurHigh, CurLow, CostMovingAverage);
-                printf("LongExtremeValue: %ld, ShortExtremeValue: %ld, ", static_cast<long>(ShockLongExtremeValue), static_cast<long>(ShockShortExtremeValue));
-                printf("CurAvg: %ld, CurAmp : %ld\n", (CurHigh + CurLow) / 2, CurHigh - CurLow);
+                printf("Open: %ld, CurHigh: %ld, CurLow: %ld, Ma5: %f, CostMovingAverage: %ld, ", OpenPrice, CurHigh, CurLow, gMa5, CostMovingAverage);
+                printf("CurAvg: %ld, CurAmp : %ld, ", (CurHigh + CurLow) / 2, CurHigh - CurLow);
+                printf("LongExtremeValue: %ld, ShortExtremeValue: %ld\n", static_cast<long>(ShockLongExtremeValue), static_cast<long>(ShockShortExtremeValue));
             }
 
             printf("=========================================\n");

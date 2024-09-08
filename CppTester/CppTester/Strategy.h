@@ -70,9 +70,10 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 #define LONG_AND_SHORT_TARGET_COUNT 2
 #define TRANSACTION_LIST_LONG_SHORT_WEIGHT_RATIO 1
 #define BID_OFFER_LONG_SHORT_WEIGHT_RATIO 3
-#define MAXIMUM_COST_AVG_BIAS_RATIO 200
+#define MAXIMUM_COST_AVG_BIAS_RATIO 100
 #define BIG_ORDER 20
 #define BID_OFFER_REFRESH_INTERVAL 100 // 100 ms
+#define FIVE_MINUTE_MA_SLOPE_LONG_SHORT 10
 
 // Order
 
@@ -110,3 +111,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 #define TSMC "2330"
 #define FOXCONN "2317"
 #define MEDIATEK "2454"
+
+extern double gCostMovingAverageVal;
+extern double gMa5;

@@ -22,7 +22,7 @@ std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint; // Max len
 std::unordered_map<long, long> gCurCommPrice;
 std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
 std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
-std::unordered_map<long, std::array<long, 5>> gTransactionList;
+std::unordered_map<long, std::array<long, 6>> gTransactionList;
 // long nPtr, long nBid, long nAsk, long nClose, long nQty,
 
 SHORT gCurServerTime[3] = {-1, -1, -1};
@@ -610,6 +610,7 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
     gTransactionList[nStockIndex][2] = nAsk;
     gTransactionList[nStockIndex][3] = nClose;
     gTransactionList[nStockIndex][4] = nQty;
+    gTransactionList[nStockIndex][5] = lTimehms;
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
