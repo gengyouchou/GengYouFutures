@@ -35,6 +35,8 @@ CppTester/x64/
 CppTester/CppTester/x64/Release
 
 GengTraderGuardian/x64
+cmdCaptureClinet/x64
+
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
