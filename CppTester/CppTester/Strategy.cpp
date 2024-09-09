@@ -105,6 +105,8 @@ static double calculate5MA(std::deque<double> &closePrices)
  */
 int Count5MaForNewLongShortPosition(LONG nStockidx)
 {
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
+
     // Static variables to retain state between function calls
     static unordered_map<long, long> PrePtr; // Keeps track of the last processed pointer for each stock index
     static std::deque<double> closePrices;   // Stores the last 5 minutes of closing prices
@@ -124,6 +126,9 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
         nClose = gTransactionList[nStockidx][3];
         nQty = gTransactionList[nStockidx][4];
         nTimehms = gTransactionList[nStockidx][5];
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
+              nStockidx, nPtr, nTimehms, nBid, nAsk, nClose, nQty);
 
         // Process new tick data only if this is a new pointer (i.e., a new tick)
         if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
@@ -2321,7 +2326,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyCaluBidOfferLongShort();
         StrategyCaluTransactionListLongShort();
 
-        int LongShort = Count5MaForNewLongShortPosition(MtxCommodtyInfo);
+        int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
 
         if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold && LongShort == 1)
         {
@@ -2345,7 +2350,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyCaluBidOfferLongShort();
         StrategyCaluTransactionListLongShort();
 
-        int LongShort = Count5MaForNewLongShortPosition(MtxCommodtyInfo);
+        int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
 
         if (LongShort == 1)
         {
