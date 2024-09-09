@@ -104,7 +104,7 @@ static double calculate5MA(std::deque<double> &closePrices)
  *         - 0 if a short position should be opened.
  *         - -1 if no action is taken (e.g., not enough data, or no change in position).
  */
-int EarnAtLeastOneStrikeAndNotInExtremeValue(LONG MtxCommodtyInfo)
+int EarnAtLeastOneStrikeAndNotInExtremeValue(LONG MtxCommodtyInfo, LONG LongShort)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
@@ -155,9 +155,10 @@ int EarnAtLeastOneStrikeAndNotInExtremeValue(LONG MtxCommodtyInfo)
     DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, CurAvg= %f, gCostMovingAverageVal=%f",
           curPrice, CurAvg, gCostMovingAverageVal);
 
-    // Strategy for going long
-
+    if (LongShort == 1)
     {
+        // Strategy for going long
+
         double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2.0;
 
         if (CurHigh - curPrice > ONE_STRIKE_PRICES &&
@@ -167,7 +168,10 @@ int EarnAtLeastOneStrikeAndNotInExtremeValue(LONG MtxCommodtyInfo)
         }
     }
 
+    if (LongShort == 0)
     {
+        // Strategy for going Short
+
         double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2.0;
 
         if (curPrice - CurLow > ONE_STRIKE_PRICES &&
@@ -1753,8 +1757,10 @@ VOID StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(string strUserId, L
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
         }
 
-        if ((BuySell == 0 && curPrice >= CurHigh) ||
-            (BuySell == 1 && curPrice <= CurLow))
+        int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
+
+        if ((BuySell == 0 && curPrice >= CurHigh && LongShort == 0) ||
+            (BuySell == 1 && curPrice <= CurLow && LongShort == 1))
         {
             vector<string> vec = {COMMODITY_OTHER};
 
@@ -2449,6 +2455,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
+        StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(g_strUserId, MtxCommodtyInfo);
 
         StrategyCaluBidOfferLongShort();
         StrategyCaluTransactionListLongShort();
@@ -2493,9 +2500,11 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
+        StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(g_strUserId, MtxCommodtyInfo);
 
         StrategyCaluBidOfferLongShort();
         StrategyCaluTransactionListLongShort();
+        int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
 
         BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
 
@@ -2504,17 +2513,18 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             break;
         }
 
-        int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
-        int IsEarnAtLeast = EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo);
-
         if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
         {
 
-            if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold && LongShort == 1 && IsEarnAtLeast == 1)
+            if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold &&
+                LongShort == 1 &&
+                EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 1) == 1)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
             }
-            else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold && LongShort == 0 && IsEarnAtLeast == 0)
+            else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold &&
+                     LongShort == 0 &&
+                     EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 0) == 0)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
             }
@@ -2532,6 +2542,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 
         StrategyCaluBidOfferLongShort();
         StrategyCaluTransactionListLongShort();
+        int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
 
         BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
 
@@ -2540,17 +2551,14 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             break;
         }
 
-        int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
-        int IsEarnAtLeast = EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo);
-
         if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
         {
 
-            if (LongShort == 1 && IsEarnAtLeast == 1)
+            if (LongShort == 1 && EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 1) == 1)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
             }
-            else if (LongShort == 0 && IsEarnAtLeast == 0)
+            else if (LongShort == 0 && EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 0) == 0)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
             }
