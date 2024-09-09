@@ -104,7 +104,7 @@ static double calculate5MA(std::deque<double> &closePrices)
  *         - 0 if a short position should be opened.
  *         - -1 if no action is taken (e.g., not enough data, or no change in position).
  */
-int EarnAtLeastOneStrikeAndNotInExtremeValue(LONG nStockidx, LONG MtxCommodtyInfo)
+int EarnAtLeastOneStrikeAndNotInExtremeValue(LONG MtxCommodtyInfo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
@@ -200,7 +200,7 @@ int EarnAtLeastOneStrikeAndNotInExtremeValue(LONG nStockidx, LONG MtxCommodtyInf
  *         - 0 if a short position should be opened.
  *         - -1 if no action is taken (e.g., not enough data, or no change in position).
  */
-BOOLEAN TodayAmplitudeHasBeenReached(LONG nStockidx, LONG MtxCommodtyInfo)
+BOOLEAN TodayAmplitudeHasBeenReached(LONG MtxCommodtyInfo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
@@ -2497,13 +2497,21 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyCaluBidOfferLongShort();
         StrategyCaluTransactionListLongShort();
 
-        int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
+        BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
 
-        if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold && LongShort == 1)
+        if (ReachTodayAmplitude == TRUE)
+        {
+            break;
+        }
+
+        int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
+        int IsEarnAtLeast = EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo);
+
+        if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold && LongShort == 1 && IsEarnAtLeast == 1)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
         }
-        else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold && LongShort == 0)
+        else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold && LongShort == 0 && IsEarnAtLeast == 0)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
         }
