@@ -1757,8 +1757,10 @@ VOID StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(string strUserId, L
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
         }
 
-        if ((BuySell == 0 && curPrice >= CurHigh) ||
-            (BuySell == 1 && curPrice <= CurLow))
+        int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
+
+        if ((BuySell == 0 && curPrice >= CurHigh && LongShort == 0) ||
+            (BuySell == 1 && curPrice <= CurLow && LongShort == 1))
         {
             vector<string> vec = {COMMODITY_OTHER};
 
