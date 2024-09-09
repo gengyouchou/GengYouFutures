@@ -57,7 +57,7 @@ DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
 LONG gBidOfferLongShort = 0, gTransactionListLongShort = 0;
 double gCostMovingAverageVal = 0;
 double gMa5 = 0;
-LONG gMa5LongShort = -1;
+LONG gMa5LongShort = 0;
 
 STRATEGY_CONFIG gStrategyConfig = {
     CLOSING_KEY_PRICE_LEVEL,
@@ -1764,8 +1764,8 @@ VOID StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(string strUserId, L
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
         }
 
-        if ((BuySell == 0 && curPrice >= CurHigh && gMa5LongShort == 0) ||
-            (BuySell == 1 && curPrice <= CurLow && gMa5LongShort == 1))
+        if ((BuySell == 0 && curPrice >= CurHigh && gMa5LongShort < 0) ||
+            (BuySell == 1 && curPrice <= CurLow && gMa5LongShort > 0))
         {
             vector<string> vec = {COMMODITY_OTHER};
 
@@ -2522,13 +2522,13 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         {
 
             if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold &&
-                gMa5LongShort == 1 &&
+                gMa5LongShort > 0 &&
                 EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 1) == 1)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
             }
             else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold &&
-                     gMa5LongShort == 0 &&
+                     gMa5LongShort < 0 &&
                      EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 0) == 0)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
@@ -2559,11 +2559,11 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
         {
 
-            if (gMa5LongShort == 1 && EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 1) == 1)
+            if (gMa5LongShort > 0 && EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 1) == 1)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
             }
-            else if (gMa5LongShort == 0 && EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 0) == 0)
+            else if (gMa5LongShort < 0 && EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 0) == 0)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
             }
