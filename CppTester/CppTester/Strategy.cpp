@@ -334,6 +334,23 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
                     closePrices.push_back(lastMinutePrice); // Push the final price of the last minute
                 }
 
+                if (closePrices.size() >= 5)
+                {
+                    // Calculate the 5MA
+                    double ma5 = calculate5MA(closePrices);
+                    gMa5 = ma5;
+
+                    if (lastMa5 == 0)
+                    {
+                        lastMa5 = closePrices.front();
+                    }
+
+                    // Determine the slope of the 5MA
+                    double ma5Slope = ma5 - lastMa5;
+
+                    gMa5LongShort = static_cast<long>(ma5Slope);
+                }
+
                 // Update the last processed minute and reset the lastMinutePrice for the new minute
                 lastMinute = currentMinute;
             }
@@ -348,14 +365,8 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
                 double ma5 = calculate5MA(closePrices);
                 gMa5 = ma5;
 
-                if (lastMa5 == 0)
-                {
-                    lastMa5 = closePrices.front();
-                }
-
                 // Determine the slope of the 5MA
                 double ma5Slope = ma5 - lastMa5;
-                gMa5LongShort = static_cast<long>(ma5Slope);
 
                 DEBUG(DEBUG_LEVEL_DEBUG, "5MA: %f, lastMa5: %f, Slope: %ld", ma5, lastMa5, gMa5LongShort);
 
