@@ -2,6 +2,7 @@
 #include "SKOrderLib.h"
 #include "SKQuoteLib.h"
 #include "SKReplyLib.h"
+#include "Strategy.h"
 #include <Logger.h>
 #include <array>
 #include <chrono>  // For std::chrono::steady_clock
@@ -12,7 +13,6 @@
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 #include <yaml-cpp/yaml.h>
-#include "Strategy.h"
 
 #include "socketServer.h"
 
@@ -378,7 +378,8 @@ void thread_main()
                 double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2;
                 double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2;
 
-                sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Open: %ld, CurHigh: %ld, CurLow: %ld, Ma5: %f, CostMovingAverage: %ld, ", OpenPrice, CurHigh, CurLow, gMa5, CostMovingAverage);
+                sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "Open: %ld, CurHigh: %ld, CurLow: %ld, Ma5: %f, Ma5LongShort: %ld, CostMovingAverage: %ld, ",
+                          OpenPrice, CurHigh, CurLow, gMa5, gMa5LongShort, CostMovingAverage);
                 sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "CurAvg: %ld, CurAmp : %ld, ", (CurHigh + CurLow) / 2, CurHigh - CurLow);
                 sprintf_s(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "LongExtremeValue: %ld, ShortExtremeValue: %ld\n", static_cast<long>(ShockLongExtremeValue), static_cast<long>(ShockShortExtremeValue));
             }

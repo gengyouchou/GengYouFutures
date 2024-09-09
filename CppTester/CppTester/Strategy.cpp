@@ -57,6 +57,7 @@ DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
 LONG gBidOfferLongShort = 0, gTransactionListLongShort = 0;
 double gCostMovingAverageVal = 0;
 double gMa5 = 0;
+LONG gMa5LongShort = 0;
 
 STRATEGY_CONFIG gStrategyConfig = {
     CLOSING_KEY_PRICE_LEVEL,
@@ -333,6 +334,23 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
                     closePrices.push_back(lastMinutePrice); // Push the final price of the last minute
                 }
 
+                if (closePrices.size() >= 5)
+                {
+                    // Calculate the 5MA
+                    double ma5 = calculate5MA(closePrices);
+                    gMa5 = ma5;
+
+                    if (lastMa5 == 0)
+                    {
+                        lastMa5 = closePrices.front();
+                    }
+
+                    // Determine the slope of the 5MA
+                    double ma5Slope = ma5 - lastMa5;
+
+                    gMa5LongShort = static_cast<long>(ma5Slope);
+                }
+
                 // Update the last processed minute and reset the lastMinutePrice for the new minute
                 lastMinute = currentMinute;
             }
@@ -350,21 +368,23 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
                 // Determine the slope of the 5MA
                 double ma5Slope = ma5 - lastMa5;
 
+                DEBUG(DEBUG_LEVEL_DEBUG, "5MA: %f, lastMa5: %f, Slope: %ld", ma5, lastMa5, gMa5LongShort);
+
                 // Store the current 5MA for the next comparison
                 lastMa5 = ma5;
 
                 // Strategy: Open positions based on the slope of the 5MA
-                if (ma5Slope > 0)
+                if (gMa5LongShort > 0)
                 {
                     // Go long: 5MA slope is positive
-                    DEBUG(DEBUG_LEVEL_DEBUG, "Opening long position. 5MA: %f, Slope: %f", ma5, ma5Slope);
+                    DEBUG(DEBUG_LEVEL_DEBUG, "Opening long position. 5MA: %f, Slope: %ld", ma5, gMa5LongShort);
                     PrePtr[nStockidx] = nPtr; // Update the last processed pointer
                     return 1;                 // Return 1 for long position
                 }
-                else if (ma5Slope < 0)
+                else if (gMa5LongShort < 0)
                 {
                     // Go short: 5MA slope is negative
-                    DEBUG(DEBUG_LEVEL_DEBUG, "Opening short position. 5MA: %f, Slope: %f", ma5, ma5Slope);
+                    DEBUG(DEBUG_LEVEL_DEBUG, "Opening short position. 5MA: %f, Slope: %ld", ma5, gMa5LongShort);
                     PrePtr[nStockidx] = nPtr; // Update the last processed pointer
                     return 0;                 // Return 0 for short position
                 }
@@ -1757,10 +1777,8 @@ VOID StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(string strUserId, L
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
         }
 
-        int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
-
-        if ((BuySell == 0 && curPrice >= CurHigh && LongShort == 0) ||
-            (BuySell == 1 && curPrice <= CurLow && LongShort == 1))
+        if ((BuySell == 0 && curPrice >= CurHigh && gMa5LongShort < 0) ||
+            (BuySell == 1 && curPrice <= CurLow && gMa5LongShort > 0))
         {
             vector<string> vec = {COMMODITY_OTHER};
 
@@ -2504,7 +2522,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 
         StrategyCaluBidOfferLongShort();
         StrategyCaluTransactionListLongShort();
-        int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
+        Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
 
         BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
 
@@ -2517,13 +2535,13 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         {
 
             if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold &&
-                LongShort == 1 &&
+                gMa5LongShort > 0 &&
                 EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 1) == 1)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
             }
             else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold &&
-                     LongShort == 0 &&
+                     gMa5LongShort < 0 &&
                      EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 0) == 0)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
@@ -2542,7 +2560,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 
         StrategyCaluBidOfferLongShort();
         StrategyCaluTransactionListLongShort();
-        int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
+        Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
 
         BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
 
@@ -2554,11 +2572,11 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
         {
 
-            if (LongShort == 1 && EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 1) == 1)
+            if (gMa5LongShort > 0 && EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 1) == 1)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
             }
-            else if (LongShort == 0 && EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 0) == 0)
+            else if (gMa5LongShort < 0 && EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo, 0) == 0)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
             }
