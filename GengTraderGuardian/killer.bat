@@ -5,7 +5,7 @@ set "tempfile=temp.txt"
 
 
 :menu
-echo Slect(1,2,3,4,5):
+echo Slect(1,2,3,4,5,6,7,8,9):
 echo 1 - Kill GengTraderGuardian.bat AND CppTester.exe AND GengTraderGuardian.exe
 echo 2 - Run cmdCaputre.exe
 echo 3 - Modify Config.yaml AND Restart Order Machine  (Kill CppTester.exe AND GengTraderGuardian.exe)
@@ -13,9 +13,10 @@ echo 4 - (Must Execute select 1 first plz) Pull AND Build
 echo 5 - Run GengTraderGuardian.bat
 echo 6 - Vim debug.log
 echo 7 - Vim strategy.log
-echo 8 - Exit 
+echo 8 - CD C:\GengYouFutures
+echo 9 - Exit 
 
-set /p option="Slect (1, 2, 3, 4, 5): "
+set /p option="Slect (1, 2, 3, 4, 5, 6, 7, 8, 9): "
 
 if "%option%"=="1" (
     echo Kill CppTester.exe AND GengTraderGuardian.exe AND GengTraderGuardian.bat
@@ -83,12 +84,18 @@ endlocal
 	call "C:\GengYouFutures\pullOriginBuild.bat"
     
 ) else if "%option%"=="5" (
+	REM (doesn't matter) powershell -Command "Start-Process 'C:\GengYouFutures\GengTraderGuardian\GengTraderGuardian.bat' -NoNewWindow -PassThru"
 	call "C:\GengYouFutures\GengTraderGuardian\GengTraderGuardian.bat"
 ) else if "%option%"=="6" (
 	call "ViewDebugLog.bat"
 ) else if "%option%"=="7" (
 	call "StrategyLog.bat"
 ) else if "%option%"=="8" (
+	cd C:\GengYouFutures
+	cmd
+	echo Exit...
+    exit /b
+)else if "%option%"=="9" (
 	echo Exit...
     exit /b
 )else (

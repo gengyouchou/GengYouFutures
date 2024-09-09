@@ -1,6 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
-
+title GengTraderGuardian.bat
 :: 获取当前盘符
 set "currentDrive=%~d0"
 
