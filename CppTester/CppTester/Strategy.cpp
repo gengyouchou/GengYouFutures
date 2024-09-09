@@ -2257,11 +2257,6 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
     DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, CurAvg= %f, gCostMovingAverageVal=%f",
           curPrice, CurAvg, gCostMovingAverageVal);
 
-    if (CurAmp > EstimatedTodaysAmplitude())
-    {
-        return;
-    }
-
     // Do Long
 
     if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
