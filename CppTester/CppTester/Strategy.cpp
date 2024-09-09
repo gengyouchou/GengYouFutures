@@ -83,6 +83,182 @@ static double calculate5MA(std::deque<double> &closePrices)
     double sum = std::accumulate(closePrices.begin(), closePrices.end(), 0.0);
     return sum / closePrices.size();
 }
+
+/**
+ * @brief Handle new tick data and calculate 5MA slope for opening long/short positions based on 1-minute close prices.
+ *
+ * This function processes tick data for a specific stock index (nStockidx), computes the 5-minute moving average (5MA)
+ * using the closing prices of the past 5 minutes, and determines whether to open long or short positions based on the
+ * slope of the 5MA (i.e., the difference between the current and previous 5MA values).
+ *
+ * The strategy is as follows:
+ * - Open a long position when the 5MA slope is positive.
+ * - Open a short position when the 5MA slope is negative.
+ *
+ * The function tracks the last processed minute and updates the closing prices deque when a new minute begins.
+ * Only the last tick of the minute is used to represent the closing price for that minute.
+ *
+ * @param nStockidx The stock index for which tick data is being processed.
+ * @return int
+ *         - 1 if a long position should be opened.
+ *         - 0 if a short position should be opened.
+ *         - -1 if no action is taken (e.g., not enough data, or no change in position).
+ */
+int EarnAtLeastOneStrikeAndNotInExtremeValue(LONG nStockidx, LONG MtxCommodtyInfo)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    if (gOpenInterestInfo.NeedToUpdate == TRUE)
+    {
+        LOG(DEBUG_LEVEL_DEBUG, "gOpenInterestInfo.NeedToUpdate == TRUE");
+        return -1;
+    }
+
+    double OpenPrice = 0;
+
+    // Check if the commodity information is present
+    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) == 0)
+    {
+        return -1;
+    }
+    else
+    {
+        OpenPrice = static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][2]) / 100.0;
+    }
+
+    double curPrice = 0;
+
+    // Get the current price for the commodity
+    if (gCurCommPrice.count(MtxCommodtyInfo) != 0)
+    {
+        curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
+    }
+
+    double CurAvg = 0;
+    double CurAmp = 0;
+    double CurHigh = 0, CurLow = 0;
+
+    // Calculate the current high, low, amplitude, and average
+    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
+    {
+        CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100.0;
+        CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100.0;
+        CurAmp = CurHigh - CurLow;
+        CurAvg = (CurHigh + CurLow) / 2;
+    }
+
+    if (curPrice <= 0 || CurHigh <= 0 || CurLow <= 0)
+    {
+        return -1;
+    }
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, CurAvg= %f, gCostMovingAverageVal=%f",
+          curPrice, CurAvg, gCostMovingAverageVal);
+
+    // Strategy for going long
+
+    {
+        double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2.0;
+
+        if (CurHigh - curPrice > ONE_STRIKE_PRICES &&
+            curPrice < ShockShortExtremeValue - ONE_STRIKE_PRICES)
+        {
+            return 1;
+        }
+    }
+
+    {
+        double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2.0;
+
+        if (curPrice - CurLow > ONE_STRIKE_PRICES &&
+            curPrice > ShockLongExtremeValue + ONE_STRIKE_PRICES)
+        {
+            return 0;
+        }
+    }
+
+    return -1;
+}
+
+/**
+ * @brief Handle new tick data and calculate 5MA slope for opening long/short positions based on 1-minute close prices.
+ *
+ * This function processes tick data for a specific stock index (nStockidx), computes the 5-minute moving average (5MA)
+ * using the closing prices of the past 5 minutes, and determines whether to open long or short positions based on the
+ * slope of the 5MA (i.e., the difference between the current and previous 5MA values).
+ *
+ * The strategy is as follows:
+ * - Open a long position when the 5MA slope is positive.
+ * - Open a short position when the 5MA slope is negative.
+ *
+ * The function tracks the last processed minute and updates the closing prices deque when a new minute begins.
+ * Only the last tick of the minute is used to represent the closing price for that minute.
+ *
+ * @param nStockidx The stock index for which tick data is being processed.
+ * @return int
+ *         - 1 if a long position should be opened.
+ *         - 0 if a short position should be opened.
+ *         - -1 if no action is taken (e.g., not enough data, or no change in position).
+ */
+BOOLEAN TodayAmplitudeHasBeenReached(LONG nStockidx, LONG MtxCommodtyInfo)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    if (gOpenInterestInfo.NeedToUpdate == TRUE)
+    {
+        LOG(DEBUG_LEVEL_DEBUG, "gOpenInterestInfo.NeedToUpdate == TRUE");
+        return TRUE;
+    }
+
+    double OpenPrice = 0;
+
+    // Check if the commodity information is present
+    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) == 0)
+    {
+        return TRUE;
+    }
+    else
+    {
+        OpenPrice = static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][2]) / 100.0;
+    }
+
+    double curPrice = 0;
+
+    // Get the current price for the commodity
+    if (gCurCommPrice.count(MtxCommodtyInfo) != 0)
+    {
+        curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
+    }
+
+    double CurAvg = 0;
+    double CurAmp = 0;
+    double CurHigh = 0, CurLow = 0;
+
+    // Calculate the current high, low, amplitude, and average
+    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
+    {
+        CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100.0;
+        CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100.0;
+        CurAmp = CurHigh - CurLow;
+        CurAvg = (CurHigh + CurLow) / 2;
+    }
+
+    if (curPrice <= 0 || CurHigh <= 0 || CurLow <= 0)
+    {
+        return TRUE;
+    }
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, CurAvg= %f, gCostMovingAverageVal=%f",
+          curPrice, CurAvg, gCostMovingAverageVal);
+
+    // Check if the current amplitude is within the estimated amplitude
+    if (CurAmp >= EstimatedTodaysAmplitude())
+    {
+        return TRUE;
+    }
+
+    return FALSE;
+}
 /**
  * @brief Handle new tick data and calculate 5MA slope for opening long/short positions based on 1-minute close prices.
  *
