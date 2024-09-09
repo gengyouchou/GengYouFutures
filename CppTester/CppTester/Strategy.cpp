@@ -357,6 +357,8 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
                 double ma5Slope = ma5 - lastMa5;
                 gMa5LongShort = static_cast<long>(ma5Slope);
 
+                DEBUG(DEBUG_LEVEL_DEBUG, "5MA: %f, lastMa5: %f, Slope: %ld", ma5, lastMa5, gMa5LongShort);
+
                 // Store the current 5MA for the next comparison
                 lastMa5 = ma5;
 
@@ -364,14 +366,14 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
                 if (gMa5LongShort > 0)
                 {
                     // Go long: 5MA slope is positive
-                    DEBUG(DEBUG_LEVEL_DEBUG, "Opening long position. 5MA: %f, Slope: %f", ma5, gMa5LongShort);
+                    DEBUG(DEBUG_LEVEL_DEBUG, "Opening long position. 5MA: %f, Slope: %ld", ma5, gMa5LongShort);
                     PrePtr[nStockidx] = nPtr; // Update the last processed pointer
                     return 1;                 // Return 1 for long position
                 }
                 else if (gMa5LongShort < 0)
                 {
                     // Go short: 5MA slope is negative
-                    DEBUG(DEBUG_LEVEL_DEBUG, "Opening short position. 5MA: %f, Slope: %f", ma5, gMa5LongShort);
+                    DEBUG(DEBUG_LEVEL_DEBUG, "Opening short position. 5MA: %f, Slope: %ld", ma5, gMa5LongShort);
                     PrePtr[nStockidx] = nPtr; // Update the last processed pointer
                     return 0;                 // Return 0 for short position
                 }
