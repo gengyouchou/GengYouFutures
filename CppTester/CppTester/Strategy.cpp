@@ -2500,6 +2500,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
+        StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(g_strUserId, MtxCommodtyInfo);
 
         StrategyCaluBidOfferLongShort();
         StrategyCaluTransactionListLongShort();
@@ -2538,7 +2539,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
-        StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(g_strUserId, MtxCommodtyInfo);
 
         StrategyCaluBidOfferLongShort();
         StrategyCaluTransactionListLongShort();
