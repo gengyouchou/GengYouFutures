@@ -2507,13 +2507,17 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
         int IsEarnAtLeast = EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo);
 
-        if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold && LongShort == 1 && IsEarnAtLeast == 1)
+        if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
         {
-            StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
-        }
-        else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold && LongShort == 0 && IsEarnAtLeast == 0)
-        {
-            StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+
+            if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold && LongShort == 1 && IsEarnAtLeast == 1)
+            {
+                StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
+            }
+            else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold && LongShort == 0 && IsEarnAtLeast == 0)
+            {
+                StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+            }
         }
 
         break;
@@ -2529,15 +2533,27 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyCaluBidOfferLongShort();
         StrategyCaluTransactionListLongShort();
 
-        int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
+        BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
 
-        if (LongShort == 1)
+        if (ReachTodayAmplitude == TRUE)
         {
-            StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
+            break;
         }
-        else if (LongShort == 0)
+
+        int LongShort = Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
+        int IsEarnAtLeast = EarnAtLeastOneStrikeAndNotInExtremeValue(MtxCommodtyInfo);
+
+        if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
         {
-            StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+
+            if (LongShort == 1 && IsEarnAtLeast == 1)
+            {
+                StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
+            }
+            else if (LongShort == 0 && IsEarnAtLeast == 0)
+            {
+                StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+            }
         }
 
         break;
