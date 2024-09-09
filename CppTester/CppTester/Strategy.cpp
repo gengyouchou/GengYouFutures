@@ -355,7 +355,7 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
 
                 // Determine the slope of the 5MA
                 double ma5Slope = ma5 - lastMa5;
-                gMa5LongShort = ma5Slope;
+                gMa5LongShort = static_cast<long>(ma5Slope);
 
                 // Store the current 5MA for the next comparison
                 lastMa5 = ma5;
