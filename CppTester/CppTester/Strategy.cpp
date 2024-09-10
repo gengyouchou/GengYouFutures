@@ -57,7 +57,7 @@ DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
 LONG gBidOfferLongShort = 0, gTransactionListLongShort = 0;
 double gCostMovingAverageVal = 0;
 double gMa5 = 0;
-LONG gMa5LongShort = 0;
+double gMa5LongShort = 0;
 
 STRATEGY_CONFIG gStrategyConfig = {
     CLOSING_KEY_PRICE_LEVEL,
@@ -348,7 +348,7 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
                     // Determine the slope of the 5MA
                     double ma5Slope = ma5 - lastMa5;
 
-                    gMa5LongShort = static_cast<long>(ma5Slope);
+                    gMa5LongShort = ma5Slope;
                 }
 
                 // Update the last processed minute and reset the lastMinutePrice for the new minute
@@ -368,7 +368,7 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
                 // Determine the slope of the 5MA
                 double ma5Slope = ma5 - lastMa5;
 
-                DEBUG(DEBUG_LEVEL_DEBUG, "5MA: %f, lastMa5: %f, Slope: %ld", ma5, lastMa5, gMa5LongShort);
+                DEBUG(DEBUG_LEVEL_DEBUG, "5MA: %f, lastMa5: %f, Slope: %f", ma5, lastMa5, gMa5LongShort);
 
                 // Store the current 5MA for the next comparison
                 lastMa5 = ma5;
