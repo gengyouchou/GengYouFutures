@@ -163,7 +163,7 @@ int EarnAtLeastOneStrike(LONG MtxCommodtyInfo, LONG LongShort)
     {
         // Strategy for going long
 
-        if (CurHigh - curPrice > ONE_STRIKE_PRICES)
+        if (CurHigh - curPrice >= ONE_STRIKE_PRICES)
         {
             return 1;
         }
@@ -173,7 +173,7 @@ int EarnAtLeastOneStrike(LONG MtxCommodtyInfo, LONG LongShort)
     {
         // Strategy for going Short
 
-        if (curPrice - CurLow > ONE_STRIKE_PRICES)
+        if (curPrice - CurLow >= ONE_STRIKE_PRICES)
         {
             return 0;
         }
