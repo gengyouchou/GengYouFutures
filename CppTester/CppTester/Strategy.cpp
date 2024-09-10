@@ -76,7 +76,7 @@ LONG CountTransactionListLongShort(LONG nStockidx);
 // Function to calculate the 5-minute moving average (5MA)
 static double calculate5MA(std::deque<double> &closePrices)
 {
-    if (closePrices.size() < 5)
+    if (closePrices.size() <= 0)
     {
         return NAN; // Not enough data to calculate 5MA yet
     }
@@ -334,7 +334,7 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
                     closePrices.push_back(lastMinutePrice); // Push the final price of the last minute
                 }
 
-                if (closePrices.size() >= 5)
+                if (closePrices.size() > 0)
                 {
                     // Calculate the 5MA
                     double ma5 = calculate5MA(closePrices);
@@ -359,7 +359,7 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
             lastMinutePrice = tickPrice;
 
             // Check if we have enough data to calculate the 5MA (at least 5 minutes of closing prices)
-            if (closePrices.size() >= 5)
+            if (closePrices.size() > 0)
             {
                 // Calculate the 5MA
                 double ma5 = calculate5MA(closePrices);
