@@ -1748,6 +1748,14 @@ VOID StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(string strUserId, L
     {
         CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100.0;
         CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100.0;
+
+        if (gOpenInterestInfo.NeedToUpdate == TRUE)
+        {
+            LOG(DEBUG_LEVEL_DEBUG, "gOpenInterestInfo.NeedToUpdate == TRUE");
+            gEntryHigh = CurHigh;
+            gEntryLow = CurLow;
+            return;
+        }
     }
 
     if (gOpenInterestInfo.product != "" && gOpenInterestInfo.avgCost != 0 && curPrice > 0)
@@ -2164,9 +2172,6 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
             gOpenInterestInfo.avgCost = curPrice;
         }
 
-        gEntryHigh = CurHigh;
-        gEntryLow = CurLow;
-
         LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
             curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
     }
@@ -2193,9 +2198,6 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
             gOpenInterestInfo.openPosition -= 1;
             gOpenInterestInfo.avgCost = curPrice;
         }
-
-        gEntryHigh = CurHigh;
-        gEntryLow = CurLow;
 
         LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
             curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
