@@ -114,4 +114,4 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 
 extern double gCostMovingAverageVal;
 extern double gMa5;
-extern LONG gMa5LongShort;
+extern double gMa5LongShort;
