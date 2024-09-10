@@ -59,6 +59,9 @@ double gCostMovingAverageVal = 0;
 double gMa5 = 0;
 double gMa5LongShort = 0;
 
+static double gEntryHigh = 0;
+static double gEntryLow = 0;
+
 STRATEGY_CONFIG gStrategyConfig = {
     CLOSING_KEY_PRICE_LEVEL,
     BID_OFFER_LONG_SHORT_THRESHOLD,
@@ -1771,8 +1774,13 @@ VOID StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(string strUserId, L
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
         }
 
-        if ((BuySell == 0 && curPrice >= CurHigh && gMa5LongShort < 0) ||
-            (BuySell == 1 && curPrice <= CurLow && gMa5LongShort > 0))
+        if (gEntryHigh == 0 || gEntryLow == 0)
+        {
+            return;
+        }
+
+        if ((BuySell == 0 && curPrice > gEntryHigh && gMa5LongShort < 0) ||
+            (BuySell == 1 && curPrice < gEntryLow && gMa5LongShort > 0))
         {
             vector<string> vec = {COMMODITY_OTHER};
 
@@ -2270,6 +2278,9 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
         CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100.0;
         CurAmp = CurHigh - CurLow;
         CurAvg = (CurHigh + CurLow) / 2;
+
+        gEntryHigh = CurHigh;
+        gEntryLow = CurLow;
     }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, CurAvg= %f, gCostMovingAverageVal=%f",
