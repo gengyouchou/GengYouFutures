@@ -1835,148 +1835,6 @@ VOID StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(string strUserId, L
  * @param currentPrice The current market price.
  * @return The trading action to be taken (e.g., buy, sell, hold).
  */
-VOID StrategyNewMainForcePassPreHighAndBreakPreLow(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
-{
-    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
-
-    if (gOpenInterestInfo.NeedToUpdate == TRUE)
-    {
-        LOG(DEBUG_LEVEL_DEBUG, "gOpenInterestInfo.NeedToUpdate == TRUE");
-        return;
-    }
-
-    double OpenPrice = 0;
-
-    // Check if the commodity information is present
-    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) == 0)
-    {
-        return;
-    }
-    else
-    {
-        OpenPrice = static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][2]) / 100.0;
-    }
-
-    double curPrice = 0;
-
-    // Get the current price for the commodity
-    if (gCurCommPrice.count(MtxCommodtyInfo) != 0)
-    {
-        curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
-    }
-
-    double CurAvg = 0;
-    double CurAmp = 0;
-    double CurHigh = 0, CurLow = 0;
-
-    // Calculate the current high, low, amplitude, and average
-    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
-    {
-        CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100.0;
-        CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100.0;
-        CurAmp = CurHigh - CurLow;
-        CurAvg = (CurHigh + CurLow) / 2;
-    }
-
-    if (curPrice <= 0 || CurHigh <= 0 || CurLow <= 0)
-    {
-        return;
-    }
-
-    DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, CurAvg= %f, gCostMovingAverageVal=%f",
-          curPrice, CurAvg, gCostMovingAverageVal);
-
-    // Check if the current amplitude is within the estimated amplitude
-    if (CurAmp > EstimatedTodaysAmplitude())
-    {
-        return;
-    }
-
-    // Strategy for going long
-    if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
-    {
-        DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
-              curPrice, gOpenInterestInfo.avgCost);
-
-        double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2.0;
-
-        if (CurHigh - curPrice > ONE_STRIKE_PRICES &&
-            curPrice - CurLow > ONE_STRIKE_PRICES &&
-            curPrice < ShockShortExtremeValue - ONE_STRIKE_PRICES)
-        {
-            vector<string> vec = {COMMODITY_OTHER};
-
-            for (size_t i = 0; i < vec.size(); ++i)
-            {
-                AutoOrder(vec[i], ORDER_AUTO_POSITION, ORDER_BUY_LONG_POSITION);
-            }
-
-            // Update position and average cost
-            gOpenInterestInfo.product = COMMODITY_OTHER;
-            gOpenInterestInfo.buySell = "B";
-            gOpenInterestInfo.openPosition += 1;
-            gOpenInterestInfo.avgCost = curPrice;
-
-            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
-                curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
-        }
-    }
-
-    // Strategy for going short
-    if (LongShort == 0 && gOpenInterestInfo.openPosition >= 0)
-    {
-        DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
-              curPrice, gOpenInterestInfo.avgCost);
-
-        double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2.0;
-
-        if (CurHigh - curPrice > ONE_STRIKE_PRICES &&
-            curPrice - CurLow > ONE_STRIKE_PRICES &&
-            curPrice > ShockLongExtremeValue + ONE_STRIKE_PRICES)
-        {
-            vector<string> vec = {COMMODITY_OTHER};
-
-            for (size_t i = 0; i < vec.size(); ++i)
-            {
-                AutoOrder(vec[i], ORDER_AUTO_POSITION, ORDER_SELL_SHORT_POSITION);
-            }
-
-            // Update position and average cost
-            gOpenInterestInfo.product = COMMODITY_OTHER;
-            gOpenInterestInfo.buySell = "S";
-            gOpenInterestInfo.openPosition -= 1;
-            gOpenInterestInfo.avgCost = curPrice;
-
-            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
-                curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
-        }
-    }
-
-    DEBUG(DEBUG_LEVEL_DEBUG, "End");
-}
-
-/**
- * @brief Implements a futures trading strategy based on the relationship between the cost line and the moving average line.
- *
- * Strategy Overview:
- *
- * 1. Cost Line Above the Moving Average Line:
- *    - Bearish Bias: Short the market when the price falls below the cost line, with the moving average line trending downward.
- *    - If the price rebounds and breaks through the moving average line, followed by a breakthrough of the cost line, switch to a bullish bias.
- *
- * 2. Cost Line Below the Moving Average Line:
- *    - Bullish Bias: Go long when the price breaks above the cost line, with the moving average line trending upward.
- *    - If the price declines, breaking below the moving average line, and continues to fall below the cost line, switch to a bearish bias.
- *
- * 3. Cost Line Equals the Moving Average Line:
- *    - Range-Bound Market: The market is considered range-bound, with the price oscillating between the cost line and the moving average line.
- *    - If the distance between the two lines is less than 20 points, refrain from trading.
- *
- * @param costLine The cost line value.
- * @param movingAverageLine The moving average line value.
- * @param currentPrice The current market price.
- * @return The trading action to be taken (e.g., buy, sell, hold).
- */
 VOID StrategyNewDailyAmplitudeAchievesReverse(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
@@ -2418,37 +2276,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         break;
     }
 
-        // The main short term strategy is to pass the previous high and break the previous low.
-        // A shock or trend order(when used as a day trading order) records the previous high or low of the day,
-        // and pulls back or rebounds by more than one execution price,
-        // and the current price is not the current low or the current high, and the five levels of pending orders are obviously unbalanced,
-        // open a position, and exceed the previous price.Exit low before breaking high
-
-    case 3:
-    {
-
-        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
-        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
-        StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(g_strUserId, MtxCommodtyInfo);
-
-        StrategyCaluBidOfferLongShort();
-        StrategyCaluTransactionListLongShort();
-
-        if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
-        {
-            if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
-            {
-                StrategyNewMainForcePassPreHighAndBreakPreLow(g_strUserId, MtxCommodtyInfo, 1);
-            }
-            else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
-            {
-                StrategyNewMainForcePassPreHighAndBreakPreLow(g_strUserId, MtxCommodtyInfo, 0);
-            }
-        }
-
-        break;
-    }
-
     case 4:
     {
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
@@ -2473,33 +2300,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         break;
     }
 
-    case 5:
-    {
-        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
-        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
-        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
-        StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(g_strUserId, MtxCommodtyInfo);
-
-        StrategyCaluBidOfferLongShort();
-        StrategyCaluTransactionListLongShort();
-
-        if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
-        {
-            if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
-            {
-                StrategyNewMainForcePassPreHighAndBreakPreLow(g_strUserId, MtxCommodtyInfo, 1);
-                StrategyNewDailyAmplitudeAchievesReverse(g_strUserId, MtxCommodtyInfo, 1);
-            }
-            else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
-            {
-                StrategyNewMainForcePassPreHighAndBreakPreLow(g_strUserId, MtxCommodtyInfo, 0);
-                StrategyNewDailyAmplitudeAchievesReverse(g_strUserId, MtxCommodtyInfo, 0);
-            }
-        }
-
-        break;
-    }
-
     case 6:
     {
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
@@ -2517,6 +2317,12 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 
         break;
     }
+
+        // The main short term strategy is to pass the previous high and break the previous low.
+        // A shock or trend order(when used as a day trading order) records the previous high or low of the day,
+        // and pulls back or rebounds by more than one execution price,
+        // and the current price is not the current low or the current high, and the five levels of pending orders are obviously unbalanced,
+        // open a position, and exceed the previous price.Exit low before breaking high
 
     case 7:
     {
