@@ -14,7 +14,7 @@ echo 5 - Run GengTraderGuardian.bat
 echo 6 - Vim debug.log
 echo 7 - Vim strategy.log
 echo 8 - CD C:\GengYouFutures
-echo 9 - Exit 
+echo 9 - Kill cmdCaptureClinet.exe
 
 set /p option="Slect (1, 2, 3, 4, 5, 6, 7, 8, 9): "
 
@@ -96,8 +96,8 @@ endlocal
 	echo Exit...
     exit /b
 )else if "%option%"=="9" (
-	echo Exit...
-    exit /b
+	echo Kill cmdCaptureClinet.exe
+	taskkill /f /im cmdCaptureClinet.exe
 )else (
     echo Fk Choice。
 )
