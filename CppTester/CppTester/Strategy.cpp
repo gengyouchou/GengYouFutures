@@ -1511,21 +1511,21 @@ LONG StrategyCaluBidOfferLongShort(VOID)
     {
         long nStockidx = gCommodtyInfo.TSMCIdxNo;
 
-        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
+        gBidOfferLongShort += TSMC_BID_OFFER_WEIGHT_RATIO * CountBidOfferLongShort(nStockidx);
     }
 
     if (gCommodtyInfo.MediaTekIdxNo != 0)
     {
         long nStockidx = gCommodtyInfo.MediaTekIdxNo;
 
-        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
+        gBidOfferLongShort += MEDIATEK_BID_OFFER_WEIGHT_RATIO * CountBidOfferLongShort(nStockidx);
     }
 
     if (gCommodtyInfo.FOXCONNIdxNo != 0)
     {
         long nStockidx = gCommodtyInfo.FOXCONNIdxNo;
 
-        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
+        gBidOfferLongShort += FOXCONN_BID_OFFER_WEIGHT_RATIO * CountBidOfferLongShort(nStockidx);
     }
 
     LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gBidOfferLongShort);
