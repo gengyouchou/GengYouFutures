@@ -1412,7 +1412,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
                 if (totalOffer * 3 <= totalBid * 2)
                 {
-                    --countShort;
+                    countShort -= nQty;
                 }
 
                 for (int i = 0; i < 5; ++i)
@@ -1421,7 +1421,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                     {
                         // Find unusual pending big Bid orders
 
-                        --countShort;
+                        countShort -= nQty;
                     }
                 }
             }
@@ -1435,7 +1435,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
                 if (totalBid * 3 <= totalOffer * 2)
                 {
-                    ++countLong;
+                    countLong += nQty;
                 }
 
                 for (int i = 5; i < 10; ++i)
@@ -1444,7 +1444,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                     {
                         // Find unusual pending big Offer orders
 
-                        ++countLong;
+                        countLong += nQty;
                     }
                 }
             }
@@ -1511,21 +1511,21 @@ LONG StrategyCaluBidOfferLongShort(VOID)
     {
         long nStockidx = gCommodtyInfo.TSMCIdxNo;
 
-        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
+        gBidOfferLongShort += TSMC_BID_OFFER_WEIGHT_RATIO * CountBidOfferLongShort(nStockidx);
     }
 
     if (gCommodtyInfo.MediaTekIdxNo != 0)
     {
         long nStockidx = gCommodtyInfo.MediaTekIdxNo;
 
-        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
+        gBidOfferLongShort += MEDIATEK_BID_OFFER_WEIGHT_RATIO * CountBidOfferLongShort(nStockidx);
     }
 
     if (gCommodtyInfo.FOXCONNIdxNo != 0)
     {
         long nStockidx = gCommodtyInfo.FOXCONNIdxNo;
 
-        gBidOfferLongShort += CountBidOfferLongShort(nStockidx);
+        gBidOfferLongShort += FOXCONN_BID_OFFER_WEIGHT_RATIO * CountBidOfferLongShort(nStockidx);
     }
 
     LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gBidOfferLongShort);
