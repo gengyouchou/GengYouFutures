@@ -1417,7 +1417,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
                 for (int i = 0; i < 5; ++i)
                 {
-                    if (AvgBid * 2 < gBest5BidOffer[nStockidx][i].second)
+                    if (AvgBid * 3 < gBest5BidOffer[nStockidx][i].second)
                     {
                         // Find unusual pending big Bid orders
 
@@ -1440,7 +1440,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
                 for (int i = 5; i < 10; ++i)
                 {
-                    if (AvgOffer * 2 < gBest5BidOffer[nStockidx][i].second)
+                    if (AvgOffer * 3 < gBest5BidOffer[nStockidx][i].second)
                     {
                         // Find unusual pending big Offer orders
 
