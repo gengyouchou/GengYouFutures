@@ -1787,6 +1787,11 @@ VOID StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(string strUserId, L
             return;
         }
 
+        if (gOpenInterestInfo.profitAndLoss < PROFIT_STOP_TICK * DOLLARS_PER_TICK)
+        {
+            return;
+        }
+
         if ((BuySell == 0 && curPrice > gEntryHigh && gMa5LongShort < 0) ||
             (BuySell == 1 && curPrice < gEntryLow && gMa5LongShort > 0))
         {
@@ -2351,14 +2356,12 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         {
 
             if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold &&
-                gMa5LongShort > 0 &&
-                EarnAtLeastOneStrike(MtxCommodtyInfo, 1) == 1)
+                gMa5LongShort > 0)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
             }
             else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold &&
-                     gMa5LongShort < 0 &&
-                     EarnAtLeastOneStrike(MtxCommodtyInfo, 0) == 0)
+                     gMa5LongShort < 0)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
             }
