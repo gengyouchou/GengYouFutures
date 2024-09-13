@@ -360,6 +360,7 @@ void thread_main()
                 if (pSKQuoteLib->IsConnected() != 1)
                 {
                     DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");
+                    LOG(DEBUG_LEVEL_INFO, "pSKQuoteLib->IsConnected() != 1");
                     release();
                     exit(0);
                 }
