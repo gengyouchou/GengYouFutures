@@ -337,15 +337,17 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
                     double ma5 = calculate5MA(closePrices);
                     gMa5 = ma5;
 
-                    if (lastMa5 == 0)
-                    {
-                        lastMa5 = closePrices.front();
-                    }
-
                     // Determine the slope of the 5MA
                     double ma5Slope = ma5 - lastMa5;
 
                     gMa5LongShort = ma5Slope;
+                    // Store the current 5MA for the next comparison
+                    lastMa5 = ma5;
+                }
+                else
+                {
+                    // Store the current 5MA for the next comparison
+                    lastMa5 = tickPrice;
                 }
 
                 // Update the last processed minute and reset the lastMinutePrice for the new minute
@@ -358,33 +360,39 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
             // Check if we have enough data to calculate the 5MA (at least 5 minutes of closing prices)
             if (closePrices.size() > 0)
             {
-                // Calculate the 5MA
-                double ma5 = calculate5MA(closePrices);
-                gMa5 = ma5;
+                deque<double> TempClosePrices = closePrices;
+                TempClosePrices.pop_front();
+                TempClosePrices.push_back(tickPrice);
+
+                double CurMa5 = calculate5MA(TempClosePrices);
+                gMa5 = CurMa5;
 
                 // Determine the slope of the 5MA
-                double ma5Slope = ma5 - lastMa5;
+                double ma5Slope = CurMa5 - lastMa5;
 
-                DEBUG(DEBUG_LEVEL_DEBUG, "5MA: %f, lastMa5: %f, Slope: %f", ma5, lastMa5, gMa5LongShort);
+                gMa5LongShort = ma5Slope;
 
-                // Store the current 5MA for the next comparison
-                lastMa5 = ma5;
+                DEBUG(DEBUG_LEVEL_DEBUG, "5MA: %f, lastMa5: %f, Slope: %f", CurMa5, lastMa5, gMa5LongShort);
 
                 // Strategy: Open positions based on the slope of the 5MA
                 if (gMa5LongShort > 0)
                 {
                     // Go long: 5MA slope is positive
-                    DEBUG(DEBUG_LEVEL_DEBUG, "Opening long position. 5MA: %f, Slope: %ld", ma5, gMa5LongShort);
+                    DEBUG(DEBUG_LEVEL_DEBUG, "Opening long position. 5MA: %f, Slope: %ld", CurMa5, gMa5LongShort);
                     PrePtr[nStockidx] = nPtr; // Update the last processed pointer
                     return 1;                 // Return 1 for long position
                 }
                 else if (gMa5LongShort < 0)
                 {
                     // Go short: 5MA slope is negative
-                    DEBUG(DEBUG_LEVEL_DEBUG, "Opening short position. 5MA: %f, Slope: %ld", ma5, gMa5LongShort);
+                    DEBUG(DEBUG_LEVEL_DEBUG, "Opening short position. 5MA: %f, Slope: %ld", CurMa5, gMa5LongShort);
                     PrePtr[nStockidx] = nPtr; // Update the last processed pointer
                     return 0;                 // Return 0 for short position
                 }
+            }
+            else
+            {
+                lastMa5 = tickPrice;
             }
 
             // Update the last processed pointer to prevent processing the same tick again
