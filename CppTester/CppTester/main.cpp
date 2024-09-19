@@ -430,8 +430,8 @@ void thread_main()
 
             printf("=========================================\n");
 
-            printf("[LongShortThreshold:%ld], StrategyCaluLongShort:%ld, BidOfferLongShort:%ld, TransactionListLongShort:%ld\n",
-                   gStrategyConfig.BidOfferLongShortThreshold, StrategyCaluLongShort(), gBidOfferLongShort, gTransactionListLongShort);
+            printf("BidOfferLongShortSlope: %f, StrategyCaluLongShort: %ld, BidOfferLongShort: %ld, TransactionListLongShort: %ld\n",
+                   gBidOfferLongShortSlope, StrategyCaluLongShort(), gBidOfferLongShort, gTransactionListLongShort);
 
             printf("=========================================\n");
 

@@ -2495,6 +2495,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyCaluBidOfferLongShort();
         StrategyCaluTransactionListLongShort();
         Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
+        BidOfferAndTransactionListLongShortSlope();
 
         BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
 
@@ -2507,12 +2508,14 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         {
 
             if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold &&
-                gMa5LongShort > 0)
+                gMa5LongShort > 0 &&
+                gBidOfferLongShortSlope > 0)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
             }
             else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold &&
-                     gMa5LongShort < 0)
+                     gMa5LongShort < 0 &&
+                     gBidOfferLongShortSlope < 0)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
             }
