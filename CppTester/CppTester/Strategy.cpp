@@ -1606,7 +1606,7 @@ LONG StrategyCaluTransactionListLongShort(VOID)
 
 LONG StrategyCaluLongShort(VOID)
 {
-    if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 30) || gCurServerTime[0] >= 14)
+    if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 25) || gCurServerTime[0] >= 14)
     {
         return 0;
     }
