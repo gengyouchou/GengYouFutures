@@ -59,6 +59,8 @@ double gCostMovingAverageVal = 0;
 double gMa5 = 0;
 double gMa5LongShort = 0;
 
+double gBidOfferLongShortSlope = 0;
+
 static double gEntryHigh = 0;
 static double gEntryLow = 0;
 
@@ -401,6 +403,45 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
     }
 
     return -1; // No action, return -1
+}
+
+VOID BidOfferAndTransactionListLongShortSlope(VOID)
+{
+    if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 25) || gCurServerTime[0] >= 14)
+    {
+        return;
+    }
+
+    static LONG PreLongShort = 0;
+    static std::deque<double> dq;
+    static double PreMa = 0;
+
+    LONG CurLongShort = StrategyCaluLongShort();
+
+    LONG LongShortDiff = CurLongShort - PreLongShort;
+
+    PreLongShort = CurLongShort;
+
+    if (LongShortDiff != 0)
+    {
+        if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT)
+        {
+            dq.pop_front(); // Remove the oldest
+        }
+        dq.push_back(CurLongShort);
+
+        if (dq.size() > 0)
+        {
+            double ma = calculate5MA(dq);
+
+            double MaSlope = ma - PreMa;
+            PreMa = ma;
+
+            gBidOfferLongShortSlope = MaSlope;
+        }
+    }
+
+    return;
 }
 
 void AutoKLineData(IN string ProductNum)
