@@ -1437,6 +1437,11 @@ LONG CountBidOfferLongShort(LONG nStockidx)
         nClose = gTransactionList[nStockidx][3];
         nQty = gTransactionList[nStockidx][4];
 
+        if (nPtr < 1)
+        {
+            return 0;
+        }
+
         if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
         {
             long totalBid = 0;
@@ -1525,6 +1530,11 @@ LONG CountTransactionListLongShort(LONG nStockidx)
         nAsk = gTransactionList[nStockidx][2];
         nClose = gTransactionList[nStockidx][3];
         nQty = gTransactionList[nStockidx][4];
+
+        if (nPtr < 1)
+        {
+            return 0;
+        }
 
         if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
         {
