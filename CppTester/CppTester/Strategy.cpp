@@ -200,6 +200,70 @@ int EarnAtLeastOneStrike(LONG MtxCommodtyInfo, LONG LongShort)
  *
  * @param nStockidx The stock index for which tick data is being processed.
  * @return int
+ *         - 1  long position should be opened.
+ *         - 0  Both long short position should be opened.
+ *         - -1 short position should be opened.
+ *         - other no action
+ */
+int LongShortExtremeFitRate(LONG MtxCommodtyInfo)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    // Check if the commodity information is present
+    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) == 0)
+    {
+        return 2;
+    }
+
+    double curPrice = 0;
+
+    // Get the current price for the commodity
+    if (gCurCommPrice.count(MtxCommodtyInfo) != 0)
+    {
+        curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
+    }
+
+    if (curPrice <= 0 || gCostMovingAverageVal <= 0)
+    {
+        return 2;
+    }
+
+    double LongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2;
+    double ShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2;
+
+    // Strategy for going long
+
+    if (curPrice <= LongExtremeValue)
+    {
+        return 1;
+    }
+
+    // Strategy for going Short
+
+    if (curPrice >= ShortExtremeValue)
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
+ * @brief Handle new tick data and calculate 5MA slope for opening long/short positions based on 1-minute close prices.
+ *
+ * This function processes tick data for a specific stock index (nStockidx), computes the 5-minute moving average (5MA)
+ * using the closing prices of the past 5 minutes, and determines whether to open long or short positions based on the
+ * slope of the 5MA (i.e., the difference between the current and previous 5MA values).
+ *
+ * The strategy is as follows:
+ * - Open a long position when the 5MA slope is positive.
+ * - Open a short position when the 5MA slope is negative.
+ *
+ * The function tracks the last processed minute and updates the closing prices deque when a new minute begins.
+ * Only the last tick of the minute is used to represent the closing price for that minute.
+ *
+ * @param nStockidx The stock index for which tick data is being processed.
+ * @return int
  *         - 1 if a long position should be opened.
  *         - 0 if a short position should be opened.
  *         - -1 if no action is taken (e.g., not enough data, or no change in position).
@@ -2514,18 +2578,22 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             break;
         }
 
+        int LongShortExtremeFit = LongShortExtremeFitRate(MtxCommodtyInfo);
+
         if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
         {
 
             if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold &&
                 gMa5LongShort > 0 &&
-                gBidOfferLongShortSlope > 0)
+                gBidOfferLongShortSlope > 0 &&
+                LongShortExtremeFit != -1)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
             }
             else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold &&
                      gMa5LongShort < 0 &&
-                     gBidOfferLongShortSlope < 0)
+                     gBidOfferLongShortSlope < 0 &&
+                     LongShortExtremeFit != 1)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
             }
