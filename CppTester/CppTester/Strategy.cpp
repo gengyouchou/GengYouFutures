@@ -2381,7 +2381,7 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
 
     // Do Long
 
-    if (LongShort == 1 && gOpenInterestInfo.openPosition <= 0)
+    if (LongShort == 1 && gOpenInterestInfo.openPosition < MAXIMUM_NUMBERS_OF_POSITIONS)
     {
         vector<string> vec = {COMMODITY_OTHER};
 
@@ -2408,7 +2408,7 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
 
     // Do Short
 
-    if (LongShort == 0 && gOpenInterestInfo.openPosition >= 0)
+    if (LongShort == 0 && gOpenInterestInfo.openPosition > -MAXIMUM_NUMBERS_OF_POSITIONS)
     {
         vector<string> vec = {COMMODITY_OTHER};
 
