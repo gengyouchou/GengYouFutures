@@ -659,7 +659,7 @@ DOUBLE CountWeeklyAndMonthlyCosts(LONG MtxCommodtyInfo)
 
         for (auto &x : DaysNightCostHighLow)
         {
-            DEBUG(DEBUG_LEVEL_INFO, "High: %f, Low: %f", x.first, x.second);
+            DEBUG(DEBUG_LEVEL_DEBUG, "High: %f, Low: %f", x.first, x.second);
 
             WeeklyHigh = max(WeeklyHigh, x.first);
             WeeklyLow = min(WeeklyLow, x.second);
@@ -690,7 +690,7 @@ DOUBLE CountWeeklyAndMonthlyCosts(LONG MtxCommodtyInfo)
 
         for (auto &x : DaysCostHighLow)
         {
-            DEBUG(DEBUG_LEVEL_INFO, "High: %f, Low: %f", x.first, x.second);
+            DEBUG(DEBUG_LEVEL_DEBUG, "High: %f, Low: %f", x.first, x.second);
 
             WeeklyHigh = max(WeeklyHigh, x.first);
             WeeklyLow = min(WeeklyLow, x.second);

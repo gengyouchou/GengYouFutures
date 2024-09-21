@@ -381,7 +381,7 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
         {
             long diff = static_cast<long>(entry.second.first - entry.second.second);
 
-            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f, Diff: %ld", entry.first, entry.second.first, entry.second.second, diff);
+            DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f, Diff: %ld", entry.first, entry.second.first, entry.second.second, diff);
 
             gDaysKlineDiff.push_back(diff);
 
@@ -418,7 +418,7 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
 
             long diff = static_cast<long>(cur.first - cur.second);
 
-            DEBUG(DEBUG_LEVEL_INFO, "Date: %s, High: %f, Low: %f, Diff: %ld", entry.first, entry.second.first, entry.second.second, diff);
+            DEBUG(DEBUG_LEVEL_DEBUG, "Date: %s, High: %f, Low: %f, Diff: %ld", entry.first, entry.second.first, entry.second.second, diff);
 
             gDaysKlineDiff.push_back(diff);
 
