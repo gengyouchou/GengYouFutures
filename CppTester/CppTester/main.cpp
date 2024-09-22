@@ -435,6 +435,11 @@ void thread_main()
 
             printf("=========================================\n");
 
+            printf("TSEA Total OFFER: [%ld]\n", gCurTaiexInfo[0][3]);
+            printf("            BID : [%ld]\n", gCurTaiexInfo[0][2]);
+
+            printf("=========================================\n");
+
             AutoBest5Long(gCommodtyInfo.TSMCIdxNo, TSMC);
             AutoBest5Long(gCommodtyInfo.FOXCONNIdxNo, FOXCONN);
             AutoBest5Long(gCommodtyInfo.MediaTekIdxNo, MEDIATEK);
