@@ -2663,6 +2663,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         StrategyCloseFixedTakeProfit(g_strUserId, MtxCommodtyInfo);
+        StrategyCloseBidOfferLongShortSlope(g_strUserId, MtxCommodtyInfo);
 
         StrategyCaluBidOfferLongShort();
         StrategyCaluTransactionListLongShort();
