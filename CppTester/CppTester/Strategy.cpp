@@ -488,13 +488,13 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
 
     if (LongShortDiff != 0)
     {
-        if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT)
+        if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
         {
             dq.pop_front(); // Remove the oldest
         }
         dq.push_back(CurLongShort);
 
-        if (dq.size() > 0)
+        if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
         {
             double ma = calculate5MA(dq);
 
