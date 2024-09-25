@@ -15,7 +15,7 @@
 #define COMMODITY_OTHER "TM0000"
 #define COMMODITY_TX_MAIN "TX00"
 
-#define DayMA 10
+#define DayMA 20
 #define DAY_NIGHT_HIGH_LOW_K_LINE 20
 #define COST_DAY_MA 5 // weekly contract cost
 #define ONE_STRIKE_PRICES 50
