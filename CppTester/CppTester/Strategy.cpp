@@ -233,14 +233,14 @@ int LongShortExtremeFitRate(LONG MtxCommodtyInfo)
 
     // Strategy for going long
 
-    if (curPrice <= LongExtremeValue)
+    if (curPrice <= LongExtremeValue + gStrategyConfig.ActivePoint)
     {
         return 1;
     }
 
     // Strategy for going Short
 
-    if (curPrice >= ShortExtremeValue)
+    if (curPrice >= ShortExtremeValue - gStrategyConfig.ActivePoint)
     {
         return -1;
     }
