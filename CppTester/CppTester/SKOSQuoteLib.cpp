@@ -35,13 +35,13 @@ void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate);
 void parseAndProcessData(const string &data);
 void ProcessDaysOrNightCommHighLowPoint();
 
-CSKQuoteLib::CSKQuoteLib()
+CSKOSQuoteLib::CSKOSQuoteLib()
 {
     m_pSKQuoteLib.CreateInstance(__uuidof(SKCOMLib::SKQuoteLib));
-    m_pSKQuoteLibEventHandler = new ISKQuoteLibEventHandler(*this, m_pSKQuoteLib, &CSKQuoteLib::OnEventFiringObjectInvoke);
+    m_pSKQuoteLibEventHandler = new ISKQuoteLibEventHandler(*this, m_pSKQuoteLib, &CSKOSQuoteLib::OnEventFiringObjectInvoke);
 }
 
-CSKQuoteLib::~CSKQuoteLib()
+CSKOSQuoteLib::~CSKOSQuoteLib()
 {
     if (m_pSKQuoteLibEventHandler)
     {
@@ -56,7 +56,7 @@ CSKQuoteLib::~CSKQuoteLib()
     }
 }
 
-HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
+HRESULT CSKOSQuoteLib::OnEventFiringObjectInvoke(
     ISKQuoteLibEventHandler *pEventHandler,
     DISPID dispidMember,
     REFIID riid,
@@ -245,43 +245,43 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
 }
 
 // Methods
-long CSKQuoteLib::EnterMonitorLONG()
+long CSKOSQuoteLib::EnterMonitorLONG()
 {
     return m_pSKQuoteLib->SKQuoteLib_EnterMonitorLONG();
 }
 
-long CSKQuoteLib::IsConnected()
+long CSKOSQuoteLib::IsConnected()
 {
     return m_pSKQuoteLib->SKQuoteLib_IsConnected();
 }
 
-long CSKQuoteLib::LeaveMonitor()
+long CSKOSQuoteLib::LeaveMonitor()
 {
     return m_pSKQuoteLib->SKQuoteLib_LeaveMonitor();
 }
 
-long CSKQuoteLib::RequestStocks(short *psPageNo, string strStockNos)
+long CSKOSQuoteLib::RequestStocks(short *psPageNo, string strStockNos)
 {
     return m_pSKQuoteLib->SKQuoteLib_RequestStocks(psPageNo, _bstr_t(strStockNos.c_str()));
 }
 
-long CSKQuoteLib::GetStockByIndexLONG(short sMarketNo, long nStockIndex, SKCOMLib::SKSTOCKLONG *pSKStock)
+long CSKOSQuoteLib::GetStockByIndexLONG(short sMarketNo, long nStockIndex, SKCOMLib::SKSTOCKLONG *pSKStock)
 {
     return m_pSKQuoteLib->SKQuoteLib_GetStockByIndexLONG(sMarketNo, nStockIndex, pSKStock);
 }
 
-long CSKQuoteLib::RequestTicks(short *psPageNo, string strStockNos)
+long CSKOSQuoteLib::RequestTicks(short *psPageNo, string strStockNos)
 {
     // SKQuoteLib_RequestLiveTick
     return m_pSKQuoteLib->SKQuoteLib_RequestTicks(psPageNo, _bstr_t(strStockNos.c_str()));
 }
 
-long CSKQuoteLib::RequestStockList(short MarketNo)
+long CSKOSQuoteLib::RequestStockList(short MarketNo)
 {
     return m_pSKQuoteLib->SKQuoteLib_RequestStockList(MarketNo);
 }
 
-long CSKQuoteLib::RequestKLine(string strStockNo)
+long CSKOSQuoteLib::RequestKLine(string strStockNo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
     BSTR BstrStockNo = _bstr_t(strStockNo.c_str());
@@ -294,7 +294,7 @@ long CSKQuoteLib::RequestKLine(string strStockNo)
     return res;
 }
 
-long CSKQuoteLib::RequestServerTime()
+long CSKOSQuoteLib::RequestServerTime()
 {
     long res = 0;
 
@@ -304,7 +304,7 @@ long CSKQuoteLib::RequestServerTime()
     return res;
 }
 
-long CSKQuoteLib::RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKSTOCKLONG *pSKStock)
+long CSKOSQuoteLib::RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKSTOCKLONG *pSKStock)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
@@ -332,7 +332,7 @@ long CSKQuoteLib::RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKSTO
     return res;
 }
 
-long CSKQuoteLib::GetMarketBuySellUpDown(VOID)
+long CSKOSQuoteLib::GetMarketBuySellUpDown(VOID)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
@@ -342,7 +342,7 @@ long CSKQuoteLib::GetMarketBuySellUpDown(VOID)
     return res;
 }
 
-void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
+void CSKOSQuoteLib::ProcessDaysOrNightCommHighLowPoint()
 {
     if (gCurServerTime[0] < 0)
     {
@@ -430,7 +430,7 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
     }
 }
 
-VOID CSKQuoteLib::GetCommodityIdx(VOID)
+VOID CSKOSQuoteLib::GetCommodityIdx(VOID)
 {
     SKCOMLib::SKSTOCKLONG skStock;
 
@@ -486,7 +486,7 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
 }
 
 // Events
-void CSKQuoteLib::OnConnection(long nKind, long nCode)
+void CSKOSQuoteLib::OnConnection(long nKind, long nCode)
 {
     switch (nKind)
     {
@@ -545,7 +545,7 @@ void CSKQuoteLib::OnConnection(long nKind, long nCode)
 //     LONG nDealTime; // Transaction time (hhmmss)
 // };
 
-void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
+void CSKOSQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
@@ -593,7 +593,7 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
     delete[] szStockNo;
 }
 
-void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate)
+void CSKOSQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
@@ -615,7 +615,7 @@ void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, lon
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
-void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate)
+void CSKOSQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
@@ -630,7 +630,7 @@ void CSKQuoteLib::OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDa
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
-void CSKQuoteLib::OnNotifyBest5LONG(
+void CSKOSQuoteLib::OnNotifyBest5LONG(
     SHORT sMarketNo, LONG nStockidx,
     long nBestBid1, long nBestBidQty1,
     long nBestBid2, long nBestBidQty2,
@@ -697,7 +697,7 @@ void CSKQuoteLib::OnNotifyBest5LONG(
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
-void CSKQuoteLib::OnNotifyStockList(long sMarketNo, string strStockData)
+void CSKOSQuoteLib::OnNotifyStockList(long sMarketNo, string strStockData)
 {
     string tempstr = "";
     for (int i = 0; i < strStockData.length(); i++)
@@ -718,7 +718,7 @@ void CSKQuoteLib::OnNotifyStockList(long sMarketNo, string strStockData)
     cout << endl;
 }
 
-void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
+void CSKOSQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
@@ -741,7 +741,7 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
-void CSKQuoteLib::OnNotifyServerTime(SHORT sHour, SHORT sMinute, SHORT sSecond, LONG nTotal)
+void CSKOSQuoteLib::OnNotifyServerTime(SHORT sHour, SHORT sMinute, SHORT sSecond, LONG nTotal)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Hour: %d Minute: %d Second: %d Total[%ld]", sHour, sMinute, sSecond, nTotal);
 
@@ -750,7 +750,7 @@ void CSKQuoteLib::OnNotifyServerTime(SHORT sHour, SHORT sMinute, SHORT sSecond, 
     gCurServerTime[2] = sSecond;
 }
 
-void CSKQuoteLib::OnNotifyMarketTot(SHORT sMarketNo, SHORT sPtr, LONG nTime, LONG nTotv, LONG nTots, LONG nTotc)
+void CSKOSQuoteLib::OnNotifyMarketTot(SHORT sMarketNo, SHORT sPtr, LONG nTime, LONG nTotv, LONG nTots, LONG nTotc)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
@@ -762,7 +762,7 @@ void CSKQuoteLib::OnNotifyMarketTot(SHORT sMarketNo, SHORT sPtr, LONG nTime, LON
     // GetCurTaiexInfo(sMarketNo, nTime, nTotv, 0, 0);
 }
 
-void CSKQuoteLib::OnNotifyMarketBuySell(SHORT sMarketNo, SHORT sPtr, LONG nTime, LONG nBc, LONG nSc, LONG nBs, LONG nSs)
+void CSKOSQuoteLib::OnNotifyMarketBuySell(SHORT sMarketNo, SHORT sPtr, LONG nTime, LONG nBc, LONG nSc, LONG nBs, LONG nSs)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 

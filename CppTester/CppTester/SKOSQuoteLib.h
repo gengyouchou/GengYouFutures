@@ -30,13 +30,13 @@ struct COMMODITY_INFO
     long MediaTekIdxNo;
 };
 
-class CSKQuoteLib
+class CSKOSQuoteLib
 {
 public:
-    typedef TEventHandlerNamespace::TEventHandler<CSKQuoteLib, SKCOMLib::ISKQuoteLib, SKCOMLib::_ISKQuoteLibEvents> ISKQuoteLibEventHandler;
+    typedef TEventHandlerNamespace::TEventHandler<CSKOSQuoteLib, SKCOMLib::ISKQuoteLib, SKCOMLib::_ISKQuoteLibEvents> ISKQuoteLibEventHandler;
 
-    CSKQuoteLib();
-    ~CSKQuoteLib();
+    CSKOSQuoteLib();
+    ~CSKOSQuoteLib();
 
     // Methods
     long EnterMonitorLONG();
