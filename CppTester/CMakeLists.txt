@@ -16,6 +16,7 @@ set(SOURCES
     CppTester/SKCenterLib.cpp
     CppTester/SKOrderLib.cpp
     CppTester/SKQuoteLib.cpp
+    CppTester/SKOSQuoteLib.cpp
     CppTester/SKReplyLib.cpp
     CppTester/Strategy.cpp
     ../Logger/Logger.cpp
@@ -27,6 +28,7 @@ set(HEADERS
     CppTester/SKCOM_reference.h
     CppTester/SKOrderLib.h
     CppTester/SKQuoteLib.h
+    CppTester/SKOSQuoteLib.h
     CppTester/SKReplyLib.h
     CppTester/TEventHandler.h
     CppTester/Strategy.h

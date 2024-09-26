@@ -11,24 +11,7 @@
 #include "TEventHandler.h"
 #include "config.h"
 
-#define COMMODITY_MAIN "MTX00"
-#define COMMODITY_OTHER "TM0000"
-#define COMMODITY_TX_MAIN "TX00"
-
-#define DayMA 20
-#define DAY_NIGHT_HIGH_LOW_K_LINE 20
-#define COST_DAY_MA 5 // weekly contract cost
-#define ONE_STRIKE_PRICES 50
-
-struct COMMODITY_INFO
-{
-    long MTXIdxNo;
-    long MTXIdxNoAM;
-    long TSMCIdxNo;
-    long FOXCONNIdxNo;
-    long TSEAIdxNo;
-    long MediaTekIdxNo;
-};
+#define COMMODITY_OS_MAIN "NQ0000"
 
 class CSKOSQuoteLib
 {
@@ -45,10 +28,10 @@ public:
     long RequestStocks(short *psPageNo, string strStockNos);
     long RequestTicks(short *psPageNo, string strStockNos);
     long RequestStockList(short MarketNo);
-    long GetStockByIndexLONG(short sMarketNo, long bStockIndex, SKCOMLib::SKSTOCKLONG *pSKStock);
+    long GetStockByIndexLONG(short sMarketNo, long bStockIndex, SKCOMLib::SKFOREIGNLONG *pSKStock);
     long RequestKLine(string strStockNo);
     long RequestServerTime();
-    long RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKSTOCKLONG *pSKStock);
+    long RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKFOREIGNLONG *pSKStock);
     long GetMarketBuySellUpDown(VOID);
     void ProcessDaysOrNightCommHighLowPoint();
     VOID GetCommodityIdx(VOID);
@@ -57,7 +40,7 @@ public:
     void OnConnection(long nKind, long nCode);
     void OnNotifyQuoteLONG(short sMarketNo, long nStockIndex);
     void OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate);
-    void OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate);
+    void OnNotifyTicksNineDigitLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate);
     void OnNotifyBest5LONG(
         SHORT sMarketNo, LONG nStockidx,
         long nBestBid1, long nBestBidQty1,
