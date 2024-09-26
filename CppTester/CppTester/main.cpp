@@ -1,4 +1,5 @@
 ﻿#include "SKCenterLib.h"
+#include "SKOSQuoteLib.h"
 #include "SKOrderLib.h"
 #include "SKQuoteLib.h"
 #include "SKReplyLib.h"
@@ -40,6 +41,8 @@ CSKQuoteLib *pSKQuoteLib;
 CSKReplyLib *pSKReplyLib;
 CSKOrderLib *pSKOrderLib;
 
+CSKOSQuoteLib *pSKOsQuoteLib;
+
 long g_nCode = 0;
 extern string g_strUserId;
 extern string gPwd;
@@ -60,6 +63,23 @@ void AutoConnect()
         if (count == 5)
         {
             DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");
+            release();
+            exit(0);
+        }
+    }
+
+    count = 0;
+
+    while (pSKOsQuoteLib->IsConnected() != 1)
+    {
+        g_nCode = pSKOsQuoteLib->EnterMonitorLONG();
+        pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
+        ++count;
+
+        if (count == 5)
+        {
+            DEBUG(DEBUG_LEVEL_ERROR, "pSKOsQuoteLib->IsConnected() != 1");
             release();
             exit(0);
         }
@@ -201,6 +221,8 @@ void init()
     pSKQuoteLib = new CSKQuoteLib;
     pSKReplyLib = new CSKReplyLib;
     pSKOrderLib = new CSKOrderLib;
+
+    pSKOsQuoteLib = new CSKOSQuoteLib;
 }
 
 void release()
@@ -209,6 +231,8 @@ void release()
     delete pSKQuoteLib;
     delete pSKReplyLib;
     delete pSKOrderLib;
+
+    delete pSKOsQuoteLib;
 
     CoUninitialize();
 }
