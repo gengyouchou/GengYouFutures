@@ -92,8 +92,8 @@ private:
         EXCEPINFO *pexcepinfo,
         UINT *puArgErr);
 
-    SKCOMLib::ISKOSQuoteLibPtr m_pSKQuoteLib;
-    ISKOSQuoteLibEventHandler *m_pSKQuoteLibEventHandler;
+    SKCOMLib::ISKOSQuoteLibPtr m_pSKOSQuoteLib;
+    ISKOSQuoteLibEventHandler *m_pSKOSQuoteLibEventHandler;
 };
 
 VOID GetCommodityIdx(VOID);

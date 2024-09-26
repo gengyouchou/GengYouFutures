@@ -37,22 +37,22 @@ void ProcessDaysOrNightCommHighLowPoint();
 
 CSKOSQuoteLib::CSKOSQuoteLib()
 {
-    m_pSKQuoteLib.CreateInstance(__uuidof(SKCOMLib::SKQuoteLib));
-    m_pSKQuoteLibEventHandler = new ISKOSQuoteLibEventHandler(*this, m_pSKQuoteLib, &CSKOSQuoteLib::OnEventFiringObjectInvoke);
+    m_pSKOSQuoteLib.CreateInstance(__uuidof(SKCOMLib::SKQuoteLib));
+    m_pSKOSQuoteLibEventHandler = new ISKOSQuoteLibEventHandler(*this, m_pSKOSQuoteLib, &CSKOSQuoteLib::OnEventFiringObjectInvoke);
 }
 
 CSKOSQuoteLib::~CSKOSQuoteLib()
 {
-    if (m_pSKQuoteLibEventHandler)
+    if (m_pSKOSQuoteLibEventHandler)
     {
-        m_pSKQuoteLibEventHandler->ShutdownConnectionPoint();
-        m_pSKQuoteLibEventHandler->Release();
-        m_pSKQuoteLibEventHandler = NULL;
+        m_pSKOSQuoteLibEventHandler->ShutdownConnectionPoint();
+        m_pSKOSQuoteLibEventHandler->Release();
+        m_pSKOSQuoteLibEventHandler = NULL;
     }
 
-    if (m_pSKQuoteLib)
+    if (m_pSKOSQuoteLib)
     {
-        m_pSKQuoteLib->Release();
+        m_pSKOSQuoteLib->Release();
     }
 }
 
@@ -247,38 +247,38 @@ HRESULT CSKOSQuoteLib::OnEventFiringObjectInvoke(
 // Methods
 long CSKOSQuoteLib::EnterMonitorLONG()
 {
-    return m_pSKQuoteLib->SKQuoteLib_EnterMonitorLONG();
+    return m_pSKOSQuoteLib->SKQuoteLib_EnterMonitorLONG();
 }
 
 long CSKOSQuoteLib::IsConnected()
 {
-    return m_pSKQuoteLib->SKQuoteLib_IsConnected();
+    return m_pSKOSQuoteLib->SKQuoteLib_IsConnected();
 }
 
 long CSKOSQuoteLib::LeaveMonitor()
 {
-    return m_pSKQuoteLib->SKQuoteLib_LeaveMonitor();
+    return m_pSKOSQuoteLib->SKQuoteLib_LeaveMonitor();
 }
 
 long CSKOSQuoteLib::RequestStocks(short *psPageNo, string strStockNos)
 {
-    return m_pSKQuoteLib->SKQuoteLib_RequestStocks(psPageNo, _bstr_t(strStockNos.c_str()));
+    return m_pSKOSQuoteLib->SKQuoteLib_RequestStocks(psPageNo, _bstr_t(strStockNos.c_str()));
 }
 
 long CSKOSQuoteLib::GetStockByIndexLONG(short sMarketNo, long nStockIndex, SKCOMLib::SKSTOCKLONG *pSKStock)
 {
-    return m_pSKQuoteLib->SKQuoteLib_GetStockByIndexLONG(sMarketNo, nStockIndex, pSKStock);
+    return m_pSKOSQuoteLib->SKQuoteLib_GetStockByIndexLONG(sMarketNo, nStockIndex, pSKStock);
 }
 
 long CSKOSQuoteLib::RequestTicks(short *psPageNo, string strStockNos)
 {
     // SKQuoteLib_RequestLiveTick
-    return m_pSKQuoteLib->SKQuoteLib_RequestTicks(psPageNo, _bstr_t(strStockNos.c_str()));
+    return m_pSKOSQuoteLib->SKQuoteLib_RequestTicks(psPageNo, _bstr_t(strStockNos.c_str()));
 }
 
 long CSKOSQuoteLib::RequestStockList(short MarketNo)
 {
-    return m_pSKQuoteLib->SKQuoteLib_RequestStockList(MarketNo);
+    return m_pSKOSQuoteLib->SKQuoteLib_RequestStockList(MarketNo);
 }
 
 long CSKOSQuoteLib::RequestKLine(string strStockNo)
@@ -288,8 +288,8 @@ long CSKOSQuoteLib::RequestKLine(string strStockNo)
 
     long res = 0;
 
-    res = m_pSKQuoteLib->SKQuoteLib_RequestKLineAM(BstrStockNo, 0, 1, 0);
-    DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKQuoteLib->SKQuoteLib_RequestKLineAM = %d", res);
+    res = m_pSKOSQuoteLib->SKQuoteLib_RequestKLineAM(BstrStockNo, 0, 1, 0);
+    DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKOSQuoteLib->SKQuoteLib_RequestKLineAM = %d", res);
 
     return res;
 }
@@ -298,8 +298,8 @@ long CSKOSQuoteLib::RequestServerTime()
 {
     long res = 0;
 
-    res = m_pSKQuoteLib->SKQuoteLib_RequestServerTime();
-    DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKQuoteLib->SKQuoteLib_RequestServerTime = %d", res);
+    res = m_pSKOSQuoteLib->SKQuoteLib_RequestServerTime();
+    DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKOSQuoteLib->SKQuoteLib_RequestServerTime = %d", res);
 
     return res;
 }
@@ -310,8 +310,8 @@ long CSKOSQuoteLib::RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKS
 
     BSTR bstrStockNo = _bstr_t(strStockNo.c_str());
 
-    long res = m_pSKQuoteLib->SKQuoteLib_GetStockByNoLONG(bstrStockNo, pSKStock);
-    DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKQuoteLib->SKQuoteLib_GetStockByNoLONG = %d", res);
+    long res = m_pSKOSQuoteLib->SKQuoteLib_GetStockByNoLONG(bstrStockNo, pSKStock);
+    DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKOSQuoteLib->SKQuoteLib_GetStockByNoLONG = %d", res);
 
     if (res == 0)
     {
@@ -336,8 +336,8 @@ long CSKOSQuoteLib::GetMarketBuySellUpDown(VOID)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
-    long res = m_pSKQuoteLib->SKQuoteLib_GetMarketBuySellUpDown();
-    DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKQuoteLib->SKQuoteLib_GetMarketBuySellUpDown = %d", res);
+    long res = m_pSKOSQuoteLib->SKQuoteLib_GetMarketBuySellUpDown();
+    DEBUG(DEBUG_LEVEL_DEBUG, "m_pSKOSQuoteLib->SKQuoteLib_GetMarketBuySellUpDown = %d", res);
 
     return res;
 }
