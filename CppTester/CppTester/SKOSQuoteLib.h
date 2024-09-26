@@ -28,7 +28,7 @@ public:
     long RequestStocks(short *psPageNo, string strStockNos);
     long RequestTicks(short *psPageNo, string strStockNos);
     long RequestStockList(short MarketNo);
-    long GetStockByIndexLONG(short sMarketNo, long bStockIndex, SKCOMLib::SKFOREIGNLONG *pSKStock);
+    long GetStockByIndexLONG(long bStockIndex, SKCOMLib::SKFOREIGNLONG *pSKStock);
     long RequestKLine(string strStockNo);
     long RequestServerTime();
     long RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKFOREIGNLONG *pSKStock);

@@ -107,9 +107,9 @@ long CSKOSQuoteLib::RequestStocks(short *psPageNo, string strStockNos)
     return m_pSKOSQuoteLib->SKOSQuoteLib_RequestStocks(psPageNo, _bstr_t(strStockNos.c_str()));
 }
 
-long CSKOSQuoteLib::GetStockByIndexLONG(short sMarketNo, long nStockIndex, SKCOMLib::SKFOREIGNLONG *pSKStock)
+long CSKOSQuoteLib::GetStockByIndexLONG(long nStockIndex, SKCOMLib::SKFOREIGNLONG *pSKStock)
 {
-    return m_pSKOSQuoteLib->SKOSQuoteLib_GetStockByIndexLONG(sMarketNo, nStockIndex, pSKStock);
+    return m_pSKOSQuoteLib->SKOSQuoteLib_GetStockByIndexLONG(nStockIndex, pSKStock);
 }
 
 long CSKOSQuoteLib::RequestTicks(short *psPageNo, string strStockNos)
