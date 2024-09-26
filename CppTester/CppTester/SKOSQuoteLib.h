@@ -33,7 +33,7 @@ struct COMMODITY_INFO
 class CSKOSQuoteLib
 {
 public:
-    typedef TEventHandlerNamespace::TEventHandler<CSKOSQuoteLib, SKCOMLib::ISKQuoteLib, SKCOMLib::_ISKQuoteLibEvents> ISKQuoteLibEventHandler;
+    typedef TEventHandlerNamespace::TEventHandler<CSKOSQuoteLib, SKCOMLib::ISKOSQuoteLib, SKCOMLib::_ISKOSQuoteLibEvents> ISKOSQuoteLibEventHandler;
 
     CSKOSQuoteLib();
     ~CSKOSQuoteLib();
@@ -82,7 +82,7 @@ public:
 
 private:
     HRESULT OnEventFiringObjectInvoke(
-        ISKQuoteLibEventHandler *pEventHandler,
+        ISKOSQuoteLibEventHandler *pEventHandler,
         DISPID dispidMember,
         REFIID riid,
         LCID lcid,
@@ -92,8 +92,8 @@ private:
         EXCEPINFO *pexcepinfo,
         UINT *puArgErr);
 
-    SKCOMLib::ISKQuoteLibPtr m_pSKQuoteLib;
-    ISKQuoteLibEventHandler *m_pSKQuoteLibEventHandler;
+    SKCOMLib::ISKOSQuoteLibPtr m_pSKQuoteLib;
+    ISKOSQuoteLibEventHandler *m_pSKQuoteLibEventHandler;
 };
 
 VOID GetCommodityIdx(VOID);

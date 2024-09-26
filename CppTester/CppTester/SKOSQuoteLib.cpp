@@ -38,7 +38,7 @@ void ProcessDaysOrNightCommHighLowPoint();
 CSKOSQuoteLib::CSKOSQuoteLib()
 {
     m_pSKQuoteLib.CreateInstance(__uuidof(SKCOMLib::SKQuoteLib));
-    m_pSKQuoteLibEventHandler = new ISKQuoteLibEventHandler(*this, m_pSKQuoteLib, &CSKOSQuoteLib::OnEventFiringObjectInvoke);
+    m_pSKQuoteLibEventHandler = new ISKOSQuoteLibEventHandler(*this, m_pSKQuoteLib, &CSKOSQuoteLib::OnEventFiringObjectInvoke);
 }
 
 CSKOSQuoteLib::~CSKOSQuoteLib()
@@ -57,7 +57,7 @@ CSKOSQuoteLib::~CSKOSQuoteLib()
 }
 
 HRESULT CSKOSQuoteLib::OnEventFiringObjectInvoke(
-    ISKQuoteLibEventHandler *pEventHandler,
+    ISKOSQuoteLibEventHandler *pEventHandler,
     DISPID dispidMember,
     REFIID riid,
     LCID lcid,
