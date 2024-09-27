@@ -1522,7 +1522,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                 totalOffer += gBest5BidOffer[nStockidx][i].second;
             }
 
-            if (nClose > 0 && nClose <= nBid)
+            if (nClose > 0 && nClose <= nBid && nQty >= BIG_ORDER)
             {
                 // Support Bid buying and force everyone to sell Bid.
                 // The purpose is to sell Bid in large quantities.
@@ -1544,7 +1544,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                 }
             }
 
-            if (nClose > 0 && nClose >= nAsk)
+            if (nClose > 0 && nClose >= nAsk && nQty >= BIG_ORDER)
             {
                 // Suppress Offer selling and force everyone to buy Offer.
                 // The purpose is to buy Offer in large quantities.
