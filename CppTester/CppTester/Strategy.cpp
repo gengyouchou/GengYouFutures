@@ -2850,7 +2850,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     {
         // For only applicable during periods of large fluctuations
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
-        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
 
         StrategyCaluBidOfferLongShort();
@@ -2865,18 +2864,16 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             break;
         }
 
-        // if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
-        // {
+        int LongShortExtremeFit = LongShortExtremeFitRate(MtxCommodtyInfo);
 
-        //     if (gMa5LongShort > 0)
-        //     {
-        //         StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
-        //     }
-        //     else if (gMa5LongShort < 0)
-        //     {
-        //         StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
-        //     }
-        // }
+        if (LongShortExtremeFit == 1 && gNQMa20LongShort > MA20_LONG_SHORT)
+        {
+            StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
+        }
+        else if (LongShortExtremeFit == -1 && gNQMa20LongShort < -MA20_LONG_SHORT)
+        {
+            StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+        }
 
         break;
     }
