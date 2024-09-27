@@ -2856,6 +2856,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyCaluBidOfferLongShort();
         StrategyCaluTransactionListLongShort();
         Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
+        CountOsNQ20MaForNewLongShortPosition(gCommodtyOsInfo.NQIdxNo);
 
         BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
 
@@ -2864,18 +2865,18 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             break;
         }
 
-        if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
-        {
+        // if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
+        // {
 
-            if (gMa5LongShort > 0 && EarnAtLeastOneStrike(MtxCommodtyInfo, 1) == 1)
-            {
-                StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
-            }
-            else if (gMa5LongShort < 0 && EarnAtLeastOneStrike(MtxCommodtyInfo, 0) == 0)
-            {
-                StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
-            }
-        }
+        //     if (gMa5LongShort > 0)
+        //     {
+        //         StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
+        //     }
+        //     else if (gMa5LongShort < 0)
+        //     {
+        //         StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+        //     }
+        // }
 
         break;
     }

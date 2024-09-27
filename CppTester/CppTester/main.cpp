@@ -420,7 +420,8 @@ void thread_main()
 
             printf("=========================================\n");
 
-            printf("[CurNQPrice: %ld]\n", gCurOsCommPrice[gCommodtyOsInfo.NQIdxNo]);
+            printf("[CurNQPrice: %ld], [NQMa20: %f], [NQMa20LongShort: %f]\n",
+                   gCurOsCommPrice[gCommodtyOsInfo.NQIdxNo], gNQMa20, gNQMa20LongShort);
 
             printf("=========================================\n");
 

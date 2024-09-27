@@ -124,3 +124,6 @@ extern double gCostMovingAverageVal;
 extern double gMa5;
 extern double gMa5LongShort;
 extern double gBidOfferLongShortSlope;
+
+extern double gNQMa20;
+extern double gNQMa20LongShort;
