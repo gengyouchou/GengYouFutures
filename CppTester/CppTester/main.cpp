@@ -144,6 +144,19 @@ void AutoQuoteTicks(IN string ProductNum, short sPageNo)
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
+void AutoOsQuoteTicks(IN string ProductNum, short sPageNo)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
+
+    g_nCode = pSKOsQuoteLib->RequestTicks(&sPageNo, ProductNum);
+
+    pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
+
+    DEBUG(DEBUG_LEVEL_INFO, "g_nCode= %d", g_nCode);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
+}
+
 void AutoBest5Long(LONG ProductIdxNo, string ProductName)
 {
     if (gCurCommHighLowPoint.count(ProductIdxNo) > 0)
@@ -307,6 +320,7 @@ void thread_main()
 
     // For calculate 5MA
     AutoQuoteTicks(COMMODITY_MAIN, -1);
+    AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
 
     while (true)
     {

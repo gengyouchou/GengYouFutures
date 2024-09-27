@@ -47,7 +47,7 @@ HRESULT CSKOSQuoteLib::OnEventFiringObjectInvoke(
     EXCEPINFO *pexcepinfo,
     UINT *puArgErr)
 {
-    DEBUG(DEBUG_LEVEL_DEBUG, "dispidMember == %d", dispidMember);
+    DEBUG(DEBUG_LEVEL_INFO, "CSKOSQuoteLib DispidMember == %d", dispidMember);
 
     VARIANT varlValue;
     VariantInit(&varlValue);
@@ -174,14 +174,14 @@ void CSKOSQuoteLib::OnConnection(long nKind, long nCode)
 
 void CSKOSQuoteLib::OnNotifyTicksNineDigitLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate)
 {
-    DEBUG(DEBUG_LEVEL_DEBUG, "start");
+    DEBUG(DEBUG_LEVEL_INFO, "start");
 
     if (nSimulate == 1 || nBid == 0 || nAsk == 0)
     {
         return;
     }
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
+    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
 
     gOsTransactionList[nStockIndex][0] = nPtr;
@@ -191,5 +191,5 @@ void CSKOSQuoteLib::OnNotifyTicksNineDigitLONG(long nStockIndex, long nPtr, long
     gOsTransactionList[nStockIndex][4] = nQty;
     gOsTransactionList[nStockIndex][5] = lTimehms;
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "end");
+    DEBUG(DEBUG_LEVEL_INFO, "end");
 }
