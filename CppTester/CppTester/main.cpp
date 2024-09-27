@@ -1,4 +1,5 @@
 ﻿#include "SKCenterLib.h"
+#include "SKOSQuoteLib.h"
 #include "SKOrderLib.h"
 #include "SKQuoteLib.h"
 #include "SKReplyLib.h"
@@ -40,6 +41,8 @@ CSKQuoteLib *pSKQuoteLib;
 CSKReplyLib *pSKReplyLib;
 CSKOrderLib *pSKOrderLib;
 
+CSKOSQuoteLib *pSKOsQuoteLib;
+
 long g_nCode = 0;
 extern string g_strUserId;
 extern string gPwd;
@@ -60,6 +63,23 @@ void AutoConnect()
         if (count == 5)
         {
             DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");
+            release();
+            exit(0);
+        }
+    }
+
+    count = 0;
+
+    while (pSKOsQuoteLib->IsConnected() != 1)
+    {
+        g_nCode = pSKOsQuoteLib->EnterMonitorLONG();
+        pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
+        ++count;
+
+        if (count == 5)
+        {
+            DEBUG(DEBUG_LEVEL_ERROR, "pSKOsQuoteLib->IsConnected() != 1");
             release();
             exit(0);
         }
@@ -116,6 +136,19 @@ void AutoQuoteTicks(IN string ProductNum, short sPageNo)
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
     g_nCode = pSKQuoteLib->RequestTicks(&sPageNo, ProductNum);
+
+    pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
+
+    DEBUG(DEBUG_LEVEL_INFO, "g_nCode= %d", g_nCode);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
+}
+
+void AutoOsQuoteTicks(IN string ProductNum, short sPageNo)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Started");
+
+    g_nCode = pSKOsQuoteLib->RequestTicks(&sPageNo, ProductNum);
 
     pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
 
@@ -201,6 +234,8 @@ void init()
     pSKQuoteLib = new CSKQuoteLib;
     pSKReplyLib = new CSKReplyLib;
     pSKOrderLib = new CSKOrderLib;
+
+    pSKOsQuoteLib = new CSKOSQuoteLib;
 }
 
 void release()
@@ -209,6 +244,8 @@ void release()
     delete pSKQuoteLib;
     delete pSKReplyLib;
     delete pSKOrderLib;
+
+    delete pSKOsQuoteLib;
 
     CoUninitialize();
 }
@@ -269,6 +306,8 @@ void thread_main()
 
     pSKQuoteLib->GetCommodityIdx();
 
+    pSKOsQuoteLib->GetCommodityIdx();
+
     std::string CommList;
 
     std::ostringstream oss;
@@ -283,6 +322,7 @@ void thread_main()
 
     // For calculate 5MA
     AutoQuoteTicks(COMMODITY_MAIN, -1);
+    AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
 
     while (true)
     {
@@ -357,7 +397,7 @@ void thread_main()
 
             if (CheckConnected == 30)
             {
-                if (pSKQuoteLib->IsConnected() != 1)
+                if (pSKQuoteLib->IsConnected() != 1 || pSKOsQuoteLib->IsConnected() != 1)
                 {
                     DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");
                     LOG(DEBUG_LEVEL_INFO, "pSKQuoteLib->IsConnected() != 1");
@@ -377,6 +417,10 @@ void thread_main()
                    gCurCommPrice[gCommodtyInfo.TSEAIdxNo] / 100, gCurTaiexInfo[0][1]);
             printf("[Diff: %d] ", (gCurCommPrice[MtxCommodtyInfo] - gCurCommPrice[gCommodtyInfo.TSEAIdxNo]) / 100);
             printf("[ServerTime: %d: %d: %d]\n", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+
+            printf("=========================================\n");
+
+            printf("[CurNQPrice: %ld]\n", gCurOsCommPrice[gCommodtyOsInfo.NQIdxNo]);
 
             printf("=========================================\n");
 
