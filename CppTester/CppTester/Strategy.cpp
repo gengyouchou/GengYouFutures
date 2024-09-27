@@ -393,7 +393,7 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
                 if (lastMinute != -1)
                 {
                     // Push the last minute's closing price to the deque
-                    if (closePrices.size() >= 5)
+                    if (closePrices.size() >= MA5)
                     {
                         closePrices.pop_front(); // Remove the oldest closing price
                     }
@@ -533,7 +533,7 @@ int CountOsNQ20MaForNewLongShortPosition(LONG nStockidx)
                 if (lastMinute != -1)
                 {
                     // Push the last minute's closing price to the deque
-                    if (closePrices.size() >= 5)
+                    if (closePrices.size() >= MA20)
                     {
                         closePrices.pop_front(); // Remove the oldest closing price
                     }

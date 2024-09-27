@@ -106,6 +106,11 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 #define STRATEGY_1 0
 #define STRATEGY_2 1
 
+// Technical line
+
+#define MA5 5
+#define MA20 20
+
 // default config
 
 #define CLOSING_KEY_PRICE_LEVEL 3
