@@ -1,5 +1,6 @@
 #include "Strategy.h"
 #include "SKCenterLib.h"
+#include "SKOSQuoteLib.h"
 #include "SKOrderLib.h"
 #include "SKQuoteLib.h"
 #include "SKReplyLib.h"
@@ -58,6 +59,8 @@ LONG gBidOfferLongShort = 0, gTransactionListLongShort = 0;
 double gCostMovingAverageVal = 0;
 double gMa5 = 0;
 double gMa5LongShort = 0;
+double gNQMa20 = 0;
+double gNQMa20LongShort = 0;
 
 double gBidOfferLongShortSlope = 0;
 
@@ -452,6 +455,146 @@ int Count5MaForNewLongShortPosition(LONG nStockidx)
                 {
                     // Go short: 5MA slope is negative
                     DEBUG(DEBUG_LEVEL_DEBUG, "Opening short position. 5MA: %f, Slope: %ld", CurMa5, gMa5LongShort);
+                    PrePtr[nStockidx] = nPtr; // Update the last processed pointer
+                    return 0;                 // Return 0 for short position
+                }
+            }
+            else
+            {
+                lastMa5 = tickPrice;
+            }
+
+            // Update the last processed pointer to prevent processing the same tick again
+            PrePtr[nStockidx] = nPtr;
+        }
+    }
+
+    return -1; // No action, return -1
+}
+
+/**
+ * @brief Handle new tick data and calculate 5MA slope for opening long/short positions based on 1-minute close prices.
+ *
+ * This function processes tick data for a specific stock index (nStockidx), computes the 5-minute moving average (5MA)
+ * using the closing prices of the past 5 minutes, and determines whether to open long or short positions based on the
+ * slope of the 5MA (i.e., the difference between the current and previous 5MA values).
+ *
+ * The strategy is as follows:
+ * - Open a long position when the 5MA slope is positive.
+ * - Open a short position when the 5MA slope is negative.
+ *
+ * The function tracks the last processed minute and updates the closing prices deque when a new minute begins.
+ * Only the last tick of the minute is used to represent the closing price for that minute.
+ *
+ * @param nStockidx The stock index for which tick data is being processed.
+ * @return int
+ *         - 1 if a long position should be opened.
+ *         - 0 if a short position should be opened.
+ *         - -1 if no action is taken (e.g., not enough data, or no change in position).
+ */
+int CountOsNQ20MaForNewLongShortPosition(LONG nStockidx)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
+
+    // Static variables to retain state between function calls
+    static unordered_map<long, long> PrePtr; // Keeps track of the last processed pointer for each stock index
+    static std::deque<double> closePrices;   // Stores the last 5 minutes of closing prices
+    static int lastMinute = -1;              // Tracks the last processed minute
+    static double lastMinutePrice = 0;       // The most recent price in the last minute
+    static double lastMa5 = 0;               // Stores the previous 5MA value for slope calculation
+
+    // Ensure that there is data for the given stock index
+    if (gTransactionList.count(nStockidx))
+    {
+        // Retrieve tick data from gTransactionList for the given stock index
+        long nPtr = 0, nClose = 0, nQty = 0, nTimehms = 0;
+
+        nPtr = gOsTransactionList[nStockidx][0];
+        nClose = gOsTransactionList[nStockidx][1];
+        nQty = gOsTransactionList[nStockidx][2];
+        nTimehms = gOsTransactionList[nStockidx][3];
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nTimehms: %ld,nClose: %ld,nQty: %ld\n",
+              nStockidx, nPtr, nTimehms, nClose, nQty);
+
+        // Process new tick data only if this is a new pointer (i.e., a new tick)
+        if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
+        {
+            // Extract the current minute from nTimehms (formatted as hhmmss)
+            int currentMinute = nTimehms / 100; // Extract hh:mm (ignores seconds)
+
+            // Convert closing price to double
+            double tickPrice = static_cast<double>(nClose) / 100.0;
+
+            // Check if we've entered a new minute
+            if (currentMinute != lastMinute)
+            {
+                // If we have already processed at least one minute
+                if (lastMinute != -1)
+                {
+                    // Push the last minute's closing price to the deque
+                    if (closePrices.size() >= 5)
+                    {
+                        closePrices.pop_front(); // Remove the oldest closing price
+                    }
+                    closePrices.push_back(lastMinutePrice); // Push the final price of the last minute
+                }
+
+                if (closePrices.size() > 0)
+                {
+                    // Calculate the 5MA
+                    double ma5 = calculate5MA(closePrices);
+                    gNQMa20 = ma5;
+
+                    // Determine the slope of the 5MA
+                    double ma5Slope = ma5 - lastMa5;
+
+                    gNQMa20LongShort = ma5Slope;
+                    // Store the current 5MA for the next comparison
+                    lastMa5 = ma5;
+                }
+                else
+                {
+                    // Store the current 5MA for the next comparison
+                    lastMa5 = tickPrice;
+                }
+
+                // Update the last processed minute and reset the lastMinutePrice for the new minute
+                lastMinute = currentMinute;
+            }
+
+            // Update the most recent price in the current minute (i.e., every tick updates the "closing" price)
+            lastMinutePrice = tickPrice;
+
+            // Check if we have enough data to calculate the 5MA (at least 5 minutes of closing prices)
+            if (closePrices.size() > 0)
+            {
+                deque<double> TempClosePrices = closePrices;
+                TempClosePrices.pop_front();
+                TempClosePrices.push_back(tickPrice);
+
+                double CurMa5 = calculate5MA(TempClosePrices);
+                gNQMa20 = CurMa5;
+
+                // Determine the slope of the 5MA
+                double ma5Slope = CurMa5 - lastMa5;
+
+                gNQMa20LongShort = ma5Slope;
+
+                DEBUG(DEBUG_LEVEL_DEBUG, "5MA: %f, lastMa5: %f, Slope: %f", CurMa5, lastMa5, gNQMa20LongShort);
+
+                // Strategy: Open positions based on the slope of the 5MA
+                if (gNQMa20LongShort > 0)
+                {
+                    // Go long: 5MA slope is positive
+                    DEBUG(DEBUG_LEVEL_DEBUG, "Opening long position. 5MA: %f, Slope: %ld", CurMa5, gNQMa20LongShort);
+                    PrePtr[nStockidx] = nPtr; // Update the last processed pointer
+                    return 1;                 // Return 1 for long position
+                }
+                else if (gNQMa20LongShort < 0)
+                {
+                    // Go short: 5MA slope is negative
+                    DEBUG(DEBUG_LEVEL_DEBUG, "Opening short position. 5MA: %f, Slope: %ld", CurMa5, gNQMa20LongShort);
                     PrePtr[nStockidx] = nPtr; // Update the last processed pointer
                     return 0;                 // Return 0 for short position
                 }
