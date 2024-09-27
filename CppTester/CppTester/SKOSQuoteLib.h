@@ -11,7 +11,7 @@
 #include "TEventHandler.h"
 #include "config.h"
 
-#define COMMODITY_OS_MAIN "NQ0000"
+#define COMMODITY_OS_MAIN "CME,NQ0000"
 
 class CSKOSQuoteLib
 {

@@ -320,7 +320,7 @@ void thread_main()
 
     // For calculate 5MA
     AutoQuoteTicks(COMMODITY_MAIN, -1);
-    AutoOsQuoteTicks(COMMODITY_OS_MAIN, 1);
+    AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
 
     while (true)
     {
