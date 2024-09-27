@@ -64,7 +64,7 @@ HRESULT CSKOSQuoteLib::OnEventFiringObjectInvoke(
         break;
     }
 
-    case 17: // OnNotifyTicksNineDigitLONG
+    case 16: // OnNotifyTicksNineDigitLONG
     {
         long nStockIndex = V_I4(&(pdispparams->rgvarg)[5]);
         long nPtr = V_I4(&(pdispparams->rgvarg)[4]);
@@ -114,7 +114,7 @@ long CSKOSQuoteLib::GetStockByIndexLONG(long nStockIndex, SKCOMLib::SKFOREIGNLON
 long CSKOSQuoteLib::RequestTicks(short *psPageNo, string strStockNos)
 {
     // SKOSQuoteLib_RequestLiveTick
-    return m_pSKOSQuoteLib->SKOSQuoteLib_RequestTicks(psPageNo, _bstr_t(strStockNos.c_str()));
+    return m_pSKOSQuoteLib->SKOSQuoteLib_RequestLiveTick(psPageNo, _bstr_t(strStockNos.c_str()));
 }
 
 long CSKOSQuoteLib::RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKFOREIGNLONG *pSKStock)
