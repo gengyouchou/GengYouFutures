@@ -892,6 +892,8 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
     return g_nCode;
 }
 
