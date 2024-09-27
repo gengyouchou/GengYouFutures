@@ -47,7 +47,7 @@ HRESULT CSKOSQuoteLib::OnEventFiringObjectInvoke(
     EXCEPINFO *pexcepinfo,
     UINT *puArgErr)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "CSKOSQuoteLib DispidMember == %d", dispidMember);
+    DEBUG(DEBUG_LEVEL_DEBUG, "CSKOSQuoteLib DispidMember == %d", dispidMember);
 
     VARIANT varlValue;
     VariantInit(&varlValue);
@@ -63,18 +63,16 @@ HRESULT CSKOSQuoteLib::OnEventFiringObjectInvoke(
         break;
     }
 
-    case 21: // OnNotifyTicksNineDigitLONG
+    case 17: // OnNotifyTicksNineDigitLONG
     {
-        long nStockIndex = V_I4(&(pdispparams->rgvarg)[9]);
-        long nPtr = V_I4(&(pdispparams->rgvarg)[8]);
-        long nDate = V_I4(&(pdispparams->rgvarg)[7]);
-        long lTimehms = V_I4(&(pdispparams->rgvarg)[6]);
-        long nBid = V_I4(&(pdispparams->rgvarg)[4]);
-        long nAsk = V_I4(&(pdispparams->rgvarg)[3]);
-        long nClose = V_I4(&(pdispparams->rgvarg)[2]);
-        long nQty = V_I4(&(pdispparams->rgvarg)[1]);
-        long nSimulate = V_I4(&(pdispparams->rgvarg)[0]);
-        OnNotifyTicksNineDigitLONG(nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty, nSimulate);
+        long nStockIndex = V_I4(&(pdispparams->rgvarg)[5]);
+        long nPtr = V_I4(&(pdispparams->rgvarg)[4]);
+        long nDate = V_I4(&(pdispparams->rgvarg)[3]);
+        long lTimehms = V_I4(&(pdispparams->rgvarg)[2]);
+        LONG nClose = V_I4(&(pdispparams->rgvarg)[1]);
+        long nQty = V_I4(&(pdispparams->rgvarg)[0]);
+        OnNotifyTicksNineDigitLONG(nStockIndex, nPtr, nDate, lTimehms, nClose, nQty);
+
         break;
     }
 
@@ -172,24 +170,22 @@ void CSKOSQuoteLib::OnConnection(long nKind, long nCode)
     }
 }
 
-void CSKOSQuoteLib::OnNotifyTicksNineDigitLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate)
+void CSKOSQuoteLib::OnNotifyTicksNineDigitLONG(LONG nStockIndex, LONG nPtr, LONG nDate, LONG lTimehms, LONG nClose, LONG nQty)
 {
     DEBUG(DEBUG_LEVEL_INFO, "start");
 
-    if (nSimulate == 1 || nBid == 0 || nAsk == 0)
+    if (nClose <= 0)
     {
         return;
     }
 
-    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld,lTimehms: %ld,nBid: %ld,nAsk: %ld,nClose: %ld,nQty: %ld\n",
-          nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty);
+    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld, lTimehms: %ld, nClose: %ld, nQty: %ld\n",
+          nStockIndex, nPtr, nDate, lTimehms, nClose, nQty);
 
     gOsTransactionList[nStockIndex][0] = nPtr;
-    gOsTransactionList[nStockIndex][1] = nBid;
-    gOsTransactionList[nStockIndex][2] = nAsk;
-    gOsTransactionList[nStockIndex][3] = nClose;
-    gOsTransactionList[nStockIndex][4] = nQty;
-    gOsTransactionList[nStockIndex][5] = lTimehms;
+    gOsTransactionList[nStockIndex][1] = (LONG)nClose;
+    gOsTransactionList[nStockIndex][2] = nQty;
+    gOsTransactionList[nStockIndex][3] = lTimehms;
 
     DEBUG(DEBUG_LEVEL_INFO, "end");
 }

@@ -39,23 +39,7 @@ public:
     // Events
     void OnConnection(long nKind, long nCode);
     void OnNotifyQuoteLONG(short sMarketNo, long nStockIndex);
-    void OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate);
-    void OnNotifyTicksNineDigitLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate);
-    void OnNotifyBest5LONG(
-        SHORT sMarketNo, LONG nStockidx,
-        long nBestBid1, long nBestBidQty1,
-        long nBestBid2, long nBestBidQty2,
-        long nBestBid3, long nBestBidQty3,
-        long nBestBid4, long nBestBidQty4,
-        long nBestBid5, long nBestBidQty5,
-        LONG nExtendBid, LONG nExtendBidQty,
-        long nBestAsk1, long nBestAskQty1,
-        long nBestAsk2, long nBestAskQty2,
-        long nBestAsk3, long nBestAskQty3,
-        long nBestAsk4, long nBestAskQty4,
-        long nBestAsk5, long nBestAskQty5,
-        LONG nExtendAsk, LONG nExtendAskQty,
-        LONG nSimulate);
+    void OnNotifyTicksNineDigitLONG(LONG nStockIndex, LONG nPtr, LONG nDate, LONG lTimehms, LONG nClose, LONG nQty);
 
     void OnNotifyStockList(long sMarketNo, string strStockData);
     void OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData);
