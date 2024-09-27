@@ -504,9 +504,9 @@ int CountOsNQ20MaForNewLongShortPosition(LONG nStockidx)
     static double lastMa5 = 0;               // Stores the previous 5MA value for slope calculation
 
     // Ensure that there is data for the given stock index
-    if (gTransactionList.count(nStockidx))
+    if (gOsTransactionList.count(nStockidx))
     {
-        // Retrieve tick data from gTransactionList for the given stock index
+        // Retrieve tick data from gOsTransactionList for the given stock index
         long nPtr = 0, nClose = 0, nQty = 0, nTimehms = 0;
 
         nPtr = gOsTransactionList[nStockidx][0];
