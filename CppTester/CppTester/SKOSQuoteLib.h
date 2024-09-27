@@ -13,6 +13,15 @@
 
 #define COMMODITY_OS_MAIN "CME,NQ0000"
 
+struct COMMODITY_OS_INFO
+{
+    long NQIdxNo;
+};
+
+extern std::unordered_map<long, std::array<long, 6>> gOsTransactionList;
+extern std::unordered_map<long, long> gCurOsCommPrice;
+extern COMMODITY_OS_INFO gCommodtyOsInfo;
+
 class CSKOSQuoteLib
 {
 public:

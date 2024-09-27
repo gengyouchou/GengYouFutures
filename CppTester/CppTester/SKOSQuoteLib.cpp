@@ -13,7 +13,8 @@
 #define SK_SUBJECT_CONNECTION_STOCKS_READY 3003
 
 std::unordered_map<long, std::array<long, 6>> gOsTransactionList;
-// long nPtr, long nBid, long nAsk, long nClose, long nQty,
+std::unordered_map<long, long> gCurOsCommPrice;
+COMMODITY_OS_INFO gCommodtyOsInfo = {-1};
 
 CSKOSQuoteLib::CSKOSQuoteLib()
 {
@@ -172,20 +173,33 @@ void CSKOSQuoteLib::OnConnection(long nKind, long nCode)
 
 void CSKOSQuoteLib::OnNotifyTicksNineDigitLONG(LONG nStockIndex, LONG nPtr, LONG nDate, LONG lTimehms, LONG nClose, LONG nQty)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     if (nClose <= 0)
     {
         return;
     }
 
-    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld, lTimehms: %ld, nClose: %ld, nQty: %ld\n",
+    DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nDate: %ld, lTimehms: %ld, nClose: %ld, nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nClose, nQty);
 
     gOsTransactionList[nStockIndex][0] = nPtr;
-    gOsTransactionList[nStockIndex][1] = (LONG)nClose;
+    gOsTransactionList[nStockIndex][1] = nClose;
     gOsTransactionList[nStockIndex][2] = nQty;
     gOsTransactionList[nStockIndex][3] = lTimehms;
 
-    DEBUG(DEBUG_LEVEL_INFO, "end");
+    gCurOsCommPrice[nStockIndex] = nClose;
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
+}
+
+VOID CSKOSQuoteLib::GetCommodityIdx(VOID)
+{
+    SKCOMLib::SKFOREIGNLONG skStock;
+
+    long res = RequestStockIndexMap(COMMODITY_OS_MAIN, &skStock);
+
+    gCommodtyOsInfo.NQIdxNo = skStock.nStockIdx;
+
+    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%ld, COMMODITY_OS_MAIN=%ld", res, skStock.nStockIdx);
 }

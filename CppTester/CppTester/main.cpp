@@ -306,6 +306,8 @@ void thread_main()
 
     pSKQuoteLib->GetCommodityIdx();
 
+    pSKOsQuoteLib->GetCommodityIdx();
+
     std::string CommList;
 
     std::ostringstream oss;
@@ -415,6 +417,10 @@ void thread_main()
                    gCurCommPrice[gCommodtyInfo.TSEAIdxNo] / 100, gCurTaiexInfo[0][1]);
             printf("[Diff: %d] ", (gCurCommPrice[MtxCommodtyInfo] - gCurCommPrice[gCommodtyInfo.TSEAIdxNo]) / 100);
             printf("[ServerTime: %d: %d: %d]\n", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+
+            printf("=========================================\n");
+
+            printf("[CurNQPrice: %ld]\n", gCurOsCommPrice[gCommodtyOsInfo.NQIdxNo]);
 
             printf("=========================================\n");
 
