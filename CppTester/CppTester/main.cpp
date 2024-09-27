@@ -397,7 +397,7 @@ void thread_main()
 
             if (CheckConnected == 30)
             {
-                if (pSKQuoteLib->IsConnected() != 1)
+                if (pSKQuoteLib->IsConnected() != 1 || pSKOsQuoteLib->IsConnected() != 1)
                 {
                     DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");
                     LOG(DEBUG_LEVEL_INFO, "pSKQuoteLib->IsConnected() != 1");
