@@ -2437,7 +2437,7 @@ VOID StrategyNewDailyAmplitudeAchievesReverse(string strUserId, LONG MtxCommodty
  * @return The trading action to be taken (e.g., buy, sell, hold).
  */
 
-VOID StrategyNewCostAverageBiasAutoLongShortPosition(string strUserId, LONG MtxCommodtyInfo)
+int CostAverageBiasBigV(LONG MtxCommodtyInfo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
@@ -2445,12 +2445,12 @@ VOID StrategyNewCostAverageBiasAutoLongShortPosition(string strUserId, LONG MtxC
     {
         // Only new positions need to be checked
         LOG(DEBUG_LEVEL_DEBUG, "gOpenInterestInfo.NeedToUpdate == TRUE");
-        return;
+        return 2;
     }
 
     if (gCurCommHighLowPoint.count(MtxCommodtyInfo) == 0)
     {
-        return;
+        return 2;
     }
 
     double curPrice = 0;
@@ -2476,82 +2476,25 @@ VOID StrategyNewCostAverageBiasAutoLongShortPosition(string strUserId, LONG MtxC
     DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, CurAvg= %f, gCostMovingAverageVal=%f",
           curPrice, CurAvg, gCostMovingAverageVal);
 
-    if (abs(CurAvg - gCostMovingAverageVal) < MAXIMUM_COST_AVG_BIAS_RATIO)
-    {
-        return;
-    }
-
     // Do Long
 
-    if (gOpenInterestInfo.openPosition <= 0)
+    if (CurAvg > gCostMovingAverageVal &&
+        curPrice <= gCostMovingAverageVal)
     {
-        DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
-              curPrice, gOpenInterestInfo.avgCost);
-
-        if (CurAvg > gCostMovingAverageVal &&
-            curPrice <= gCostMovingAverageVal)
-        {
-
-            vector<string> vec = {COMMODITY_OTHER};
-
-            for (auto &x : vec)
-            {
-                AutoOrder(x,
-                          ORDER_NEW_POSITION,     // New
-                          ORDER_BUY_LONG_POSITION // Buy or sell
-                );
-            }
-
-            // Greedy assumptions always have positions
-
-            {
-                gOpenInterestInfo.product = COMMODITY_OTHER;
-                gOpenInterestInfo.buySell = "B";
-                gOpenInterestInfo.openPosition += 1;
-                gOpenInterestInfo.avgCost = curPrice;
-            }
-
-            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
-                curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
-        }
+        return 1;
     }
 
     // Do Short
 
-    if (gOpenInterestInfo.openPosition >= 0)
+    if (CurAvg < gCostMovingAverageVal &&
+        curPrice >= gCostMovingAverageVal)
     {
-        DEBUG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
-              curPrice, gOpenInterestInfo.avgCost);
-
-        if (CurAvg < gCostMovingAverageVal &&
-            curPrice >= gCostMovingAverageVal)
-        {
-
-            vector<string> vec = {COMMODITY_OTHER};
-
-            for (auto &x : vec)
-            {
-                AutoOrder(x,
-                          ORDER_NEW_POSITION,       // New
-                          ORDER_SELL_SHORT_POSITION // Buy or sell
-                );
-            }
-
-            // Greedy assumptions always have positions
-
-            {
-                gOpenInterestInfo.product = COMMODITY_OTHER;
-                gOpenInterestInfo.buySell = "S";
-                gOpenInterestInfo.openPosition -= 1;
-                gOpenInterestInfo.avgCost = curPrice;
-            }
-
-            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
-                curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
-        }
+        return -1;
     }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
+
+    return 0;
 }
 
 /**
@@ -2773,24 +2716,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             {
                 StrategyNewDailyAmplitudeAchievesReverse(g_strUserId, MtxCommodtyInfo, 0);
             }
-        }
-
-        break;
-    }
-
-    case 6:
-    {
-        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
-        StrategyCloseIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo);
-
-        if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 15)
-        {
-            StrategyNewCostAverageBiasAutoLongShortPosition(g_strUserId, MtxCommodtyInfo);
-        }
-
-        if (gCurServerTime[0] >= 8 && gCurServerTime[0] < 14)
-        {
-            StrategyNewCostAverageBiasAutoLongShortPosition(g_strUserId, MtxCommodtyInfo);
         }
 
         break;
