@@ -2864,7 +2864,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             break;
         }
 
-        int LongShortExtremeFit = LongShortExtremeFitRate(MtxCommodtyInfo);
+        int LongShortExtremeFit = CostAverageBigLongOrShort(MtxCommodtyInfo);
 
         if (LongShortExtremeFit == 1 && gNQMa20LongShort > MA20_LONG_SHORT)
         {
