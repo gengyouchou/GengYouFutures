@@ -79,7 +79,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 #define FOXCONN_BID_OFFER_WEIGHT_RATIO 2
 #define MEDIATEK_BID_OFFER_WEIGHT_RATIO 2
 
-#define MA20_LONG_SHORT 5
+#define MA20_LONG_SHORT 2
 
 // Order
 
