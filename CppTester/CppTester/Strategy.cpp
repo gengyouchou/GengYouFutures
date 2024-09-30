@@ -2162,8 +2162,8 @@ VOID StrategyCloseBidOfferLongShortSlope(string strUserId, LONG MtxCommodtyInfo)
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
         }
 
-        if ((BuySell == 0 && gBidOfferLongShort <= -CLOSE_BID_OFFER_SLOPE_LONG_SHORT) ||
-            (BuySell == 1 && gBidOfferLongShort >= CLOSE_BID_OFFER_SLOPE_LONG_SHORT))
+        if ((BuySell == 0 && gBidOfferLongShortSlope <= -CLOSE_BID_OFFER_SLOPE_LONG_SHORT) ||
+            (BuySell == 1 && gBidOfferLongShortSlope >= CLOSE_BID_OFFER_SLOPE_LONG_SHORT))
         {
             vector<string> vec = {COMMODITY_OTHER};
 
