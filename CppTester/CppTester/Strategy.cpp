@@ -1766,6 +1766,11 @@ LONG CountTransactionListLongShort(LONG nStockidx)
     return TRANSACTION_LIST_LONG_SHORT_WEIGHT_RATIO * (countLong + countShort);
 }
 
+LONG CountNqMa20LongShort(VOID)
+{
+    return static_cast<long>(NQ_MA20_LONG_SHORT_WEIGHT_RATIO * gNQMa20LongShort);
+}
+
 LONG StrategyCaluBidOfferLongShort(VOID)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
@@ -1871,7 +1876,7 @@ LONG StrategyCaluLongShort(VOID)
         return 0;
     }
 
-    return (gTransactionListLongShort + gBidOfferLongShort) / LONG_AND_SHORT_TARGET_COUNT;
+    return (gTransactionListLongShort + gBidOfferLongShort) / LONG_AND_SHORT_TARGET_COUNT + CountNqMa20LongShort();
 }
 
 VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
