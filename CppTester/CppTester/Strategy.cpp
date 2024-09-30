@@ -2261,7 +2261,8 @@ VOID StrategyCloseFixedTakeProfit(string strUserId, LONG MtxCommodtyInfo)
         }
 
         if ((BuySell == 0 && gMa5LongShort < 0) ||
-            (BuySell == 1 && gMa5LongShort > 0))
+            (BuySell == 1 && gMa5LongShort > 0) ||
+            gOpenInterestInfo.profitAndLoss > 2 * PROFIT_STOP_TICK * DOLLARS_PER_TICK)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
