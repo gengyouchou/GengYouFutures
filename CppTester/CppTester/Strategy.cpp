@@ -2268,9 +2268,13 @@ VOID StrategyCloseFixedTakeProfit(string strUserId, LONG MtxCommodtyInfo)
         bool PrepareToLeaveFirst = (BuySell == 0 && gBidOfferLongShortSlope < 0) ||
                                    (BuySell == 1 && gBidOfferLongShortSlope > 0);
 
+        bool JustMakeOneRound = (BuySell == 0 && gBidOfferLongShortSlope >= CLOSE_BID_OFFER_SLOPE_LONG_SHORT) ||
+                                (BuySell == 1 && gBidOfferLongShortSlope <= -CLOSE_BID_OFFER_SLOPE_LONG_SHORT);
+
         if ((BuySell == 0 && gMa5LongShort < 0) ||
             (BuySell == 1 && gMa5LongShort > 0) ||
-            (gOpenInterestInfo.profitAndLoss > 2 * PROFIT_STOP_TICK * DOLLARS_PER_TICK && PrepareToLeaveFirst))
+            (gOpenInterestInfo.profitAndLoss > 2 * PROFIT_STOP_TICK * DOLLARS_PER_TICK && PrepareToLeaveFirst) ||
+            JustMakeOneRound)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
