@@ -67,6 +67,8 @@ double gBidOfferLongShortSlope = 0;
 static double gEntryHigh = 0;
 static double gEntryLow = 0;
 
+LONG gEvaluatePosition = MAXIMUM_NUMBERS_OF_POSITIONS;
+
 STRATEGY_CONFIG gStrategyConfig = {
     CLOSING_KEY_PRICE_LEVEL,
     BID_OFFER_LONG_SHORT_THRESHOLD,
@@ -2290,7 +2292,7 @@ VOID StrategyCloseFixedTakeProfit(string strUserId, LONG MtxCommodtyInfo)
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
         }
 
-        if (gOpenInterestInfo.profitAndLoss < PROFIT_STOP_TICK * DOLLARS_PER_TICK)
+        if (gOpenInterestInfo.profitAndLoss < gEvaluatePosition * PROFIT_STOP_TICK * DOLLARS_PER_TICK)
         {
             return;
         }
@@ -2303,7 +2305,7 @@ VOID StrategyCloseFixedTakeProfit(string strUserId, LONG MtxCommodtyInfo)
 
         if ((BuySell == 0 && gMa5LongShort < 0) ||
             (BuySell == 1 && gMa5LongShort > 0) ||
-            (gOpenInterestInfo.profitAndLoss > 2 * PROFIT_STOP_TICK * DOLLARS_PER_TICK && PrepareToLeaveFirst) ||
+            (gOpenInterestInfo.profitAndLoss > 2 * gEvaluatePosition * PROFIT_STOP_TICK * DOLLARS_PER_TICK && PrepareToLeaveFirst) ||
             JustMakeOneRound)
         {
             vector<string> vec = {COMMODITY_OTHER};
@@ -2335,6 +2337,70 @@ VOID StrategyCloseFixedTakeProfit(string strUserId, LONG MtxCommodtyInfo)
     }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
+}
+
+LONG EvaluateTheMaximumPosition(LONG MtxCommodtyInfo)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    static bool CanAddPositions = FALSE;
+    static DOUBLE MaxProfit = 0;
+    static LONG EvaluatePosition = MAXIMUM_NUMBERS_OF_POSITIONS;
+
+    double curPrice = 0;
+
+    if (gCurCommPrice.count(MtxCommodtyInfo) != 0)
+    {
+        curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
+    }
+
+    if (gOpenInterestInfo.NeedToUpdate == TRUE)
+    {
+        LOG(DEBUG_LEVEL_DEBUG, "gOpenInterestInfo.NeedToUpdate == TRUE");
+        return EvaluatePosition;
+    }
+
+    if (gOpenInterestInfo.product != "" && gOpenInterestInfo.avgCost != 0 && curPrice > 0)
+    {
+        LOG(DEBUG_LEVEL_DEBUG, "product: %s", gOpenInterestInfo.product);
+        LOG(DEBUG_LEVEL_DEBUG, "buySell: %s", gOpenInterestInfo.buySell);
+        LOG(DEBUG_LEVEL_DEBUG, "openPosition: %ld", gOpenInterestInfo.openPosition);
+        LOG(DEBUG_LEVEL_DEBUG, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
+        LOG(DEBUG_LEVEL_DEBUG, "avgCost: %f", gOpenInterestInfo.avgCost);
+
+        LOG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f",
+            curPrice, gOpenInterestInfo.avgCost);
+
+        if (gOpenInterestInfo.profitAndLoss < EvaluatePosition * PROFIT_STOP_TICK * DOLLARS_PER_TICK && CanAddPositions == FALSE)
+        {
+            return MAXIMUM_NUMBERS_OF_POSITIONS;
+        }
+
+        CanAddPositions = TRUE;
+
+        MaxProfit = max(MaxProfit, gOpenInterestInfo.profitAndLoss);
+
+        if (gOpenInterestInfo.profitAndLoss >= 0 &&
+            gOpenInterestInfo.profitAndLoss <= MaxProfit - MaxProfit / 3)
+        {
+            EvaluatePosition = max(EvaluatePosition, gOpenInterestInfo.openPosition + 1);
+        }
+        else
+        {
+            --EvaluatePosition;
+            EvaluatePosition = max(EvaluatePosition, MAXIMUM_NUMBERS_OF_POSITIONS);
+        }
+    }
+    else
+    {
+        MaxProfit = 0;
+        CanAddPositions = FALSE;
+        EvaluatePosition = MAXIMUM_NUMBERS_OF_POSITIONS;
+    }
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "End");
+
+    return EvaluatePosition;
 }
 
 /**

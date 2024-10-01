@@ -135,3 +135,5 @@ extern double gBidOfferLongShortSlope;
 
 extern double gNQMa20;
 extern double gNQMa20LongShort;
+
+extern LONG gEvaluatePosition;
