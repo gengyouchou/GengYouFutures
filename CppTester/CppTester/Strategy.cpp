@@ -1667,7 +1667,7 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                 totalOffer += gBest5BidOffer[nStockidx][i].second;
             }
 
-            if (nClose > 0 && nClose <= nBid && nQty >= BIG_ORDER)
+            if (nClose > 0 && nClose <= nBid)
             {
                 // Support Bid buying and force everyone to sell Bid.
                 // The purpose is to sell Bid in large quantities.
@@ -1676,6 +1676,11 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                 if (totalOffer * 3 <= totalBid * 2)
                 {
                     countShort -= nQty;
+
+                    if (nQty >= BIG_ORDER)
+                    {
+                        countShort -= nQty;
+                    }
                 }
 
                 for (int i = 0; i < 5; ++i)
@@ -1685,11 +1690,16 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                         // Find unusual pending big Bid orders
 
                         countShort -= nQty;
+
+                        if (nQty >= BIG_ORDER)
+                        {
+                            countShort -= nQty;
+                        }
                     }
                 }
             }
 
-            if (nClose > 0 && nClose >= nAsk && nQty >= BIG_ORDER)
+            if (nClose > 0 && nClose >= nAsk)
             {
                 // Suppress Offer selling and force everyone to buy Offer.
                 // The purpose is to buy Offer in large quantities.
@@ -1699,6 +1709,11 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                 if (totalBid * 3 <= totalOffer * 2)
                 {
                     countLong += nQty;
+
+                    if (nQty >= BIG_ORDER)
+                    {
+                        countLong += nQty;
+                    }
                 }
 
                 for (int i = 5; i < 10; ++i)
@@ -1708,6 +1723,11 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                         // Find unusual pending big Offer orders
 
                         countLong += nQty;
+
+                        if (nQty >= BIG_ORDER)
+                        {
+                            countLong += nQty;
+                        }
                     }
                 }
             }
@@ -1750,11 +1770,21 @@ LONG CountTransactionListLongShort(LONG nStockidx)
             if (nClose > 0 && nClose <= nBid)
             {
                 countShort -= nQty;
+
+                if (nQty >= BIG_ORDER)
+                {
+                    countShort -= nQty;
+                }
             }
 
             if (nClose > 0 && nClose >= nAsk)
             {
                 countLong += nQty;
+
+                if (nQty >= BIG_ORDER)
+                {
+                    countLong += nQty;
+                }
             }
 
             PrePtr[nStockidx] = nPtr;
