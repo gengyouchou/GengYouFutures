@@ -2751,7 +2751,7 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
 
     // Do Long
 
-    if (LongShort == 1 && gOpenInterestInfo.openPosition < MAXIMUM_NUMBERS_OF_POSITIONS)
+    if (LongShort == 1 && gOpenInterestInfo.openPosition < gEvaluatePosition)
     {
         vector<string> vec = {COMMODITY_OTHER};
 
@@ -2778,7 +2778,7 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
 
     // Do Short
 
-    if (LongShort == 0 && gOpenInterestInfo.openPosition > -MAXIMUM_NUMBERS_OF_POSITIONS)
+    if (LongShort == 0 && gOpenInterestInfo.openPosition > -gEvaluatePosition)
     {
         vector<string> vec = {COMMODITY_OTHER};
 
@@ -2926,6 +2926,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyCaluTransactionListLongShort();
         BidOfferAndTransactionListLongShortSlope();
 
+        gEvaluatePosition = EvaluateTheMaximumPosition(MtxCommodtyInfo);
         BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
 
         if (ReachTodayAmplitude == TRUE)
