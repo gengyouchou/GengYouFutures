@@ -2292,7 +2292,7 @@ VOID StrategyCloseFixedTakeProfit(string strUserId, LONG MtxCommodtyInfo)
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
         }
 
-        if (gOpenInterestInfo.profitAndLoss < gEvaluatePosition * PROFIT_STOP_TICK * DOLLARS_PER_TICK)
+        if (gOpenInterestInfo.profitAndLoss < abs(gOpenInterestInfo.openPosition) * PROFIT_STOP_TICK * DOLLARS_PER_TICK)
         {
             return;
         }
@@ -2305,7 +2305,7 @@ VOID StrategyCloseFixedTakeProfit(string strUserId, LONG MtxCommodtyInfo)
 
         if ((BuySell == 0 && gMa5LongShort < 0) ||
             (BuySell == 1 && gMa5LongShort > 0) ||
-            (gOpenInterestInfo.profitAndLoss > 2 * gEvaluatePosition * PROFIT_STOP_TICK * DOLLARS_PER_TICK && PrepareToLeaveFirst) ||
+            (gOpenInterestInfo.profitAndLoss > 2 * abs(gOpenInterestInfo.openPosition) * PROFIT_STOP_TICK * DOLLARS_PER_TICK && PrepareToLeaveFirst) ||
             JustMakeOneRound)
         {
             vector<string> vec = {COMMODITY_OTHER};
@@ -2383,7 +2383,7 @@ LONG EvaluateTheMaximumPosition(LONG MtxCommodtyInfo)
         if (gOpenInterestInfo.profitAndLoss >= 0 &&
             gOpenInterestInfo.profitAndLoss <= MaxProfit - MaxProfit / 3)
         {
-            EvaluatePosition = max(EvaluatePosition, gOpenInterestInfo.openPosition + 1);
+            EvaluatePosition = max(EvaluatePosition, abs(gOpenInterestInfo.openPosition) + 1);
         }
         else
         {
