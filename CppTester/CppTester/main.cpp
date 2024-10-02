@@ -295,7 +295,7 @@ void thread_main()
 
     AutoConnect();
 
-    // AutoGetFutureRights();
+    AutoGetFutureRights();
 
     long res = pSKQuoteLib->RequestServerTime();
 

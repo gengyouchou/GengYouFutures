@@ -37,6 +37,7 @@ string g_strUserId = "";
 string gPwd = "";
 
 void ParseOpenInterestMessage(const std::string &strMessage);
+void ParseOnFutureRightsMessage(const std::string &strMessage);
 
 CSKOrderLib::CSKOrderLib()
 {
@@ -568,6 +569,8 @@ void CSKOrderLib::OnFutureRights(BSTR bstrData)
 
     DEBUG(DEBUG_LEVEL_INFO, "%s", strMessage);
 
+    ParseOnFutureRightsMessage(strMessage);
+
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
@@ -576,29 +579,6 @@ void CSKOrderLib::OnAsyncOrder(long nThreadID, long nCode, string strMessage)
     cout << "On AsyncOrder ThreadID : " << nThreadID << ", nCode : " << nCode << ", Message : " << strMessage;
     cout << endl;
 }
-
-// ,
-// 1:
-// 1
-//
-// 2
-//
-// 3
-//
-// 4
-//
-// 5
-//
-// 6
-//
-// 7
-//  ()
-// 8
-//
-// 9
-//  (X)
-// 10
-//  LOGIN_ID
 
 void CSKOrderLib::OnOpenInterest(IN BSTR bstrData)
 {
@@ -676,4 +656,121 @@ void ParseOpenInterestMessage(const std::string &strMessage)
 
         DEBUG(DEBUG_LEVEL_DEBUG, "NO Open Position: %s", strMessage);
     }
+}
+
+/**
+ * @brief Parses a comma-separated string of account data.
+ *
+ * The input string contains multiple fields related to account and trading data,
+ * separated by commas. The function will parse these fields and process them.
+ *
+ * The fields in the string are as follows:
+ *
+ * 0  - Account Balance (double): Total balance in the account.
+ * 1  - Floating Profit/Loss (double): Current floating profit or loss.
+ * 2  - Realized Expenses (double): Expenses that have been realized.
+ * 3  - Transaction Tax (double): Tax applied to transactions.
+ * 4  - Withheld Premium (double): Premium amount withheld.
+ * 5  - Premium Payments (double): Payments made for premiums.
+ * 6  - Equity (double): Total equity in the account.
+ * 7  - Excess Margin (double): Margin amount exceeding the required level.
+ * 8  - Deposits/Withdrawals (double): Total amount of deposits and withdrawals.
+ * 9  - Buyer Market Value (double): Market value of positions bought.
+ * 10 - Seller Market Value (double): Market value of positions sold.
+ * 11 - Futures Closing Profit/Loss (double): Profit or loss from futures positions closed.
+ * 12 - Unrealized Intraday (double): Intraday unrealized profit or loss.
+ * 13 - Initial Margin (double): Initial margin required.
+ * 14 - Maintenance Margin (double): Margin required to maintain positions.
+ * 15 - Position Initial Margin (double): Initial margin for specific positions.
+ * 16 - Position Maintenance Margin (double): Maintenance margin for specific positions.
+ * 17 - Order Margin (double): Margin tied up in orders.
+ * 18 - Excess Optimal Margin (double): Optimal excess margin.
+ * 19 - Total Option Value (double): Total value of options held.
+ * 20 - Withheld Expenses (double): Expenses that have been withheld.
+ * 21 - Initial Margin (double): Initial margin again for calculations.
+ * 22 - Previous Day Balance (double): Account balance from the previous day.
+ * 23 - Option Combination Margin Adjustment (double): Margin adjustment for option combinations.
+ * 24 - Maintenance Ratio (double): Ratio of maintenance margin to required margin.
+ * 25 - Currency (string): Currency type of the account.
+ * 26 - Full Initial Margin (double): Full amount required for initial margin.
+ * 27 - Full Maintenance Margin (double): Full amount required for maintenance margin.
+ * 28 - Full Available (double): Fully available amount in the account.
+ * 29 - Offset Amount (double): Amount that can offset positions.
+ * 30 - Valuable Available (double): Valuable amount available.
+ * 31 - Available Balance (double): Total available balance in the account.
+ * 32 - Full Cash Available (double): Fully available cash in the account.
+ * 33 - Valuable Value (double): Value of valuable positions.
+ * 34 - Risk Indicator (double): Indicator of account risk.
+ * 35 - Option Expiry Difference (double): Difference at option expiry.
+ * 36 - Option Expiry Profit/Loss (double): Profit or loss from expired options.
+ * 37 - Futures Expiry Profit/Loss (double): Profit or loss from futures expiry.
+ * 38 - Additional Margin (double): Additional margin required.
+ * 39 - LOGIN_ID (string): Login ID for the account.
+ * 40 - ACCOUNT_NO (string): Account number.
+ *
+ * @param strMessage A comma-separated string containing the account data fields.
+ */
+void ParseOnFutureRightsMessage(const std::string &strMessage)
+{
+    // Split the string by commas
+    std::stringstream ss(strMessage);
+    std::string token;
+    std::vector<std::string> fields;
+
+    while (std::getline(ss, token, ','))
+    {
+        fields.push_back(token);
+    }
+
+    // if (fields.size() != 41)
+    // {
+    //     std::cerr << "Error: Expected 41 fields, but got " << fields.size() << std::endl;
+    //     return;
+    // }
+
+    double accountBalance = std::stod(fields[0]);
+    double floatingPL = std::stod(fields[1]);
+    // double realizedExpenses = std::stod(fields[2]);
+    // double transactionTax = std::stod(fields[3]);
+    // double withheldPremium = std::stod(fields[4]);
+    // double premiumPayments = std::stod(fields[5]);
+    // double equity = std::stod(fields[6]);
+    // double excessMargin = std::stod(fields[7]);
+    // double depositsWithdrawals = std::stod(fields[8]);
+    // double buyerMarketValue = std::stod(fields[9]);
+    // double sellerMarketValue = std::stod(fields[10]);
+    double futuresClosingPL = std::stod(fields[11]);
+    // double unrealizedIntraday = std::stod(fields[12]);
+    // double initialMargin = std::stod(fields[13]);
+    // double maintenanceMargin = std::stod(fields[14]);
+    // double positionInitialMargin = std::stod(fields[15]);
+    // double positionMaintenanceMargin = std::stod(fields[16]);
+    // double orderMargin = std::stod(fields[17]);
+    // double excessOptimalMargin = std::stod(fields[18]);
+    // double totalOptionValue = std::stod(fields[19]);
+    // double withheldExpenses = std::stod(fields[20]);
+    // double secondInitialMargin = std::stod(fields[21]); // Second occurrence of Initial Margin
+    // double previousDayBalance = std::stod(fields[22]);
+    // double optionCombinationMarginAdjustment = std::stod(fields[23]);
+    // double maintenanceRatio = std::stod(fields[24]);
+    // std::string currency = fields[25];
+    // double fullInitialMargin = std::stod(fields[26]);
+    // double fullMaintenanceMargin = std::stod(fields[27]);
+    // double fullAvailable = std::stod(fields[28]);
+    // double offsetAmount = std::stod(fields[29]);
+    // double valuableAvailable = std::stod(fields[30]);
+    // double availableBalance = std::stod(fields[31]);
+    // double fullCashAvailable = std::stod(fields[32]);
+    // double valuableValue = std::stod(fields[33]);
+    // double riskIndicator = std::stod(fields[34]);
+    // double optionExpiryDifference = std::stod(fields[35]);
+    // double optionExpiryPL = std::stod(fields[36]);
+    // double futuresExpiryPL = std::stod(fields[37]);
+    // double additionalMargin = std::stod(fields[38]);
+    // std::string loginID = fields[39];
+    // std::string accountNo = fields[40];
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "Account Balance:%f", accountBalance);
+    DEBUG(DEBUG_LEVEL_DEBUG, "Floating P/L:%f", floatingPL);
+    DEBUG(DEBUG_LEVEL_DEBUG, "futuresClosingPL:%f", futuresClosingPL);
 }
