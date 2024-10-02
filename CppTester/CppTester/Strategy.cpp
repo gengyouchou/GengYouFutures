@@ -1903,11 +1903,6 @@ LONG StrategyCaluTransactionListLongShort(VOID)
 
 LONG StrategyCaluLongShort(VOID)
 {
-    if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 25) || gCurServerTime[0] >= 14)
-    {
-        return 0;
-    }
-
     return (gTransactionListLongShort + gBidOfferLongShort) / LONG_AND_SHORT_TARGET_COUNT + CountNqMa20LongShort();
 }
 
