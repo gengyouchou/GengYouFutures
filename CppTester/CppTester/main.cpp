@@ -111,7 +111,7 @@ void AutoGetFutureRights()
 
     g_nCode = pSKOrderLib->GetFutureRights(g_strUserId);
 
-    pSKCenterLib->PrintfCodeMessage("AutoGetFutureRights", "GetFutureRights", g_nCode);
+    // pSKCenterLib->PrintfCodeMessage("AutoGetFutureRights", "GetFutureRights", g_nCode);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "GetFutureRights res = %d", g_nCode);
 
