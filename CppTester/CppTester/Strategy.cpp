@@ -616,11 +616,6 @@ int CountOsNQ20MaForNewLongShortPosition(LONG nStockidx)
 
 VOID BidOfferAndTransactionListLongShortSlope(VOID)
 {
-    if (gCurServerTime[0] < 9 || (gCurServerTime[0] >= 13 && gCurServerTime[1] >= 25) || gCurServerTime[0] >= 14)
-    {
-        return;
-    }
-
     static LONG PreLongShort = 0;
     static std::deque<double> dq;
     static double PreMa = 0;
