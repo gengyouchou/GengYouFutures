@@ -1013,6 +1013,11 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
     NewClose = ORDER_CLOSE_POSITION;
 #endif
 
+    if (-gFloatingProfitLoss >= gStrategyConfig.MaximumLoss)
+    {
+        NewClose = ORDER_CLOSE_POSITION;
+    }
+
     long g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
                                                 false, // bAsyncOrder
                                                 ProductNum,
@@ -2854,7 +2859,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyCloseIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo);
-
 
         if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 15)
         {
