@@ -397,6 +397,8 @@ void thread_main()
 
             if (CheckConnected == 30)
             {
+                AutoGetFutureRights();
+
                 if (pSKQuoteLib->IsConnected() != 1 || pSKOsQuoteLib->IsConnected() != 1)
                 {
                     DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");

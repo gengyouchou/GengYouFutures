@@ -564,12 +564,12 @@ void CSKOrderLib::OnFutureRights(BSTR bstrData)
 
     string strMessage = string(_bstr_t(bstrData));
 
-    cout << "OnFutureRights : " << endl;
-    cout << "Message : " << strMessage;
+    // cout << "OnFutureRights : " << endl;
+    // cout << "Message : " << strMessage;
 
-    cout << endl;
+    // cout << endl;
 
-    DEBUG(DEBUG_LEVEL_INFO, "%s", strMessage);
+    DEBUG(DEBUG_LEVEL_DEBUG, "%s", strMessage);
 
     ParseOnFutureRightsMessage(strMessage);
 
