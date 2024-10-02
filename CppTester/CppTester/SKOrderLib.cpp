@@ -776,5 +776,5 @@ void ParseOnFutureRightsMessage(const std::string &strMessage)
     DEBUG(DEBUG_LEVEL_DEBUG, "Floating P/L:%f", floatingPL);
     DEBUG(DEBUG_LEVEL_DEBUG, "futuresClosingPL:%f", futuresClosingPL);
 
-    gFloatingProfitLoss = min(floatingPL, futuresClosingPL);
+    gFloatingProfitLoss = futuresClosingPL;
 }

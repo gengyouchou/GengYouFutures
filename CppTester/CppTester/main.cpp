@@ -443,7 +443,7 @@ void thread_main()
 
             printf("=========================================\n");
 
-            printf("EvaluatePosition: %ld", gEvaluatePosition);
+            printf("EvaluatePosition: %ld, FloatingProfitLoss: %f", gEvaluatePosition, gFloatingProfitLoss);
 
             if (gOpenInterestInfo.NeedToUpdate == FALSE && gOpenInterestInfo.openPosition != 0)
             {
