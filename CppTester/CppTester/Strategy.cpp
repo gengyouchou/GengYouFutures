@@ -2806,6 +2806,10 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     Count5MaForNewLongShortPosition(gCommodtyInfo.MTXIdxNo);
     CountOsNQ20MaForNewLongShortPosition(gCommodtyOsInfo.NQIdxNo);
 
+    StrategyCaluBidOfferLongShort();
+    StrategyCaluTransactionListLongShort();
+    BidOfferAndTransactionListLongShortSlope();
+
     if (!(gCurServerTime[0] <= 5 || gCurServerTime[0] >= 15) &&
         !(gCurServerTime[0] >= 8 && gCurServerTime[0] < 14))
     {
@@ -2822,9 +2826,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     {
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
-
-        StrategyCaluBidOfferLongShort();
-        StrategyCaluTransactionListLongShort();
 
         if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 15)
         {
@@ -2859,10 +2860,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyCloseIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo);
 
-        // for review
-
-        StrategyCaluBidOfferLongShort();
-        StrategyCaluTransactionListLongShort();
 
         if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 15)
         {
@@ -2884,9 +2881,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
-
-        StrategyCaluBidOfferLongShort();
-        StrategyCaluTransactionListLongShort();
 
         if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
         {
@@ -2916,10 +2910,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         StrategyCloseFixedTakeProfit(g_strUserId, MtxCommodtyInfo);
         StrategyCloseBidOfferLongShortSlope(g_strUserId, MtxCommodtyInfo);
-
-        StrategyCaluBidOfferLongShort();
-        StrategyCaluTransactionListLongShort();
-        BidOfferAndTransactionListLongShortSlope();
 
         gEvaluatePosition = EvaluateTheMaximumPosition(MtxCommodtyInfo);
         BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
@@ -2958,9 +2948,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         // For only applicable during periods of large fluctuations
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
-
-        StrategyCaluBidOfferLongShort();
-        StrategyCaluTransactionListLongShort();
 
         BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
 
