@@ -443,15 +443,17 @@ void thread_main()
 
             printf("=========================================\n");
 
+            printf("EvaluatePosition: %ld", gEvaluatePosition);
+
             if (gOpenInterestInfo.NeedToUpdate == FALSE && gOpenInterestInfo.openPosition != 0)
             {
-                printf("Open Position: %d, AvgCost:%f, ProfitAndLoss: %f\n",
+                printf(", Open Position: %d, AvgCost:%f, ProfitAndLoss: %f\n",
                        gOpenInterestInfo.openPosition,
                        gOpenInterestInfo.avgCost,
                        gOpenInterestInfo.profitAndLoss);
-
-                printf("=========================================\n");
             }
+
+            printf("\n=========================================\n");
 
             printf("Long Key 5: %ld\n", gDayAmpAndKeyPrice.LongKey5);
             printf("Long Key 4: %ld\n", gDayAmpAndKeyPrice.LongKey4);
