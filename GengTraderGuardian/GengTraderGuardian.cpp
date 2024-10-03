@@ -77,7 +77,7 @@ bool IsTimeToClose()
     tm localTime;
     localtime_s(&localTime, &now);
 
-    if ((localTime.tm_hour == 8 && localTime.tm_min == 30) ||
+    if ((localTime.tm_hour == 8 && localTime.tm_min == 00) ||
         (localTime.tm_hour == 15 && localTime.tm_min == 0))
     {
         return true;
