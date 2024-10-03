@@ -542,7 +542,7 @@ int CountOsNQ20MaForNewLongShortPosition(LONG nStockidx)
                     closePrices.push_back(lastMinutePrice); // Push the final price of the last minute
                 }
 
-                if (closePrices.size() > 0)
+                if (closePrices.size() >= MA5)
                 {
                     // Calculate the 5MA
                     double ma5 = calculate5MA(closePrices);
@@ -569,7 +569,7 @@ int CountOsNQ20MaForNewLongShortPosition(LONG nStockidx)
             lastMinutePrice = tickPrice;
 
             // Check if we have enough data to calculate the 5MA (at least 5 minutes of closing prices)
-            if (closePrices.size() > 0)
+            if (closePrices.size() >= MA5)
             {
                 deque<double> TempClosePrices = closePrices;
                 TempClosePrices.pop_front();
