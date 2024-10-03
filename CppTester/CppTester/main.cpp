@@ -53,7 +53,9 @@ void AutoConnect()
 {
     while (pSKQuoteLib->IsConnected() != 1)
     {
-        g_nCode = pSKQuoteLib->LeaveMonitor();
+        // g_nCode = pSKQuoteLib->LeaveMonitor();
+        // std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
+
         g_nCode = pSKQuoteLib->EnterMonitorLONG();
         pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
         std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
@@ -61,7 +63,9 @@ void AutoConnect()
 
     while (pSKOsQuoteLib->IsConnected() != 1)
     {
-        g_nCode = pSKOsQuoteLib->LeaveMonitor();
+        // g_nCode = pSKOsQuoteLib->LeaveMonitor();
+        // std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
+
         g_nCode = pSKOsQuoteLib->EnterMonitorLONG();
         pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
         std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
@@ -376,12 +380,16 @@ void thread_main()
                 while (pSKQuoteLib->IsConnected() != 1 || pSKOsQuoteLib->IsConnected() != 1)
                 {
                     LOG(DEBUG_LEVEL_INFO, "pSKQuoteLib->IsConnected() != 1");
-                    LONG res = AutoSetup();
 
-                    if (res == 0)
+                    while (true)
                     {
-                        LOG(DEBUG_LEVEL_INFO, "AutoSetup Success");
-                        break;
+                        LONG res = AutoSetup();
+
+                        if (res == 0 || res == SK_SUBJECT_NO_QUOTE_SUBSCRIBE)
+                        {
+                            LOG(DEBUG_LEVEL_INFO, "AutoSetup Success");
+                            break;
+                        }
                     }
                 }
 

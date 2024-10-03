@@ -20,6 +20,8 @@
 #define COST_DAY_MA 5 // weekly contract cost
 #define ONE_STRIKE_PRICES 50
 
+#define SK_SUBJECT_NO_QUOTE_SUBSCRIBE 3030
+
 struct COMMODITY_INFO
 {
     long MTXIdxNo;
