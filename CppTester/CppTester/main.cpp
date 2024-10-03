@@ -51,44 +51,54 @@ void release();
 
 void AutoConnect()
 {
-    while (pSKQuoteLib->IsConnected() != 1)
+    while (pSKQuoteLib->IsConnected() == 0)
     {
-        // g_nCode = pSKQuoteLib->LeaveMonitor();
-        // std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
+        LONG res = pSKQuoteLib->LeaveMonitor();
 
-        g_nCode = pSKQuoteLib->EnterMonitorLONG();
-        pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
+        DEBUG(DEBUG_LEVEL_INFO, "res= %d", res);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
+
+        res = pSKQuoteLib->EnterMonitorLONG();
+        pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", res);
         std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
     }
 
-    while (pSKOsQuoteLib->IsConnected() != 1)
+    while (pSKOsQuoteLib->IsConnected() == 0)
     {
-        // g_nCode = pSKOsQuoteLib->LeaveMonitor();
-        // std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
+        LONG res = pSKOsQuoteLib->LeaveMonitor();
 
-        g_nCode = pSKOsQuoteLib->EnterMonitorLONG();
-        pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
+        DEBUG(DEBUG_LEVEL_INFO, "res= %d", res);
+
         std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
+
+        res = pSKOsQuoteLib->EnterMonitorLONG();
+        pSKCenterLib->PrintfCodeMessage("QuoteOs", "EnterMonitor", res);
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
+    }
+
+    while (pSKOsQuoteLib->IsConnected() != 1 || pSKOsQuoteLib->IsConnected() != 1)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000)); //  CPU
     }
 }
 
-void AutoLogIn()
+LONG AutoLogIn()
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
-    //
-    g_nCode = pSKOrderLib->Initialize();
+    LONG res = pSKOrderLib->Initialize();
     pSKCenterLib->PrintfCodeMessage("AutoLogIn", "Initialize", g_nCode);
 
-    //
-    g_nCode = pSKOrderLib->ReadCertByID(g_strUserId);
+    res = pSKOrderLib->ReadCertByID(g_strUserId);
     pSKCenterLib->PrintfCodeMessage("AutoLogIn", "ReadCertByID", g_nCode);
 
-    //
-    g_nCode = pSKOrderLib->GetUserAccount();
+    res = pSKOrderLib->GetUserAccount();
     pSKCenterLib->PrintfCodeMessage("AutoLogIn", "GetUserAccount", g_nCode);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
+
+    return res;
 }
 
 LONG AutoGetFutureRights()
@@ -104,7 +114,7 @@ LONG AutoGetFutureRights()
     return res;
 }
 
-LONG AutoQuote(IN string ProductNum, short sPageNo)
+LONG AutoQuote(IN string ProductNum, short &sPageNo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
@@ -117,7 +127,7 @@ LONG AutoQuote(IN string ProductNum, short sPageNo)
     return res;
 }
 
-LONG AutoQuoteTicks(IN string ProductNum, short sPageNo)
+LONG AutoQuoteTicks(IN string ProductNum, short &sPageNo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
@@ -132,7 +142,7 @@ LONG AutoQuoteTicks(IN string ProductNum, short sPageNo)
     return res;
 }
 
-LONG AutoOsQuoteTicks(IN string ProductNum, short sPageNo)
+LONG AutoOsQuoteTicks(IN string ProductNum, short &sPageNo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
@@ -242,8 +252,6 @@ void release()
 
 LONG AutoSetup()
 {
-    AutoLogIn();
-
     AutoConnect();
 
     AutoGetFutureRights();
@@ -265,15 +273,19 @@ LONG AutoSetup()
     oss << COMMODITY_MAIN << "AM" << "," << COMMODITY_MAIN << "," << "TSEA" << "," << TSMC << "," << MEDIATEK << "," << FOXCONN;
     CommList = oss.str();
 
-    res = res | AutoQuote(CommList, -1);
+    static short page1 = -1, page2 = -1, page3 = -1, page4 = -1, page5 = -1, page6 = -1;
 
-    res = res | AutoQuoteTicks(TSMC, -1);
-    res = res | AutoQuoteTicks(MEDIATEK, -1);
-    res = res | AutoQuoteTicks(FOXCONN, -1);
+    DEBUG(DEBUG_LEVEL_INFO, "page1: %d", page1);
+
+    res = res | AutoQuote(CommList, page1);
+
+    res = res | AutoQuoteTicks(TSMC, page2);
+    res = res | AutoQuoteTicks(MEDIATEK, page3);
+    res = res | AutoQuoteTicks(FOXCONN, page4);
 
     // For calculate 5MA
-    res = res | AutoQuoteTicks(COMMODITY_MAIN, -1);
-    res = res | AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
+    res = res | AutoQuoteTicks(COMMODITY_MAIN, page5);
+    res = res | AutoOsQuoteTicks(COMMODITY_OS_MAIN, page6);
 
     return res;
 }
@@ -319,6 +331,12 @@ void thread_main()
 {
     const int refreshInterval = 1000; // 1000 ms
     std::chrono::steady_clock::time_point lastClearTime = std::chrono::steady_clock::now();
+
+    if (AutoLogIn() != 0)
+    {
+        release();
+        exit(0);
+    }
 
     AutoSetup();
 
@@ -381,15 +399,12 @@ void thread_main()
                 {
                     LOG(DEBUG_LEVEL_INFO, "pSKQuoteLib->IsConnected() != 1");
 
-                    while (true)
-                    {
-                        LONG res = AutoSetup();
+                    LONG res = AutoSetup();
 
-                        if (res == 0 || res == SK_SUBJECT_NO_QUOTE_SUBSCRIBE)
-                        {
-                            LOG(DEBUG_LEVEL_INFO, "AutoSetup Success");
-                            break;
-                        }
+                    if (res == 0)
+                    {
+                        LOG(DEBUG_LEVEL_INFO, "AutoSetup Success");
+                        break;
                     }
                 }
 
