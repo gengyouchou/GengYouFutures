@@ -53,6 +53,7 @@ void AutoConnect()
 {
     while (pSKQuoteLib->IsConnected() != 1)
     {
+        g_nCode = pSKQuoteLib->LeaveMonitor();
         g_nCode = pSKQuoteLib->EnterMonitorLONG();
         pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
         std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
@@ -60,6 +61,7 @@ void AutoConnect()
 
     while (pSKOsQuoteLib->IsConnected() != 1)
     {
+        g_nCode = pSKOsQuoteLib->LeaveMonitor();
         g_nCode = pSKOsQuoteLib->EnterMonitorLONG();
         pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
         std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
@@ -85,56 +87,60 @@ void AutoLogIn()
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
-void AutoGetFutureRights()
+LONG AutoGetFutureRights()
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
-    g_nCode = pSKOrderLib->GetFutureRights(g_strUserId);
+    LONG res = pSKOrderLib->GetFutureRights(g_strUserId);
 
-    // pSKCenterLib->PrintfCodeMessage("AutoGetFutureRights", "GetFutureRights", g_nCode);
-
-    DEBUG(DEBUG_LEVEL_DEBUG, "GetFutureRights res = %d", g_nCode);
+    LOG(DEBUG_LEVEL_INFO, "GetFutureRights res = %d", res);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
+
+    return res;
 }
 
 LONG AutoQuote(IN string ProductNum, short sPageNo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
-    g_nCode = pSKQuoteLib->RequestStocks(&sPageNo, ProductNum);
-    pSKCenterLib->PrintfCodeMessage("Quote", "RequestStocks", g_nCode);
-    DEBUG(DEBUG_LEVEL_INFO, "g_nCode= %d", g_nCode);
+    LONG res = pSKQuoteLib->RequestStocks(&sPageNo, ProductNum);
+    pSKCenterLib->PrintfCodeMessage("Quote", "RequestStocks", res);
+    DEBUG(DEBUG_LEVEL_INFO, "res= %d", res);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 
-    return g_nCode;
+    return res;
 }
 
-void AutoQuoteTicks(IN string ProductNum, short sPageNo)
+LONG AutoQuoteTicks(IN string ProductNum, short sPageNo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
-    g_nCode = pSKQuoteLib->RequestTicks(&sPageNo, ProductNum);
+    LONG res = pSKQuoteLib->RequestTicks(&sPageNo, ProductNum);
 
-    pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
+    pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", res);
 
-    DEBUG(DEBUG_LEVEL_INFO, "g_nCode= %d", g_nCode);
+    DEBUG(DEBUG_LEVEL_INFO, "res= %d", res);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
+
+    return res;
 }
 
-void AutoOsQuoteTicks(IN string ProductNum, short sPageNo)
+LONG AutoOsQuoteTicks(IN string ProductNum, short sPageNo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
-    g_nCode = pSKOsQuoteLib->RequestTicks(&sPageNo, ProductNum);
+    LONG res = pSKOsQuoteLib->RequestTicks(&sPageNo, ProductNum);
 
-    pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", g_nCode);
+    pSKCenterLib->PrintfCodeMessage("Quote", "RequestTicks", res);
 
-    DEBUG(DEBUG_LEVEL_INFO, "g_nCode= %d", g_nCode);
+    DEBUG(DEBUG_LEVEL_INFO, "res= %d", res);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
+
+    return res;
 }
 
 void AutoBest5Long(LONG ProductIdxNo, string ProductName)
@@ -230,7 +236,7 @@ void release()
     CoUninitialize();
 }
 
-void AutoSetup()
+LONG AutoSetup()
 {
     AutoLogIn();
 
@@ -242,12 +248,12 @@ void AutoSetup()
 
     DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestServerTime()=%d", res);
 
-    res = pSKQuoteLib->GetMarketBuySellUpDown();
+    res = res | pSKQuoteLib->GetMarketBuySellUpDown();
     DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
 
-    pSKQuoteLib->GetCommodityIdx();
+    res = res | pSKQuoteLib->GetCommodityIdx();
 
-    pSKOsQuoteLib->GetCommodityIdx();
+    res = res | pSKOsQuoteLib->GetCommodityIdx();
 
     std::string CommList;
 
@@ -255,15 +261,17 @@ void AutoSetup()
     oss << COMMODITY_MAIN << "AM" << "," << COMMODITY_MAIN << "," << "TSEA" << "," << TSMC << "," << MEDIATEK << "," << FOXCONN;
     CommList = oss.str();
 
-    AutoQuote(CommList, -1);
+    res = res | AutoQuote(CommList, -1);
 
-    AutoQuoteTicks(TSMC, -1);
-    AutoQuoteTicks(MEDIATEK, -1);
-    AutoQuoteTicks(FOXCONN, -1);
+    res = res | AutoQuoteTicks(TSMC, -1);
+    res = res | AutoQuoteTicks(MEDIATEK, -1);
+    res = res | AutoQuoteTicks(FOXCONN, -1);
 
     // For calculate 5MA
-    AutoQuoteTicks(COMMODITY_MAIN, -1);
-    AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
+    res = res | AutoQuoteTicks(COMMODITY_MAIN, -1);
+    res = res | AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
+
+    return res;
 }
 
 // To do list:
@@ -365,10 +373,16 @@ void thread_main()
             {
                 AutoGetFutureRights();
 
-                if (pSKQuoteLib->IsConnected() != 1 || pSKOsQuoteLib->IsConnected() != 1)
+                while (pSKQuoteLib->IsConnected() != 1 || pSKOsQuoteLib->IsConnected() != 1)
                 {
                     LOG(DEBUG_LEVEL_INFO, "pSKQuoteLib->IsConnected() != 1");
-                    AutoSetup();
+                    LONG res = AutoSetup();
+
+                    if (res == 0)
+                    {
+                        LOG(DEBUG_LEVEL_INFO, "AutoSetup Success");
+                        break;
+                    }
                 }
 
                 CheckConnected = 0;

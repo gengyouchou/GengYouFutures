@@ -51,7 +51,7 @@ public:
     long RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKSTOCKLONG *pSKStock);
     long GetMarketBuySellUpDown(VOID);
     void ProcessDaysOrNightCommHighLowPoint();
-    VOID GetCommodityIdx(VOID);
+    LONG GetCommodityIdx(VOID);
 
     // Events
     void OnConnection(long nKind, long nCode);
@@ -96,7 +96,6 @@ private:
     ISKQuoteLibEventHandler *m_pSKQuoteLibEventHandler;
 };
 
-VOID GetCommodityIdx(VOID);
 void loadHighLowPoints();
 void updateHighLowPoints(const std::string &date, double dayHigh, double dayLow, double nightHigh, double nightLow);
 

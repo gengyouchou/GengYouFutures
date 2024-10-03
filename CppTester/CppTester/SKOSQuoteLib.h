@@ -39,7 +39,7 @@ public:
     long RequestStockList(short MarketNo);
     long GetStockByIndexLONG(long bStockIndex, SKCOMLib::SKFOREIGNLONG *pSKStock);
     long RequestStockIndexMap(IN string strStockNo, OUT SKCOMLib::SKFOREIGNLONG *pSKStock);
-    VOID GetCommodityIdx(VOID);
+    LONG GetCommodityIdx(VOID);
 
     // Events
     void OnConnection(long nKind, long nCode);

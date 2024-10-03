@@ -193,7 +193,7 @@ void CSKOSQuoteLib::OnNotifyTicksNineDigitLONG(LONG nStockIndex, LONG nPtr, LONG
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
-VOID CSKOSQuoteLib::GetCommodityIdx(VOID)
+LONG CSKOSQuoteLib::GetCommodityIdx(VOID)
 {
     SKCOMLib::SKFOREIGNLONG skStock;
 
@@ -202,4 +202,6 @@ VOID CSKOSQuoteLib::GetCommodityIdx(VOID)
     gCommodtyOsInfo.NQIdxNo = skStock.nStockIdx;
 
     DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%ld, COMMODITY_OS_MAIN=%ld", res, skStock.nStockIdx);
+
+    return res;
 }

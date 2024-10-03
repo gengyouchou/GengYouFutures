@@ -430,7 +430,7 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
     }
 }
 
-VOID CSKQuoteLib::GetCommodityIdx(VOID)
+LONG CSKQuoteLib::GetCommodityIdx(VOID)
 {
     SKCOMLib::SKSTOCKLONG skStock;
 
@@ -448,30 +448,30 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
 
     DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, MTXIdxNoAM=%d", res, MTXIdxNoAM);
 
-    res = RequestStockIndexMap(COMMODITY_MAIN, &skStock);
+    res = res | RequestStockIndexMap(COMMODITY_MAIN, &skStock);
 
     MTXIdxNo = skStock.nStockIdx;
 
     DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, MTXIdxNo=%d", res, MTXIdxNo);
 
-    res = RequestStockIndexMap(TSMC, &skStock);
+    res = res | RequestStockIndexMap(TSMC, &skStock);
 
     TSMCIdxNo = skStock.nStockIdx;
     DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, TSMCIdxNo=%d", res, TSMCIdxNo);
 
-    res = RequestStockIndexMap(FOXCONN, &skStock);
+    res = res | RequestStockIndexMap(FOXCONN, &skStock);
 
     FOXCONNIdxNo = skStock.nStockIdx;
 
     DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, FOXCONNIdxNo=%d", res, FOXCONNIdxNo);
 
-    res = RequestStockIndexMap("TSEA", &skStock);
+    res = res | RequestStockIndexMap("TSEA", &skStock);
 
     TSEAIdxNo = skStock.nStockIdx;
 
     DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, TSEAIdxNo=%d", res, TSEAIdxNo);
 
-    res = RequestStockIndexMap(MEDIATEK, &skStock);
+    res = res | RequestStockIndexMap(MEDIATEK, &skStock);
 
     MediaTekIdxNo = skStock.nStockIdx;
 
@@ -483,6 +483,8 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
     gCommodtyInfo.TSEAIdxNo = TSEAIdxNo;
     gCommodtyInfo.TSMCIdxNo = TSMCIdxNo;
     gCommodtyInfo.MediaTekIdxNo = MediaTekIdxNo;
+
+    return res;
 }
 
 // Events
