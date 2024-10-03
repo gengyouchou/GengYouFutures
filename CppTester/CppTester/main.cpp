@@ -51,38 +51,18 @@ void release();
 
 void AutoConnect()
 {
-    long count = 0;
-
     while (pSKQuoteLib->IsConnected() != 1)
     {
         g_nCode = pSKQuoteLib->EnterMonitorLONG();
         pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
         std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
-        ++count;
-
-        if (count == 5)
-        {
-            DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");
-            release();
-            exit(0);
-        }
     }
-
-    count = 0;
 
     while (pSKOsQuoteLib->IsConnected() != 1)
     {
         g_nCode = pSKOsQuoteLib->EnterMonitorLONG();
         pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
         std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
-        ++count;
-
-        if (count == 5)
-        {
-            DEBUG(DEBUG_LEVEL_ERROR, "pSKOsQuoteLib->IsConnected() != 1");
-            release();
-            exit(0);
-        }
     }
 }
 
@@ -250,6 +230,42 @@ void release()
     CoUninitialize();
 }
 
+void AutoSetup()
+{
+    AutoLogIn();
+
+    AutoConnect();
+
+    AutoGetFutureRights();
+
+    long res = pSKQuoteLib->RequestServerTime();
+
+    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestServerTime()=%d", res);
+
+    res = pSKQuoteLib->GetMarketBuySellUpDown();
+    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
+
+    pSKQuoteLib->GetCommodityIdx();
+
+    pSKOsQuoteLib->GetCommodityIdx();
+
+    std::string CommList;
+
+    std::ostringstream oss;
+    oss << COMMODITY_MAIN << "AM" << "," << COMMODITY_MAIN << "," << "TSEA" << "," << TSMC << "," << MEDIATEK << "," << FOXCONN;
+    CommList = oss.str();
+
+    AutoQuote(CommList, -1);
+
+    AutoQuoteTicks(TSMC, -1);
+    AutoQuoteTicks(MEDIATEK, -1);
+    AutoQuoteTicks(FOXCONN, -1);
+
+    // For calculate 5MA
+    AutoQuoteTicks(COMMODITY_MAIN, -1);
+    AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
+}
+
 // To do list:
 //  (done)
 // Estimated trading volume
@@ -291,38 +307,8 @@ void thread_main()
 {
     const int refreshInterval = 1000; // 1000 ms
     std::chrono::steady_clock::time_point lastClearTime = std::chrono::steady_clock::now();
-    AutoLogIn();
 
-    AutoConnect();
-
-    AutoGetFutureRights();
-
-    long res = pSKQuoteLib->RequestServerTime();
-
-    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestServerTime()=%d", res);
-
-    res = pSKQuoteLib->GetMarketBuySellUpDown();
-    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
-
-    pSKQuoteLib->GetCommodityIdx();
-
-    pSKOsQuoteLib->GetCommodityIdx();
-
-    std::string CommList;
-
-    std::ostringstream oss;
-    oss << COMMODITY_MAIN << "AM" << "," << COMMODITY_MAIN << "," << "TSEA" << "," << TSMC << "," << MEDIATEK << "," << FOXCONN;
-    CommList = oss.str();
-
-    AutoQuote(CommList, -1);
-
-    AutoQuoteTicks(TSMC, -1);
-    AutoQuoteTicks(MEDIATEK, -1);
-    AutoQuoteTicks(FOXCONN, -1);
-
-    // For calculate 5MA
-    AutoQuoteTicks(COMMODITY_MAIN, -1);
-    AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
+    AutoSetup();
 
     while (true)
     {
@@ -395,16 +381,14 @@ void thread_main()
 
             ++CheckConnected;
 
-            if (CheckConnected == 30)
+            if (CheckConnected == 10)
             {
                 AutoGetFutureRights();
 
                 if (pSKQuoteLib->IsConnected() != 1 || pSKOsQuoteLib->IsConnected() != 1)
                 {
-                    DEBUG(DEBUG_LEVEL_ERROR, "pSKQuoteLib->IsConnected() != 1");
                     LOG(DEBUG_LEVEL_INFO, "pSKQuoteLib->IsConnected() != 1");
-                    release();
-                    exit(0);
+                    AutoSetup();
                 }
 
                 CheckConnected = 0;
