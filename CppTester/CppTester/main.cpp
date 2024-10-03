@@ -310,26 +310,6 @@ void thread_main()
 
     AutoSetup();
 
-    while (true)
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-
-        system("cls");
-
-        printf("Waiting for host quotation...");
-
-        if (gCurServerTime[0] >= 0 &&
-            gCommodtyInfo.MTXIdxNoAM >= 0 &&
-            gCommodtyInfo.MTXIdxNo >= 0 &&
-            gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM) != 0 &&
-            gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) != 0 &&
-            gCurCommPrice.count(gCommodtyInfo.MTXIdxNoAM) != 0 &&
-            gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
-        {
-            break;
-        }
-    }
-
     DEBUG(DEBUG_LEVEL_INFO, "[ServerTime: %d: %d: %d]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
     LOG(DEBUG_LEVEL_INFO, "[ServerTime: %d: %d: %d]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
 
