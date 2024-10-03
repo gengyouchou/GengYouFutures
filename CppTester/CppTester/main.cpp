@@ -336,9 +336,7 @@ void thread_main()
             gCommodtyInfo.MTXIdxNoAM >= 0 &&
             gCommodtyInfo.MTXIdxNo >= 0 &&
             gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM) != 0 &&
-            gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) != 0 &&
-            gCurCommPrice.count(gCommodtyInfo.MTXIdxNoAM) != 0 &&
-            gCurCommPrice.count(gCommodtyInfo.MTXIdxNo) != 0)
+            gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) != 0)
         {
             break;
         }
