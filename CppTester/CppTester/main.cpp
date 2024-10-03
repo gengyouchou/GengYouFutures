@@ -361,7 +361,7 @@ void thread_main()
 
             ++CheckConnected;
 
-            if (CheckConnected == 10)
+            if (CheckConnected == 15)
             {
                 AutoGetFutureRights();
 
