@@ -1865,10 +1865,6 @@ LONG CountOsTransactionListLongShort(LONG nStockidx)
             // Update the last processed pointer to prevent processing the same tick again
             PrePtr[nStockidx] = nPtr;
         }
-        else
-        {
-            PreClosePrices[nStockidx] = nClose;
-        }
     }
 
     return NQ_MA20_LONG_SHORT_WEIGHT_RATIO * (countLong + countShort);
