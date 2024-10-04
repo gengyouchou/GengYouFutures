@@ -55,7 +55,7 @@ extern std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint; // 
 
 DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
 
-LONG gBidOfferLongShort = 0, gTransactionListLongShort = 0;
+LONG gBidOfferLongShort = 0, gTransactionListLongShort = 0, gOsTransactionListLongShort = 0;
 double gCostMovingAverageVal = 0;
 double gMa5 = 0;
 double gMa5LongShort = 0;
@@ -1803,9 +1803,75 @@ LONG CountTransactionListLongShort(LONG nStockidx)
     return TRANSACTION_LIST_LONG_SHORT_WEIGHT_RATIO * (countLong + countShort);
 }
 
-LONG CountNqMa20LongShort(VOID)
+/**
+ * @brief Handle new tick data and calculate 5MA slope for opening long/short positions based on 1-minute close prices.
+ *
+ * This function processes tick data for a specific stock index (nStockidx), computes the 5-minute moving average (5MA)
+ * using the closing prices of the past 5 minutes, and determines whether to open long or short positions based on the
+ * slope of the 5MA (i.e., the difference between the current and previous 5MA values).
+ *
+ * The strategy is as follows:
+ * - Open a long position when the 5MA slope is positive.
+ * - Open a short position when the 5MA slope is negative.
+ *
+ * The function tracks the last processed minute and updates the closing prices deque when a new minute begins.
+ * Only the last tick of the minute is used to represent the closing price for that minute.
+ *
+ * @param nStockidx The stock index for which tick data is being processed.
+ * @return int
+ *         - 1 if a long position should be opened.
+ *         - 0 if a short position should be opened.
+ *         - -1 if no action is taken (e.g., not enough data, or no change in position).
+ */
+LONG CountOsTransactionListLongShort(LONG nStockidx)
 {
-    return static_cast<long>(NQ_MA20_LONG_SHORT_WEIGHT_RATIO * gNQMa20LongShort);
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
+
+    static unordered_map<long, long> PrePtr;
+    static unordered_map<long, long> PreClosePrices;
+
+    long countLong = 0, countShort = 0;
+
+    // Ensure that there is data for the given stock index
+    if (gOsTransactionList.count(nStockidx))
+    {
+        // Retrieve tick data from gOsTransactionList for the given stock index
+        long nPtr = 0, nClose = 0, nQty = 0, nTimehms = 0;
+
+        nPtr = gOsTransactionList[nStockidx][0];
+        nClose = gOsTransactionList[nStockidx][1];
+        nQty = gOsTransactionList[nStockidx][2];
+        nTimehms = gOsTransactionList[nStockidx][3];
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nTimehms: %ld,nClose: %ld,nQty: %ld\n",
+              nStockidx, nPtr, nTimehms, nClose, nQty);
+
+        // Process new tick data only if this is a new pointer (i.e., a new tick)
+        if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
+        {
+
+            if (nClose > 0 && PreClosePrices[nStockidx] < nClose)
+            {
+                countLong += nQty;
+            }
+
+            if (nClose > 0 && PreClosePrices[nStockidx] > nClose)
+            {
+                countShort -= nQty;
+            }
+
+            PreClosePrices[nStockidx] = nClose;
+
+            // Update the last processed pointer to prevent processing the same tick again
+            PrePtr[nStockidx] = nPtr;
+        }
+        else
+        {
+            PreClosePrices[nStockidx] = nClose;
+        }
+    }
+
+    return NQ_MA20_LONG_SHORT_WEIGHT_RATIO * (countLong + countShort);
 }
 
 LONG StrategyCaluBidOfferLongShort(VOID)
@@ -1906,9 +1972,41 @@ LONG StrategyCaluTransactionListLongShort(VOID)
     return gTransactionListLongShort;
 }
 
+LONG StrategyCaluOsTransactionListLongShort(VOID)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    if (gOsTransactionListLongShort >= INT_MAX || gOsTransactionListLongShort <= INT_MIN)
+    {
+        return gOsTransactionListLongShort;
+    }
+
+    if (gCommodtyOsInfo.NQIdxNo != 0)
+    {
+        long nStockidx = gCommodtyOsInfo.NQIdxNo;
+
+        gOsTransactionListLongShort += CountOsTransactionListLongShort(nStockidx);
+    }
+
+    LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gOsTransactionListLongShort);
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "End");
+
+    if (gOsTransactionListLongShort > 0)
+    {
+        gOsTransactionListLongShort = min(gOsTransactionListLongShort, gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT);
+    }
+    else if (gOsTransactionListLongShort < 0)
+    {
+        gOsTransactionListLongShort = max(gOsTransactionListLongShort, -(gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT));
+    }
+
+    return gOsTransactionListLongShort;
+}
+
 LONG StrategyCaluLongShort(VOID)
 {
-    return (gTransactionListLongShort + gBidOfferLongShort) / LONG_AND_SHORT_TARGET_COUNT + CountNqMa20LongShort();
+    return (gTransactionListLongShort + gBidOfferLongShort + gOsTransactionListLongShort) / LONG_AND_SHORT_TARGET_COUNT;
 }
 
 VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
@@ -2913,6 +3011,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 
     StrategyCaluBidOfferLongShort();
     StrategyCaluTransactionListLongShort();
+    StrategyCaluOsTransactionListLongShort();
     BidOfferAndTransactionListLongShortSlope();
 
     if (!(gCurServerTime[0] <= 5 || gCurServerTime[0] >= 15) &&
