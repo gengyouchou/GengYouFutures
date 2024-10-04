@@ -1830,7 +1830,7 @@ LONG CountOsTransactionListLongShort(LONG nStockidx)
     static unordered_map<long, long> PrePtr;
     static unordered_map<long, long> PreClosePrices;
 
-    long BidOfferFlip = 0;
+    static long BidOfferFlip = 0;
 
     long countLong = 0,
          countShort = 0;
@@ -1858,13 +1858,13 @@ LONG CountOsTransactionListLongShort(LONG nStockidx)
 
             if (PreClosePrices.count(nStockidx))
             {
-                if (nClose > 0 && PreClosePrices[nStockidx] <= nClose)
+                if (nClose > 0 && PreClosePrices[nStockidx] < nClose)
                 {
                     BidOfferFlip = 1;
                     DEBUG(DEBUG_LEVEL_DEBUG, "countLong");
                 }
 
-                if (nClose > 0 && PreClosePrices[nStockidx] >= nClose)
+                if (nClose > 0 && PreClosePrices[nStockidx] > nClose)
                 {
                     BidOfferFlip = 0;
                     DEBUG(DEBUG_LEVEL_DEBUG, "countShort");
