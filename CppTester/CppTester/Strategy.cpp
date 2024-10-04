@@ -1828,7 +1828,7 @@ LONG CountOsTransactionListLongShort(LONG nStockidx)
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     static unordered_map<long, long> PrePtr;
-    static unordered_map<long, long> PreClosePrices;
+    static unordered_map<long, long> PreClosePricesBid, PreClosePricesOffer;
 
     long countLong = 0, countShort = 0;
 
@@ -1850,24 +1850,24 @@ LONG CountOsTransactionListLongShort(LONG nStockidx)
         if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
         {
 
-            if (nClose > 0 && PreClosePrices[nStockidx] < nClose)
+            if (nClose > 0 && PreClosePricesOffer[nStockidx] <= nClose)
             {
                 countLong += nQty;
+                PreClosePricesOffer[nStockidx] = nClose;
             }
 
-            if (nClose > 0 && PreClosePrices[nStockidx] > nClose)
+            if (nClose > 0 && PreClosePricesBid[nStockidx] >= nClose)
             {
                 countShort -= nQty;
+                PreClosePricesBid[nStockidx] = nClose;
             }
-
-            PreClosePrices[nStockidx] = nClose;
 
             // Update the last processed pointer to prevent processing the same tick again
             PrePtr[nStockidx] = nPtr;
         }
     }
 
-    return NQ_MA20_LONG_SHORT_WEIGHT_RATIO * (countLong + countShort);
+    return NQ_TRANSACTION_LIST_LONG_SHORT_WEIGHT_RATIO * (countLong + countShort);
 }
 
 LONG StrategyCaluBidOfferLongShort(VOID)
