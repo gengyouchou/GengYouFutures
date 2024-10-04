@@ -2409,9 +2409,7 @@ VOID StrategyCloseOneRoundTakeProfit(string strUserId, LONG MtxCommodtyInfo)
         bool JustMakeOneRound = (BuySell == 0 && gBidOfferLongShortSlope >= CLOSE_BID_OFFER_SLOPE_LONG_SHORT) ||
                                 (BuySell == 1 && gBidOfferLongShortSlope <= -CLOSE_BID_OFFER_SLOPE_LONG_SHORT);
 
-        if ((BuySell == 0 && gMa5LongShort < 0) ||
-            (BuySell == 1 && gMa5LongShort > 0) ||
-            PrepareToLeaveFirst ||
+        if (PrepareToLeaveFirst ||
             JustMakeOneRound)
         {
             vector<string> vec = {COMMODITY_OTHER};
