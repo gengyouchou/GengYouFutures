@@ -559,7 +559,7 @@ int CountOsNQ20MaForNewLongShortPosition(LONG nStockidx)
                 else
                 {
                     // Store the current 5MA for the next comparison
-                    lastMa5 = tickPrice;
+                    lastMa5 = calculate5MA(closePrices);
                 }
 
                 // Update the last processed minute and reset the lastMinutePrice for the new minute
@@ -604,7 +604,7 @@ int CountOsNQ20MaForNewLongShortPosition(LONG nStockidx)
             }
             else
             {
-                lastMa5 = tickPrice;
+                lastMa5 = calculate5MA(closePrices);
             }
 
             // Update the last processed pointer to prevent processing the same tick again
@@ -646,7 +646,7 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
         }
         else
         {
-            PreMa = CurLongShort;
+            PreMa = calculate5MA(dq);
         }
     }
 
