@@ -2517,8 +2517,8 @@ VOID StrategyCloseOneRoundTakeProfit(string strUserId, LONG MtxCommodtyInfo)
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
         }
 
-        bool PrepareToLeaveFirst = (BuySell == 0 && -gBidOfferLongShortSlope > gStrategyConfig.BidOfferLongShortAttackSlope / 2.0) ||
-                                   (BuySell == 1 && gBidOfferLongShortSlope > gStrategyConfig.BidOfferLongShortAttackSlope / 2.0);
+        bool PrepareToLeaveFirst = (BuySell == 0 && -gBidOfferLongShortSlope > gStrategyConfig.BidOfferLongShortAttackSlope) ||
+                                   (BuySell == 1 && gBidOfferLongShortSlope > gStrategyConfig.BidOfferLongShortAttackSlope);
 
         if (PrepareToLeaveFirst)
         {
@@ -3185,6 +3185,37 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
         }
         else if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
+                 LongShortExtremeFit != 1)
+        {
+            StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+        }
+
+        break;
+    }
+
+    case 9:
+    {
+        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
+        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
+        StrategyCloseOneRoundTakeProfit(g_strUserId, MtxCommodtyInfo);
+
+        BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
+
+        if (ReachTodayAmplitude == TRUE)
+        {
+            break;
+        }
+
+        int LongShortExtremeFit = LongShortExtremeFitRate(MtxCommodtyInfo);
+
+        if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
+            gMa5LongShort > 0 &&
+            LongShortExtremeFit != -1)
+        {
+            StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
+        }
+        else if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
+                 gMa5LongShort < 0 &&
                  LongShortExtremeFit != 1)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
