@@ -1830,7 +1830,18 @@ LONG CountOsTransactionListLongShort(LONG nStockidx)
     static unordered_map<long, long> PrePtr;
     static unordered_map<long, long> PreClosePricesBid, PreClosePricesOffer;
 
-    long countLong = 0, countShort = 0;
+    if (!PreClosePricesBid.count(nStockidx))
+    {
+        PreClosePricesBid[nStockidx] = INT_MAX;
+    }
+
+    if (!PreClosePricesOffer.count(nStockidx))
+    {
+        PreClosePricesOffer[nStockidx] = INT_MIN;
+    }
+
+    long countLong = 0,
+         countShort = 0;
 
     // Ensure that there is data for the given stock index
     if (gOsTransactionList.count(nStockidx))
