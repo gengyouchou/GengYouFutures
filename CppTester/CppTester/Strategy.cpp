@@ -2517,8 +2517,8 @@ VOID StrategyCloseOneRoundTakeProfit(string strUserId, LONG MtxCommodtyInfo)
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
         }
 
-        bool PrepareToLeaveFirst = (BuySell == 0 && -gBidOfferLongShortSlope > gStrategyConfig.BidOfferLongShortAttackSlope) ||
-                                   (BuySell == 1 && gBidOfferLongShortSlope > gStrategyConfig.BidOfferLongShortAttackSlope);
+        bool PrepareToLeaveFirst = (BuySell == 0 && -gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope) ||
+                                   (BuySell == 1 && gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope);
 
         if (PrepareToLeaveFirst)
         {
