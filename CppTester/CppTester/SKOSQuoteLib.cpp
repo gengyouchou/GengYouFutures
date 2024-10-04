@@ -70,10 +70,12 @@ HRESULT CSKOSQuoteLib::OnEventFiringObjectInvoke(
         long nPtr = V_I4(&(pdispparams->rgvarg)[4]);
         long nDate = V_I4(&(pdispparams->rgvarg)[3]);
         long lTimehms = V_I4(&(pdispparams->rgvarg)[2]);
-        LONG nClose = V_I4(&(pdispparams->rgvarg)[1]);
+        // nClose is originally long long, convert it to long
+        long long nCloseLongLong = V_I8(&(pdispparams->rgvarg)[1]);
+        long nClose = static_cast<long>(nCloseLongLong); // Convert long long to long
         long nQty = V_I4(&(pdispparams->rgvarg)[0]);
-        OnNotifyTicksNineDigitLONG(nStockIndex, nPtr, nDate, lTimehms, nClose, nQty);
 
+        OnNotifyTicksNineDigitLONG(nStockIndex, nPtr, nDate, lTimehms, nClose, nQty);
         break;
     }
 

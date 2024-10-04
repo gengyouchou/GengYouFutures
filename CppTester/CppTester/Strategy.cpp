@@ -1828,17 +1828,9 @@ LONG CountOsTransactionListLongShort(LONG nStockidx)
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     static unordered_map<long, long> PrePtr;
-    static unordered_map<long, long> PreClosePricesBid, PreClosePricesOffer;
+    static unordered_map<long, long> PreClosePrices;
 
-    if (!PreClosePricesBid.count(nStockidx))
-    {
-        PreClosePricesBid[nStockidx] = INT_MAX;
-    }
-
-    if (!PreClosePricesOffer.count(nStockidx))
-    {
-        PreClosePricesOffer[nStockidx] = INT_MIN;
-    }
+    long BidOfferFlip = 0;
 
     long countLong = 0,
          countShort = 0;
@@ -1854,24 +1846,41 @@ LONG CountOsTransactionListLongShort(LONG nStockidx)
         nQty = gOsTransactionList[nStockidx][2];
         nTimehms = gOsTransactionList[nStockidx][3];
 
-        DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nTimehms: %ld,nClose: %ld,nQty: %ld\n",
-              nStockidx, nPtr, nTimehms, nClose, nQty);
-
         // Process new tick data only if this is a new pointer (i.e., a new tick)
         if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
         {
 
-            if (nClose > 0 && PreClosePricesOffer[nStockidx] <= nClose)
+            DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nTimehms: %ld,nClose: %ld,nQty: %ld\n",
+                  nStockidx, nPtr, nTimehms, nClose, nQty);
+
+            // 1 2 3 6 6 6 6 5 5 4 6 7 1 2 2
+            // + + + + + + + - - - + + + + +
+
+            if (PreClosePrices.count(nStockidx))
             {
-                countLong += nQty;
-                PreClosePricesOffer[nStockidx] = nClose;
+                if (nClose > 0 && PreClosePrices[nStockidx] <= nClose)
+                {
+                    BidOfferFlip = 1;
+                    DEBUG(DEBUG_LEVEL_INFO, "countLong");
+                }
+
+                if (nClose > 0 && PreClosePrices[nStockidx] >= nClose)
+                {
+                    BidOfferFlip = 0;
+                    DEBUG(DEBUG_LEVEL_INFO, "countShort");
+                }
+
+                if (BidOfferFlip == 1)
+                {
+                    countLong += nQty;
+                }
+                else
+                {
+                    countShort -= nQty;
+                }
             }
 
-            if (nClose > 0 && PreClosePricesBid[nStockidx] >= nClose)
-            {
-                countShort -= nQty;
-                PreClosePricesBid[nStockidx] = nClose;
-            }
+            PreClosePrices[nStockidx] = nClose;
 
             // Update the last processed pointer to prevent processing the same tick again
             PrePtr[nStockidx] = nPtr;
