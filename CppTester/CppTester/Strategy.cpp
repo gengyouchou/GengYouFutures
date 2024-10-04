@@ -1850,7 +1850,7 @@ LONG CountOsTransactionListLongShort(LONG nStockidx)
         if (!PrePtr.count(nStockidx) || PrePtr[nStockidx] != nPtr)
         {
 
-            DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nTimehms: %ld,nClose: %ld,nQty: %ld\n",
+            DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nTimehms: %ld,nClose: %ld,nQty: %ld\n",
                   nStockidx, nPtr, nTimehms, nClose, nQty);
 
             // 1 2 3 6 6 6 6 5 5 4 6 7 1 2 2
@@ -1861,13 +1861,13 @@ LONG CountOsTransactionListLongShort(LONG nStockidx)
                 if (nClose > 0 && PreClosePrices[nStockidx] <= nClose)
                 {
                     BidOfferFlip = 1;
-                    DEBUG(DEBUG_LEVEL_INFO, "countLong");
+                    DEBUG(DEBUG_LEVEL_DEBUG, "countLong");
                 }
 
                 if (nClose > 0 && PreClosePrices[nStockidx] >= nClose)
                 {
                     BidOfferFlip = 0;
-                    DEBUG(DEBUG_LEVEL_INFO, "countShort");
+                    DEBUG(DEBUG_LEVEL_DEBUG, "countShort");
                 }
 
                 if (BidOfferFlip == 1)
