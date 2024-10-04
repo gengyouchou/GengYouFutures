@@ -39,6 +39,7 @@ struct STRATEGY_CONFIG
 {
     LONG ClosingKeyPriceLevel;
     LONG BidOfferLongShortThreshold;
+    DOUBLE BidOfferLongShortAttackSlope;
     LONG ActivePoint;
     DOUBLE MaximumLoss;
     LONG StrategyMode;
@@ -120,6 +121,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 #define MAXIMUM_LOSS 3000.0
 #define ACTIVITY_POINT 0
 #define BID_OFFER_LONG_SHORT_THRESHOLD 1000
+#define BID_OFFER_LONG_SHORT_ATTACK_SLOPE 30
 #define STRATEGY_MODE -1
 
 // leading stocks

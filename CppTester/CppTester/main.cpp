@@ -408,9 +408,9 @@ void thread_main()
                 CheckConnected = 0;
             }
 
-            printf("[UserId:%s], [StrategyMode:%ld], [ClosingKeyPriceLevel:%ld], [BidOfferLongShortThreshold:%ld], [ActivePoint:%ld], [MaximumLoss:%f]\n",
+            printf("[UserId:%s], [StrategyMode:%ld], [ClosingKeyPriceLevel:%ld], [BidOfferLongShortThreshold:%ld], [BidOfferLongShortAttackSlope:%f], [ActivePoint:%ld], [MaximumLoss:%f]\n",
                    g_strUserId.c_str(), gStrategyConfig.StrategyMode, gStrategyConfig.ClosingKeyPriceLevel,
-                   gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss);
+                   gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.BidOfferLongShortAttackSlope, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss);
             printf("=========================================\n");
             printf("[CurMtxPrice: %ld] ", gCurCommPrice[MtxCommodtyInfo] / 100);
             printf("[TSEA prices: %ld, Valume: %ld] ",
@@ -523,6 +523,11 @@ void readConfig()
             gStrategyConfig.BidOfferLongShortThreshold = config["BID_OFFER_LONG_SHORT_THRESHOLD"].as<LONG>();
         }
 
+        if (config["BID_OFFER_LONG_SHORT_ATTACK_SLOPE"])
+        {
+            gStrategyConfig.BidOfferLongShortAttackSlope = config["BID_OFFER_LONG_SHORT_ATTACK_SLOPE"].as<DOUBLE>();
+        }
+
         if (config["ACTIVITY_POINT"])
         {
             gStrategyConfig.ActivePoint = config["ACTIVITY_POINT"].as<LONG>();
@@ -540,6 +545,7 @@ void readConfig()
 
         DEBUG(DEBUG_LEVEL_INFO, "Closing Key Price Level: %ld", gStrategyConfig.ClosingKeyPriceLevel);
         DEBUG(DEBUG_LEVEL_INFO, "Bid Offer Long Short Threshold: %ld", gStrategyConfig.BidOfferLongShortThreshold);
+        DEBUG(DEBUG_LEVEL_INFO, "Bid Offer Long Short Attack Slop: %f", gStrategyConfig.BidOfferLongShortAttackSlope);
         DEBUG(DEBUG_LEVEL_INFO, "Activity Point: %ld", gStrategyConfig.ActivePoint);
         DEBUG(DEBUG_LEVEL_INFO, "Maximum Loss: %f", gStrategyConfig.MaximumLoss);
         DEBUG(DEBUG_LEVEL_INFO, "STRATEGY_MODE: %ld", gStrategyConfig.StrategyMode);
