@@ -644,6 +644,10 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
 
             gBidOfferLongShortSlope = MaSlope;
         }
+        else
+        {
+            PreMa = CurLongShort;
+        }
     }
 
     return;
