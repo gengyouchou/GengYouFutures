@@ -1972,6 +1972,20 @@ LONG StrategyCaluTransactionListLongShort(VOID)
         gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
     }
 
+    if (gCommodtyInfo.MTXIdxNo != 0)
+    {
+        long nStockidx = gCommodtyInfo.MTXIdxNo;
+
+        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+    }
+
+    if (gCommodtyInfo.MTXIdxNoAM != 0)
+    {
+        long nStockidx = gCommodtyInfo.MTXIdxNoAM;
+
+        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+    }
+
     LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gTransactionListLongShort);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
