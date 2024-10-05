@@ -477,8 +477,8 @@ void thread_main()
 
             printf("=========================================\n");
 
-            printf("BidOfferLongShortSlope: %f, StrategyCaluLongShort: %ld, BidOfferLongShort: %ld, TransactionListLongShort: %ld\n",
-                   gBidOfferLongShortSlope, StrategyCaluLongShort(), gBidOfferLongShort, gTransactionListLongShort);
+            printf("BidOfferLongShortSlope: %f, StrategyCaluLongShort: %ld, BidOfferLongShort: %ld, TransactionListLongShort: %ld, OsTransactionListLongShort: %ld\n",
+                   gBidOfferLongShortSlope, StrategyCaluLongShort(), gBidOfferLongShort, gTransactionListLongShort, gOsTransactionListLongShort);
 
             printf("=========================================\n");
 

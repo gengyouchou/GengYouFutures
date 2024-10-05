@@ -139,3 +139,7 @@ extern double gNQMa20;
 extern double gNQMa20LongShort;
 
 extern LONG gEvaluatePosition;
+
+extern LONG gBidOfferLongShort;
+extern LONG gTransactionListLongShort;
+extern LONG gOsTransactionListLongShort;
