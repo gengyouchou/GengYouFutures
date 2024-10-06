@@ -482,8 +482,10 @@ void thread_main()
 
             printf("=========================================\n");
 
-            printf("TSEA Total OFFER: [%ld]\n", gCurTaiexInfo[0][3]);
-            printf("            BID : [%ld]\n", gCurTaiexInfo[0][2]);
+            printf("TSEA Total OFFER: [%ld]\n", gCurTaiexInfo[0x00][3]);
+            printf("            BID : [%ld]\n", gCurTaiexInfo[0x00][2]);
+            printf("TPEX Total OFFER: [%ld]\n", gCurTaiexInfo[0x01][3]);
+            printf("            BID : [%ld]\n", gCurTaiexInfo[0x01][2]);
 
             printf("=========================================\n");
 
