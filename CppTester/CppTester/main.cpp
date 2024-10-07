@@ -482,16 +482,16 @@ void thread_main()
 
             printf("=========================================\n");
 
+            AutoBest5Long(gCommodtyInfo.TSMCIdxNo, TSMC);
+            AutoBest5Long(gCommodtyInfo.FOXCONNIdxNo, FOXCONN);
+            AutoBest5Long(gCommodtyInfo.MediaTekIdxNo, MEDIATEK);
+
+            printf("=========================================\n");
+
             printf("TSEA Total OFFER: [%ld]\n", gCurTaiexInfo[0x00][3]);
             printf("            BID : [%ld]\n", gCurTaiexInfo[0x00][2]);
             printf("TPEX Total OFFER: [%ld]\n", gCurTaiexInfo[0x01][3]);
             printf("            BID : [%ld]\n", gCurTaiexInfo[0x01][2]);
-
-            printf("=========================================\n");
-
-            AutoBest5Long(gCommodtyInfo.TSMCIdxNo, TSMC);
-            AutoBest5Long(gCommodtyInfo.FOXCONNIdxNo, FOXCONN);
-            AutoBest5Long(gCommodtyInfo.MediaTekIdxNo, MEDIATEK);
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU
