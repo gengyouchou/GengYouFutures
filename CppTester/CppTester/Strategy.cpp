@@ -1136,6 +1136,70 @@ VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo)
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
+VOID StrategyTakeFuturesProfit(string strUserId, LONG MtxCommodtyInfo)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    double curPrice = 0;
+
+    if (gCurCommPrice.count(MtxCommodtyInfo) != 0)
+    {
+        curPrice = static_cast<double>(gCurCommPrice[MtxCommodtyInfo]) / 100.0;
+    }
+
+    if (gOpenInterestInfo.product != "" && gOpenInterestInfo.avgCost != 0 && curPrice > 0)
+    {
+        LOG(DEBUG_LEVEL_DEBUG, "product: %s", gOpenInterestInfo.product);
+        LOG(DEBUG_LEVEL_DEBUG, "buySell: %s", gOpenInterestInfo.buySell);
+        LOG(DEBUG_LEVEL_DEBUG, "openPosition: %ld", gOpenInterestInfo.openPosition);
+        LOG(DEBUG_LEVEL_DEBUG, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
+        LOG(DEBUG_LEVEL_DEBUG, "avgCost: %f", gOpenInterestInfo.avgCost);
+
+        SHORT CloseBuySell = -1;
+
+        if (gOpenInterestInfo.buySell == "S")
+        {
+            CloseBuySell = ORDER_BUY_LONG_POSITION; // need to Buy to take short position profit
+        }
+        else if (gOpenInterestInfo.buySell == "B")
+        {
+            CloseBuySell = ORDER_SELL_SHORT_POSITION; // need to Sell to take long position profit
+        }
+
+        if (gOpenInterestInfo.profitAndLoss >= gStrategyConfig.MaximumLoss)
+        {
+            LOG(DEBUG_LEVEL_INFO, "Take profit at curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
+                curPrice, gOpenInterestInfo.avgCost, gOpenInterestInfo.profitAndLoss);
+
+            vector<string> vec = {COMMODITY_MAIN, COMMODITY_OTHER};
+
+            for (auto &x : vec)
+            {
+                AutoOrder(x,
+                          ORDER_CLOSE_POSITION, // Close
+                          CloseBuySell          // Buy or sell
+                );
+            }
+
+#ifdef VIRTUAL_ACCOUNT_ORDER
+            gOpenInterestInfo = {
+                "",  // product
+                "",  // Buy/Sell Indicator
+                0,   // openPosition 0
+                0,   // dayTradePosition 0
+                0.0, // avgCost 0.0
+                0.0, // profitAndLoss
+                TRUE
+
+            };
+
+#endif
+        }
+    }
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "End");
+}
+
 VOID StrategyClosePositionOnDayTrade(string strUserId, LONG MtxCommodtyInfo, SHORT StopHour, SHORT StopMinute)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
@@ -3210,6 +3274,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     case 9:
     {
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
+        StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         StrategyCloseOneRoundTakeProfit(g_strUserId, MtxCommodtyInfo);
 
