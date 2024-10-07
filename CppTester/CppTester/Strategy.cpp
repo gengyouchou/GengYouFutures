@@ -37,7 +37,7 @@ extern CSKOrderLib *pSKOrderLib;
 
 // Global variables, initialized by main, and continuously updated by the com server
 extern SHORT gCurServerTime[3];
-extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
+extern std::unordered_map<SHORT, std::array<long, 6>> gCurTaiexInfo;
 extern std::deque<long> gDaysKlineDiff;
 extern std::deque<long> gCostMovingAverage;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
