@@ -618,7 +618,7 @@ int CountOsNQ20MaForNewLongShortPosition(LONG nStockidx)
 VOID BidOfferAndTransactionListLongShortSlope(VOID)
 {
     static LONG PreLongShort = 0;
-    static std::deque<double> dq;
+    static std::deque<double> dq, dqSlop;
     static double PreMa = 0;
 
     LONG CurLongShort = StrategyCaluLongShort();
@@ -638,8 +638,13 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
         if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
         {
             double ma = calculate5MA(dq);
+            if (dqSlop.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
+            {
+                dqSlop.pop_front(); // Remove the oldest
+            }
+            dqSlop.push_back(ma);
 
-            double deltaY = dq.back() - dq.front();
+            double deltaY = dqSlop.back() - dqSlop.front();
             double MaSlope = deltaY / BID_OFFER_SLOPE_LONG_SHORT_COUNT;
 
             gBidOfferLongShortSlope = MaSlope;
