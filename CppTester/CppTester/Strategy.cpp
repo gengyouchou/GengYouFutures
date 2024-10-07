@@ -639,14 +639,10 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
         {
             double ma = calculate5MA(dq);
 
-            double MaSlope = ma - PreMa;
-            PreMa = ma;
+            double deltaY = dq.back() - dq.front();
+            double MaSlope = deltaY / BID_OFFER_SLOPE_LONG_SHORT_COUNT;
 
             gBidOfferLongShortSlope = MaSlope;
-        }
-        else
-        {
-            PreMa = calculate5MA(dq);
         }
     }
 
