@@ -1202,8 +1202,8 @@ VOID StrategyClosePositionOnDayTrade(string strUserId, LONG MtxCommodtyInfo, SHO
             };
 #endif
 
-            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
-                curPrice, gCostMovingAverageVal, StrategyCaluLongShort());
+            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShortSlope: %f",
+                curPrice, gCostMovingAverageVal, gBidOfferLongShortSlope);
         }
     }
 
@@ -1271,8 +1271,8 @@ VOID StrategyClosePosition(string strUserId, LONG MtxCommodtyInfo)
             };
 #endif
 
-            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
-                curPrice, gCostMovingAverageVal, StrategyCaluLongShort());
+            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShortSlope: %f",
+                curPrice, gCostMovingAverageVal, gBidOfferLongShortSlope);
         }
     }
 
@@ -1348,8 +1348,8 @@ VOID StrategyCloseIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodt
             };
 #endif
 
-            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
-                curPrice, gCostMovingAverageVal, StrategyCaluLongShort());
+            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShortSlope: %f",
+                curPrice, gCostMovingAverageVal, gBidOfferLongShortSlope);
         }
     }
 
@@ -1583,8 +1583,8 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
                 gOpenInterestInfo.avgCost = curPrice;
             }
 
-            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
-                curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
+            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, BidOfferLongShortSlope: %f",
+                curPrice, gCostMovingAverageVal, CurAvg, gBidOfferLongShortSlope);
         }
     }
 
@@ -1623,8 +1623,8 @@ VOID StrategyNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG L
                 gOpenInterestInfo.avgCost = curPrice;
             }
 
-            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
-                curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
+            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, BidOfferLongShortSlope: %f",
+                curPrice, gCostMovingAverageVal, CurAvg, gBidOfferLongShortSlope);
         }
     }
 
@@ -2095,8 +2095,8 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
                     gOpenInterestInfo.avgCost = curPrice;
                 }
 
-                LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, StrategyCaluLongShort: %ld",
-                    curPrice, gCostMovingAverageVal, StrategyCaluLongShort());
+                LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShortSlope: %f",
+                    curPrice, gCostMovingAverageVal, gBidOfferLongShortSlope);
             }
         }
 
@@ -2131,8 +2131,8 @@ VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyI
                     gOpenInterestInfo.avgCost = curPrice;
                 }
 
-                LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, StrategyCaluLongShort: %ld",
-                    curPrice, gCostMovingAverageVal, StrategyCaluLongShort());
+                LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShortSlope: %f",
+                    curPrice, gCostMovingAverageVal, gBidOfferLongShortSlope);
             }
         }
     }
@@ -2250,8 +2250,8 @@ VOID StrategyCloseMainForcePassPreHighAndBreakPreLowPosition(string strUserId, L
             };
 #endif
 
-            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
-                curPrice, gCostMovingAverageVal, StrategyCaluLongShort());
+            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShortSlope: %f",
+                curPrice, gCostMovingAverageVal, gBidOfferLongShortSlope);
         }
     }
 
@@ -2348,8 +2348,8 @@ VOID StrategyCloseBidOfferLongShortSlope(string strUserId, LONG MtxCommodtyInfo)
             };
 #endif
 
-            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
-                curPrice, gCostMovingAverageVal, StrategyCaluLongShort());
+            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShortSlope: %f",
+                curPrice, gCostMovingAverageVal, gBidOfferLongShortSlope);
         }
     }
 
@@ -2459,8 +2459,8 @@ VOID StrategyCloseFixedTakeProfit(string strUserId, LONG MtxCommodtyInfo)
             };
 #endif
 
-            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
-                curPrice, gCostMovingAverageVal, StrategyCaluLongShort());
+            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShortSlope: %f",
+                curPrice, gCostMovingAverageVal, gBidOfferLongShortSlope);
         }
     }
 
@@ -2559,8 +2559,8 @@ VOID StrategyCloseOneRoundTakeProfit(string strUserId, LONG MtxCommodtyInfo)
             };
 #endif
 
-            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShort: %ld",
-                curPrice, gCostMovingAverageVal, StrategyCaluLongShort());
+            LOG(DEBUG_LEVEL_INFO, "Close position, curPrice = %f, gCostMovingAverageVal= %f, BidOfferLongShortSlope: %f",
+                curPrice, gCostMovingAverageVal, gBidOfferLongShortSlope);
         }
     }
 
@@ -2715,8 +2715,8 @@ VOID StrategyNewDailyAmplitudeAchievesReverse(string strUserId, LONG MtxCommodty
             gOpenInterestInfo.openPosition += 1;
             gOpenInterestInfo.avgCost = curPrice;
 
-            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
-                curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
+            LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, BidOfferLongShortSlope: %f",
+                curPrice, gCostMovingAverageVal, CurAvg, gBidOfferLongShortSlope);
         }
     }
 
@@ -2743,8 +2743,8 @@ VOID StrategyNewDailyAmplitudeAchievesReverse(string strUserId, LONG MtxCommodty
             gOpenInterestInfo.openPosition -= 1;
             gOpenInterestInfo.avgCost = curPrice;
 
-            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, StrategyCaluLongShort: %ld",
-                curPrice, gCostMovingAverageVal, CurAvg, StrategyCaluLongShort());
+            LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, BidOfferLongShortSlope: %f",
+                curPrice, gCostMovingAverageVal, CurAvg, gBidOfferLongShortSlope);
         }
     }
 
