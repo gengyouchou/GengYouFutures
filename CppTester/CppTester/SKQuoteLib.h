@@ -11,7 +11,7 @@
 #include "TEventHandler.h"
 #include "config.h"
 
-#define COMMODITY_MAIN "MTX00"
+#define COMMODITY_TX_MAIN "MTX00"
 #define COMMODITY_OTHER "TM0000"
 #define COMMODITY_TX_MAIN "TX00"
 

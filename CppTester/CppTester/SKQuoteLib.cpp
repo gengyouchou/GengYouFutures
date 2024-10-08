@@ -446,7 +446,7 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
     std::string CommList;
 
     std::ostringstream oss;
-    oss << COMMODITY_MAIN << "AM";
+    oss << COMMODITY_TX_MAIN << "AM";
     CommList = oss.str();
 
     long res = RequestStockIndexMap(CommList, &skStock);
@@ -455,7 +455,7 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
 
     DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, MTXIdxNoAM=%d", res, MTXIdxNoAM);
 
-    res = RequestStockIndexMap(COMMODITY_MAIN, &skStock);
+    res = RequestStockIndexMap(COMMODITY_TX_MAIN, &skStock);
 
     MTXIdxNo = skStock.nStockIdx;
 

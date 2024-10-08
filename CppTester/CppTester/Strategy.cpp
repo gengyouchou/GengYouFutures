@@ -1108,7 +1108,7 @@ VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo)
             LOG(DEBUG_LEVEL_INFO, "STOP Loss at curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
                 curPrice, gOpenInterestInfo.avgCost, profitAndLoss);
 
-            vector<string> vec = {COMMODITY_MAIN, COMMODITY_OTHER};
+            vector<string> vec = {COMMODITY_TX_MAIN, COMMODITY_OTHER};
 
             for (auto &x : vec)
             {
@@ -1172,7 +1172,7 @@ VOID StrategyTakeFuturesProfit(string strUserId, LONG MtxCommodtyInfo)
             LOG(DEBUG_LEVEL_INFO, "Take profit at curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
                 curPrice, gOpenInterestInfo.avgCost, gOpenInterestInfo.profitAndLoss);
 
-            vector<string> vec = {COMMODITY_MAIN, COMMODITY_OTHER};
+            vector<string> vec = {COMMODITY_TX_MAIN, COMMODITY_OTHER};
 
             for (auto &x : vec)
             {

@@ -311,7 +311,7 @@ void thread_main()
     std::string CommList;
 
     std::ostringstream oss;
-    oss << COMMODITY_MAIN << "AM" << "," << COMMODITY_MAIN << "," << "TSEA" << "," << TSMC << "," << MEDIATEK << "," << FOXCONN;
+    oss << COMMODITY_TX_MAIN << "AM" << "," << COMMODITY_TX_MAIN << "," << "TSEA" << "," << TSMC << "," << MEDIATEK << "," << FOXCONN;
     CommList = oss.str();
 
     AutoQuote(CommList, -1);
@@ -321,7 +321,7 @@ void thread_main()
     AutoQuoteTicks(FOXCONN, -1);
 
     // For calculate 5MA
-    AutoQuoteTicks(COMMODITY_MAIN, -1);
+    AutoQuoteTicks(COMMODITY_TX_MAIN, -1);
     AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
 
     while (true)
