@@ -833,66 +833,6 @@ void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate)
     gCurCommPrice[nStockIndex] = nClose;
 }
 
-/**
- * @brief Splits the given trading data into day and night sessions and records the highest and lowest prices.
- *
- * @param datetime The datetime string in "YYYY/MM/DD HH:MM" format.
- * @param openPrice The opening price.
- * @param highPrice The highest price.
- * @param lowPrice The lowest price.
- * @param closePrice The closing price.
- * @param volume The trading volume.
- */
-void processTradingData(const string &datetime, double openPrice, double highPrice, double lowPrice, double closePrice, int volume)
-{
-
-    DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
-
-    // Extract the date and time from the datetime string
-    string date = datetime.substr(0, 10);
-    string time = datetime.substr(11, 5);
-
-    // Convert time to hour and minute
-    int hour = stoi(time.substr(0, 2));
-    int minute = stoi(time.substr(3, 2));
-
-    if ((hour == 8 && minute >= 45) || (hour >= 9 && hour < 13) || (hour == 13 && minute <= 45))
-    {
-        // Day session
-        if (gDaysCommHighLowPoint.count(date) == 0)
-        {
-            gDaysCommHighLowPoint[date] = {highPrice, lowPrice};
-        }
-
-        auto &entry = gDaysCommHighLowPoint[date];
-        entry.first = max(entry.first, highPrice);
-        entry.second = min(entry.second, lowPrice);
-
-        DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
-
-        DEBUG(DEBUG_LEVEL_DEBUG, "Date08_45: %s, High: %f, Low: %f",
-              date, entry.first, entry.second);
-    }
-
-    {
-        // Night session
-
-        if (gDaysNightAllCommHighLowPoint.count(date) == 0)
-        {
-            gDaysNightAllCommHighLowPoint[date] = {highPrice, lowPrice};
-        }
-
-        auto &entry = gDaysNightAllCommHighLowPoint[date];
-        entry.first = max(entry.first, highPrice);
-        entry.second = min(entry.second, lowPrice);
-
-        DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
-
-        DEBUG(DEBUG_LEVEL_DEBUG, "Date15_00: %s, High: %f, Low: %f",
-              date, entry.first, entry.second);
-    }
-}
-
 // Function to load high/low points from database.yaml into global maps
 void loadHighLowPoints()
 {
