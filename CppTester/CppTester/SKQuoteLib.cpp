@@ -375,6 +375,10 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
             // Update the points and save back to the file
             updateHighLowPoints(yesterday, -1, -1, PreHigh, PreLow);
         }
+        else
+        {
+            DEBUG(DEBUG_LEVEL_INFO, "gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo)=0");
+        }
 
         for (const auto &entry : gDaysCommHighLowPoint) // need ordered by date  from the past to the present
         {
@@ -409,6 +413,10 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
 
             // Update the points and save back to the file
             updateHighLowPoints(yesterday, PreHigh, PreLow, -1, -1);
+        }
+        else
+        {
+            DEBUG(DEBUG_LEVEL_INFO, "gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM)=0");
         }
 
         for (const auto &entry : gDaysNightAllCommHighLowPoint) // need ordered by date  from the past to the present
