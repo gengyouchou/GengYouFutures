@@ -3279,6 +3279,8 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         StrategyCloseOneRoundTakeProfit(g_strUserId, MtxCommodtyInfo);
 
+        gEvaluatePosition = EvaluateTheMaximumPosition(MtxCommodtyInfo);
+
         BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
 
         if (ReachTodayAmplitude == TRUE)
