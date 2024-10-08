@@ -32,7 +32,6 @@ COMMODITY_INFO gCommodtyInfo = {-1, -1, -1, -1, -1};
 long CalculateDiff(const std::string &data);
 void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate, IN long lTimehms);
 void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate);
-void parseAndProcessData(const string &data);
 void ProcessDaysOrNightCommHighLowPoint();
 
 CSKQuoteLib::CSKQuoteLib()
@@ -736,8 +735,6 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 
     DEBUG(DEBUG_LEVEL_DEBUG, "strData= %s", strData);
 
-    // parseAndProcessData(strData);
-
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
@@ -894,33 +891,6 @@ void processTradingData(const string &datetime, double openPrice, double highPri
         DEBUG(DEBUG_LEVEL_DEBUG, "Date15_00: %s, High: %f, Low: %f",
               date, entry.first, entry.second);
     }
-}
-
-/**
- * @brief Parses a trading data string and processes it.
- *
- * @param data The trading data string in the format "YYYY/MM/DD HH:MM, openPrice, highPrice, lowPrice, closePrice, volume".
- */
-void parseAndProcessData(const string &data)
-{
-
-    stringstream ss(data);
-    string datetime;
-    double openPrice, highPrice, lowPrice, closePrice;
-    int volume;
-
-    getline(ss, datetime, ',');
-    ss >> openPrice;
-    ss.ignore(1); // Ignore the comma
-    ss >> highPrice;
-    ss.ignore(1); // Ignore the comma
-    ss >> lowPrice;
-    ss.ignore(1); // Ignore the comma
-    ss >> closePrice;
-    ss.ignore(1); // Ignore the comma
-    ss >> volume;
-
-    processTradingData(datetime, openPrice, highPrice, lowPrice, closePrice, volume);
 }
 
 // Function to load high/low points from database.yaml into global maps
