@@ -3289,13 +3289,11 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         int LongShortExtremeFit = LongShortExtremeFitRate(MtxCommodtyInfo);
 
         if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
-            gMa5LongShort > 0 &&
             LongShortExtremeFit != -1)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
         }
         else if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
-                 gMa5LongShort < 0 &&
                  LongShortExtremeFit != 1)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
