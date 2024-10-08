@@ -2020,35 +2020,35 @@ LONG StrategyCaluTransactionListLongShort(VOID)
     {
         long nStockidx = gCommodtyInfo.TSMCIdxNo;
 
-        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+        gTransactionListLongShort += TSMC_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
     if (gCommodtyInfo.MediaTekIdxNo != 0)
     {
         long nStockidx = gCommodtyInfo.MediaTekIdxNo;
 
-        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+        gTransactionListLongShort += MEDIATEK_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
     if (gCommodtyInfo.FOXCONNIdxNo != 0)
     {
         long nStockidx = gCommodtyInfo.FOXCONNIdxNo;
 
-        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+        gTransactionListLongShort += FOXCONN_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
     if (gCommodtyInfo.MTXIdxNo != 0)
     {
         long nStockidx = gCommodtyInfo.MTXIdxNo;
 
-        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+        gTransactionListLongShort += TX_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
     if (gCommodtyInfo.MTXIdxNoAM != 0)
     {
         long nStockidx = gCommodtyInfo.MTXIdxNoAM;
 
-        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+        gTransactionListLongShort += TX_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
     LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gTransactionListLongShort);
