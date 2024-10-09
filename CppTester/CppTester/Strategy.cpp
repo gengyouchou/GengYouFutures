@@ -614,41 +614,70 @@ int CountOsNQ20MaForNewLongShortPosition(LONG nStockidx)
 
     return -1; // No action, return -1
 }
-
+/**
+ * @brief Calculate the slope of the long-short position from bid-offer and transaction data.
+ *
+ * This function calculates and monitors the trend of long-short positions
+ * from the bid-offer and transaction list. It updates the global variable
+ * gBidOfferLongShortSlope based on the computed slope.
+ * It uses a deque to maintain the most recent data points and smooths the
+ * data using a moving average (MA).
+ * The function also incorporates the derivative term from PID control
+ * to speed up the response of the MA slope to changes.
+ *
+ * @note This function depends on StrategyCaluLongShort() to get the current
+ *       long-short position and calculates the slope based on a fixed sample
+ *       size (BID_OFFER_SLOPE_LONG_SHORT_COUNT).
+ *
+ * @return VOID
+ */
 VOID BidOfferAndTransactionListLongShortSlope(VOID)
 {
     static LONG PreLongShort = 0;
     static std::deque<double> dq, dqSlop;
     static double PreMa = 0;
 
+    // Get the current long-short value
     LONG CurLongShort = StrategyCaluLongShort();
 
-    LONG LongShortDiff = CurLongShort - PreLongShort;
+    static double PreLongShortDiff = 0; // To store the previous long-short difference
 
+    // Calculate the current long-short difference
+    LONG LongShortDiff = CurLongShort - PreLongShort;
     PreLongShort = CurLongShort;
 
-    if (LongShortDiff != 0)
+    // Calculate the rate of change of the current difference (derivative term)
+    double deltaDiff = LongShortDiff - PreLongShortDiff;
+    PreLongShortDiff = LongShortDiff;
+
+    // Maintain the deque size for the sample count
+    if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
     {
-        if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
+        dq.pop_front(); // Remove the oldest value
+    }
+    dq.push_back(CurLongShort); // Add the current value
+
+    if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
+    {
+        // Calculate the moving average
+        double ma = calculate5MA(dq);
+
+        // Maintain the deque for the moving average
+        if (dqSlop.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
         {
-            dq.pop_front(); // Remove the oldest
+            dqSlop.pop_front(); // Remove the oldest
         }
-        dq.push_back(CurLongShort);
+        dqSlop.push_back(ma);
 
-        if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
-        {
-            double ma = calculate5MA(dq);
-            if (dqSlop.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
-            {
-                dqSlop.pop_front(); // Remove the oldest
-            }
-            dqSlop.push_back(ma);
+        // Calculate the slope
+        double deltaY = dqSlop.back() - dqSlop.front();
+        double MaSlope = deltaY / BID_OFFER_SLOPE_LONG_SHORT_COUNT;
 
-            double deltaY = dqSlop.back() - dqSlop.front();
-            double MaSlope = deltaY / BID_OFFER_SLOPE_LONG_SHORT_COUNT;
+        // Adjust slope using PID derivative term to speed up the response
+        MaSlope += deltaDiff * BID_OFFER_SLOPE_LONG_SHORT_PID_D_GAIN;
 
-            gBidOfferLongShortSlope = MaSlope;
-        }
+        // Update the global slope variable
+        gBidOfferLongShortSlope = MaSlope;
     }
 
     return;
