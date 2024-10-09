@@ -651,7 +651,7 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
     double deltaDiff = LongShortDiff - PreLongShortDiff;
     PreLongShortDiff = LongShortDiff;
 
-    gLongShort += LongShortDiff + deltaDiff;
+    gLongShort += LongShortDiff + deltaDiff * BID_OFFER_SLOPE_LONG_SHORT_PID_D_GAIN;
 
     // Maintain the deque size for the sample count
     if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
@@ -677,7 +677,7 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
         double MaSlope = deltaY / BID_OFFER_SLOPE_LONG_SHORT_COUNT;
 
         // Adjust slope using PID derivative term to speed up the response
-        MaSlope += deltaDiff * BID_OFFER_SLOPE_LONG_SHORT_PID_D_GAIN;
+        MaSlope += deltaDiff * BID_OFFER_SLOPE_LONG_SHORT_PID_D_GAIN / BID_OFFER_SLOPE_LONG_SHORT_COUNT;
 
         // Update the global slope variable
         gBidOfferLongShortSlope = MaSlope;
