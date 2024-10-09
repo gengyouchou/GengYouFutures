@@ -56,6 +56,7 @@ extern std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint; // 
 DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
 
 LONG gBidOfferLongShort = 0, gTransactionListLongShort = 0, gOsTransactionListLongShort = 0;
+LONG gLongShort = 0;
 double gCostMovingAverageVal = 0;
 double gMa5 = 0;
 double gMa5LongShort = 0;
@@ -649,6 +650,8 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
     // Calculate the rate of change of the current difference (derivative term)
     double deltaDiff = LongShortDiff - PreLongShortDiff;
     PreLongShortDiff = LongShortDiff;
+
+    gLongShort += LongShortDiff + deltaDiff;
 
     // Maintain the deque size for the sample count
     if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
