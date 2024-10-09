@@ -651,7 +651,7 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
     double deltaDiff = LongShortDiff - PreLongShortDiff;
     PreLongShortDiff = LongShortDiff;
 
-    gLongShort += LongShortDiff + deltaDiff * BID_OFFER_SLOPE_LONG_SHORT_PID_D_GAIN;
+    gLongShort += LongShortDiff + static_cast<long>(deltaDiff * BID_OFFER_SLOPE_LONG_SHORT_PID_D_GAIN);
 
     if (gLongShort > 0)
     {
@@ -2637,8 +2637,8 @@ VOID StrategyCloseOneRoundTakeProfit(string strUserId, LONG MtxCommodtyInfo)
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
         }
 
-        bool PrepareToLeaveFirst = (BuySell == 0 && -gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope / 2.0) ||
-                                   (BuySell == 1 && gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope / 2.0);
+        bool PrepareToLeaveFirst = (BuySell == 0 && gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * 2.0) ||
+                                   (BuySell == 1 && -gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * 2.0);
 
         if (PrepareToLeaveFirst)
         {
@@ -3332,11 +3332,13 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         int LongShortExtremeFit = LongShortExtremeFitRate(MtxCommodtyInfo);
 
         if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
+            gLongShort > 0 &&
             LongShortExtremeFit != -1)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
         }
         else if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
+                 gLongShort < 0 &&
                  LongShortExtremeFit != 1)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
