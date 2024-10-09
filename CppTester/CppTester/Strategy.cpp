@@ -2016,35 +2016,35 @@ LONG StrategyCaluTransactionListLongShort(VOID)
     // long FOXCONNIdxNo;
     // long TSEAIdxNo;
 
-    if (gCommodtyInfo.TSMCIdxNo != 0)
+    if (gCommodtyInfo.TSMCIdxNo != -1)
     {
         long nStockidx = gCommodtyInfo.TSMCIdxNo;
 
         gTransactionListLongShort += TSMC_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
-    if (gCommodtyInfo.MediaTekIdxNo != 0)
+    if (gCommodtyInfo.MediaTekIdxNo != -1)
     {
         long nStockidx = gCommodtyInfo.MediaTekIdxNo;
 
         gTransactionListLongShort += MEDIATEK_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
-    if (gCommodtyInfo.FOXCONNIdxNo != 0)
+    if (gCommodtyInfo.FOXCONNIdxNo != -1)
     {
         long nStockidx = gCommodtyInfo.FOXCONNIdxNo;
 
         gTransactionListLongShort += FOXCONN_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
-    if (gCommodtyInfo.MTXIdxNo != 0)
+    if (gCommodtyInfo.MTXIdxNo != -1)
     {
         long nStockidx = gCommodtyInfo.MTXIdxNo;
 
         gTransactionListLongShort += TX_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
-    if (gCommodtyInfo.MTXIdxNoAM != 0)
+    if (gCommodtyInfo.MTXIdxNoAM != -1)
     {
         long nStockidx = gCommodtyInfo.MTXIdxNoAM;
 
