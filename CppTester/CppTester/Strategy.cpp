@@ -653,6 +653,15 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
 
     gLongShort += LongShortDiff + deltaDiff * BID_OFFER_SLOPE_LONG_SHORT_PID_D_GAIN;
 
+    if (gLongShort > 0)
+    {
+        gLongShort = min(gLongShort, gStrategyConfig.BidOfferLongShortThreshold);
+    }
+    else
+    {
+        gLongShort = max(gLongShort, -gStrategyConfig.BidOfferLongShortThreshold);
+    }
+
     // Maintain the deque size for the sample count
     if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
     {
