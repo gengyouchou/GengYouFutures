@@ -2020,11 +2020,11 @@ LONG StrategyCaluBidOfferLongShort(VOID)
 
     if (gBidOfferLongShort > 0)
     {
-        gBidOfferLongShort = min(gBidOfferLongShort, gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT);
+        gBidOfferLongShort = min(gBidOfferLongShort, INT_MAX);
     }
     else if (gBidOfferLongShort < 0)
     {
-        gBidOfferLongShort = max(gBidOfferLongShort, -(gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT));
+        gBidOfferLongShort = max(gBidOfferLongShort, INT_MIN);
     }
 
     return gBidOfferLongShort;
@@ -2086,11 +2086,11 @@ LONG StrategyCaluTransactionListLongShort(VOID)
 
     if (gTransactionListLongShort > 0)
     {
-        gTransactionListLongShort = min(gTransactionListLongShort, gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT);
+        gTransactionListLongShort = min(gTransactionListLongShort, INT_MAX);
     }
     else if (gTransactionListLongShort < 0)
     {
-        gTransactionListLongShort = max(gTransactionListLongShort, -(gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT));
+        gTransactionListLongShort = max(gTransactionListLongShort, INT_MIN);
     }
 
     return gTransactionListLongShort;
@@ -2118,11 +2118,11 @@ LONG StrategyCaluOsTransactionListLongShort(VOID)
 
     if (gOsTransactionListLongShort > 0)
     {
-        gOsTransactionListLongShort = min(gOsTransactionListLongShort, gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT);
+        gOsTransactionListLongShort = min(gOsTransactionListLongShort, INT_MAX);
     }
     else if (gOsTransactionListLongShort < 0)
     {
-        gOsTransactionListLongShort = max(gOsTransactionListLongShort, -(gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT));
+        gOsTransactionListLongShort = max(gOsTransactionListLongShort, INT_MIN);
     }
 
     return gOsTransactionListLongShort;
