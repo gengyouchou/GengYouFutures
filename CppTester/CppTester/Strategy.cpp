@@ -240,14 +240,14 @@ int LongShortExtremeFitRate(LONG MtxCommodtyInfo)
 
     // Strategy for going long
 
-    if (curPrice <= LongExtremeValue - gStrategyConfig.ActivePoint)
+    if (curPrice <= LongExtremeValue)
     {
         return 1;
     }
 
     // Strategy for going Short
 
-    if (curPrice >= ShortExtremeValue + gStrategyConfig.ActivePoint)
+    if (curPrice >= ShortExtremeValue)
     {
         return -1;
     }
@@ -291,10 +291,6 @@ BOOLEAN TodayAmplitudeHasBeenReached(LONG MtxCommodtyInfo)
     if (gCurCommHighLowPoint.count(MtxCommodtyInfo) == 0)
     {
         return TRUE;
-    }
-    else
-    {
-        OpenPrice = static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][2]) / 100.0;
     }
 
     double curPrice = 0;
@@ -1551,23 +1547,23 @@ LONG EstimatedTodaysAmplitude(VOID)
     {
     case 1:
     {
-        return gDayAmpAndKeyPrice.SmallestAmp;
+        return gDayAmpAndKeyPrice.SmallestAmp - gStrategyConfig.ActivePoint;
     }
     case 2:
     {
-        return gDayAmpAndKeyPrice.SmallAmp;
+        return gDayAmpAndKeyPrice.SmallAmp - gStrategyConfig.ActivePoint;
     }
     case 3:
     {
-        return gDayAmpAndKeyPrice.AvgAmp;
+        return gDayAmpAndKeyPrice.AvgAmp - gStrategyConfig.ActivePoint;
     }
     case 4:
     {
-        return gDayAmpAndKeyPrice.LargerAmp;
+        return gDayAmpAndKeyPrice.LargerAmp - gStrategyConfig.ActivePoint;
     }
     case 5:
     {
-        return gDayAmpAndKeyPrice.LargestAmp;
+        return gDayAmpAndKeyPrice.LargestAmp - gStrategyConfig.ActivePoint;
     }
 
     default:
@@ -3323,6 +3319,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         StrategyCloseOneRoundTakeProfit(g_strUserId, MtxCommodtyInfo);
+        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 33);
 
         gEvaluatePosition = EvaluateTheMaximumPosition(MtxCommodtyInfo);
 
