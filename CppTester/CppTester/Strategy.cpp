@@ -3337,7 +3337,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
         }
         else if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
-                 gLongShort <= gStrategyConfig.BidOfferLongShortThreshold &&
+                 -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold &&
                  gMa5LongShort > -MAXIMUM_5MA_BIAS_RATIO)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
