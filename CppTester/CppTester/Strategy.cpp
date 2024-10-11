@@ -3330,18 +3330,14 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             break;
         }
 
-        int LongShortExtremeFit = LongShortExtremeFitRate(MtxCommodtyInfo);
-
         if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
             gLongShort > 0 &&
-            LongShortExtremeFit != -1 &&
             gMa5LongShort < MAXIMUM_5MA_BIAS_RATIO)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
         }
         else if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
                  gLongShort < 0 &&
-                 LongShortExtremeFit != 1 &&
                  gMa5LongShort > -MAXIMUM_5MA_BIAS_RATIO)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
