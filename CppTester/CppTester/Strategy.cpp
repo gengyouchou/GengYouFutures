@@ -3107,9 +3107,6 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
             gOpenInterestInfo.openPosition += 1;
             gOpenInterestInfo.avgCost = curPrice;
         }
-
-        LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, BidOfferLongShortSlope: %f",
-            curPrice, gCostMovingAverageVal, CurAvg, gBidOfferLongShortSlope);
     }
 
     // Do Short
@@ -3134,10 +3131,10 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
             gOpenInterestInfo.openPosition -= 1;
             gOpenInterestInfo.avgCost = curPrice;
         }
-
-        LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, BidOfferLongShortSlope: %f",
-            curPrice, gCostMovingAverageVal, CurAvg, gBidOfferLongShortSlope);
     }
+
+    LOG(DEBUG_LEVEL_INFO, "New position: %ld, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, BidOfferLongShortSlope: %f, LongShort: %ld",
+        gOpenInterestInfo.openPosition, curPrice, gCostMovingAverageVal, CurAvg, gBidOfferLongShortSlope, gLongShort);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
