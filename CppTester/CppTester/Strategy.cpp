@@ -2637,10 +2637,10 @@ VOID StrategyCloseOneRoundTakeProfit(string strUserId, LONG MtxCommodtyInfo)
 
         bool PrepareToLeaveFirst = (BuySell == 0 &&
                                     gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * 2.0 &&
-                                    gMa5LongShort > MAXIMUM_5MA_BIAS_RATIO) ||
+                                    gMa5LongShort > MAXIMUM_5MA_BIAS_RATIO * 2.0) ||
                                    (BuySell == 1 &&
                                     -gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * 2.0 &&
-                                    gMa5LongShort < -MAXIMUM_5MA_BIAS_RATIO);
+                                    gMa5LongShort < -MAXIMUM_5MA_BIAS_RATIO * 2.0);
 
         if (PrepareToLeaveFirst)
         {
