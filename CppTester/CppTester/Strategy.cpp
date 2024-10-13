@@ -1061,6 +1061,8 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
         NewClose = ORDER_CLOSE_POSITION;
     }
 
+    gFloatingProfitLoss += gOpenInterestInfo.profitAndLoss;
+
     long g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
                                                 false, // bAsyncOrder
                                                 ProductNum,
