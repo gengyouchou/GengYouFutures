@@ -11,9 +11,9 @@ REM 设置 Visual Studio 环境变量
 REM 根据你的 Visual Studio 版本和安装路径修改路径
 
 REM 设置编译器路径
-set "VS_VERSION=2019"
-set "VS_PATH=C:\Program Files (x86)\Microsoft Visual Studio\%VS_VERSION%\VC\Auxiliary\Build"
-set "COMMUNITY_PATH=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build"
+set "VS_VERSION=2022"
+set "VS_PATH=C:\Program Files\Microsoft Visual Studio\%VS_VERSION%\VC\Auxiliary\Build"
+set "COMMUNITY_PATH=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build"
 
 REM 确定 MSVC 版本号（需要根据实际安装的版本号进行调整）
 set "MSVC_VERSION=14.29.30133"
