@@ -681,10 +681,6 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
         double deltaY = dqSlop.back() - dqSlop.front();
         double MaSlope = deltaY / BID_OFFER_SLOPE_LONG_SHORT_COUNT;
 
-        // Adjust slope using PID derivative term to speed up the response
-        MaSlope += deltaDiff * BID_OFFER_SLOPE_LONG_SHORT_PID_D_GAIN / BID_OFFER_SLOPE_LONG_SHORT_COUNT;
-
-        // Update the global slope variable
         gBidOfferLongShortSlope = MaSlope;
     }
 
