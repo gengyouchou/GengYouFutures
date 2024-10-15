@@ -612,43 +612,59 @@ int CountOsNQ20MaForNewLongShortPosition(LONG nStockidx)
     return -1; // No action, return -1
 }
 /**
- * @brief Calculate the slope of the long-short position from bid-offer and transaction data.
+ * @brief Calculate the slope of the long-short position using bid-offer and transaction data.
  *
- * This function calculates and monitors the trend of long-short positions
- * from the bid-offer and transaction list. It updates the global variable
- * gBidOfferLongShortSlope based on the computed slope.
- * It uses a deque to maintain the most recent data points and smooths the
- * data using a moving average (MA).
- * The function also incorporates the derivative term from PID control
- * to speed up the response of the MA slope to changes.
+ * This function calculates the long-short position slope based on the difference in
+ * long-short positions from bid-offer and transaction data. It uses a moving average (MA)
+ * to smooth the position values and incorporates a PID control-inspired derivative term
+ * to enhance responsiveness to rapid changes in the position data. The smoothed difference
+ * (delta) is calculated and applied to adjust the overall long-short trend.
  *
- * @note This function depends on StrategyCaluLongShort() to get the current
- *       long-short position and calculates the slope based on a fixed sample
- *       size (BID_OFFER_SLOPE_LONG_SHORT_COUNT).
+ * @note This function updates the global variable `gBidOfferLongShortSlope` to reflect
+ *       the slope of long-short positions.
+ *
+ * The global long-short position (`gLongShort`) is bounded between predefined thresholds
+ * to avoid extreme values, and the slope is computed using a deque to store a set of recent
+ * data points, which helps in calculating a moving average slope.
+ *
+ * The function also smooths the derivative term using a weighted average, which mitigates
+ * the impact of noise or short-term fluctuations on the slope calculation.
  *
  * @return VOID
  */
 VOID BidOfferAndTransactionListLongShortSlope(VOID)
 {
+    // Store the previous long-short value for calculating the difference
     static LONG PreLongShort = 0;
-    static std::deque<double> dq, dqSlop;
-    static double PreMa = 0;
 
-    // Get the current long-short value
+    // Deques to store recent values for calculating moving average (MA) and slope
+    static std::deque<double> dq, dqSlop;
+
+    // Store the previous moving average difference (used in smoothing)
+    static double PreMaDiff = 0;
+
+    // Get the current long-short position by invoking a custom function
     LONG CurLongShort = StrategyCaluLongShort();
 
-    static double PreLongShortDiff = 0; // To store the previous long-short difference
+    // Variable to store the previous long-short difference (used in calculating delta)
+    static double PreLongShortDiff = 0;
 
-    // Calculate the current long-short difference
+    // Calculate the difference between current and previous long-short values
     LONG LongShortDiff = CurLongShort - PreLongShort;
     PreLongShort = CurLongShort;
 
-    // Calculate the rate of change of the current difference (derivative term)
+    // Calculate the rate of change (derivative term) for the long-short difference
     double deltaDiff = LongShortDiff - PreLongShortDiff;
     PreLongShortDiff = LongShortDiff;
 
-    gLongShort += LongShortDiff + static_cast<long>(deltaDiff * BID_OFFER_SLOPE_LONG_SHORT_PID_D_GAIN);
+    // Smooth the derivative term using a weighted average of current and previous difference
+    double SmoothedDiff = 0.8 * deltaDiff + 0.2 * PreMaDiff;
+    PreMaDiff = SmoothedDiff; // Store the smoothed derivative term for future use
 
+    // Update the global long-short position with the smoothed difference
+    gLongShort += LongShortDiff + static_cast<long>(SmoothedDiff * BID_OFFER_SLOPE_LONG_SHORT_PID_D_GAIN);
+
+    // Bound the global long-short position between predefined thresholds to avoid extreme values
     if (gLongShort > 0)
     {
         gLongShort = min(gLongShort, gStrategyConfig.BidOfferLongShortThreshold * 2);
@@ -658,29 +674,31 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
         gLongShort = max(gLongShort, -gStrategyConfig.BidOfferLongShortThreshold * 2);
     }
 
-    // Maintain the deque size for the sample count
+    // Manage the size of the deque to store the recent long-short values for moving average calculation
     if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
     {
         dq.pop_front(); // Remove the oldest value
     }
-    dq.push_back(CurLongShort); // Add the current value
+    dq.push_back(CurLongShort); // Add the current long-short value
 
+    // Ensure the deque has enough values to calculate the moving average and slope
     if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
     {
-        // Calculate the moving average
+        // Calculate the moving average of the deque
         double ma = calculate5MA(dq);
 
-        // Maintain the deque for the moving average
+        // Maintain a deque for the moving average values to compute the slope
         if (dqSlop.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
         {
-            dqSlop.pop_front(); // Remove the oldest
+            dqSlop.pop_front(); // Remove the oldest MA value
         }
-        dqSlop.push_back(ma);
+        dqSlop.push_back(ma); // Add the new MA value
 
-        // Calculate the slope
+        // Calculate the slope based on the difference between the first and last values in the deque
         double deltaY = dqSlop.back() - dqSlop.front();
         double MaSlope = deltaY / BID_OFFER_SLOPE_LONG_SHORT_COUNT;
 
+        // Update the global variable that tracks the bid-offer long-short slope
         gBidOfferLongShortSlope = MaSlope;
     }
 
