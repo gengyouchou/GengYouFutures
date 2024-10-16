@@ -102,3 +102,4 @@ void updateHighLowPoints(const std::string &date, double dayHigh, double dayLow,
 
 extern std::unordered_map<long, std::array<long, 6>> gTransactionList;
 // long nPtr, long nBid, long nAsk, long nClose, long nQty
+extern vector<pair<string, long>> gLeadingCommodtyInfo;

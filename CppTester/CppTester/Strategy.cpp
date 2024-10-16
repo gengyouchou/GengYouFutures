@@ -2098,6 +2098,14 @@ LONG StrategyCaluTransactionListLongShort(VOID)
         gTransactionListLongShort += TX_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
+    for (int i = 0; i < gLeadingCommodtyInfo.size(); ++i)
+    {
+        long nStockidx = gLeadingCommodtyInfo[i].second;
+        DEBUG(DEBUG_LEVEL_DEBUG, "LeadingCommodtyInfo[i].second=%ld", gLeadingCommodtyInfo[i].second);
+
+        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+    }
+
     LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gTransactionListLongShort);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");

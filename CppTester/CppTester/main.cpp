@@ -304,6 +304,9 @@ void thread_main()
     res = pSKQuoteLib->GetMarketBuySellUpDown();
     DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
 
+    gLeadingCommodtyInfo.push_back({"2382", -1});
+    gLeadingCommodtyInfo.push_back({"3661", -1});
+
     pSKQuoteLib->GetCommodityIdx();
 
     pSKOsQuoteLib->GetCommodityIdx();
@@ -319,6 +322,11 @@ void thread_main()
     AutoQuoteTicks(TSMC, -1);
     AutoQuoteTicks(MEDIATEK, -1);
     AutoQuoteTicks(FOXCONN, -1);
+
+    for (int i = 0; i < gLeadingCommodtyInfo.size(); ++i)
+    {
+        AutoQuoteTicks(gLeadingCommodtyInfo[i].first, -1);
+    }
 
     // For calculate 5MA
     AutoQuoteTicks(COMMODITY_TX_MAIN, -1);

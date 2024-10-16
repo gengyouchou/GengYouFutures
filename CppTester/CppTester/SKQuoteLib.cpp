@@ -28,6 +28,7 @@ std::unordered_map<long, std::array<long, 6>> gTransactionList;
 SHORT gCurServerTime[3] = {-1, -1, -1};
 
 COMMODITY_INFO gCommodtyInfo = {-1, -1, -1, -1, -1};
+vector<pair<string, long>> gLeadingCommodtyInfo;
 
 long CalculateDiff(const std::string &data);
 void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate, IN long lTimehms);
@@ -490,6 +491,15 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
     gCommodtyInfo.TSEAIdxNo = TSEAIdxNo;
     gCommodtyInfo.TSMCIdxNo = TSMCIdxNo;
     gCommodtyInfo.MediaTekIdxNo = MediaTekIdxNo;
+
+    for (int i = 0; i < gLeadingCommodtyInfo.size(); ++i)
+    {
+        res = RequestStockIndexMap(gLeadingCommodtyInfo[i].first, &skStock);
+
+        gLeadingCommodtyInfo[i].second = skStock.nStockIdx;
+
+        DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, gLeadingCommodtyInfo[i].second=%d", res, gLeadingCommodtyInfo[i].second);
+    }
 }
 
 // Events
