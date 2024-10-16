@@ -2103,7 +2103,7 @@ LONG StrategyCaluTransactionListLongShort(VOID)
         long nStockidx = gLeadingCommodtyInfo[i].second;
         DEBUG(DEBUG_LEVEL_DEBUG, "LeadingCommodtyInfo[i].second=%ld", gLeadingCommodtyInfo[i].second);
 
-        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+        gTransactionListLongShort += LEADING_STOCKS_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
     LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gTransactionListLongShort);
