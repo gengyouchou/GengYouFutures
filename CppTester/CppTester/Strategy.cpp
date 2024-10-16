@@ -679,7 +679,7 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
     {
         dq.pop_front(); // Remove the oldest value
     }
-    dq.push_back(CurLongShort); // Add the current long-short value
+    dq.push_back(gLongShort); // Add the current long-short value
 
     // Ensure the deque has enough values to calculate the moving average and slope
     if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
