@@ -1800,7 +1800,6 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
                 if (totalOffer * 3 <= totalBid * 2)
                 {
-                    countShort -= nQty;
 
                     if (nQty >= BIG_ORDER)
                     {
@@ -1813,8 +1812,6 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                     if (AvgBid * 3 < gBest5BidOffer[nStockidx][i].second)
                     {
                         // Find unusual pending big Bid orders
-
-                        countShort -= nQty;
 
                         if (nQty >= BIG_ORDER)
                         {
@@ -1833,7 +1830,6 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
                 if (totalBid * 3 <= totalOffer * 2)
                 {
-                    countLong += nQty;
 
                     if (nQty >= BIG_ORDER)
                     {
@@ -1846,8 +1842,6 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                     if (AvgOffer * 3 < gBest5BidOffer[nStockidx][i].second)
                     {
                         // Find unusual pending big Offer orders
-
-                        countLong += nQty;
 
                         if (nQty >= BIG_ORDER)
                         {
