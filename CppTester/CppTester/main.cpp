@@ -306,6 +306,7 @@ void thread_main()
 
     gLeadingCommodtyInfo.push_back({"2382", -1});
     gLeadingCommodtyInfo.push_back({"3661", -1});
+    gLeadingCommodtyInfo.push_back({"3443", -1});
 
     pSKQuoteLib->GetCommodityIdx();
 
