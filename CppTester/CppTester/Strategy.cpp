@@ -667,11 +667,11 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
     // Bound the global long-short position between predefined thresholds to avoid extreme values
     if (gLongShort > 0)
     {
-        gLongShort = min(gLongShort, INT_MAX);
+        gLongShort = min(gLongShort, gStrategyConfig.BidOfferLongShortThreshold * 2);
     }
     else
     {
-        gLongShort = max(gLongShort, INT_MIN);
+        gLongShort = max(gLongShort, -gStrategyConfig.BidOfferLongShortThreshold * 2);
     }
 
     // Manage the size of the deque to store the recent long-short values for moving average calculation
