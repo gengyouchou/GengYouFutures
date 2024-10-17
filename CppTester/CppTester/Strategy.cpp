@@ -3149,8 +3149,8 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
         }
     }
 
-    LOG(DEBUG_LEVEL_INFO, "New position: %ld, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, BidOfferLongShortSlope: %f, LongShort: %ld",
-        gOpenInterestInfo.openPosition, curPrice, gCostMovingAverageVal, CurAvg, gBidOfferLongShortSlope, gLongShort);
+    LOG(DEBUG_LEVEL_INFO, "New position: %ld, curPrice = %f, Ma5LongShort= %f, BidOfferLongShortSlope: %f, LongShort: %ld",
+        gOpenInterestInfo.openPosition, curPrice, gMa5LongShort, gBidOfferLongShortSlope, gLongShort);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
