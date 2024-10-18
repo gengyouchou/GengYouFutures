@@ -56,6 +56,7 @@ extern std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint; // 
 DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice = {0};
 
 LONG gBidOfferLongShort = 0, gTransactionListLongShort = 0, gOsTransactionListLongShort = 0;
+LONG gLongShort = 0;
 double gCostMovingAverageVal = 0;
 double gMa5 = 0;
 double gMa5LongShort = 0;
@@ -240,14 +241,14 @@ int LongShortExtremeFitRate(LONG MtxCommodtyInfo)
 
     // Strategy for going long
 
-    if (curPrice <= LongExtremeValue - gStrategyConfig.ActivePoint)
+    if (curPrice <= LongExtremeValue)
     {
         return 1;
     }
 
     // Strategy for going Short
 
-    if (curPrice >= ShortExtremeValue + gStrategyConfig.ActivePoint)
+    if (curPrice >= ShortExtremeValue)
     {
         return -1;
     }
@@ -291,10 +292,6 @@ BOOLEAN TodayAmplitudeHasBeenReached(LONG MtxCommodtyInfo)
     if (gCurCommHighLowPoint.count(MtxCommodtyInfo) == 0)
     {
         return TRUE;
-    }
-    else
-    {
-        OpenPrice = static_cast<double>(gCurCommHighLowPoint[MtxCommodtyInfo][2]) / 100.0;
     }
 
     double curPrice = 0;
@@ -615,40 +612,95 @@ int CountOsNQ20MaForNewLongShortPosition(LONG nStockidx)
 
     return -1; // No action, return -1
 }
-
+/**
+ * @brief Calculate the slope of the long-short position using bid-offer and transaction data.
+ *
+ * This function calculates the long-short position slope based on the difference in
+ * long-short positions from bid-offer and transaction data. It uses a moving average (MA)
+ * to smooth the position values and incorporates a PID control-inspired derivative term
+ * to enhance responsiveness to rapid changes in the position data. The smoothed difference
+ * (delta) is calculated and applied to adjust the overall long-short trend.
+ *
+ * @note This function updates the global variable `gBidOfferLongShortSlope` to reflect
+ *       the slope of long-short positions.
+ *
+ * The global long-short position (`gLongShort`) is bounded between predefined thresholds
+ * to avoid extreme values, and the slope is computed using a deque to store a set of recent
+ * data points, which helps in calculating a moving average slope.
+ *
+ * The function also smooths the derivative term using a weighted average, which mitigates
+ * the impact of noise or short-term fluctuations on the slope calculation.
+ *
+ * @return VOID
+ */
 VOID BidOfferAndTransactionListLongShortSlope(VOID)
 {
+    // Store the previous long-short value for calculating the difference
     static LONG PreLongShort = 0;
-    static std::deque<double> dq;
-    static double PreMa = 0;
 
+    // Deques to store recent values for calculating moving average (MA) and slope
+    static std::deque<double> dq, dqSlop;
+
+    // Store the previous moving average difference (used in smoothing)
+    static double PreMaDiff = 0;
+
+    // Get the current long-short position by invoking a custom function
     LONG CurLongShort = StrategyCaluLongShort();
 
-    LONG LongShortDiff = CurLongShort - PreLongShort;
+    // Variable to store the previous long-short difference (used in calculating delta)
+    static double PreLongShortDiff = 0;
 
+    // Calculate the difference between current and previous long-short values
+    LONG LongShortDiff = CurLongShort - PreLongShort;
     PreLongShort = CurLongShort;
 
-    if (LongShortDiff != 0)
+    // Calculate the rate of change (derivative term) for the long-short difference
+    double deltaDiff = LongShortDiff - PreLongShortDiff;
+    PreLongShortDiff = LongShortDiff;
+
+    // Smooth the derivative term using a weighted average of current and previous difference
+    double SmoothedDiff = 0.8 * deltaDiff + 0.2 * PreMaDiff;
+    PreMaDiff = SmoothedDiff; // Store the smoothed derivative term for future use
+
+    // Update the global long-short position with the smoothed difference
+    gLongShort += LongShortDiff + static_cast<long>(SmoothedDiff * BID_OFFER_SLOPE_LONG_SHORT_PID_D_GAIN);
+
+    // Bound the global long-short position between predefined thresholds to avoid extreme values
+    if (gLongShort > 0)
     {
-        if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
-        {
-            dq.pop_front(); // Remove the oldest
-        }
-        dq.push_back(CurLongShort);
+        gLongShort = min(gLongShort, gStrategyConfig.BidOfferLongShortThreshold * 2);
+    }
+    else
+    {
+        gLongShort = max(gLongShort, -gStrategyConfig.BidOfferLongShortThreshold * 2);
+    }
 
-        if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
-        {
-            double ma = calculate5MA(dq);
+    // Manage the size of the deque to store the recent long-short values for moving average calculation
+    if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
+    {
+        dq.pop_front(); // Remove the oldest value
+    }
+    dq.push_back(gLongShort); // Add the current long-short value
 
-            double MaSlope = ma - PreMa;
-            PreMa = ma;
+    // Ensure the deque has enough values to calculate the moving average and slope
+    if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
+    {
+        // Calculate the moving average of the deque
+        double ma = calculate5MA(dq);
 
-            gBidOfferLongShortSlope = MaSlope;
-        }
-        else
+        // Maintain a deque for the moving average values to compute the slope
+        if (dqSlop.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
         {
-            PreMa = calculate5MA(dq);
+            dqSlop.pop_front(); // Remove the oldest MA value
         }
+        dqSlop.push_back(ma); // Add the new MA value
+
+        // Calculate the slope based on the difference between the first and last values in the deque
+        double deltaY = dqSlop.back() - dqSlop.front();
+        double MaSlope = deltaY / BID_OFFER_SLOPE_LONG_SHORT_COUNT;
+
+        // Update the global variable that tracks the bid-offer long-short slope
+        gBidOfferLongShortSlope = MaSlope;
     }
 
     return;
@@ -1024,6 +1076,8 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
         NewClose = ORDER_CLOSE_POSITION;
     }
 
+    gFloatingProfitLoss += gOpenInterestInfo.profitAndLoss;
+
     long g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
                                                 false, // bAsyncOrder
                                                 ProductNum,
@@ -1108,7 +1162,7 @@ VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo)
             LOG(DEBUG_LEVEL_INFO, "STOP Loss at curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
                 curPrice, gOpenInterestInfo.avgCost, profitAndLoss);
 
-            vector<string> vec = {COMMODITY_MAIN, COMMODITY_OTHER};
+            vector<string> vec = {COMMODITY_TX_MAIN, COMMODITY_OTHER};
 
             for (auto &x : vec)
             {
@@ -1172,7 +1226,7 @@ VOID StrategyTakeFuturesProfit(string strUserId, LONG MtxCommodtyInfo)
             LOG(DEBUG_LEVEL_INFO, "Take profit at curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
                 curPrice, gOpenInterestInfo.avgCost, gOpenInterestInfo.profitAndLoss);
 
-            vector<string> vec = {COMMODITY_MAIN, COMMODITY_OTHER};
+            vector<string> vec = {COMMODITY_TX_MAIN, COMMODITY_OTHER};
 
             for (auto &x : vec)
             {
@@ -1510,23 +1564,23 @@ LONG EstimatedTodaysAmplitude(VOID)
     {
     case 1:
     {
-        return gDayAmpAndKeyPrice.SmallestAmp;
+        return gDayAmpAndKeyPrice.SmallestAmp - gStrategyConfig.ActivePoint;
     }
     case 2:
     {
-        return gDayAmpAndKeyPrice.SmallAmp;
+        return gDayAmpAndKeyPrice.SmallAmp - gStrategyConfig.ActivePoint;
     }
     case 3:
     {
-        return gDayAmpAndKeyPrice.AvgAmp;
+        return gDayAmpAndKeyPrice.AvgAmp - gStrategyConfig.ActivePoint;
     }
     case 4:
     {
-        return gDayAmpAndKeyPrice.LargerAmp;
+        return gDayAmpAndKeyPrice.LargerAmp - gStrategyConfig.ActivePoint;
     }
     case 5:
     {
-        return gDayAmpAndKeyPrice.LargestAmp;
+        return gDayAmpAndKeyPrice.LargestAmp - gStrategyConfig.ActivePoint;
     }
 
     default:
@@ -1747,7 +1801,6 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
                 if (totalOffer * 3 <= totalBid * 2)
                 {
-                    countShort -= nQty;
 
                     if (nQty >= BIG_ORDER)
                     {
@@ -1760,8 +1813,6 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                     if (AvgBid * 3 < gBest5BidOffer[nStockidx][i].second)
                     {
                         // Find unusual pending big Bid orders
-
-                        countShort -= nQty;
 
                         if (nQty >= BIG_ORDER)
                         {
@@ -1780,7 +1831,6 @@ LONG CountBidOfferLongShort(LONG nStockidx)
 
                 if (totalBid * 3 <= totalOffer * 2)
                 {
-                    countLong += nQty;
 
                     if (nQty >= BIG_ORDER)
                     {
@@ -1793,8 +1843,6 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                     if (AvgOffer * 3 < gBest5BidOffer[nStockidx][i].second)
                     {
                         // Find unusual pending big Offer orders
-
-                        countLong += nQty;
 
                         if (nQty >= BIG_ORDER)
                         {
@@ -1991,11 +2039,11 @@ LONG StrategyCaluBidOfferLongShort(VOID)
 
     if (gBidOfferLongShort > 0)
     {
-        gBidOfferLongShort = min(gBidOfferLongShort, gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT);
+        gBidOfferLongShort = min(gBidOfferLongShort, INT_MAX);
     }
     else if (gBidOfferLongShort < 0)
     {
-        gBidOfferLongShort = max(gBidOfferLongShort, -(gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT));
+        gBidOfferLongShort = max(gBidOfferLongShort, INT_MIN);
     }
 
     return gBidOfferLongShort;
@@ -2016,39 +2064,47 @@ LONG StrategyCaluTransactionListLongShort(VOID)
     // long FOXCONNIdxNo;
     // long TSEAIdxNo;
 
-    if (gCommodtyInfo.TSMCIdxNo != 0)
+    if (gCommodtyInfo.TSMCIdxNo != -1)
     {
         long nStockidx = gCommodtyInfo.TSMCIdxNo;
 
-        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+        gTransactionListLongShort += TSMC_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
-    if (gCommodtyInfo.MediaTekIdxNo != 0)
+    if (gCommodtyInfo.MediaTekIdxNo != -1)
     {
         long nStockidx = gCommodtyInfo.MediaTekIdxNo;
 
-        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+        gTransactionListLongShort += MEDIATEK_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
-    if (gCommodtyInfo.FOXCONNIdxNo != 0)
+    if (gCommodtyInfo.FOXCONNIdxNo != -1)
     {
         long nStockidx = gCommodtyInfo.FOXCONNIdxNo;
 
-        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+        gTransactionListLongShort += FOXCONN_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
-    if (gCommodtyInfo.MTXIdxNo != 0)
+    if (gCommodtyInfo.MTXIdxNo != -1)
     {
         long nStockidx = gCommodtyInfo.MTXIdxNo;
 
-        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+        gTransactionListLongShort += TX_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
-    if (gCommodtyInfo.MTXIdxNoAM != 0)
+    if (gCommodtyInfo.MTXIdxNoAM != -1)
     {
         long nStockidx = gCommodtyInfo.MTXIdxNoAM;
 
-        gTransactionListLongShort += CountTransactionListLongShort(nStockidx);
+        gTransactionListLongShort += TX_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
+    }
+
+    for (int i = 0; i < gLeadingCommodtyInfo.size(); ++i)
+    {
+        long nStockidx = gLeadingCommodtyInfo[i].second;
+        DEBUG(DEBUG_LEVEL_DEBUG, "LeadingCommodtyInfo[i].second=%ld", gLeadingCommodtyInfo[i].second);
+
+        gTransactionListLongShort += LEADING_STOCKS_BID_OFFER_WEIGHT_RATIO * CountTransactionListLongShort(nStockidx);
     }
 
     LOG(DEBUG_LEVEL_DEBUG, "LongShort = %ld", gTransactionListLongShort);
@@ -2057,11 +2113,11 @@ LONG StrategyCaluTransactionListLongShort(VOID)
 
     if (gTransactionListLongShort > 0)
     {
-        gTransactionListLongShort = min(gTransactionListLongShort, gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT);
+        gTransactionListLongShort = min(gTransactionListLongShort, INT_MAX);
     }
     else if (gTransactionListLongShort < 0)
     {
-        gTransactionListLongShort = max(gTransactionListLongShort, -(gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT));
+        gTransactionListLongShort = max(gTransactionListLongShort, INT_MIN);
     }
 
     return gTransactionListLongShort;
@@ -2089,11 +2145,11 @@ LONG StrategyCaluOsTransactionListLongShort(VOID)
 
     if (gOsTransactionListLongShort > 0)
     {
-        gOsTransactionListLongShort = min(gOsTransactionListLongShort, gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT);
+        gOsTransactionListLongShort = min(gOsTransactionListLongShort, INT_MAX);
     }
     else if (gOsTransactionListLongShort < 0)
     {
-        gOsTransactionListLongShort = max(gOsTransactionListLongShort, -(gStrategyConfig.BidOfferLongShortThreshold * LONG_AND_SHORT_TARGET_COUNT));
+        gOsTransactionListLongShort = max(gOsTransactionListLongShort, INT_MIN);
     }
 
     return gOsTransactionListLongShort;
@@ -2596,8 +2652,12 @@ VOID StrategyCloseOneRoundTakeProfit(string strUserId, LONG MtxCommodtyInfo)
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
         }
 
-        bool PrepareToLeaveFirst = (BuySell == 0 && -gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope / 2.0) ||
-                                   (BuySell == 1 && gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope / 2.0);
+        bool PrepareToLeaveFirst = (BuySell == 0 &&
+                                    gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * 2.0 &&
+                                    gMa5LongShort > MAXIMUM_5MA_BIAS_RATIO * 2.0) ||
+                                   (BuySell == 1 &&
+                                    -gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * 2.0 &&
+                                    gMa5LongShort < -MAXIMUM_5MA_BIAS_RATIO * 2.0);
 
         if (PrepareToLeaveFirst)
         {
@@ -3064,9 +3124,6 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
             gOpenInterestInfo.openPosition += 1;
             gOpenInterestInfo.avgCost = curPrice;
         }
-
-        LOG(DEBUG_LEVEL_INFO, "New Long position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, BidOfferLongShortSlope: %f",
-            curPrice, gCostMovingAverageVal, CurAvg, gBidOfferLongShortSlope);
     }
 
     // Do Short
@@ -3091,10 +3148,10 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
             gOpenInterestInfo.openPosition -= 1;
             gOpenInterestInfo.avgCost = curPrice;
         }
-
-        LOG(DEBUG_LEVEL_INFO, "New Short position, curPrice = %f, gCostMovingAverageVal= %f, CurAvg= %f, BidOfferLongShortSlope: %f",
-            curPrice, gCostMovingAverageVal, CurAvg, gBidOfferLongShortSlope);
     }
+
+    LOG(DEBUG_LEVEL_INFO, "New position: %ld, curPrice = %f, Ma5LongShort= %f, BidOfferLongShortSlope: %f, LongShort: %ld",
+        gOpenInterestInfo.openPosition, curPrice, gMa5LongShort, gBidOfferLongShortSlope, gLongShort);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
@@ -3278,6 +3335,9 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         StrategyCloseOneRoundTakeProfit(g_strUserId, MtxCommodtyInfo);
+        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 33);
+
+        gEvaluatePosition = EvaluateTheMaximumPosition(MtxCommodtyInfo);
 
         BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
 
@@ -3286,17 +3346,15 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             break;
         }
 
-        int LongShortExtremeFit = LongShortExtremeFitRate(MtxCommodtyInfo);
-
         if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
-            gMa5LongShort > 0 &&
-            LongShortExtremeFit != -1)
+            gLongShort >= gStrategyConfig.BidOfferLongShortThreshold &&
+            gMa5LongShort < -TURNING_EXTREME_5MA_BIAS_RATIO)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
         }
         else if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
-                 gMa5LongShort < 0 &&
-                 LongShortExtremeFit != 1)
+                 -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold &&
+                 gMa5LongShort > TURNING_EXTREME_5MA_BIAS_RATIO)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
         }

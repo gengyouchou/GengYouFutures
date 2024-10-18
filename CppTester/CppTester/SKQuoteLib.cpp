@@ -28,11 +28,11 @@ std::unordered_map<long, std::array<long, 6>> gTransactionList;
 SHORT gCurServerTime[3] = {-1, -1, -1};
 
 COMMODITY_INFO gCommodtyInfo = {-1, -1, -1, -1, -1};
+vector<pair<string, long>> gLeadingCommodtyInfo;
 
 long CalculateDiff(const std::string &data);
 void CaluCurCommHighLowPoint(IN long nStockIndex, IN long nClose, IN long nSimulate, IN long lTimehms);
 void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate);
-void parseAndProcessData(const string &data);
 void ProcessDaysOrNightCommHighLowPoint();
 
 CSKQuoteLib::CSKQuoteLib()
@@ -415,6 +415,10 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
             // Update the points and save back to the file
             updateHighLowPoints(yesterday, -1, -1, PreHigh, PreLow);
         }
+        else
+        {
+            DEBUG(DEBUG_LEVEL_INFO, "gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo)=0");
+        }
 
         for (const auto &entry : gDaysCommHighLowPoint) // need ordered by date  from the past to the present
         {
@@ -450,6 +454,10 @@ void CSKQuoteLib::ProcessDaysOrNightCommHighLowPoint()
             // Update the points and save back to the file
             updateHighLowPoints(yesterday, PreHigh, PreLow, -1, -1);
         }
+        else
+        {
+            DEBUG(DEBUG_LEVEL_INFO, "gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM)=0");
+        }
 
         for (const auto &entry : gDaysNightAllCommHighLowPoint) // need ordered by date  from the past to the present
         {
@@ -478,7 +486,7 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
     std::string CommList;
 
     std::ostringstream oss;
-    oss << COMMODITY_MAIN << "AM";
+    oss << COMMODITY_TX_MAIN << "AM";
     CommList = oss.str();
 
     long res = RequestStockIndexMap(CommList, &skStock);
@@ -487,7 +495,7 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
 
     DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, MTXIdxNoAM=%d", res, MTXIdxNoAM);
 
-    res = RequestStockIndexMap(COMMODITY_MAIN, &skStock);
+    res = RequestStockIndexMap(COMMODITY_TX_MAIN, &skStock);
 
     MTXIdxNo = skStock.nStockIdx;
 
@@ -522,6 +530,15 @@ VOID CSKQuoteLib::GetCommodityIdx(VOID)
     gCommodtyInfo.TSEAIdxNo = TSEAIdxNo;
     gCommodtyInfo.TSMCIdxNo = TSMCIdxNo;
     gCommodtyInfo.MediaTekIdxNo = MediaTekIdxNo;
+
+    for (int i = 0; i < gLeadingCommodtyInfo.size(); ++i)
+    {
+        res = RequestStockIndexMap(gLeadingCommodtyInfo[i].first, &skStock);
+
+        gLeadingCommodtyInfo[i].second = skStock.nStockIdx;
+
+        DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%d, gLeadingCommodtyInfo[i].second=%d", res, gLeadingCommodtyInfo[i].second);
+    }
 }
 
 // Events
@@ -775,8 +792,6 @@ void CSKQuoteLib::OnNotifyKLineData(BSTR bstrStockNo, BSTR bstrData)
 
     DEBUG(DEBUG_LEVEL_DEBUG, "strData= %s", strData);
 
-    // parseAndProcessData(strData);
-
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
 
@@ -915,93 +930,6 @@ void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate)
     }
 
     gCurCommPrice[nStockIndex] = nClose;
-}
-
-/**
- * @brief Splits the given trading data into day and night sessions and records the highest and lowest prices.
- *
- * @param datetime The datetime string in "YYYY/MM/DD HH:MM" format.
- * @param openPrice The opening price.
- * @param highPrice The highest price.
- * @param lowPrice The lowest price.
- * @param closePrice The closing price.
- * @param volume The trading volume.
- */
-void processTradingData(const string &datetime, double openPrice, double highPrice, double lowPrice, double closePrice, int volume)
-{
-
-    DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
-
-    // Extract the date and time from the datetime string
-    string date = datetime.substr(0, 10);
-    string time = datetime.substr(11, 5);
-
-    // Convert time to hour and minute
-    int hour = stoi(time.substr(0, 2));
-    int minute = stoi(time.substr(3, 2));
-
-    if ((hour == 8 && minute >= 45) || (hour >= 9 && hour < 13) || (hour == 13 && minute <= 45))
-    {
-        // Day session
-        if (gDaysCommHighLowPoint.count(date) == 0)
-        {
-            gDaysCommHighLowPoint[date] = {highPrice, lowPrice};
-        }
-
-        auto &entry = gDaysCommHighLowPoint[date];
-        entry.first = max(entry.first, highPrice);
-        entry.second = min(entry.second, lowPrice);
-
-        DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
-
-        DEBUG(DEBUG_LEVEL_DEBUG, "Date08_45: %s, High: %f, Low: %f",
-              date, entry.first, entry.second);
-    }
-
-    {
-        // Night session
-
-        if (gDaysNightAllCommHighLowPoint.count(date) == 0)
-        {
-            gDaysNightAllCommHighLowPoint[date] = {highPrice, lowPrice};
-        }
-
-        auto &entry = gDaysNightAllCommHighLowPoint[date];
-        entry.first = max(entry.first, highPrice);
-        entry.second = min(entry.second, lowPrice);
-
-        DEBUG(DEBUG_LEVEL_DEBUG, "datetime: %s, highPrice: %f, lowPrice: %f", datetime, highPrice, lowPrice);
-
-        DEBUG(DEBUG_LEVEL_DEBUG, "Date15_00: %s, High: %f, Low: %f",
-              date, entry.first, entry.second);
-    }
-}
-
-/**
- * @brief Parses a trading data string and processes it.
- *
- * @param data The trading data string in the format "YYYY/MM/DD HH:MM, openPrice, highPrice, lowPrice, closePrice, volume".
- */
-void parseAndProcessData(const string &data)
-{
-
-    stringstream ss(data);
-    string datetime;
-    double openPrice, highPrice, lowPrice, closePrice;
-    int volume;
-
-    getline(ss, datetime, ',');
-    ss >> openPrice;
-    ss.ignore(1); // Ignore the comma
-    ss >> highPrice;
-    ss.ignore(1); // Ignore the comma
-    ss >> lowPrice;
-    ss.ignore(1); // Ignore the comma
-    ss >> closePrice;
-    ss.ignore(1); // Ignore the comma
-    ss >> volume;
-
-    processTradingData(datetime, openPrice, highPrice, lowPrice, closePrice, volume);
 }
 
 // Function to load high/low points from database.yaml into global maps

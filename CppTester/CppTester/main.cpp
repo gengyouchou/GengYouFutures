@@ -304,6 +304,10 @@ void thread_main()
     res = pSKQuoteLib->GetMarketBuySellUpDown();
     DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->GetMarketBuySellUpDown()=%d", res);
 
+    gLeadingCommodtyInfo.push_back({"2382", -1});
+    gLeadingCommodtyInfo.push_back({"3661", -1});
+    gLeadingCommodtyInfo.push_back({"3443", -1});
+
     pSKQuoteLib->GetCommodityIdx();
 
     pSKOsQuoteLib->GetCommodityIdx();
@@ -311,7 +315,7 @@ void thread_main()
     std::string CommList;
 
     std::ostringstream oss;
-    oss << COMMODITY_MAIN << "AM" << "," << COMMODITY_MAIN << "," << "TSEA" << "," << TSMC << "," << MEDIATEK << "," << FOXCONN;
+    oss << COMMODITY_TX_MAIN << "AM" << "," << COMMODITY_TX_MAIN << "," << "TSEA" << "," << TSMC << "," << MEDIATEK << "," << FOXCONN;
     CommList = oss.str();
 
     AutoQuote(CommList, -1);
@@ -320,8 +324,13 @@ void thread_main()
     AutoQuoteTicks(MEDIATEK, -1);
     AutoQuoteTicks(FOXCONN, -1);
 
+    for (int i = 0; i < gLeadingCommodtyInfo.size(); ++i)
+    {
+        AutoQuoteTicks(gLeadingCommodtyInfo[i].first, -1);
+    }
+
     // For calculate 5MA
-    AutoQuoteTicks(COMMODITY_MAIN, -1);
+    AutoQuoteTicks(COMMODITY_TX_MAIN, -1);
     AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
 
     while (true)
@@ -477,8 +486,14 @@ void thread_main()
 
             printf("=========================================\n");
 
-            printf("BidOfferLongShortSlope: %f, StrategyCaluLongShort: %ld, BidOfferLongShort: %ld, TransactionListLongShort: %ld, OsTransactionListLongShort: %ld\n",
-                   gBidOfferLongShortSlope, StrategyCaluLongShort(), gBidOfferLongShort, gTransactionListLongShort, gOsTransactionListLongShort);
+            printf("BidOfferLongShortSlope: %f, LongShort: %ld, BidOfferLongShort: %ld, TransactionListLongShort: %ld, OsTransactionListLongShort: %ld\n",
+                   gBidOfferLongShortSlope, gLongShort, gBidOfferLongShort, gTransactionListLongShort, gOsTransactionListLongShort);
+
+            printf("=========================================\n");
+
+            AutoBest5Long(gCommodtyInfo.TSMCIdxNo, TSMC);
+            AutoBest5Long(gCommodtyInfo.FOXCONNIdxNo, FOXCONN);
+            AutoBest5Long(gCommodtyInfo.MediaTekIdxNo, MEDIATEK);
 
             printf("=========================================\n");
 
@@ -486,12 +501,6 @@ void thread_main()
             printf("            BID : [%ld]\n", gCurTaiexInfo[0x00][2]);
             printf("TPEX Total OFFER: [%ld]\n", gCurTaiexInfo[0x01][3]);
             printf("            BID : [%ld]\n", gCurTaiexInfo[0x01][2]);
-
-            printf("=========================================\n");
-
-            AutoBest5Long(gCommodtyInfo.TSMCIdxNo, TSMC);
-            AutoBest5Long(gCommodtyInfo.FOXCONNIdxNo, FOXCONN);
-            AutoBest5Long(gCommodtyInfo.MediaTekIdxNo, MEDIATEK);
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU
