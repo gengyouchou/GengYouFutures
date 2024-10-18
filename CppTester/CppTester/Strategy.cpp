@@ -706,6 +706,14 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
     return;
 }
 
+VOID CountNumberOfStocksRisingAndFalling(void)
+{
+    long nUpNoW = gCurTaiexInfo[0][4] + gCurTaiexInfo[1][4];
+    long nDownNoW = gCurTaiexInfo[0][5] + gCurTaiexInfo[1][5];
+
+    gNumberOfStocksRisingAndFalling = nUpNoW - nDownNoW;
+}
+
 void AutoKLineData(IN string ProductNum)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
@@ -3165,6 +3173,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     StrategyCaluTransactionListLongShort();
     StrategyCaluOsTransactionListLongShort();
     BidOfferAndTransactionListLongShortSlope();
+    CountNumberOfStocksRisingAndFalling();
 
     if (!(gCurServerTime[0] <= 5 || gCurServerTime[0] >= 15) &&
         !(gCurServerTime[0] >= 8 && gCurServerTime[0] < 14))
