@@ -84,6 +84,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 #define FOXCONN_BID_OFFER_WEIGHT_RATIO 5
 #define MEDIATEK_BID_OFFER_WEIGHT_RATIO 10
 #define LEADING_STOCKS_BID_OFFER_WEIGHT_RATIO 20
+#define NUMBER_OF_STOCKS_RISING_AND_FALLING 5
 
 #define TX_BID_OFFER_WEIGHT_RATIO 10
 
@@ -140,6 +141,7 @@ extern double gCostMovingAverageVal;
 extern double gMa5;
 extern double gMa5LongShort;
 extern double gBidOfferLongShortSlope;
+extern double gNumberOfStocksRisingAndFalling;
 
 extern double gNQMa20;
 extern double gNQMa20LongShort;

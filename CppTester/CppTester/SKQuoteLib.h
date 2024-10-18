@@ -79,6 +79,30 @@ public:
     void OnNotifyServerTime(SHORT sHour, SHORT sMinute, SHORT sSecond, LONG nTotal);
     void OnNotifyMarketTot(SHORT sMarketNo, SHORT sPtr, LONG nTime, LONG nTotv, LONG nTots, LONG nTotc);
     void OnNotifyMarketBuySell(SHORT sMarketNo, SHORT sPtr, LONG nTime, LONG nBc, LONG nSc, LONG nBs, LONG nSs);
+    void OnNotifyMarketHighLow(
+        short sMarketNo,
+        short sPtr,
+        long nTime,
+        short sUp,
+        short sDown,
+        short sHigh,
+        short sLow,
+        short sNoChange);
+
+    void CSKQuoteLib::OnNotifyMarketHighLowNoWarrant(
+        short sMarketNo,
+        long lPtr,
+        long nTime,
+        long nUp,
+        long nDown,
+        long nHigh,
+        long nLow,
+        long nUnchanged,
+        long nUpNoW,
+        long nDownNoW,
+        long nHighNoW,
+        long nLowNoW,
+        long nUnchangedNoW);
 
 private:
     HRESULT OnEventFiringObjectInvoke(

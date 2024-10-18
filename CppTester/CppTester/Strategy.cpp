@@ -37,7 +37,7 @@ extern CSKOrderLib *pSKOrderLib;
 
 // Global variables, initialized by main, and continuously updated by the com server
 extern SHORT gCurServerTime[3];
-extern std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
+extern std::unordered_map<SHORT, std::array<long, 6>> gCurTaiexInfo;
 extern std::deque<long> gDaysKlineDiff;
 extern std::deque<long> gCostMovingAverage;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
@@ -64,6 +64,7 @@ double gNQMa20 = 0;
 double gNQMa20LongShort = 0;
 
 double gBidOfferLongShortSlope = 0;
+double gNumberOfStocksRisingAndFalling = 0;
 
 static double gEntryHigh = 0;
 static double gEntryLow = 0;
@@ -703,6 +704,14 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
     }
 
     return;
+}
+
+VOID CountNumberOfStocksRisingAndFalling(void)
+{
+    long nUpNoW = gCurTaiexInfo[0][4] + gCurTaiexInfo[1][4];
+    long nDownNoW = gCurTaiexInfo[0][5] + gCurTaiexInfo[1][5];
+
+    gNumberOfStocksRisingAndFalling = nUpNoW - nDownNoW;
 }
 
 void AutoKLineData(IN string ProductNum)
@@ -2156,7 +2165,7 @@ LONG StrategyCaluOsTransactionListLongShort(VOID)
 
 LONG StrategyCaluLongShort(VOID)
 {
-    return (gTransactionListLongShort + gBidOfferLongShort + gOsTransactionListLongShort) / LONG_AND_SHORT_TARGET_COUNT;
+    return static_cast<long>(NUMBER_OF_STOCKS_RISING_AND_FALLING * gNumberOfStocksRisingAndFalling) + (gTransactionListLongShort + gBidOfferLongShort + gOsTransactionListLongShort) / LONG_AND_SHORT_TARGET_COUNT;
 }
 
 VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
@@ -3164,6 +3173,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     StrategyCaluTransactionListLongShort();
     StrategyCaluOsTransactionListLongShort();
     BidOfferAndTransactionListLongShortSlope();
+    CountNumberOfStocksRisingAndFalling();
 
     if (!(gCurServerTime[0] <= 5 || gCurServerTime[0] >= 15) &&
         !(gCurServerTime[0] >= 8 && gCurServerTime[0] < 14))

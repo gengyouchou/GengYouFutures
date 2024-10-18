@@ -20,7 +20,7 @@ std::map<string, pair<double, double>> gDaysCommHighLowPoint;         // Max len
 std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint; // Max len: DAY_NIGHT_HIGH_LOW_K_LINE
 
 std::unordered_map<long, long> gCurCommPrice;
-std::unordered_map<SHORT, std::array<long, 4>> gCurTaiexInfo;
+std::unordered_map<SHORT, std::array<long, 6>> gCurTaiexInfo;
 std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 std::unordered_map<long, std::array<long, 6>> gTransactionList;
 // long nPtr, long nBid, long nAsk, long nClose, long nQty,
@@ -98,16 +98,16 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
     }
     case 20: // OnNotifyHistoryTicksLONG
     {
-        long nStockIndex = V_I4(&(pdispparams->rgvarg)[9]);
-        long nPtr = V_I4(&(pdispparams->rgvarg)[8]);
-        long nDate = V_I4(&(pdispparams->rgvarg)[7]);
-        long lTimehms = V_I4(&(pdispparams->rgvarg)[6]);
-        long nBid = V_I4(&(pdispparams->rgvarg)[4]);
-        long nAsk = V_I4(&(pdispparams->rgvarg)[3]);
-        long nClose = V_I4(&(pdispparams->rgvarg)[2]);
-        long nQty = V_I4(&(pdispparams->rgvarg)[1]);
-        long nSimulate = V_I4(&(pdispparams->rgvarg)[0]);
-        OnNotifyHistoryTicksLONG(nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty, nSimulate);
+        // long nStockIndex = V_I4(&(pdispparams->rgvarg)[9]);
+        // long nPtr = V_I4(&(pdispparams->rgvarg)[8]);
+        // long nDate = V_I4(&(pdispparams->rgvarg)[7]);
+        // long lTimehms = V_I4(&(pdispparams->rgvarg)[6]);
+        // long nBid = V_I4(&(pdispparams->rgvarg)[4]);
+        // long nAsk = V_I4(&(pdispparams->rgvarg)[3]);
+        // long nClose = V_I4(&(pdispparams->rgvarg)[2]);
+        // long nQty = V_I4(&(pdispparams->rgvarg)[1]);
+        // long nSimulate = V_I4(&(pdispparams->rgvarg)[0]);
+        // OnNotifyHistoryTicksLONG(nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty, nSimulate);
         break;
     }
     case 21: // OnNotifyTicksLONG
@@ -188,10 +188,10 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
 
     case 6:
     {
-        BSTR bstrStockNo = pdispparams->rgvarg[1].bstrVal;
-        BSTR bstrData = pdispparams->rgvarg[0].bstrVal;
+        // BSTR bstrStockNo = pdispparams->rgvarg[1].bstrVal;
+        // BSTR bstrData = pdispparams->rgvarg[0].bstrVal;
 
-        OnNotifyKLineData(bstrStockNo, bstrData);
+        // OnNotifyKLineData(bstrStockNo, bstrData);
 
         break;
     }
@@ -231,8 +231,47 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
         break;
     }
     case 10:
+    {
+        // SHORT sMarketNo = V_I2(&(pdispparams->rgvarg)[7]);
+        // LONG nTime = V_I4(&(pdispparams->rgvarg)[5]);
+        // SHORT sUp = V_I2(&(pdispparams->rgvarg)[4]);
+        // SHORT sDown = V_I2(&(pdispparams->rgvarg)[3]);
+
+        // OnNotifyMarketHighLow(
+        //     sMarketNo,
+        //     0,
+        //     nTime,
+        //     sUp,
+        //     sDown,
+        //     0,
+        //     0,
+        //     0);
+
+        break;
+    }
     case 17:
     {
+
+        SHORT sMarketNo = V_I2(&(pdispparams->rgvarg)[12]);
+        LONG nTime = V_I4(&(pdispparams->rgvarg)[10]);
+        LONG nUpNoW = V_I4(&(pdispparams->rgvarg)[4]);
+        LONG nDownNoW = V_I4(&(pdispparams->rgvarg)[3]);
+
+        OnNotifyMarketHighLowNoWarrant(
+            sMarketNo,
+            0,
+            nTime,
+            0,
+            0,
+            0,
+            0,
+            0,
+            nUpNoW,
+            nDownNoW,
+            0,
+            0,
+            0);
+
         break;
     }
 
@@ -785,6 +824,48 @@ void CSKQuoteLib::OnNotifyMarketBuySell(SHORT sMarketNo, SHORT sPtr, LONG nTime,
 
     gCurTaiexInfo[sMarketNo][2] = nBs;
     gCurTaiexInfo[sMarketNo][3] = nSs;
+}
+
+void CSKQuoteLib::OnNotifyMarketHighLow(
+    short sMarketNo,
+    short sPtr,
+    long nTime,
+    short sUp,
+    short sDown,
+    short sHigh,
+    short sLow,
+    short sNoChange)
+{
+
+    DEBUG(DEBUG_LEVEL_INFO, "start");
+
+    DEBUG(DEBUG_LEVEL_INFO, "sMarketNo: %d nTime: %ld sUp: %d sDown: %d", sMarketNo, nTime, sUp, sDown);
+
+    gCurTaiexInfo[sMarketNo][4] = sUp;
+    gCurTaiexInfo[sMarketNo][5] = sDown;
+}
+
+void CSKQuoteLib::OnNotifyMarketHighLowNoWarrant(
+    short sMarketNo,
+    long lPtr,
+    long nTime,
+    long nUp,
+    long nDown,
+    long nHigh,
+    long nLow,
+    long nUnchanged,
+    long nUpNoW,
+    long nDownNoW,
+    long nHighNoW,
+    long nLowNoW,
+    long nUnchangedNoW)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "sMarketNo: %d nTime: %ld nUpNoW: %ld nDownNoW: %ld", sMarketNo, nTime, nUpNoW, nDownNoW);
+
+    gCurTaiexInfo[sMarketNo][4] = nUpNoW;
+    gCurTaiexInfo[sMarketNo][5] = nDownNoW;
 }
 
 long CalculateDiff(const std::string &data)
