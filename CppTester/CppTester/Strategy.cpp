@@ -63,6 +63,7 @@ double gNQMa20 = 0;
 double gNQMa20LongShort = 0;
 
 double gBidOfferLongShortSlope = 0;
+double gNumberOfStocksRisingAndFalling = 0;
 
 static double gEntryHigh = 0;
 static double gEntryLow = 0;
