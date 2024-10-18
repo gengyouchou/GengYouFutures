@@ -2165,7 +2165,7 @@ LONG StrategyCaluOsTransactionListLongShort(VOID)
 
 LONG StrategyCaluLongShort(VOID)
 {
-    return (gTransactionListLongShort + gBidOfferLongShort + gOsTransactionListLongShort) / LONG_AND_SHORT_TARGET_COUNT;
+    return (gTransactionListLongShort + gBidOfferLongShort + gOsTransactionListLongShort) / LONG_AND_SHORT_TARGET_COUNT + NUMBER_OF_STOCKS_RISING_AND_FALLING * gNumberOfStocksRisingAndFalling;
 }
 
 VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
