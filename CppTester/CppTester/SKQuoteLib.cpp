@@ -67,7 +67,7 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
     EXCEPINFO *pexcepinfo,
     UINT *puArgErr)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "dispidMember == %d", dispidMember);
+    DEBUG(DEBUG_LEVEL_DEBUG, "dispidMember == %d", dispidMember);
 
     VARIANT varlValue;
     VariantInit(&varlValue);
@@ -860,9 +860,9 @@ void CSKQuoteLib::OnNotifyMarketHighLowNoWarrant(
     long nLowNoW,
     long nUnchangedNoW)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "start");
+    DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
-    DEBUG(DEBUG_LEVEL_INFO, "sMarketNo: %d nTime: %ld nUpNoW: %ld nDownNoW: %ld", sMarketNo, nTime, nUpNoW, nDownNoW);
+    DEBUG(DEBUG_LEVEL_DEBUG, "sMarketNo: %d nTime: %ld nUpNoW: %ld nDownNoW: %ld", sMarketNo, nTime, nUpNoW, nDownNoW);
 
     gCurTaiexInfo[sMarketNo][4] = nUpNoW;
     gCurTaiexInfo[sMarketNo][5] = nDownNoW;
