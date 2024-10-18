@@ -89,6 +89,21 @@ public:
         short sLow,
         short sNoChange);
 
+    void CSKQuoteLib::OnNotifyMarketHighLowNoWarrant(
+        short sMarketNo,
+        long lPtr,
+        long nTime,
+        long nUp,
+        long nDown,
+        long nHigh,
+        long nLow,
+        long nUnchanged,
+        long nUpNoW,
+        long nDownNoW,
+        long nHighNoW,
+        long nLowNoW,
+        long nUnchangedNoW);
+
 private:
     HRESULT OnEventFiringObjectInvoke(
         ISKQuoteLibEventHandler *pEventHandler,

@@ -232,17 +232,42 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
     }
     case 10:
     {
-        SHORT sMarketNo = V_I2(&(pdispparams->rgvarg)[7]);
-        LONG nTime = V_I4(&(pdispparams->rgvarg)[5]);
-        SHORT sUp = V_I2(&(pdispparams->rgvarg)[4]);
-        SHORT sDown = V_I2(&(pdispparams->rgvarg)[3]);
+        // SHORT sMarketNo = V_I2(&(pdispparams->rgvarg)[7]);
+        // LONG nTime = V_I4(&(pdispparams->rgvarg)[5]);
+        // SHORT sUp = V_I2(&(pdispparams->rgvarg)[4]);
+        // SHORT sDown = V_I2(&(pdispparams->rgvarg)[3]);
 
-        OnNotifyMarketHighLow(
+        // OnNotifyMarketHighLow(
+        //     sMarketNo,
+        //     0,
+        //     nTime,
+        //     sUp,
+        //     sDown,
+        //     0,
+        //     0,
+        //     0);
+
+        break;
+    }
+    case 17:
+    {
+
+        SHORT sMarketNo = V_I2(&(pdispparams->rgvarg)[12]);
+        LONG nTime = V_I4(&(pdispparams->rgvarg)[10]);
+        LONG nUpNoW = V_I4(&(pdispparams->rgvarg)[4]);
+        LONG nDownNoW = V_I4(&(pdispparams->rgvarg)[3]);
+
+        OnNotifyMarketHighLowNoWarrant(
             sMarketNo,
             0,
             nTime,
-            sUp,
-            sDown,
+            0,
+            0,
+            0,
+            0,
+            0,
+            nUpNoW,
+            nDownNoW,
             0,
             0,
             0);
@@ -797,12 +822,35 @@ void CSKQuoteLib::OnNotifyMarketHighLow(
     short sNoChange)
 {
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "start");
+    DEBUG(DEBUG_LEVEL_INFO, "start");
 
-    DEBUG(DEBUG_LEVEL_INFO, "sMarketNo: %d nTime: %d sUp: %ld sDown: %ld", sMarketNo, nTime, sUp, sDown);
+    DEBUG(DEBUG_LEVEL_INFO, "sMarketNo: %d nTime: %ld sUp: %d sDown: %d", sMarketNo, nTime, sUp, sDown);
 
     gCurTaiexInfo[sMarketNo][4] = sUp;
     gCurTaiexInfo[sMarketNo][5] = sDown;
+}
+
+void CSKQuoteLib::OnNotifyMarketHighLowNoWarrant(
+    short sMarketNo,
+    long lPtr,
+    long nTime,
+    long nUp,
+    long nDown,
+    long nHigh,
+    long nLow,
+    long nUnchanged,
+    long nUpNoW,
+    long nDownNoW,
+    long nHighNoW,
+    long nLowNoW,
+    long nUnchangedNoW)
+{
+    DEBUG(DEBUG_LEVEL_INFO, "start");
+
+    DEBUG(DEBUG_LEVEL_INFO, "sMarketNo: %d nTime: %ld nUpNoW: %ld nDownNoW: %ld", sMarketNo, nTime, nUpNoW, nDownNoW);
+
+    gCurTaiexInfo[sMarketNo][4] = nUpNoW;
+    gCurTaiexInfo[sMarketNo][5] = nDownNoW;
 }
 
 long CalculateDiff(const std::string &data)
