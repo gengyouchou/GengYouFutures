@@ -36,7 +36,7 @@ OpenInterestInfo gOpenInterestInfo = {
 string g_strUserId = "";
 string gPwd = "";
 
-double gFloatingProfitLoss = 0.0;
+double gClosedProfitLoss = 0.0;
 
 void ParseOpenInterestMessage(const std::string &strMessage);
 void ParseOnFutureRightsMessage(const std::string &strMessage);
@@ -776,5 +776,5 @@ void ParseOnFutureRightsMessage(const std::string &strMessage)
     DEBUG(DEBUG_LEVEL_DEBUG, "Floating P/L:%f", floatingPL);
     DEBUG(DEBUG_LEVEL_DEBUG, "futuresClosingPL:%f", futuresClosingPL);
 
-    gFloatingProfitLoss = futuresClosingPL;
+    gClosedProfitLoss = futuresClosingPL;
 }

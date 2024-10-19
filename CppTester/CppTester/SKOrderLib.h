@@ -81,7 +81,7 @@ struct OpenInterestInfo
     BOOLEAN NeedToUpdate;
 };
 
-extern double gFloatingProfitLoss;
+extern double gClosedProfitLoss;
 
 // struct FUTUREORDER
 // {
