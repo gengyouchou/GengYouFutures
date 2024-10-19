@@ -82,6 +82,7 @@ struct OpenInterestInfo
 };
 
 extern double gClosedProfitLoss;
+extern double gFutureRight;
 
 // struct FUTUREORDER
 // {
