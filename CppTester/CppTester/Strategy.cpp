@@ -641,8 +641,8 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
     // Store the previous moving average difference (used in smoothing)
     static double PreMaDiff = 0;
 
-    LONG CurNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
-    static LONG PreNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
+    double CurNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
+    static double PreNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
 
     // Get the current long-short position by invoking a custom function
     LONG CurLongShort = StrategyCaluLongShort() +
