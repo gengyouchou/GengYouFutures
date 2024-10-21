@@ -635,6 +635,11 @@ int CountOsNQ20MaForNewLongShortPosition(LONG nStockidx)
  */
 VOID BidOfferAndTransactionListLongShortSlope(VOID)
 {
+
+    if (gNumberOfStocksRisingAndFalling == 0)
+    {
+        return;
+    }
     // Deques to store recent values for calculating moving average (MA) and slope
     static std::deque<double> dq, dqSlop;
 
