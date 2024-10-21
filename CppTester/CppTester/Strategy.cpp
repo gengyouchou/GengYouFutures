@@ -644,8 +644,14 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
     // Store the previous moving average difference (used in smoothing)
     static double PreMaDiff = 0;
 
+    static LONG CurNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
+    static LONG PreNumberOfStocksRisingAndFalling = 0;
+
     // Get the current long-short position by invoking a custom function
-    LONG CurLongShort = StrategyCaluLongShort();
+    LONG CurLongShort = StrategyCaluLongShort() +
+                        static_cast<long>(NUMBER_OF_STOCKS_RISING_AND_FALLING * (CurNumberOfStocksRisingAndFalling - PreNumberOfStocksRisingAndFalling));
+
+    PreNumberOfStocksRisingAndFalling = CurNumberOfStocksRisingAndFalling;
 
     // Variable to store the previous long-short difference (used in calculating delta)
     static double PreLongShortDiff = 0;
@@ -2165,7 +2171,7 @@ LONG StrategyCaluOsTransactionListLongShort(VOID)
 
 LONG StrategyCaluLongShort(VOID)
 {
-    return static_cast<long>(NUMBER_OF_STOCKS_RISING_AND_FALLING * gNumberOfStocksRisingAndFalling) + (gTransactionListLongShort + gBidOfferLongShort + gOsTransactionListLongShort) / LONG_AND_SHORT_TARGET_COUNT;
+    return (gTransactionListLongShort + gBidOfferLongShort + gOsTransactionListLongShort) / LONG_AND_SHORT_TARGET_COUNT;
 }
 
 VOID StrategyNewIntervalAmpLongShortPosition(string strUserId, LONG MtxCommodtyInfo, LONG LongShort)
