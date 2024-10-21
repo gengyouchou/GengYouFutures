@@ -635,17 +635,14 @@ int CountOsNQ20MaForNewLongShortPosition(LONG nStockidx)
  */
 VOID BidOfferAndTransactionListLongShortSlope(VOID)
 {
-    // Store the previous long-short value for calculating the difference
-    static LONG PreLongShort = 0;
-
     // Deques to store recent values for calculating moving average (MA) and slope
     static std::deque<double> dq, dqSlop;
 
     // Store the previous moving average difference (used in smoothing)
     static double PreMaDiff = 0;
 
-    static LONG CurNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
-    static LONG PreNumberOfStocksRisingAndFalling = 0;
+    LONG CurNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
+    static LONG PreNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
 
     // Get the current long-short position by invoking a custom function
     LONG CurLongShort = StrategyCaluLongShort() +
@@ -653,12 +650,15 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
 
     PreNumberOfStocksRisingAndFalling = CurNumberOfStocksRisingAndFalling;
 
-    // Variable to store the previous long-short difference (used in calculating delta)
-    static double PreLongShortDiff = 0;
+    // Store the previous long-short value for calculating the difference
+    static LONG PreLongShort = CurLongShort;
 
     // Calculate the difference between current and previous long-short values
     LONG LongShortDiff = CurLongShort - PreLongShort;
     PreLongShort = CurLongShort;
+
+    // Variable to store the previous long-short difference (used in calculating delta)
+    static double PreLongShortDiff = LongShortDiff;
 
     // Calculate the rate of change (derivative term) for the long-short difference
     double deltaDiff = LongShortDiff - PreLongShortDiff;
