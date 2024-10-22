@@ -1278,7 +1278,7 @@ VOID StrategyClosePositionOnDayTrade(string strUserId, LONG MtxCommodtyInfo, SHO
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
-    if (gCurServerTime[0] != StopHour || gCurServerTime[1] != StopMinute)
+    if (gCurServerTime[0] < StopHour || gCurServerTime[1] < StopMinute)
     {
         return;
     }
@@ -1314,8 +1314,8 @@ VOID StrategyClosePositionOnDayTrade(string strUserId, LONG MtxCommodtyInfo, SHO
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // long position
         }
 
-        if (BuySell == 0 ||
-            BuySell == 1)
+        if ((BuySell == 0 && gMa5LongShort < 0) ||
+            (BuySell == 1 && gMa5LongShort > 0))
         {
             vector<string> vec = {COMMODITY_OTHER};
 
