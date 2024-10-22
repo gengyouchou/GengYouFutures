@@ -635,25 +635,23 @@ int CountOsNQ20MaForNewLongShortPosition(LONG nStockidx)
  */
 VOID BidOfferAndTransactionListLongShortSlope(VOID)
 {
-
-    if (gNumberOfStocksRisingAndFalling == 0)
-    {
-        return;
-    }
     // Deques to store recent values for calculating moving average (MA) and slope
     static std::deque<double> dq, dqSlop;
 
     // Store the previous moving average difference (used in smoothing)
     static double PreMaDiff = 0;
 
-    double CurNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
-    static double PreNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
+    double NumberOfStocksRisingAndFallingDiff = 0;
+
+    if (gNumberOfStocksRisingAndFalling != 0)
+    {
+        static double PreNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
+        NumberOfStocksRisingAndFallingDiff = static_cast<long>(NUMBER_OF_STOCKS_RISING_AND_FALLING * (gNumberOfStocksRisingAndFalling - PreNumberOfStocksRisingAndFalling));
+        PreNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
+    }
 
     // Get the current long-short position by invoking a custom function
-    LONG CurLongShort = StrategyCaluLongShort() +
-                        static_cast<long>(NUMBER_OF_STOCKS_RISING_AND_FALLING * (CurNumberOfStocksRisingAndFalling - PreNumberOfStocksRisingAndFalling));
-
-    PreNumberOfStocksRisingAndFalling = CurNumberOfStocksRisingAndFalling;
+    LONG CurLongShort = StrategyCaluLongShort() + NumberOfStocksRisingAndFallingDiff;
 
     // Store the previous long-short value for calculating the difference
     static LONG PreLongShort = CurLongShort;
