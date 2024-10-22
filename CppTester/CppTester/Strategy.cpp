@@ -1276,7 +1276,7 @@ VOID StrategyClosePositionOnDayTrade(string strUserId, LONG MtxCommodtyInfo, SHO
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
-    if (gCurServerTime[0] < StopHour || gCurServerTime[1] < StopMinute)
+    if (!(gCurServerTime[0] == StopHour && gCurServerTime[1] >= StopMinute && gCurServerTime[1] < 45))
     {
         return;
     }
