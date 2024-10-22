@@ -1812,11 +1812,13 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                 totalOffer += gBest5BidOffer[nStockidx][i].second;
             }
 
+            long AvgOffer = totalOffer / 5;
+            long AvgBid = totalBid / 5;
+
             if (nClose > 0 && nClose <= nBid)
             {
                 // Support Bid buying and force everyone to sell Bid.
                 // The purpose is to sell Bid in large quantities.
-                long AvgBid = totalBid / 5;
 
                 if (totalOffer * 3 <= totalBid * 2)
                 {
@@ -1846,8 +1848,6 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                 // Suppress Offer selling and force everyone to buy Offer.
                 // The purpose is to buy Offer in large quantities.
 
-                long AvgOffer = totalOffer / 5;
-
                 if (totalBid * 3 <= totalOffer * 2)
                 {
 
@@ -1869,6 +1869,20 @@ LONG CountBidOfferLongShort(LONG nStockidx)
                         }
                     }
                 }
+            }
+
+            if (AvgOffer * 3 < gBest5BidOffer[nStockidx][5].second && nClose <= nBid)
+            {
+                // Find unusual pending big Offer orders
+
+                countLong -= nQty;
+            }
+
+            if (AvgBid * 3 < gBest5BidOffer[nStockidx][0].second && nClose >= nAsk)
+            {
+                // Find unusual pending big Bid orders
+
+                countShort += nQty;
             }
 
             PrePtr[nStockidx] = nPtr;
