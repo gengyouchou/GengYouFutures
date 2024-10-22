@@ -641,7 +641,7 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
     // Store the previous moving average difference (used in smoothing)
     static double PreMaDiff = 0;
 
-    double NumberOfStocksRisingAndFallingDiff = 0;
+    LONG NumberOfStocksRisingAndFallingDiff = 0;
 
     if (gNumberOfStocksRisingAndFalling != 0)
     {
