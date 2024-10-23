@@ -3381,13 +3381,13 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         if (gMa5LongShort > -TURNING_EXTREME_5MA_BIAS_RATIO &&
             gMa5LongShort < TURNING_EXTREME_5MA_BIAS_RATIO)
         {
-            if (gBidOfferLongShortSlope <= gStrategyConfig.BidOfferLongShortAttackSlope &&
-                gLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
+            if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
+                gLongShort <= gStrategyConfig.BidOfferLongShortThreshold)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
             }
-            else if (-gBidOfferLongShortSlope <= gStrategyConfig.BidOfferLongShortAttackSlope &&
-                     -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
+            else if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
+                     -gLongShort <= gStrategyConfig.BidOfferLongShortThreshold)
             {
                 StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
             }
