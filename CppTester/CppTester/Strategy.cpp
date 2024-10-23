@@ -638,9 +638,6 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
     // Deques to store recent values for calculating moving average (MA) and slope
     static std::deque<double> dq, dqSlop;
 
-    // Store the previous moving average difference (used in smoothing)
-    static double PreMaDiff = 0;
-
     LONG NumberOfStocksRisingAndFallingDiff = 0;
 
     if (gNumberOfStocksRisingAndFalling != 0)
@@ -660,19 +657,8 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
     LONG LongShortDiff = CurLongShort - PreLongShort;
     PreLongShort = CurLongShort;
 
-    // Variable to store the previous long-short difference (used in calculating delta)
-    static double PreLongShortDiff = LongShortDiff;
-
-    // Calculate the rate of change (derivative term) for the long-short difference
-    double deltaDiff = LongShortDiff - PreLongShortDiff;
-    PreLongShortDiff = LongShortDiff;
-
-    // Smooth the derivative term using a weighted average of current and previous difference
-    double SmoothedDiff = 0.8 * deltaDiff + 0.2 * PreMaDiff;
-    PreMaDiff = SmoothedDiff; // Store the smoothed derivative term for future use
-
     // Update the global long-short position with the smoothed difference
-    gLongShort += LongShortDiff + static_cast<long>(SmoothedDiff * BID_OFFER_SLOPE_LONG_SHORT_PID_D_GAIN);
+    gLongShort += LongShortDiff;
 
     // Bound the global long-short position between predefined thresholds to avoid extreme values
     if (gLongShort > 0)
