@@ -657,6 +657,11 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
     LONG LongShortDiff = CurLongShort - PreLongShort;
     PreLongShort = CurLongShort;
 
+    if (LongShortDiff == 0)
+    {
+        return;
+    }
+
     // Update the global long-short position with the smoothed difference
     gLongShort += LongShortDiff;
 
