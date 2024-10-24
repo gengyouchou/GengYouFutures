@@ -2681,7 +2681,12 @@ VOID StrategyCloseOneRoundTakeProfit(string strUserId, LONG MtxCommodtyInfo)
                                     -gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * 2.0 &&
                                     gMa5LongShort < -MAXIMUM_5MA_BIAS_RATIO * 2.0);
 
-        if (PrepareToLeaveFirst)
+        bool PrepareToReverse = (BuySell == 0 &&
+                                 gBidOfferLongShortSlope <= -gStrategyConfig.BidOfferLongShortAttackSlope) ||
+                                (BuySell == 1 &&
+                                 gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope);
+
+        if (PrepareToLeaveFirst || PrepareToReverse)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
