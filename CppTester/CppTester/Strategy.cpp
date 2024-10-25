@@ -1069,6 +1069,12 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
+    if ((gCurServerTime[0] == 13 && gCurServerTime[1] == 30) ||
+        (gCurServerTime[0] == 21 && gCurServerTime[1] == 30))
+    {
+        return 0;
+    }
+
     if (NewClose != ORDER_CLOSE_POSITION && gOpenInterestInfo.NeedToUpdate == FALSE)
     {
         LOG(DEBUG_LEVEL_INFO, "gOpenInterestInfo.NeedToUpdate == FALSE");
