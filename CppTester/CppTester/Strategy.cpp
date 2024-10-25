@@ -1070,7 +1070,9 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
     DEBUG(DEBUG_LEVEL_DEBUG, "Started");
 
     if ((gCurServerTime[0] == 13 && gCurServerTime[1] == 30) ||
-        (gCurServerTime[0] == 21 && gCurServerTime[1] == 30))
+        (gCurServerTime[0] == 21 && gCurServerTime[1] == 30) ||
+        (gCurServerTime[0] == 9 && gCurServerTime[1] == 0) ||
+        (gCurServerTime[0] == 5 && gCurServerTime[1] == 0))
     {
         return 0;
     }
