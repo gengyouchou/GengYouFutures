@@ -1107,14 +1107,14 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
                                                 0         // 0: Intraday (T session and T+1 session)
     );
 
-    pSKCenterLib->PrintfCodeMessage("AutoOrder", "SendFutureOrder", g_nCode);
-
     LOG(DEBUG_LEVEL_INFO, "SendFutureOrder res = %d, ProductNum=%s, NewClose=%d, BuySell=%d",
         g_nCode, ProductNum, NewClose, BuySell);
+    LOG(DEBUG_LEVEL_INFO, "Cur Position: %ld, Ma5LongShort= %f, BidOfferLongShortSlope: %f, LongShort: %ld",
+        gOpenInterestInfo.openPosition, gMa5LongShort, gBidOfferLongShortSlope, gLongShort);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
     return g_nCode;
 }
@@ -3185,9 +3185,6 @@ VOID StrategySimpleNewLongShortPosition(string strUserId, LONG MtxCommodtyInfo, 
             gOpenInterestInfo.avgCost = curPrice;
         }
     }
-
-    LOG(DEBUG_LEVEL_INFO, "New position: %ld, curPrice = %f, Ma5LongShort= %f, BidOfferLongShortSlope: %f, LongShort: %ld",
-        gOpenInterestInfo.openPosition, curPrice, gMa5LongShort, gBidOfferLongShortSlope, gLongShort);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
