@@ -3398,6 +3398,37 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         break;
     }
 
+    case 10:
+    {
+        // contrarian strategy
+        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
+        StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
+        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
+        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 33);
+
+        gEvaluatePosition = EvaluateTheMaximumPosition(MtxCommodtyInfo);
+
+        BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
+
+        if (ReachTodayAmplitude == TRUE)
+        {
+            break;
+        }
+
+        if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
+            gLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
+        {
+            StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
+        }
+        else if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
+                 -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
+        {
+            StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
+        }
+
+        break;
+    }
+
     default:
     {
         break;
