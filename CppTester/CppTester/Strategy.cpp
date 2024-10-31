@@ -3365,6 +3365,8 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 
     case 9:
     {
+        // Trend strategy
+
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
@@ -3380,19 +3382,15 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             break;
         }
 
-        if (gMa5LongShort > -TURNING_EXTREME_5MA_BIAS_RATIO &&
-            gMa5LongShort < TURNING_EXTREME_5MA_BIAS_RATIO)
+        if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * BID_OFFER_LONG_ATTACK_SLOPE_PROPORTION &&
+            gLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
         {
-            if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * BID_OFFER_LONG_ATTACK_SLOPE_PROPORTION &&
-                gLongShort <= gStrategyConfig.BidOfferLongShortThreshold)
-            {
-                StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
-            }
-            else if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * BID_OFFER_SHORT_ATTACK_SLOPE_PROPORTION &&
-                     -gLongShort <= gStrategyConfig.BidOfferLongShortThreshold)
-            {
-                StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
-            }
+            StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
+        }
+        else if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * BID_OFFER_SHORT_ATTACK_SLOPE_PROPORTION &&
+                 -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
+        {
+            StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
         }
 
         break;
@@ -3400,7 +3398,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 
     case 10:
     {
-        // contrarian strategy
+        // Counter-trend strategy
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
