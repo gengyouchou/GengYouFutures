@@ -3365,7 +3365,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 
     case 9:
     {
-        // Trend strategy
+        // Trend strategy, Long red K Long black K
 
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
@@ -3398,7 +3398,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 
     case 10:
     {
-        // Counter-trend strategy
+        // Counter-trend strategy, V turn or A turn
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
