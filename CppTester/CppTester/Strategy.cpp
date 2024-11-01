@@ -3371,7 +3371,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         StrategyCloseOneRoundTakeProfit(g_strUserId, MtxCommodtyInfo);
-        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 33);
+        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 40);
 
         gEvaluatePosition = EvaluateTheMaximumPosition(MtxCommodtyInfo);
 
@@ -3402,7 +3402,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
-        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 33);
+        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 40);
 
         gEvaluatePosition = EvaluateTheMaximumPosition(MtxCommodtyInfo);
 
