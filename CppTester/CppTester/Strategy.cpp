@@ -1272,13 +1272,20 @@ VOID StrategyTakeFuturesProfit(string strUserId, LONG MtxCommodtyInfo)
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
 
-VOID StrategyClosePositionOnDayTrade(string strUserId, LONG MtxCommodtyInfo, SHORT StopHour, SHORT StopMinute)
+bool StrategyClosePositionOnDayTrade(string strUserId, LONG MtxCommodtyInfo, SHORT StopHour, SHORT StopMinute)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
-    if (!(gCurServerTime[0] == StopHour && gCurServerTime[1] >= StopMinute && gCurServerTime[1] < 45))
+    static bool TimeIsUp = FALSE;
+
+    if (gCurServerTime[0] == StopHour && gCurServerTime[1] == StopMinute)
     {
-        return;
+        TimeIsUp = TRUE;
+    }
+
+    if (TimeIsUp == FALSE)
+    {
+        return TimeIsUp;
     }
 
     double curPrice = 0;
@@ -1342,6 +1349,8 @@ VOID StrategyClosePositionOnDayTrade(string strUserId, LONG MtxCommodtyInfo, SHO
                 curPrice, gCostMovingAverageVal, gBidOfferLongShortSlope);
         }
     }
+
+    return TimeIsUp;
 
     DEBUG(DEBUG_LEVEL_DEBUG, "End");
 }
@@ -3371,7 +3380,13 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         StrategyCloseOneRoundTakeProfit(g_strUserId, MtxCommodtyInfo);
-        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 40);
+        bool TimeIsUp = StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 40);
+        TimeIsUp = TimeIsUp | StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 04, 40);
+
+        if (TimeIsUp == TRUE)
+        {
+            break;
+        }
 
         gEvaluatePosition = EvaluateTheMaximumPosition(MtxCommodtyInfo);
 
@@ -3402,7 +3417,13 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
-        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 40);
+        bool TimeIsUp = StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 40);
+        TimeIsUp = TimeIsUp | StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 04, 40);
+
+        if (TimeIsUp == TRUE)
+        {
+            break;
+        }
 
         gEvaluatePosition = EvaluateTheMaximumPosition(MtxCommodtyInfo);
 
