@@ -1238,7 +1238,7 @@ VOID StrategyTakeFuturesProfit(string strUserId, LONG MtxCommodtyInfo)
             CloseBuySell = ORDER_SELL_SHORT_POSITION; // need to Sell to take long position profit
         }
 
-        if (gOpenInterestInfo.profitAndLoss >= gStrategyConfig.MaximumLoss)
+        if (gOpenInterestInfo.profitAndLoss >= gStrategyConfig.MaximumLoss * PROFIT_LOSS_RATIO)
         {
             LOG(DEBUG_LEVEL_INFO, "Take profit at curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
                 curPrice, gOpenInterestInfo.avgCost, gOpenInterestInfo.profitAndLoss);
