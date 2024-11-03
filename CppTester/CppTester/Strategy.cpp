@@ -3218,137 +3218,25 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     switch (Mode)
     {
 
-    // The middle-aged man's trading method
-    // Trend plate (positions can be left), rely on the relative position of the average price and cost price, and the imbalance of the main orders to judge the direction.
-    // If today's amplitude does not meet the standard to open a position, at least push it to the checkpoint price before exiting.
-    case 1:
-    {
-        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
-        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
-
-        if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 15)
-        {
-#if NIGHT_TRADING
-
-            StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
-            StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
-#endif
-        }
-        else
-        {
-            if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
-            {
-                StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
-            }
-            else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
-            {
-                StrategyNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
-            }
-        }
-
-        break;
-    }
-
-        // Long and short divergence money brushing strategy(current night trading strategy)
-        // In shock trading(positions can be left),
-        // open a counter - trend position at the opposite checkpoint price and exit at the relative checkpoint price.
-
-    case 2:
-    {
-
-        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
-        StrategyCloseIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo);
-
-        if (gCurServerTime[0] < 8 || gCurServerTime[0] >= 15)
-        {
-            StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
-            StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
-        }
-
-        if (gCurServerTime[0] >= 8 && gCurServerTime[0] < 14)
-        {
-            StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
-            StrategyNewIntervalAmpLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
-        }
-
-        break;
-    }
-
-    case 4:
-    {
-        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
-        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
-        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
-
-        if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
-        {
-            if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
-            {
-                StrategyNewDailyAmplitudeAchievesReverse(g_strUserId, MtxCommodtyInfo, 1);
-            }
-            else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold)
-            {
-                StrategyNewDailyAmplitudeAchievesReverse(g_strUserId, MtxCommodtyInfo, 0);
-            }
-        }
-
-        break;
-    }
-
-        // The main short term strategy is to pass the previous high and break the previous low.
-        // A shock or trend order(when used as a day trading order) records the previous high or low of the day,
-        // and pulls back or rebounds by more than one execution price,
-        // and the current price is not the current low or the current high, and the five levels of pending orders are obviously unbalanced,
-        // open a position, and exceed the previous price.Exit low before breaking high
-
-    case 7:
-    {
-        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
-        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
-        StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
-        StrategyCloseFixedTakeProfit(g_strUserId, MtxCommodtyInfo);
-        StrategyCloseBidOfferLongShortSlope(g_strUserId, MtxCommodtyInfo);
-
-        gEvaluatePosition = EvaluateTheMaximumPosition(MtxCommodtyInfo);
-        BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
-
-        if (ReachTodayAmplitude == TRUE)
-        {
-            break;
-        }
-
-        int LongShortExtremeFit = LongShortExtremeFitRate(MtxCommodtyInfo);
-
-        if (gCurServerTime[0] >= 8 || gCurServerTime[0] <= 13)
-        {
-
-            if (StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold &&
-                gMa5LongShort > 0 &&
-                gBidOfferLongShortSlope > 0 &&
-                LongShortExtremeFit != -1)
-            {
-                StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
-            }
-            else if (-StrategyCaluLongShort() >= gStrategyConfig.BidOfferLongShortThreshold &&
-                     gMa5LongShort < 0 &&
-                     gBidOfferLongShortSlope < 0 &&
-                     LongShortExtremeFit != 1)
-            {
-                StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
-            }
-        }
-
-        break;
-    }
     case 8:
     {
+        // Trend strategy, The middle-aged man's trading method
+        // Fall slowly, Rise slowly K
+
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
-        StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 30);
+        StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         StrategyCloseOneRoundTakeProfit(g_strUserId, MtxCommodtyInfo);
-        StrategyCloseBidOfferLongShortSlope(g_strUserId, MtxCommodtyInfo);
+        bool TimeIsUp = StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 40);
+        TimeIsUp = TimeIsUp | StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 04, 40);
+
+        if (TimeIsUp == TRUE)
+        {
+            break;
+        }
 
         gEvaluatePosition = EvaluateTheMaximumPosition(MtxCommodtyInfo);
+
         BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
 
         if (ReachTodayAmplitude == TRUE)
@@ -3356,15 +3244,13 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             break;
         }
 
-        int LongShortExtremeFit = LongShortExtremeFitRate(MtxCommodtyInfo);
-
-        if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
-            LongShortExtremeFit != -1)
+        if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * BID_OFFER_SHORT_ATTACK_SLOPE_PROPORTION &&
+            gLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
         }
-        else if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
-                 LongShortExtremeFit != 1)
+        else if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * BID_OFFER_LONG_ATTACK_SLOPE_PROPORTION &&
+                 -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
         }
