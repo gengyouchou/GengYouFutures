@@ -3226,7 +3226,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
-        StrategyCloseOneRoundTakeProfit(g_strUserId, MtxCommodtyInfo);
         bool TimeIsUp = StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 40);
         TimeIsUp = TimeIsUp | StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 04, 40);
 
