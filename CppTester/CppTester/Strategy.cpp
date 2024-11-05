@@ -3278,8 +3278,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
             break;
         }
 
-        gEvaluatePosition = EvaluateTheMaximumPosition(MtxCommodtyInfo);
-
         BOOLEAN ReachTodayAmplitude = TodayAmplitudeHasBeenReached(MtxCommodtyInfo);
 
         if (ReachTodayAmplitude == TRUE)
