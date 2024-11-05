@@ -2693,10 +2693,10 @@ VOID StrategyCloseOneRoundTakeProfit(string strUserId, LONG MtxCommodtyInfo)
         }
 
         bool PrepareToLeaveFirst = (BuySell == 0 &&
-                                    gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * 2.0 &&
+                                    gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * 5.0 &&
                                     gMa5LongShort > MAXIMUM_5MA_BIAS_RATIO * 2.0) ||
                                    (BuySell == 1 &&
-                                    -gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * 2.0 &&
+                                    -gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * 5.0 &&
                                     gMa5LongShort < -MAXIMUM_5MA_BIAS_RATIO * 2.0);
 
         bool PrepareToReverse = (BuySell == 0 &&
@@ -2704,7 +2704,12 @@ VOID StrategyCloseOneRoundTakeProfit(string strUserId, LONG MtxCommodtyInfo)
                                 (BuySell == 1 &&
                                  gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope);
 
-        if (PrepareToLeaveFirst || PrepareToReverse)
+        bool PrepareToRunOut = (BuySell == 0 &&
+                                gLongShort >= gStrategyConfig.BidOfferLongShortThreshold * 2) ||
+                               (BuySell == 1 &&
+                                -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold * 2);
+
+        if (PrepareToLeaveFirst || PrepareToReverse || PrepareToRunOut)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
@@ -3259,7 +3264,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 
     case 9:
     {
-        // Trend strategy, Long red K Long black K
+        // Trend strategy, Breakthrough Long red K Long black K
 
         StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
@@ -3283,12 +3288,12 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         }
 
         if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * BID_OFFER_LONG_ATTACK_SLOPE_PROPORTION &&
-            gLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
+            gLongShort <= gStrategyConfig.BidOfferLongShortThreshold)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
         }
         else if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * BID_OFFER_SHORT_ATTACK_SLOPE_PROPORTION &&
-                 -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
+                 -gLongShort <= gStrategyConfig.BidOfferLongShortThreshold)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
         }
