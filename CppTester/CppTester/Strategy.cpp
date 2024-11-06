@@ -2700,9 +2700,9 @@ VOID StrategyCloseOneRoundTakeProfit(string strUserId, LONG MtxCommodtyInfo)
                                     gMa5LongShort < -MAXIMUM_5MA_BIAS_RATIO * 2.0);
 
         bool PrepareToRunOut = (BuySell == 0 &&
-                                gLongShort >= gStrategyConfig.BidOfferLongShortThreshold * 3) ||
+                                gLongShort >= gStrategyConfig.BidOfferLongShortThreshold * 6) ||
                                (BuySell == 1 &&
-                                -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold * 3);
+                                -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold * 6);
 
         if (PrepareToLeaveFirst || PrepareToRunOut)
         {
