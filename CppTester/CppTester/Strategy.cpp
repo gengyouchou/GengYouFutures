@@ -2693,23 +2693,18 @@ VOID StrategyCloseOneRoundTakeProfit(string strUserId, LONG MtxCommodtyInfo)
         }
 
         bool PrepareToLeaveFirst = (BuySell == 0 &&
-                                    gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * 5.0 &&
+                                    gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * 3.0 &&
                                     gMa5LongShort > MAXIMUM_5MA_BIAS_RATIO * 2.0) ||
                                    (BuySell == 1 &&
-                                    -gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * 5.0 &&
+                                    -gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * 3.0 &&
                                     gMa5LongShort < -MAXIMUM_5MA_BIAS_RATIO * 2.0);
 
-        bool PrepareToReverse = (BuySell == 0 &&
-                                 gBidOfferLongShortSlope <= -gStrategyConfig.BidOfferLongShortAttackSlope) ||
-                                (BuySell == 1 &&
-                                 gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope);
-
         bool PrepareToRunOut = (BuySell == 0 &&
-                                gLongShort >= gStrategyConfig.BidOfferLongShortThreshold * 2) ||
+                                gLongShort >= gStrategyConfig.BidOfferLongShortThreshold * 3) ||
                                (BuySell == 1 &&
-                                -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold * 2);
+                                -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold * 3);
 
-        if (PrepareToLeaveFirst || PrepareToReverse || PrepareToRunOut)
+        if (PrepareToLeaveFirst || PrepareToRunOut)
         {
             vector<string> vec = {COMMODITY_OTHER};
 
