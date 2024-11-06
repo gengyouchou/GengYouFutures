@@ -74,6 +74,7 @@ LONG gEvaluatePosition = MAXIMUM_NUMBERS_OF_POSITIONS;
 STRATEGY_CONFIG gStrategyConfig = {
     CLOSING_KEY_PRICE_LEVEL,
     BID_OFFER_LONG_SHORT_THRESHOLD,
+    BID_OFFER_LONG_SHORT_EXTREME_VALUE,
     BID_OFFER_LONG_SHORT_ATTACK_SLOPE,
     ACTIVITY_POINT,
     MAXIMUM_LOSS,
@@ -2700,9 +2701,9 @@ VOID StrategyCloseOneRoundTakeProfit(string strUserId, LONG MtxCommodtyInfo)
                                     gMa5LongShort < -MAXIMUM_5MA_BIAS_RATIO * 2.0);
 
         bool PrepareToRunOut = (BuySell == 0 &&
-                                gLongShort >= gStrategyConfig.BidOfferLongShortThreshold * 6) ||
+                                gLongShort >= gStrategyConfig.BidOfferLongShortExtremeValue) ||
                                (BuySell == 1 &&
-                                -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold * 6);
+                                -gLongShort >= gStrategyConfig.BidOfferLongShortExtremeValue);
 
         if (PrepareToLeaveFirst || PrepareToRunOut)
         {
@@ -3244,12 +3245,14 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         }
 
         if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * BID_OFFER_SHORT_ATTACK_SLOPE_PROPORTION &&
-            gLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
+            gLongShort >= gStrategyConfig.BidOfferLongShortThreshold &&
+            gLongShort <= gStrategyConfig.BidOfferLongShortExtremeValue)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
         }
         else if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * BID_OFFER_LONG_ATTACK_SLOPE_PROPORTION &&
-                 -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
+                 -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold &&
+                 -gLongShort <= gStrategyConfig.BidOfferLongShortExtremeValue)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
         }
