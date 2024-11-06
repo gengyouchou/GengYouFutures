@@ -3314,12 +3314,12 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         gEvaluatePosition = EvaluateTheMaximumPosition(MtxCommodtyInfo);
 
         if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
-            gLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
+            gLongShort >= gStrategyConfig.BidOfferLongShortExtremeValue)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
         }
         else if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
-                 -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold)
+                 -gLongShort >= gStrategyConfig.BidOfferLongShortExtremeValue)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
         }
