@@ -39,6 +39,7 @@ struct STRATEGY_CONFIG
 {
     LONG ClosingKeyPriceLevel;
     LONG BidOfferLongShortThreshold;
+    LONG BidOfferLongShortExtremeValue;
     DOUBLE BidOfferLongShortAttackSlope;
     LONG ActivePoint;
     DOUBLE MaximumLoss;

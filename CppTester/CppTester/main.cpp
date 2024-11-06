@@ -417,9 +417,9 @@ void thread_main()
                 CheckConnected = 0;
             }
 
-            printf("[UserId:%s], [StrategyMode:%ld], [ClosingKeyPriceLevel:%ld], [BidOfferLongShortThreshold:%ld], [BidOfferLongShortAttackSlope:%f], [ActivePoint:%ld], [MaximumLoss:%f]\n",
+            printf("[UserId:%s], [StrategyMode:%ld], [ClosingKeyPriceLevel:%ld], [BidOfferLongShortThreshold:%ld], [BidOfferLongShortExtremeValue:%ld], [BidOfferLongShortAttackSlope:%f], [ActivePoint:%ld], [MaximumLoss:%f]\n",
                    g_strUserId.c_str(), gStrategyConfig.StrategyMode, gStrategyConfig.ClosingKeyPriceLevel,
-                   gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.BidOfferLongShortAttackSlope, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss);
+                   gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.BidOfferLongShortExtremeValue, gStrategyConfig.BidOfferLongShortAttackSlope, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss);
             printf("=========================================\n");
             printf("[CurMtxPrice: %ld] ", gCurCommPrice[MtxCommodtyInfo] / 100);
             printf("[TSEA prices: %ld, Valume: %ld] ",
@@ -534,6 +534,11 @@ void readConfig()
             gStrategyConfig.BidOfferLongShortThreshold = config["BID_OFFER_LONG_SHORT_THRESHOLD"].as<LONG>();
         }
 
+        if (config["BID_OFFER_LONG_SHORT_EXTREME_VALUE"])
+        {
+            gStrategyConfig.BidOfferLongShortExtremeValue = config["BID_OFFER_LONG_SHORT_EXTREME_VALUE"].as<LONG>();
+        }
+
         if (config["BID_OFFER_LONG_SHORT_ATTACK_SLOPE"])
         {
             gStrategyConfig.BidOfferLongShortAttackSlope = config["BID_OFFER_LONG_SHORT_ATTACK_SLOPE"].as<DOUBLE>();
@@ -556,6 +561,7 @@ void readConfig()
 
         DEBUG(DEBUG_LEVEL_INFO, "Closing Key Price Level: %ld", gStrategyConfig.ClosingKeyPriceLevel);
         DEBUG(DEBUG_LEVEL_INFO, "Bid Offer Long Short Threshold: %ld", gStrategyConfig.BidOfferLongShortThreshold);
+        DEBUG(DEBUG_LEVEL_INFO, "Bid Offer Long Short Extreme Value: %ld", gStrategyConfig.BidOfferLongShortExtremeValue);
         DEBUG(DEBUG_LEVEL_INFO, "Bid Offer Long Short Attack Slop: %f", gStrategyConfig.BidOfferLongShortAttackSlope);
         DEBUG(DEBUG_LEVEL_INFO, "Activity Point: %ld", gStrategyConfig.ActivePoint);
         DEBUG(DEBUG_LEVEL_INFO, "Maximum Loss: %f", gStrategyConfig.MaximumLoss);
