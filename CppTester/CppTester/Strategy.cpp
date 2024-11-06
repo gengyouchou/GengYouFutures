@@ -2780,7 +2780,9 @@ LONG EvaluateTheMaximumPosition(LONG MtxCommodtyInfo)
         MaxProfit = max(MaxProfit, gOpenInterestInfo.profitAndLoss);
 
         if (gOpenInterestInfo.profitAndLoss >= 0 &&
-            gOpenInterestInfo.profitAndLoss <= MaxProfit - MaxProfit / 3)
+            gOpenInterestInfo.profitAndLoss <= MaxProfit - MaxProfit / 3 &&
+            gLongShort <= gStrategyConfig.BidOfferLongShortExtremeValue &&
+            -gLongShort <= gStrategyConfig.BidOfferLongShortExtremeValue)
         {
             EvaluatePosition = max(EvaluatePosition, abs(gOpenInterestInfo.openPosition) + 1);
         }
