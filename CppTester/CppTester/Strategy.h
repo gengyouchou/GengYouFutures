@@ -107,6 +107,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 #define PROFIT_STOP_TICK 50
 
 #define MAXIMUM_NUMBERS_OF_POSITIONS 1
+#define MAXIMUM_DAILY_LOSS_TICK 200
 
 // Mode
 
