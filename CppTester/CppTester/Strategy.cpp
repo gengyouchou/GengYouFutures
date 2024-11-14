@@ -2779,10 +2779,24 @@ LONG EvaluateTheMaximumPosition(LONG MtxCommodtyInfo)
 
         MaxProfit = max(MaxProfit, gOpenInterestInfo.profitAndLoss);
 
+        SHORT BuySell = -1;
+
+        if (gOpenInterestInfo.buySell == "S")
+        {
+            BuySell = 1;
+        }
+        else if (gOpenInterestInfo.buySell == "B")
+        {
+            BuySell = 0;
+        }
+
+        bool LongExtremeAchieve = BuySell == 0 && gLongShort > gStrategyConfig.BidOfferLongShortExtremeValue;
+        bool ShortExtremeAchieve = BuySell == 1 && -gLongShort > gStrategyConfig.BidOfferLongShortExtremeValue;
+
         if (gOpenInterestInfo.profitAndLoss >= 0 &&
             gOpenInterestInfo.profitAndLoss <= MaxProfit - MaxProfit / 3 &&
-            gLongShort <= gStrategyConfig.BidOfferLongShortExtremeValue &&
-            -gLongShort <= gStrategyConfig.BidOfferLongShortExtremeValue)
+            !LongExtremeAchieve &&
+            !ShortExtremeAchieve)
         {
             EvaluatePosition = max(EvaluatePosition, abs(gOpenInterestInfo.openPosition) + 1);
         }
