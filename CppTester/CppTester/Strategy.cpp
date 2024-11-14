@@ -1175,7 +1175,7 @@ VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo)
         LOG(DEBUG_LEVEL_DEBUG, "curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
             curPrice, gOpenInterestInfo.avgCost, gOpenInterestInfo.profitAndLoss);
 
-        if (-profitAndLoss >= gStrategyConfig.MaximumLoss)
+        if (-profitAndLoss >= min(gStrategyConfig.MaximumLoss * abs(gOpenInterestInfo.openPosition), gStrategyConfig.MaximumLoss * 2))
         {
             LOG(DEBUG_LEVEL_INFO, "STOP Loss at curPrice = %f, gOpenInterestInfo.avgCost= %f, profit and loss:%f",
                 curPrice, gOpenInterestInfo.avgCost, profitAndLoss);
