@@ -17,18 +17,19 @@ FetchContent_Declare(
   GIT_TAG v4.3.1  # 可以根据需要指定版本
 )
 
-# 下载并构建 libwebsockets
-FetchContent_MakeAvailable(libwebsockets)
-
 # 如果需要 SSL 支持（例如使用 OpenSSL）
 option(LWS_WITH_SSL "Enable SSL support in libwebsockets" ON)
-# 可选：配置 OpenSSL 依赖
+
+# FetchContent 用于引入 OpenSSL
 FetchContent_Declare(
   openssl
   GIT_REPOSITORY https://github.com/openssl/openssl.git
   GIT_TAG OpenSSL_1_1_1l  # 可根据需要选择版本
 )
+
+# 下载并构建 libwebsockets 和 OpenSSL
 FetchContent_MakeAvailable(openssl)
+FetchContent_MakeAvailable(libwebsockets)
 
 # 确保使用 Windows 的线程库
 if(MSVC)
@@ -42,8 +43,8 @@ find_package(Threads REQUIRED)
 # 添加可执行文件（入口文件是 GengYouFuturesUI.cpp）
 add_executable(GengYouFuturesUI GengYouFuturesUI.cpp)
 
-# 链接 libwebsockets 和线程库
-target_link_libraries(GengYouFuturesUI PRIVATE libwebsockets Threads::Threads)
+# 链接 libwebsockets、OpenSSL 和线程库
+target_link_libraries(GengYouFuturesUI PRIVATE libwebsockets Threads::Threads OpenSSL::Crypto OpenSSL::SSL)
 
 # 如果需要其他链接设置，可以在这里添加
 # target_include_directories(GengYouFuturesUI PRIVATE ${libwebsockets_SOURCE_DIR}/include)

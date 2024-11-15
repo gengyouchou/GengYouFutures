@@ -8,7 +8,6 @@ REM Create build directory if it doesn't exist
 if not exist "%BUILD_DIR%" mkdir "%BUILD_DIR%"
 
 REM Navigate to build directory
-cd "%BUILD_DIR%"
 
 REM 确保 CMakeLists.txt 文件存在于指定目录
 if exist "%SOURCE_DIR%\CMakeLists.txt" (
