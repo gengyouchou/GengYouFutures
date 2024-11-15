@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Data Viewer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #log {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+            background-color: #f9f9f9;
+        }
+
+        canvas {
+            max-width: 100%;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Real-time Data Viewer</h1>
+    <div id="log"></div>
+    <canvas id="chart"></canvas>
+
+    <script>
+        // WebSocket connection setup
+        const serverIP = "127.0.0.1"; // Replace with your server's IP
+        const port = 8080;           // Replace with your WebSocket server's port
+        const ws = new WebSocket(`ws://${serverIP}:${port}`);
+
+        const logDiv = document.getElementById("log");
+        const chartCtx = document.getElementById("chart").getContext("2d");
+
+        // Line chart data setup
+        const chartData = {
+            labels: [], // Timestamps
+            datasets: [{
+                label: "Real-time Data",
+                data: [],
+                borderColor: "blue",
+                backgroundColor: "rgba(0, 0, 255, 0.1)",
+                borderWidth: 2,
+                fill: true,
+            }]
+        };
+
+        const chartOptions = {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                },
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: "Timestamp"
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: "Value"
+                    }
+                }
+            }
+        };
+
+        const lineChart = new Chart(chartCtx, {
+            type: "line",
+            data: chartData,
+            options: chartOptions,
+        });
+
+        // Handle incoming messages
+        ws.onmessage = function (event) {
+            const data = event.data.trim();
+            const timestamp = new Date().toLocaleTimeString();
+
+            // Log data
+            const newLogEntry = document.createElement("div");
+            newLogEntry.textContent = `[${timestamp}] ${data}`;
+            logDiv.appendChild(newLogEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+
+            // Update chart
+            const numericValue = parseFloat(data); // Assuming numeric data
+            if (!isNaN(numericValue)) {
+                chartData.labels.push(timestamp);
+                chartData.datasets[0].data.push(numericValue);
+
+                // Limit the chart to the last 20 data points
+                if (chartData.labels.length > 20) {
+                    chartData.labels.shift();
+                    chartData.datasets[0].data.shift();
+                }
+
+                lineChart.update();
+            }
+        };
+
+        ws.onopen = function () {
+            console.log("WebSocket connection established");
+        };
+
+        ws.onerror = function (error) {
+            console.error("WebSocket error:", error);
+        };
+
+        ws.onclose = function () {
+            console.log("WebSocket connection closed");
+        };
+    </script>
+</body>
+
+</html>
