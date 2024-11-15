@@ -16,20 +16,20 @@ if exist "%SOURCE_DIR%\CMakeLists.txt" (
     cmake -S "%SOURCE_DIR%" -B "%BUILD_DIR%"
 ) else (
     echo Error: CMakeLists.txt not found in %SOURCE_DIR%.
+    exit /b 1
 )
 
 REM 使用 CMake 和 Visual Studio 进行构建
 echo Building project...
-@REM cmake --build "%BUILD_DIR%" --config Debug
 cmake --build "%BUILD_DIR%" --config Release
 
 REM 打印构建结果
-if errorlevel 1 (
-    echo Build failed.
+if %errorlevel% neq 0 (
+    echo Build failed with error code %errorlevel%.
+    exit /b %errorlevel%
 ) else (
     echo Build succeeded.
 )
 
-cd ..
-cd ..
-
+REM Optional: If you need to return to the root directory
+cd "%SOURCE_DIR%"

@@ -20,13 +20,16 @@ FetchContent_Declare(
 # 下载并构建 libwebsockets
 FetchContent_MakeAvailable(libwebsockets)
 
-# 设置 pthread（如果使用多线程）
-find_package(Threads REQUIRED)
+# 确保使用 Windows 的线程库
+if(MSVC)
+    # 使用 Windows 的线程库而非 pthread
+    set(THREADS_PREFER_PTHREAD_FLAG OFF)
+endif()
 
 # 添加可执行文件（入口文件是 GengYouFuturesUI.cpp）
 add_executable(GengYouFuturesUI GengYouFuturesUI.cpp)
 
-# 链接 libwebsockets 和 pthread 库
+# 链接 libwebsockets 和线程库
 target_link_libraries(GengYouFuturesUI PRIVATE libwebsockets Threads::Threads)
 
 # 如果需要其他链接设置，可以在这里添加
