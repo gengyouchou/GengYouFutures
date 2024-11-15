@@ -32,4 +32,3 @@ if %errorlevel% neq 0 (
 )
 
 REM Optional: If you need to return to the root directory
-cd "%SOURCE_DIR%"
