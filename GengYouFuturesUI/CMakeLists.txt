@@ -10,32 +10,27 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 # 引入 FetchContent 模块
 include(FetchContent)
 
-# FetchContent 用于引入 libwebsockets
+# FetchContent 用于引入 Crow 框架
 FetchContent_Declare(
-  libwebsockets
-  GIT_REPOSITORY https://github.com/warmcat/libwebsockets.git
-  GIT_TAG v4.3.1  # 可以根据需要指定版本
+  crow
+  GIT_REPOSITORY https://github.com/CrowCpp/Crow.git
+  GIT_TAG master  # 选择最新版本
 )
 
-# 如果需要 SSL 支持（例如使用 OpenSSL）
-option(LWS_WITH_SSL "Enable SSL support in libwebsockets" ON)
+# 如果需要 SSL 支持（例如使用 Boost 和 OpenSSL）
+option(CROW_ENABLE_SSL "Enable SSL support in Crow" ON)
 
-# FetchContent 用于引入 OpenSSL
+# FetchContent 用于引入 Boost 库（Crow 依赖）
 FetchContent_Declare(
-  openssl
-  GIT_REPOSITORY https://github.com/openssl/openssl.git
-  GIT_TAG OpenSSL_1_1_1l  # 可根据需要选择版本
+  boost
+  GIT_REPOSITORY https://github.com/boostorg/boost.git
+  GIT_TAG boost-1.81.0  # 可根据需要选择版本
 )
+set(BOOST_BUILD_CMAKE ON CACHE BOOL "" FORCE)
 
-# 下载并构建 libwebsockets 和 OpenSSL
-FetchContent_MakeAvailable(openssl)
-FetchContent_MakeAvailable(libwebsockets)
-
-# 确保使用 Windows 的线程库
-if(MSVC)
-    # 使用 Windows 的线程库而非 pthread
-    set(THREADS_PREFER_PTHREAD_FLAG OFF)
-endif()
+# 下载并构建 Crow 和 Boost
+FetchContent_MakeAvailable(crow)
+FetchContent_MakeAvailable(boost)
 
 # 查找线程库
 find_package(Threads REQUIRED)
@@ -43,8 +38,11 @@ find_package(Threads REQUIRED)
 # 添加可执行文件（入口文件是 GengYouFuturesUI.cpp）
 add_executable(GengYouFuturesUI GengYouFuturesUI.cpp)
 
-# 链接 libwebsockets、OpenSSL 和线程库
-target_link_libraries(GengYouFuturesUI PRIVATE libwebsockets Threads::Threads OpenSSL::Crypto OpenSSL::SSL)
+# 链接 Crow 和 Boost 库
+target_link_libraries(GengYouFuturesUI PRIVATE crow Threads::Threads)
 
-# 如果需要其他链接设置，可以在这里添加
-# target_include_directories(GengYouFuturesUI PRIVATE ${libwebsockets_SOURCE_DIR}/include)
+# 如果启用了 SSL 支持，链接 OpenSSL
+if(CROW_ENABLE_SSL)
+    find_package(OpenSSL REQUIRED)
+    target_link_libraries(GengYouFuturesUI PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+endif()
