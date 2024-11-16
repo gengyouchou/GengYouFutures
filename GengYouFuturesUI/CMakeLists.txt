@@ -10,39 +10,49 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 # 引入 FetchContent 模块
 include(FetchContent)
 
-# FetchContent 用于引入 Crow 框架
-FetchContent_Declare(
-  crow
-  GIT_REPOSITORY https://github.com/CrowCpp/Crow.git
-  GIT_TAG master  # 选择最新版本
-)
-
-# 如果需要 SSL 支持（例如使用 Boost 和 OpenSSL）
-option(CROW_ENABLE_SSL "Enable SSL support in Crow" ON)
-
-# FetchContent 用于引入 Boost 库（Crow 依赖）
+# 配置 Boost（Crow 依赖 Boost.Asio）
 FetchContent_Declare(
   boost
   GIT_REPOSITORY https://github.com/boostorg/boost.git
-  GIT_TAG boost-1.81.0  # 可根据需要选择版本
+  GIT_TAG boost-1.81.0
 )
+# 启用 Boost 的 CMake 支持
 set(BOOST_BUILD_CMAKE ON CACHE BOOL "" FORCE)
-
-# 下载并构建 Crow 和 Boost
-FetchContent_MakeAvailable(crow)
 FetchContent_MakeAvailable(boost)
 
-# 查找线程库
-find_package(Threads REQUIRED)
+# 配置 Crow 框架
+FetchContent_Declare(
+  crow
+  GIT_REPOSITORY https://github.com/CrowCpp/Crow.git
+  GIT_TAG master
+)
+# 禁用 Crow 的测试，避免对 Asio 的额外查找需求
+set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(crow)
 
-# 添加可执行文件（入口文件是 GengYouFuturesUI.cpp）
-add_executable(GengYouFuturesUI GengYouFuturesUI.cpp)
+# 配置 Crow 的 SSL 支持（可选）
+option(CROW_ENABLE_SSL "Enable SSL support in Crow" ON)
 
-# 链接 Crow 和 Boost 库
-target_link_libraries(GengYouFuturesUI PRIVATE crow Threads::Threads)
-
-# 如果启用了 SSL 支持，链接 OpenSSL
+# 如果启用 SSL，查找 OpenSSL
 if(CROW_ENABLE_SSL)
     find_package(OpenSSL REQUIRED)
+endif()
+
+# 添加可执行文件
+add_executable(GengYouFuturesUI GengYouFuturesUI.cpp)
+
+# 链接 Crow 和 Boost
+target_link_libraries(GengYouFuturesUI PRIVATE
+    crow
+    Boost::headers  # 只需要头文件，Asio 是 header-only
+)
+
+# 如果启用 SSL，链接 OpenSSL
+if(CROW_ENABLE_SSL)
     target_link_libraries(GengYouFuturesUI PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 endif()
+
+# 添加 include 路径
+target_include_directories(GengYouFuturesUI PRIVATE
+    ${boost_SOURCE_DIR}  # Boost 源码目录作为 include 路径
+)
