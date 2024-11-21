@@ -26,12 +26,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(drogon)
 
-# 配置路径
-set(JSONCPP_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/x64/_deps/jsoncpp-build/include")
-set(JSONCPP_LIBRARIES "${CMAKE_SOURCE_DIR}/x64/_deps/jsoncpp-build/lib/jsoncpp.lib")
+# 设置包含目录和库文件路径
+set(JSONCPP_INCLUDE_DIRS "${jsoncpp_SOURCE_DIR}/include")
+set(JSONCPP_LIBRARIES "${jsoncpp_BINARY_DIR}/lib/jsoncpp.lib")
 
-set(DROGON_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/x64/_deps/drogon-src/lib/inc")
-set(DROGON_LIBRARIES "${CMAKE_SOURCE_DIR}/x64/_deps/drogon-build/lib/drogon.lib")
+set(DROGON_INCLUDE_DIRS "${drogon_SOURCE_DIR}/lib/inc")
+set(DROGON_LIBRARIES "${drogon_BINARY_DIR}/lib/drogon.lib")
 
 # 检查是否生成了 jsoncpp.lib 和 drogon.lib
 if(NOT EXISTS "${JSONCPP_LIBRARIES}")
@@ -61,20 +61,5 @@ target_include_directories(GengYouFuturesUI PRIVATE
 target_link_libraries(GengYouFuturesUI PRIVATE
     ${JSONCPP_LIBRARIES}
     ${DROGON_LIBRARIES}
-)
-
-# 使用 FetchContent 确保依赖项已正确构建
-FetchContent_Populate(jsoncpp)
-FetchContent_Populate(drogon)
-
-# 添加依赖项，确保 FetchContent 成功拉取并构建
-add_dependencies(GengYouFuturesUI jsoncpp drogon)
-
-# 使用自定义命令来确保构建步骤
-add_custom_command(
-    TARGET GengYouFuturesUI PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/_deps/jsoncpp-build --target jsoncpp
-    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/_deps/drogon-build --target drogon
-    COMMENT "确保 JsonCpp 和 Drogon 库已经构建"
 )
 
