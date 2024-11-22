@@ -7,9 +7,9 @@ import win32file
 # WebSocket 客户端列表
 connected_clients = set()
 # WebSocket 处理函数
-async def handle_websocket(websocket, path):
+async def handle_websocket(websocket):
     try:
-        print(f"New WebSocket connection from {websocket.remote_address} with path {path}")
+        print(f"New WebSocket connection from {websocket.remote_address} with path")
         # 将客户端添加到客户端列表
         connected_clients.add(websocket)
 
