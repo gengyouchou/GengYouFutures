@@ -38,8 +38,8 @@
 
     <script>
         // WebSocket connection setup
-        const serverIP = "127.0.0.1"; // Replace with your server's IP
-        const port = 8080;           // Replace with your WebSocket server's port
+        const serverIP = "127.0.0.1"; // Server IP
+        const port = 8765;           // WebSocket server port (matches Python backend)
         const ws = new WebSocket(`ws://${serverIP}:${port}`);
 
         const logDiv = document.getElementById("log");
@@ -49,7 +49,7 @@
         const chartData = {
             labels: [], // Timestamps
             datasets: [{
-                label: "Real-time Data",
+                label: "Price",
                 data: [],
                 borderColor: "blue",
                 backgroundColor: "rgba(0, 0, 255, 0.1)",
@@ -89,20 +89,21 @@
 
         // Handle incoming messages
         ws.onmessage = function (event) {
-            const data = event.data.trim();
-            const timestamp = new Date().toLocaleTimeString();
+            try {
+                // Parse JSON data
+                const data = JSON.parse(event.data.trim());
+                const timestamp = new Date(data.time).toLocaleTimeString();
+                const price = parseFloat(data.price);
 
-            // Log data
-            const newLogEntry = document.createElement("div");
-            newLogEntry.textContent = `[${timestamp}] ${data}`;
-            logDiv.appendChild(newLogEntry);
-            logDiv.scrollTop = logDiv.scrollHeight;
+                // Log data
+                const newLogEntry = document.createElement("div");
+                newLogEntry.textContent = `[${timestamp}] Symbol: ${data.symbol}, Price: ${price}, Volume: ${data.volume}`;
+                logDiv.appendChild(newLogEntry);
+                logDiv.scrollTop = logDiv.scrollHeight;
 
-            // Update chart
-            const numericValue = parseFloat(data); // Assuming numeric data
-            if (!isNaN(numericValue)) {
+                // Update chart
                 chartData.labels.push(timestamp);
-                chartData.datasets[0].data.push(numericValue);
+                chartData.datasets[0].data.push(price);
 
                 // Limit the chart to the last 20 data points
                 if (chartData.labels.length > 20) {
@@ -111,6 +112,8 @@
                 }
 
                 lineChart.update();
+            } catch (error) {
+                console.error("Error parsing message:", error);
             }
         };
 
