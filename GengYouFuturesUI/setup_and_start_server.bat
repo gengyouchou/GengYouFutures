@@ -39,9 +39,9 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-:: 确保 pip 是最新的
+:: 确保 pip 是最新的（直接调用虚拟环境中的 Python）
 echo Updating pip to the latest version...
-pip install --upgrade pip
+venv\Scripts\python.exe -m pip install --upgrade pip
 if %errorlevel% neq 0 (
     echo Failed to update pip. Please check your internet connection or pip installation.
     pause
