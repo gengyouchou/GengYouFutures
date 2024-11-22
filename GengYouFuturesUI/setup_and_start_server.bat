@@ -38,16 +38,7 @@ pip install websockets
 
 :: 启动 Python WebSocket 服务器
 echo Starting Python WebSocket server...
-python -c "import asyncio; import websockets; async def echo(websocket, path):\
-    async for message in websocket:\
-        print(f'Received message: {message}')\
-        await websocket.send(f'Message received: {message}')\
-async def main():\
-    async with websockets.serve(echo, 'localhost', 8765):\
-        print('WebSocket server started at ws://localhost:8765')\
-        await asyncio.Future()  # run forever\
-if __name__ == '__main__':\
-    asyncio.run(main())"
+python server.py
 
 :: 显示消息并暂停脚本
 echo WebSocket server is running. Press any key to exit...
