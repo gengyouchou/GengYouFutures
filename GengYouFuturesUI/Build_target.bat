@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 
 REM 设置源代码和构建目录
 set "SOURCE_DIR=%cd%"
@@ -13,7 +14,15 @@ if not exist "%BUILD_DIR%" (
 REM 确保在源目录中存在 CMakeLists.txt 文件
 if exist "%SOURCE_DIR%\CMakeLists.txt" (
     echo CMakeLists.txt found in %SOURCE_DIR%. Running CMake configuration...
-    cmake -S "%SOURCE_DIR%" -B "%BUILD_DIR%"
+
+    REM 如果构建目录已存在，清理旧的构建文件
+    if exist "%BUILD_DIR%" (
+        echo Cleaning old build files...
+        rd /s /q "%BUILD_DIR%"
+    )
+    
+    REM 运行 CMake 配置
+    cmake -S "%SOURCE_DIR%" -B "%BUILD_DIR%" -G "Visual Studio 16 2019" -A x64
     if %errorlevel% neq 0 (
         echo Error: CMake configuration failed with error code %errorlevel%.
         exit /b %errorlevel%
@@ -36,3 +45,4 @@ if %errorlevel% neq 0 (
 
 REM 可选：返回源代码目录
 cd "%SOURCE_DIR%"
+endlocal
