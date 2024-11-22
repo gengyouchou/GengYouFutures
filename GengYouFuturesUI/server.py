@@ -8,15 +8,14 @@ import win32file
 connected_clients = set()
 
 # WebSocket 处理函数
-async def echo(websocket, path):
-    # 添加到已连接的客户端列表
-    connected_clients.add(websocket)
-    print(f"New client connected: {websocket.remote_address}")
+async def handle_websocket(websocket, path):
+    # 在此函数中进行您需要的处理
     try:
-        # 保持连接直到客户端断开
-        async for message in websocket:
+        print(f"New WebSocket connection from {websocket.remote_address}")
+        while True:
+            message = await websocket.recv()  # 等待客户端消息
             print(f"Received WebSocket message: {message}")
-            await websocket.send(f"Message received: {message}")
+            # 在这里您可以根据业务需要处理消息
     except websockets.exceptions.ConnectionClosed:
         print(f"Client disconnected: {websocket.remote_address}")
     finally:
@@ -63,7 +62,7 @@ async def main():
     pipe_name = r'\\.\pipe\FuturesPipe'  # C++ 定义的管道名称
 
     # 启动 WebSocket 服务器
-    websocket_server = websockets.serve(echo, 'localhost', 8765)
+    websocket_server = websockets.serve(handle_websocket, 'localhost', 8765)
     print('WebSocket server started at ws://localhost:8765')
 
     # 同时运行 WebSocket 服务器和管道处理
