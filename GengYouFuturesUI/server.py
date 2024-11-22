@@ -7,7 +7,7 @@ import win32file
 # WebSocket 客户端列表
 connected_clients = set()
 
-# WebSocket 处理函数，处理客户端连接和断开
+# WebSocket 处理函数
 async def echo(websocket, path):
     # 添加到已连接的客户端列表
     connected_clients.add(websocket)
@@ -24,8 +24,7 @@ async def echo(websocket, path):
         connected_clients.remove(websocket)
 
 # 从命名管道读取数据
-def read_from_pipe():
-    pipe_name = r'\\.\pipe\FuturesPipe'  # C++ 端定义的管道名称
+async def read_from_pipe(pipe_name):
     try:
         # 打开命名管道
         handle = win32file.CreateFile(
@@ -44,28 +43,34 @@ def read_from_pipe():
             if result == 0:  # 如果读取成功
                 message = data.decode("utf-8")  # 解码为字符串
                 print(f"Received data from pipe: {message}")
-                yield message  # 使用生成器逐条返回数据
+                yield message  # 使用异步生成器逐条返回数据
+            await asyncio.sleep(0.1)  # 避免过度占用资源
     except Exception as e:
         print(f"Error reading from pipe: {e}")
 
 # 从管道读取数据并广播给 WebSocket 客户端
-async def pipe_to_websocket():
-    for message in read_from_pipe():
+async def pipe_to_websocket(pipe_name):
+    async for message in read_from_pipe(pipe_name):
         if connected_clients:  # 只有当有客户端连接时才广播
             print(f"Broadcasting to {len(connected_clients)} clients: {message}")
             await asyncio.gather(
-                *[client.send(message) for client in connected_clients]
+                *[client.send(message) for client in connected_clients],
+                return_exceptions=True  # 防止单个客户端异常中断所有广播
             )
-        await asyncio.sleep(1)  # 每秒检查一次管道数据
 
-# 启动 WebSocket 服务器
+# 主函数，启动服务器和管道数据处理
 async def main():
+    pipe_name = r'\\.\pipe\FuturesPipe'  # C++ 定义的管道名称
+
     # 启动 WebSocket 服务器
-    server = await websockets.serve(echo, 'localhost', 8765)
+    websocket_server = websockets.serve(echo, 'localhost', 8765)
     print('WebSocket server started at ws://localhost:8765')
 
-    # 启动管道到 WebSocket 的数据转发任务
-    await pipe_to_websocket()
+    # 同时运行 WebSocket 服务器和管道处理
+    await asyncio.gather(
+        websocket_server,
+        pipe_to_websocket(pipe_name)
+    )
 
 if __name__ == '__main__':
     asyncio.run(main())
