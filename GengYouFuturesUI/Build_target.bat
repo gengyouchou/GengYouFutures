@@ -1,40 +1,38 @@
 @echo off
-REM 定义项目根目录
-set ROOT_DIR=%~dp0
 
-REM 定义构建目录
-set BUILD_DIR=%ROOT_DIR%build
+REM 设置源代码和构建目录
+set "SOURCE_DIR=%cd%"
+set "BUILD_DIR=%cd%\x64"
 
-REM 切换到项目根目录
-cd /d %ROOT_DIR%
-
-REM 检查是否已存在构建目录，如果存在则清理
-if exist %BUILD_DIR% (
-    echo Cleaning existing build directory...
-    rmdir /s /q %BUILD_DIR%
+REM 检查构建目录是否存在，不存在则创建
+if not exist "%BUILD_DIR%" (
+    echo Creating build directory at %BUILD_DIR%...
+    mkdir "%BUILD_DIR%"
 )
 
-REM 创建新的构建目录
-mkdir %BUILD_DIR%
-cd %BUILD_DIR%
+REM 确保在源目录中存在 CMakeLists.txt 文件
+if exist "%SOURCE_DIR%\CMakeLists.txt" (
+    echo CMakeLists.txt found in %SOURCE_DIR%. Running CMake configuration...
+    cmake -S "%SOURCE_DIR%" -B "%BUILD_DIR%"
+    if %errorlevel% neq 0 (
+        echo Error: CMake configuration failed with error code %errorlevel%.
+        exit /b %errorlevel%
+    )
+) else (
+    echo Error: CMakeLists.txt not found in %SOURCE_DIR%.
+    exit /b 1
+)
 
-REM 配置项目
-echo Running CMake configuration...
-cmake .. -G "Visual Studio 16 2019" -A x64
+REM 构建项目
+echo Starting build process...
+cmake --build "%BUILD_DIR%" --config Release
 if %errorlevel% neq 0 (
-    echo CMake configuration failed!
+    echo Error: Build process failed with error code %errorlevel%.
     exit /b %errorlevel%
+) else (
+    echo Build succeeded. Executable should be in:
+    echo %BUILD_DIR%\Release
 )
 
-REM 编译项目
-echo Building project...
-cmake --build . --config Debug
-if %errorlevel% neq 0 (
-    echo Build failed!
-    exit /b %errorlevel%
-)
-
-REM 提示完成并显示生成文件路径
-echo Build completed successfully!
-echo Executable is located at:
-echo %BUILD_DIR%\Debug\GengYouFuturesUI.exe
+REM 可选：返回源代码目录
+cd "%SOURCE_DIR%"
