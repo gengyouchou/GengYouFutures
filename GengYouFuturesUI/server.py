@@ -6,18 +6,22 @@ import win32file
 
 # WebSocket 客户端列表
 connected_clients = set()
-
 # WebSocket 处理函数
 async def handle_websocket(websocket, path):
-    # 在此函数中进行您需要的处理
     try:
-        print(f"New WebSocket connection from {websocket.remote_address}")
+        print(f"New WebSocket connection from {websocket.remote_address} with path {path}")
+        # 将客户端添加到客户端列表
+        connected_clients.add(websocket)
+
         while True:
             message = await websocket.recv()  # 等待客户端消息
             print(f"Received WebSocket message: {message}")
-            # 在这里您可以根据业务需要处理消息
+            # 这里您可以根据业务需要处理消息
+
     except websockets.exceptions.ConnectionClosed:
         print(f"Client disconnected: {websocket.remote_address}")
+    except Exception as e:
+        print(f"Error handling WebSocket connection: {e}")
     finally:
         # 从客户端列表中移除断开连接的客户端
         connected_clients.remove(websocket)
