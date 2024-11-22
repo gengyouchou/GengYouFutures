@@ -1,10 +1,12 @@
-#include <windows.h>
+#include <chrono>
 #include <iostream>
 #include <string>
+#include <thread>
+#include <windows.h>
 
 int main()
 {
-    const char *pipeName = R"(\.\pipe\FuturesPipe)"; // Named pipe name
+    const char *pipeName = R"(\\.\pipe\FuturesPipe)"; // Named pipe name
 
     // Create the named pipe
     HANDLE hPipe = CreateNamedPipe(
@@ -36,19 +38,32 @@ int main()
 
     std::cout << "Connection successful, starting to send data..." << std::endl;
 
-    // Simulate futures data
-    std::string data = R"({"time": "2024-11-17 10:05", "price": 1234.56, "volume": 100, "symbol": "FUTURE1"})";
+    // Simulate sending futures data continuously
+    int count = 0;
+    while (true)
+    {
+        // Simulate futures data
+        std::string data = R"({"time": "2024-11-17 10:05", "price": )" + std::to_string(1234.56 + count) +
+                           R"(, "volume": 100, "symbol": "FUTURE1"})";
 
-    // Write data to the pipe
-    DWORD bytesWritten;
-    BOOL writeResult = WriteFile(hPipe, data.c_str(), data.size(), &bytesWritten, nullptr);
-    if (writeResult)
-    {
-        std::cout << "Successfully wrote data: " << data << std::endl;
-    }
-    else
-    {
-        std::cerr << "Failed to write data, error code: " << GetLastError() << std::endl;
+        // Write data to the pipe
+        DWORD bytesWritten;
+        BOOL writeResult = WriteFile(hPipe, data.c_str(), data.size(), &bytesWritten, nullptr);
+        if (writeResult)
+        {
+            std::cout << "Successfully wrote data: " << data << std::endl;
+        }
+        else
+        {
+            std::cerr << "Failed to write data, error code: " << GetLastError() << std::endl;
+            break;
+        }
+
+        // Simulate a delay between data points
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+
+        // Increment count for new data
+        ++count;
     }
 
     // Close the pipe
