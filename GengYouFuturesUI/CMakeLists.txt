@@ -33,9 +33,28 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(OpenSSL)
 
+# 自动下载并配置 Asio（Crow 的另一个依赖）
+FetchContent_Declare(
+  Asio
+  GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
+  GIT_TAG        master
+)
+FetchContent_MakeAvailable(Asio)
+
 # 定义项目的可执行文件
 add_executable(GengYouFuturesUI GengYouFuturesUI.cpp)
 
 # 链接依赖库
-target_include_directories(GengYouFuturesUI PRIVATE ${Boost_INCLUDE_DIRS} ${CROW_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
-target_link_libraries(GengYouFuturesUI PRIVATE Boost::headers Boost::boost OpenSSL::SSL Crow::Crow)
+target_include_directories(GengYouFuturesUI PRIVATE
+  ${Boost_INCLUDE_DIRS}
+  ${CROW_INCLUDE_DIRS}
+  ${OPENSSL_INCLUDE_DIR}
+  ${ASIO_INCLUDE_DIR}
+)
+
+target_link_libraries(GengYouFuturesUI PRIVATE
+  Boost::headers
+  Boost::boost
+  OpenSSL::SSL
+  Crow::Crow
+)
