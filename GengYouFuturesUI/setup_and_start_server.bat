@@ -31,15 +31,15 @@ if not exist "venv" (
 )
 
 :: 激活虚拟环境
-echo Activating virtual environment...
-call venv\Scripts\activate.bat
-if %errorlevel% neq 0 (
-    echo Failed to activate virtual environment. Please check your environment setup.
+if exist "venv\Scripts\activate.bat" (
+    call venv\Scripts\activate.bat
+) else (
+    echo Virtual environment activation script not found. Please check your virtual environment setup.
     pause
     exit /b 1
 )
 
-:: 确保 pip 是最新的（直接调用虚拟环境中的 Python）
+:: 确保 pip 是最新的
 echo Updating pip to the latest version...
 venv\Scripts\python.exe -m pip install --upgrade pip
 if %errorlevel% neq 0 (
@@ -48,11 +48,18 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-:: 安装依赖包
+:: 安装依赖包（包括 aiohttp）
 echo Installing required packages...
-pip install websockets pywin32
+pip install websockets pywin32 aiohttp
 if %errorlevel% neq 0 (
     echo Failed to install required packages. Please check your internet connection or pip configuration.
+    pause
+    exit /b 1
+)
+
+:: 检查 server.py 是否存在
+if not exist "server.py" (
+    echo server.py not found in the current directory. Please check your setup.
     pause
     exit /b 1
 )
@@ -66,8 +73,7 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-:: 显示消息并暂停脚本
+:: 脚本结束
 echo WebSocket server is running. Press any key to exit...
 pause
-
 endlocal

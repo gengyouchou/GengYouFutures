@@ -1,30 +1,18 @@
 import asyncio
-import websockets
+from aiohttp import web
 import json
 import win32pipe
 import win32file
 
-# WebSocket 客户端列表
-connected_clients = set()
-# WebSocket 处理函数
-async def handle_websocket(websocket):
-    try:
-        print(f"New WebSocket connection from {websocket.remote_address} with path")
-        # 将客户端添加到客户端列表
-        connected_clients.add(websocket)
+# 全局存储从管道接收到的数据
+received_data = []
 
-        while True:
-            message = await websocket.recv()  # 等待客户端消息
-            print(f"Received WebSocket message: {message}")
-            # 这里您可以根据业务需要处理消息
-
-    except websockets.exceptions.ConnectionClosed:
-        print(f"Client disconnected: {websocket.remote_address}")
-    except Exception as e:
-        print(f"Error handling WebSocket connection: {e}")
-    finally:
-        # 从客户端列表中移除断开连接的客户端
-        connected_clients.remove(websocket)
+# HTTP 处理函数，用于返回从管道接收的数据
+async def handle_http(request):
+    """
+    返回从命名管道接收到的所有数据。
+    """
+    return web.json_response(received_data)
 
 # 从命名管道读取数据
 async def read_from_pipe(pipe_name):
@@ -46,34 +34,33 @@ async def read_from_pipe(pipe_name):
             if result == 0:  # 如果读取成功
                 message = data.decode("utf-8")  # 解码为字符串
                 print(f"Received data from pipe: {message}")
-                yield message  # 使用异步生成器逐条返回数据
+                received_data.append(message)  # 将数据存储到全局列表
+                # 如果数据过多，可以选择定期清理
+                if len(received_data) > 1000:
+                    received_data.pop(0)  # 移除最早的一条数据
             await asyncio.sleep(0.1)  # 避免过度占用资源
     except Exception as e:
         print(f"Error reading from pipe: {e}")
 
-# 从管道读取数据并广播给 WebSocket 客户端
-async def pipe_to_websocket(pipe_name):
-    async for message in read_from_pipe(pipe_name):
-        if connected_clients:  # 只有当有客户端连接时才广播
-            print(f"Broadcasting to {len(connected_clients)} clients: {message}")
-            await asyncio.gather(
-                *[client.send(message) for client in connected_clients],
-                return_exceptions=True  # 防止单个客户端异常中断所有广播
-            )
-
-# 主函数，启动服务器和管道数据处理
+# 主函数，启动 HTTP 服务器和管道数据处理
 async def main():
     pipe_name = r'\\.\pipe\FuturesPipe'  # C++ 定义的管道名称
 
-    # 启动 WebSocket 服务器
-    websocket_server = websockets.serve(handle_websocket, 'localhost', 8765)
-    print('WebSocket server started at ws://localhost:8765')
+    # 创建 aiohttp 应用
+    app = web.Application()
 
-    # 同时运行 WebSocket 服务器和管道处理
-    await asyncio.gather(
-        websocket_server,
-        pipe_to_websocket(pipe_name)
-    )
+    # 添加路由：访问根路径返回从管道读取的数据
+    app.router.add_get('/', handle_http)
+
+    # 启动 HTTP 服务器
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, 'localhost', 8080)
+    print('HTTP server started at http://localhost:8080')
+    await site.start()
+
+    # 同时运行 HTTP 服务器和管道处理
+    await read_from_pipe(pipe_name)
 
 if __name__ == '__main__':
     asyncio.run(main())
