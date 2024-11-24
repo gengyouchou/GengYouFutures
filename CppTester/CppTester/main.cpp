@@ -417,8 +417,8 @@ void thread_main()
                 CheckConnected = 0;
             }
 
-            printf("[UserId:%s], [StrategyMode:%ld], [ClosingKeyPriceLevel:%ld], [BidOfferLongShortThreshold:%ld], [BidOfferLongShortExtremeValue:%ld], [BidOfferLongShortAttackSlope:%f], [ActivePoint:%ld], [MaximumLoss:%f]\n",
-                   g_strUserId.c_str(), gStrategyConfig.StrategyMode, gStrategyConfig.ClosingKeyPriceLevel,
+            printf("[UserId:%s], [StrategyMode:%ld], [SpecifyLongShort:%d], [ClosingKeyPriceLevel:%ld], [BidOfferLongShortThreshold:%ld], [BidOfferLongShortExtremeValue:%ld], [BidOfferLongShortAttackSlope:%f], [ActivePoint:%ld], [MaximumLoss:%f]\n",
+                   g_strUserId.c_str(), gStrategyConfig.StrategyMode, gStrategyConfig.SpecifyLongShort, gStrategyConfig.ClosingKeyPriceLevel,
                    gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.BidOfferLongShortExtremeValue, gStrategyConfig.BidOfferLongShortAttackSlope, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss);
             printf("=========================================\n");
             printf("[CurMtxPrice: %ld] ", gCurCommPrice[MtxCommodtyInfo] / 100);
@@ -559,6 +559,11 @@ void readConfig()
             gStrategyConfig.StrategyMode = config["STRATEGY_MODE"].as<LONG>();
         }
 
+        if (config["SPECIFY_LONG_SHORT"])
+        {
+            gStrategyConfig.SpecifyLongShort = config["SPECIFY_LONG_SHORT"].as<SHORT>();
+        }
+
         DEBUG(DEBUG_LEVEL_INFO, "Closing Key Price Level: %ld", gStrategyConfig.ClosingKeyPriceLevel);
         DEBUG(DEBUG_LEVEL_INFO, "Bid Offer Long Short Threshold: %ld", gStrategyConfig.BidOfferLongShortThreshold);
         DEBUG(DEBUG_LEVEL_INFO, "Bid Offer Long Short Extreme Value: %ld", gStrategyConfig.BidOfferLongShortExtremeValue);
@@ -566,6 +571,7 @@ void readConfig()
         DEBUG(DEBUG_LEVEL_INFO, "Activity Point: %ld", gStrategyConfig.ActivePoint);
         DEBUG(DEBUG_LEVEL_INFO, "Maximum Loss: %f", gStrategyConfig.MaximumLoss);
         DEBUG(DEBUG_LEVEL_INFO, "STRATEGY_MODE: %ld", gStrategyConfig.StrategyMode);
+        DEBUG(DEBUG_LEVEL_INFO, "SPECIFY_LONG_SHORT: %d", gStrategyConfig.SpecifyLongShort);
     }
     catch (const YAML::BadFile &e)
     {

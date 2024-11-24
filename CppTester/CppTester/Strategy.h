@@ -44,6 +44,7 @@ struct STRATEGY_CONFIG
     LONG ActivePoint;
     DOUBLE MaximumLoss;
     LONG StrategyMode;
+    SHORT SpecifyLongShort;
 };
 
 VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo);
@@ -137,6 +138,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 #define BID_OFFER_LONG_SHORT_EXTREME_VALUE 150000
 #define BID_OFFER_LONG_SHORT_ATTACK_SLOPE 30
 #define STRATEGY_MODE -1
+#define SPECIFY_LONG_SHORT 0
 
 // leading stocks
 
