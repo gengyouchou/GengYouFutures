@@ -22,6 +22,9 @@ async def handle_http(request):
         'data': received_data
     }
 
+    # 调试信息，打印即将返回的响应数据
+    print(f"HTTP Response: {response_data}")
+
     # 返回包含当前时间和管道数据的JSON响应
     return web.json_response(response_data)
 
@@ -32,6 +35,7 @@ async def read_from_pipe(pipe_name):
     """
     while True:
         try:
+            print(f"Attempting to connect to pipe: {pipe_name}")
             # 打开命名管道
             handle = win32file.CreateFile(
                 pipe_name,
@@ -63,7 +67,7 @@ async def read_from_pipe(pipe_name):
             print(f"Error connecting to pipe: {e}")
             await asyncio.sleep(5)  # 连接失败时，等待5秒再重试
 
-# 主函数，启动 HTTP 服务器和管道数据处理
+# 启动 HTTP 服务器和测试数据注入
 async def main():
     pipe_name = r'\\.\pipe\FuturesPipe'  # C++ 定义的管道名称
 
@@ -80,8 +84,20 @@ async def main():
     print('HTTP server started at http://localhost:8080')
     await site.start()
 
-    # 启动管道读取任务
-    asyncio.create_task(read_from_pipe(pipe_name))
+    # 模拟测试数据，不通过管道直接插入数据
+    received_data.extend([
+        "Test message 1",
+        "Test message 2",
+        "Test message 3",
+        "Test message 4",
+        "Test message 5"
+    ])
+
+    # 调试信息，检查当前的接收数据
+    print(f"Test Data Injected: {received_data}")
+
+    # 启动管道读取任务（如果管道工作正常）
+    # asyncio.create_task(read_from_pipe(pipe_name))
 
     # 保持主线程运行，等待终止
     await asyncio.Event().wait()

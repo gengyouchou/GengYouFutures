@@ -84,23 +84,28 @@
 
         // Fetch data from the server
         async function fetchData() {
+            console.log("Fetching data..."); // Debugging: Indicate fetch attempt
             try {
                 const response = await fetch("http://localhost:8080/");
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
+                console.log("Data fetched successfully!"); // Debugging: Successful fetch
+
                 const data = await response.json();
                 updateUI(data);
             } catch (error) {
-                console.error("Error fetching data:", error);
+                console.error("Error fetching data:", error); // Debugging: Error message
                 appendLog("Error fetching data: " + error.message);
 
                 // Retry fetching data after 5 seconds
+                console.log("Retrying fetch in 5 seconds..."); // Debugging: Retry message
                 setTimeout(fetchData, 5000);
             }
         }
 
         // Update chart and log with fetched data
         function updateUI(data) {
+            console.log("Updating UI with new data..."); // Debugging: UI update start
             data.forEach((message) => {
                 // Assuming the message is in JSON format: {time, price, volume, symbol}
                 const { time, price, volume, symbol } = message;
@@ -120,6 +125,7 @@
                 }
             });
 
+            console.log("UI updated with new data!"); // Debugging: UI update complete
             lineChart.update();
         }
 
