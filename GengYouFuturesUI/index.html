@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-time Futures Data</title>
+    <title>Real-time Futures Data Viewer</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
@@ -70,7 +70,7 @@
                 y: {
                     title: {
                         display: true,
-                        text: "Value"
+                        text: "Price"
                     }
                 }
             }
@@ -89,32 +89,29 @@
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
                 const data = await response.json();
-
-                // Log and update chart
                 updateUI(data);
             } catch (error) {
                 console.error("Error fetching data:", error);
                 appendLog("Error fetching data: " + error.message);
+
+                // Retry fetching data after 5 seconds
+                setTimeout(fetchData, 5000);
             }
         }
 
         // Update chart and log with fetched data
         function updateUI(data) {
-            data.forEach((message, index) => {
-                // Assume the message is in a format like "symbol,time,price,volume"
-                const parts = message.split(',');
-                if (parts.length !== 4) return; // Skip invalid data
-
-                const [symbol, time, price, volume] = parts;
+            data.forEach((message) => {
+                // Assuming the message is in JSON format: {time, price, volume, symbol}
+                const { time, price, volume, symbol } = message;
                 const timestamp = new Date(time).toLocaleTimeString();
-                const parsedPrice = parseFloat(price);
 
                 // Log data
-                appendLog(`[${timestamp}] Symbol: ${symbol}, Price: ${parsedPrice}, Volume: ${volume}`);
+                appendLog(`[${timestamp}] Symbol: ${symbol}, Price: ${price}, Volume: ${volume}`);
 
                 // Update chart
                 chartData.labels.push(timestamp);
-                chartData.datasets[0].data.push(parsedPrice);
+                chartData.datasets[0].data.push(price);
 
                 // Limit the chart to the last 50 data points
                 if (chartData.labels.length > 50) {
@@ -134,7 +131,7 @@
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        // Fetch data every 3 seconds
+        // Retry fetching data every 3 seconds
         setInterval(fetchData, 3000);
 
         // Initial data fetch
