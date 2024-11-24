@@ -105,13 +105,22 @@
         function updateUI(data) {
             console.log("Updating UI with new data..."); // Debugging: UI update start
 
+            // Log the full data object for debugging
+            console.log("Fetched data:", data);
+
             // Ensure 'data' is an object and 'data' is an array inside the object
             if (data && Array.isArray(data.data)) {
                 data.data.forEach((message, index) => {
-                    // Log the index of the data item (1-based index)
                     console.log("Processing message #" + (index + 1));  // Log the index (1-based)
 
+                    // Log the raw message data
+                    console.log("Raw message data:", message);
+
+                    // Check if expected fields are present
                     const { price, volume, symbol } = message;
+                    if (price === undefined || volume === undefined || symbol === undefined) {
+                        console.warn(`Missing data in message #${index + 1}:`, message);
+                    }
 
                     // Log the data (without time)
                     appendLog(`Message #${index + 1}: Symbol: ${symbol}, Price: ${price}, Volume: ${volume}`);
