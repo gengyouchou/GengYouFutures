@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Futures Data</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #log {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+            background-color: #f9f9f9;
+        }
+
+        canvas {
+            max-width: 100%;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Real-time Futures Data Viewer</h1>
+    <div id="log"></div>
+    <canvas id="chart"></canvas>
+
+    <script>
+        const logDiv = document.getElementById("log");
+        const chartCtx = document.getElementById("chart").getContext("2d");
+
+        // Line chart setup
+        const chartData = {
+            labels: [], // Timestamps
+            datasets: [{
+                label: "Price",
+                data: [],
+                borderColor: "blue",
+                backgroundColor: "rgba(0, 0, 255, 0.1)",
+                borderWidth: 2,
+                fill: true,
+            }]
+        };
+
+        const chartOptions = {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                },
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: "Timestamp"
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: "Value"
+                    }
+                }
+            }
+        };
+
+        const lineChart = new Chart(chartCtx, {
+            type: "line",
+            data: chartData,
+            options: chartOptions,
+        });
+
+        // Fetch data from the server
+        async function fetchData() {
+            try {
+                const response = await fetch("http://localhost:8080/");
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                const data = await response.json();
+
+                // Log and update chart
+                updateUI(data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                appendLog("Error fetching data: " + error.message);
+            }
+        }
+
+        // Update chart and log with fetched data
+        function updateUI(data) {
+            data.forEach((message, index) => {
+                // Assume the message is in a format like "symbol,time,price,volume"
+                const parts = message.split(',');
+                if (parts.length !== 4) return; // Skip invalid data
+
+                const [symbol, time, price, volume] = parts;
+                const timestamp = new Date(time).toLocaleTimeString();
+                const parsedPrice = parseFloat(price);
+
+                // Log data
+                appendLog(`[${timestamp}] Symbol: ${symbol}, Price: ${parsedPrice}, Volume: ${volume}`);
+
+                // Update chart
+                chartData.labels.push(timestamp);
+                chartData.datasets[0].data.push(parsedPrice);
+
+                // Limit the chart to the last 50 data points
+                if (chartData.labels.length > 50) {
+                    chartData.labels.shift();
+                    chartData.datasets[0].data.shift();
+                }
+            });
+
+            lineChart.update();
+        }
+
+        // Append log to the logDiv and keep it scrolled to the bottom
+        function appendLog(message) {
+            const newLogEntry = document.createElement("div");
+            newLogEntry.textContent = message;
+            logDiv.appendChild(newLogEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // Fetch data every 3 seconds
+        setInterval(fetchData, 3000);
+
+        // Initial data fetch
+        fetchData();
+    </script>
+</body>
+
+</html>

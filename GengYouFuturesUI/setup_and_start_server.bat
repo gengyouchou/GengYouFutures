@@ -64,6 +64,20 @@ if not exist "server.py" (
     exit /b 1
 )
 
+:: 启动 HTTP 服务器（服务静态文件，如 index.html）
+if not exist "index.html" (
+    echo index.html not found in the current directory. Please check your setup.
+    pause
+    exit /b 1
+)
+
+start cmd /k "echo Starting HTTP server on port 8000... && python -m http.server 8000"
+if %errorlevel% neq 0 (
+    echo HTTP server failed to start. Please check for errors.
+    pause
+    exit /b 1
+)
+
 :: 启动 Python WebSocket 服务器
 echo Starting Python WebSocket server...
 python server.py
@@ -74,6 +88,6 @@ if %errorlevel% neq 0 (
 )
 
 :: 脚本结束
-echo WebSocket server is running. Press any key to exit...
+echo Both servers are running. Press any key to exit...
 pause
 endlocal
