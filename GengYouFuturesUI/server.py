@@ -18,7 +18,7 @@ async def cors_middleware(request, handler):
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'  # 允许的头部
     return response
 
-# HTTP 处理函数，用于返回从管道接收的数据和当前时间
+# HTTP 处理函数，用于返回从管道接收到的数据和当前时间
 async def handle_http(request):
     """
     返回从命名管道接收到的所有数据和当前时间。
@@ -94,20 +94,8 @@ async def main():
     print('HTTP server started at http://localhost:8080')
     await site.start()
 
-    # 模拟测试数据，不通过管道直接插入数据
-    received_data.extend([
-        "Test message 1",
-        "Test message 2",
-        "Test message 3",
-        "Test message 4",
-        "Test message 5"
-    ])
-
-    # 调试信息，检查当前的接收数据
-    print(f"Test Data Injected: {received_data}")
-
     # 启动管道读取任务（如果管道工作正常）
-    # asyncio.create_task(read_from_pipe(pipe_name))
+    asyncio.create_task(read_from_pipe(pipe_name))
 
     # 保持主线程运行，等待终止
     await asyncio.Event().wait()

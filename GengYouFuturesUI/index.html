@@ -92,7 +92,7 @@
                 console.log("Data fetched successfully!"); // Debugging: Successful fetch
 
                 const data = await response.json();
-                updateUI(data);
+                updateUI(data); // Process data
             } catch (error) {
                 console.error("Error fetching data:", error); // Debugging: Error message
                 appendLog("Error fetching data: " + error.message);
@@ -102,38 +102,45 @@
                 setTimeout(fetchData, 5000);
             }
         }
-
         // Update chart and log with fetched data
         function updateUI(data) {
             console.log("Updating UI with new data..."); // Debugging: UI update start
 
-            // Check if data is an array before proceeding with forEach
-            if (Array.isArray(data)) {
-                data.forEach((message) => {
-                    // Assuming the message is in JSON format: {time, price, volume, symbol}
+            // Ensure 'data' is an object and 'data' is an array inside the object
+            if (data && Array.isArray(data.data)) {
+                data.data.forEach((message) => {
+                    // Assuming the message contains {time, price, volume, symbol}
                     const { time, price, volume, symbol } = message;
-                    const timestamp = new Date(time).toLocaleTimeString();
 
-                    // Log data
-                    appendLog(`[${timestamp}] Symbol: ${symbol}, Price: ${price}, Volume: ${volume}`);
+                    // Try parsing the time, if not valid, log error
+                    const timestamp = new Date(time);
+                    if (isNaN(timestamp)) {
+                        console.error("Invalid date format for time:", time);
+                        appendLog("Error: Invalid date format for time.");
+                    } else {
+                        const formattedTime = timestamp.toLocaleTimeString();
 
-                    // Update chart
-                    chartData.labels.push(timestamp);
-                    chartData.datasets[0].data.push(price);
+                        // Log data
+                        appendLog(`[${formattedTime}] Symbol: ${symbol}, Price: ${price}, Volume: ${volume}`);
 
-                    // Limit the chart to the last 50 data points
-                    if (chartData.labels.length > 50) {
-                        chartData.labels.shift();
-                        chartData.datasets[0].data.shift();
+                        // Update chart
+                        chartData.labels.push(formattedTime);
+                        chartData.datasets[0].data.push(price);
+
+                        // Limit the chart to the last 50 data points
+                        if (chartData.labels.length > 50) {
+                            chartData.labels.shift();
+                            chartData.datasets[0].data.shift();
+                        }
                     }
                 });
             } else {
-                console.error("Fetched data is not an array:", data);
-                appendLog("Error: Data is not an array.");
+                console.error("Fetched data is not in the expected format:", data);
+                appendLog("Error: Fetched data is not in the expected format.");
             }
 
             console.log("UI updated with new data!"); // Debugging: UI update complete
-            lineChart.update();
+            lineChart.update(); // Update the chart with the new data
         }
 
         // Append log to the logDiv and keep it scrolled to the bottom
