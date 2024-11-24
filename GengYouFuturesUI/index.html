@@ -102,36 +102,28 @@
                 setTimeout(fetchData, 5000);
             }
         }
-        // Update chart and log with fetched data
         function updateUI(data) {
             console.log("Updating UI with new data..."); // Debugging: UI update start
 
             // Ensure 'data' is an object and 'data' is an array inside the object
             if (data && Array.isArray(data.data)) {
-                data.data.forEach((message) => {
-                    // Assuming the message contains {time, price, volume, symbol}
-                    const { time, price, volume, symbol } = message;
+                data.data.forEach((message, index) => {
+                    // Log the index of the data item (1-based index)
+                    console.log("Processing message #" + (index + 1));  // Log the index (1-based)
 
-                    // Try parsing the time, if not valid, log error
-                    const timestamp = new Date(time);
-                    if (isNaN(timestamp)) {
-                        console.error("Invalid date format for time:", time);
-                        appendLog("Error: Invalid date format for time.");
-                    } else {
-                        const formattedTime = timestamp.toLocaleTimeString();
+                    const { price, volume, symbol } = message;
 
-                        // Log data
-                        appendLog(`[${formattedTime}] Symbol: ${symbol}, Price: ${price}, Volume: ${volume}`);
+                    // Log the data (without time)
+                    appendLog(`Message #${index + 1}: Symbol: ${symbol}, Price: ${price}, Volume: ${volume}`);
 
-                        // Update chart
-                        chartData.labels.push(formattedTime);
-                        chartData.datasets[0].data.push(price);
+                    // Update chart (just use the price as before)
+                    chartData.labels.push(`Message #${index + 1}`);
+                    chartData.datasets[0].data.push(price);
 
-                        // Limit the chart to the last 50 data points
-                        if (chartData.labels.length > 50) {
-                            chartData.labels.shift();
-                            chartData.datasets[0].data.shift();
-                        }
+                    // Limit the chart to the last 50 data points
+                    if (chartData.labels.length > 50) {
+                        chartData.labels.shift();
+                        chartData.datasets[0].data.shift();
                     }
                 });
             } else {
@@ -142,6 +134,7 @@
             console.log("UI updated with new data!"); // Debugging: UI update complete
             lineChart.update(); // Update the chart with the new data
         }
+
 
         // Append log to the logDiv and keep it scrolled to the bottom
         function appendLog(message) {

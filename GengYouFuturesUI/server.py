@@ -1,9 +1,9 @@
-import asyncio
 from aiohttp import web
 import json
 import win32pipe
 import win32file
 from datetime import datetime
+import asyncio
 
 # 全局存储从管道接收到的数据
 received_data = []
@@ -23,8 +23,8 @@ async def handle_http(request):
     """
     返回从命名管道接收到的所有数据和当前时间。
     """
-    # 获取当前时间
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # 获取当前时间，转换为 ISO 8601 格式
+    current_time = datetime.now().isoformat()
 
     # 构建响应数据
     response_data = {
