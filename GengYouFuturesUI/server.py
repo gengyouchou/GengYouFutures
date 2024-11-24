@@ -3,16 +3,27 @@ from aiohttp import web
 import json
 import win32pipe
 import win32file
+from datetime import datetime
 
 # 全局存储从管道接收到的数据
 received_data = []
 
-# HTTP 处理函数，用于返回从管道接收的数据
+# HTTP 处理函数，用于返回从管道接收的数据和当前时间
 async def handle_http(request):
     """
-    返回从命名管道接收到的所有数据。
+    返回从命名管道接收到的所有数据和当前时间。
     """
-    return web.json_response(received_data)
+    # 获取当前时间
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # 构建响应数据
+    response_data = {
+        'time': current_time,
+        'data': received_data
+    }
+
+    # 返回包含当前时间和管道数据的JSON响应
+    return web.json_response(response_data)
 
 # 从命名管道读取数据
 async def read_from_pipe(pipe_name):
