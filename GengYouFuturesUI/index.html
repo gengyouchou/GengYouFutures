@@ -106,24 +106,31 @@
         // Update chart and log with fetched data
         function updateUI(data) {
             console.log("Updating UI with new data..."); // Debugging: UI update start
-            data.forEach((message) => {
-                // Assuming the message is in JSON format: {time, price, volume, symbol}
-                const { time, price, volume, symbol } = message;
-                const timestamp = new Date(time).toLocaleTimeString();
 
-                // Log data
-                appendLog(`[${timestamp}] Symbol: ${symbol}, Price: ${price}, Volume: ${volume}`);
+            // Check if data is an array before proceeding with forEach
+            if (Array.isArray(data)) {
+                data.forEach((message) => {
+                    // Assuming the message is in JSON format: {time, price, volume, symbol}
+                    const { time, price, volume, symbol } = message;
+                    const timestamp = new Date(time).toLocaleTimeString();
 
-                // Update chart
-                chartData.labels.push(timestamp);
-                chartData.datasets[0].data.push(price);
+                    // Log data
+                    appendLog(`[${timestamp}] Symbol: ${symbol}, Price: ${price}, Volume: ${volume}`);
 
-                // Limit the chart to the last 50 data points
-                if (chartData.labels.length > 50) {
-                    chartData.labels.shift();
-                    chartData.datasets[0].data.shift();
-                }
-            });
+                    // Update chart
+                    chartData.labels.push(timestamp);
+                    chartData.datasets[0].data.push(price);
+
+                    // Limit the chart to the last 50 data points
+                    if (chartData.labels.length > 50) {
+                        chartData.labels.shift();
+                        chartData.datasets[0].data.shift();
+                    }
+                });
+            } else {
+                console.error("Fetched data is not an array:", data);
+                appendLog("Error: Data is not an array.");
+            }
 
             console.log("UI updated with new data!"); // Debugging: UI update complete
             lineChart.update();
