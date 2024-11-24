@@ -8,6 +8,16 @@ from datetime import datetime
 # 全局存储从管道接收到的数据
 received_data = []
 
+# CORS 中间件
+@web.middleware
+async def cors_middleware(request, handler):
+    response = await handler(request)
+    # 允许所有来源的请求
+    response.headers['Access-Control-Allow-Origin'] = '*'  # 允许所有来源
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'  # 允许的方法
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'  # 允许的头部
+    return response
+
 # HTTP 处理函数，用于返回从管道接收的数据和当前时间
 async def handle_http(request):
     """
@@ -72,7 +82,7 @@ async def main():
     pipe_name = r'\\.\pipe\FuturesPipe'  # C++ 定义的管道名称
 
     # 创建 aiohttp 应用
-    app = web.Application()
+    app = web.Application(middlewares=[cors_middleware])  # 启用 CORS 中间件
 
     # 添加路由：访问根路径返回从管道读取的数据
     app.router.add_get('/', handle_http)
