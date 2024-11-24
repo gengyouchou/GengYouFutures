@@ -103,7 +103,7 @@
             }
         }
         function updateUI(data) {
-            console.log("Updating UI with new data..."); // Debugging: UI update start
+            console.log("Updating UI with new data...");
 
             // Log the full data object for debugging
             console.log("Fetched data:", data);
@@ -116,14 +116,19 @@
                     // Log the raw message data
                     console.log("Raw message data:", message);
 
+                    // Extract the data fields explicitly
+                    const time = message.time;
+                    const price = message.price;
+                    const volume = message.volume;
+                    const symbol = message.symbol;
+
                     // Check if expected fields are present
-                    const { price, volume, symbol } = message;
-                    if (price === undefined || volume === undefined || symbol === undefined) {
+                    if (time === undefined || price === undefined || volume === undefined || symbol === undefined) {
                         console.warn(`Missing data in message #${index + 1}:`, message);
                     }
 
-                    // Log the data (without time)
-                    appendLog(`Message #${index + 1}: Symbol: ${symbol}, Price: ${price}, Volume: ${volume}`);
+                    // Log the message
+                    appendLog(`Message #${index + 1}: Symbol: ${symbol}, Price: ${price}, Volume: ${volume}, Time: ${time}`);
 
                     // Update chart (just use the price as before)
                     chartData.labels.push(`Message #${index + 1}`);
@@ -140,9 +145,10 @@
                 appendLog("Error: Fetched data is not in the expected format.");
             }
 
-            console.log("UI updated with new data!"); // Debugging: UI update complete
+            console.log("UI updated with new data!");
             lineChart.update(); // Update the chart with the new data
         }
+
 
 
         // Append log to the logDiv and keep it scrolled to the bottom
