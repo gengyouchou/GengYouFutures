@@ -103,16 +103,13 @@ void loadLongShortIntegralValue(LONG &gLongShort)
         }
         else
         {
-            std::cerr << "LongShortIntegralValue not found in database.yaml. Setting default value to 0 and saving to file." << std::endl;
-            DEBUG(DEBUG_LEVEL_ERROR, "LongShortIntegralValue not found in database.yaml. Setting default value to 0 and saving to file.");
+            std::cerr << "LongShortIntegralValue not found in database.yaml. Setting default value to 0 and appending to file." << std::endl;
+            DEBUG(DEBUG_LEVEL_ERROR, "LongShortIntegralValue not found in database.yaml. Setting default value to 0 and appending to file.");
             gLongShort = 0; // Default value
 
-            // Add LongShortIntegralValue to the YAML configuration
-            config["LongShortIntegralValue"] = gLongShort;
-
-            // Write updated configuration back to database.yaml
-            std::ofstream fout(DATABASE_PATH);
-            fout << config;
+            // Append LongShortIntegralValue to the end of the file
+            std::ofstream fout(DATABASE_PATH, std::ios_base::app); // Open file in append mode
+            fout << "\nLongShortIntegralValue: " << gLongShort << "\n";
         }
     }
     catch (const YAML::BadFile &e)
