@@ -395,6 +395,12 @@ void thread_main()
 
         StrategySwitch(gStrategyConfig.StrategyMode, MtxCommodtyInfo);
 
+        if (gCurServerTime[0] == 5 && gCurServerTime[1] == 0 && gCurServerTime[2] == 0 ||
+            gCurServerTime[0] == 13 && gCurServerTime[1] == 45 && gCurServerTime[2] == 0)
+        {
+            UpdateLongShortIntegralValue(gLongShort);
+        }
+
         // Ouput start
 
         if (elapsed.count() >= refreshInterval)
