@@ -247,6 +247,8 @@ void release()
 
     delete pSKOsQuoteLib;
 
+    UpdateLongShortIntegralValue(gLongShort);
+
     CoUninitialize();
 }
 
@@ -588,6 +590,7 @@ int main()
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     readConfig();
+    loadLongShortIntegralValue(gLongShort);
 
     CoInitialize(NULL);
 
