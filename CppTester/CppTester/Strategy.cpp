@@ -87,7 +87,6 @@ LONG EstimatedLongSideKeyPrice(VOID);
 LONG EstimatedShortSideKeyPrice(VOID);
 LONG CountBidOfferLongShort(LONG nStockidx);
 LONG CountTransactionListLongShort(LONG nStockidx);
-
 // Function to load LongShortIntegralValue from database.yaml into the global variable gLongShort
 void loadLongShortIntegralValue(LONG &gLongShort)
 {
@@ -104,21 +103,29 @@ void loadLongShortIntegralValue(LONG &gLongShort)
         }
         else
         {
-            std::cerr << "LongShortIntegralValue not found in database.yaml" << std::endl;
-            DEBUG(DEBUG_LEVEL_DEBUG, "LongShortIntegralValue not found in database.yaml");
+            std::cerr << "LongShortIntegralValue not found in database.yaml. Setting default value to 0 and saving to file." << std::endl;
+            DEBUG(DEBUG_LEVEL_ERROR, "LongShortIntegralValue not found in database.yaml. Setting default value to 0 and saving to file.");
+            gLongShort = 0; // Default value
+
+            // Add LongShortIntegralValue to the YAML configuration
+            config["LongShortIntegralValue"] = gLongShort;
+
+            // Write updated configuration back to database.yaml
+            std::ofstream fout(DATABASE_PATH);
+            fout << config;
         }
     }
     catch (const YAML::BadFile &e)
     {
         std::cerr << "Failed to load database.yaml: " << e.what() << std::endl;
-        DEBUG(DEBUG_LEVEL_DEBUG, "Failed to load database.yaml");
+        DEBUG(DEBUG_LEVEL_ERROR, "Failed to load database.yaml");
         system("pause");
         exit(1); // Handle error if the file cannot be loaded
     }
     catch (const YAML::Exception &e)
     {
         std::cerr << "Error parsing database.yaml: " << e.what() << std::endl;
-        DEBUG(DEBUG_LEVEL_DEBUG, "Error parsing database.yaml");
+        DEBUG(DEBUG_LEVEL_ERROR, "Error parsing database.yaml");
         system("pause");
         exit(1); // Handle parsing errors
     }
