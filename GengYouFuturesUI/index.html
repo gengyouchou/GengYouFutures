@@ -28,6 +28,23 @@
             max-width: 100%;
             margin: 20px auto;
         }
+
+        #data-container {
+            margin-top: 20px;
+        }
+
+        .message-item {
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -35,14 +52,16 @@
     <h1>Real-time Futures Data Viewer</h1>
     <div id="log"></div>
     <canvas id="chart"></canvas>
+    <div id="data-container"></div>
 
     <script>
         const logDiv = document.getElementById("log");
         const chartCtx = document.getElementById("chart").getContext("2d");
+        const dataContainer = document.getElementById("data-container");
 
-        // Line chart setup
+        // Chart setup
         const chartData = {
-            labels: [], // Timestamps
+            labels: [],
             datasets: [{
                 label: "Price",
                 data: [],
@@ -64,7 +83,7 @@
                 x: {
                     title: {
                         display: true,
-                        text: "Timestamp"
+                        text: "Message Index"
                     }
                 },
                 y: {
@@ -82,87 +101,87 @@
             options: chartOptions,
         });
 
-        // Fetch data from the server
+        // Fetch and update data
         async function fetchData() {
-            console.log("Fetching data..."); // Debugging: Indicate fetch attempt
+            console.log("Fetching data...");
             try {
                 const response = await fetch("http://localhost:8080/");
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-                console.log("Data fetched successfully!"); // Debugging: Successful fetch
-
                 const data = await response.json();
-                updateUI(data); // Process data
+                updateUI(data);
             } catch (error) {
-                console.error("Error fetching data:", error); // Debugging: Error message
-                appendLog("Error fetching data: " + error.message);
+                appendLog("Error fetching data: " + error.message, true);
+                console.error("Error fetching data:", error);
 
-                // Retry fetching data after 5 seconds
-                console.log("Retrying fetch in 5 seconds..."); // Debugging: Retry message
+                // Retry after 5 seconds
                 setTimeout(fetchData, 5000);
             }
         }
-        function updateUI(data) {
-            console.log("Updating UI with new data...");
 
-            // Log the full data object for debugging
+        function updateUI(data) {
+            console.log("Updating UI...");
             console.log("Fetched data:", data);
 
-            // Ensure 'data' is an object and 'data' is an array inside the object
-            if (data && Array.isArray(data.data)) {
-                data.data.forEach((message, index) => {
-                    console.log("Processing message #" + (index + 1));  // Log the index (1-based)
-
-                    // Log the raw message data
-                    console.log("Raw message data:", message);
-
-                    // Extract the data fields explicitly
-                    const time = message.time;
-                    const price = message.price;
-                    const volume = message.volume;
-                    const symbol = message.symbol;
-
-                    // Check if expected fields are present
-                    if (time === undefined || price === undefined || volume === undefined || symbol === undefined) {
-                        console.warn(`Missing data in message #${index + 1}:`, message);
-                    }
-
-                    // Log the message
-                    appendLog(`Message #${index + 1}: Symbol: ${symbol}, Price: ${price}, Volume: ${volume}, Time: ${time}`);
-
-                    // Update chart (just use the price as before)
-                    chartData.labels.push(`Message #${index + 1}`);
-                    chartData.datasets[0].data.push(price);
-
-                    // Limit the chart to the last 50 data points
-                    if (chartData.labels.length > 50) {
-                        chartData.labels.shift();
-                        chartData.datasets[0].data.shift();
-                    }
-                });
-            } else {
+            if (!data || !Array.isArray(data.data)) {
+                appendLog("Error: Data format is invalid.", true);
                 console.error("Fetched data is not in the expected format:", data);
-                appendLog("Error: Fetched data is not in the expected format.");
+                return;
             }
 
-            console.log("UI updated with new data!");
-            lineChart.update(); // Update the chart with the new data
+            dataContainer.innerHTML = ""; // Clear old data
+            data.data.forEach((message, index) => {
+                const { time, price, volume, symbol } = message;
+
+                if (!time || !price || !volume || !symbol) {
+                    console.warn(`Incomplete data in message #${index + 1}:`, message);
+                    appendLog(`Warning: Missing fields in message #${index + 1}.`, true);
+                    return;
+                }
+
+                appendLog(`Message #${index + 1}: Symbol: ${symbol}, Price: ${price}, Volume: ${volume}, Time: ${time}`);
+
+                const messageElement = document.createElement("div");
+                messageElement.classList.add("message-item");
+                messageElement.innerHTML = `
+                    <div class="message-header">
+                        <strong>Message #${index + 1}</strong>
+                    </div>
+                    <div class="message-body">
+                        <p><strong>Symbol:</strong> ${symbol}</p>
+                        <p><strong>Price:</strong> ${price}</p>
+                        <p><strong>Volume:</strong> ${volume}</p>
+                        <p><strong>Time:</strong> ${time}</p>
+                    </div>
+                `;
+                dataContainer.appendChild(messageElement);
+
+                // Update chart
+                chartData.labels.push(`Message #${index + 1}`);
+                chartData.datasets[0].data.push(price);
+
+                if (chartData.labels.length > 50) {
+                    chartData.labels.shift();
+                    chartData.datasets[0].data.shift();
+                }
+            });
+
+            lineChart.update(); // Refresh chart
+            console.log("UI updated successfully!");
         }
 
-
-
-        // Append log to the logDiv and keep it scrolled to the bottom
-        function appendLog(message) {
+        function appendLog(message, isError = false) {
             const newLogEntry = document.createElement("div");
             newLogEntry.textContent = message;
+            if (isError) newLogEntry.classList.add("error-message");
             logDiv.appendChild(newLogEntry);
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        // Retry fetching data every 3 seconds
+        // Periodic data fetch
         setInterval(fetchData, 3000);
 
-        // Initial data fetch
+        // Initial fetch
         fetchData();
     </script>
 </body>
