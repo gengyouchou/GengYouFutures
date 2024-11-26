@@ -45,19 +45,28 @@
             color: red;
             font-weight: bold;
         }
+
+        #price-change {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 20px;
+            font-weight: bold;
+        }
     </style>
 </head>
 
 <body>
     <h1>Real-time Futures Data Viewer</h1>
-    <div id="log"></div>
+    <div id="price-change">Price Change: N/A</div>
     <canvas id="chart"></canvas>
+    <div id="log"></div>
     <div id="data-container"></div>
 
     <script>
         const logDiv = document.getElementById("log");
         const chartCtx = document.getElementById("chart").getContext("2d");
         const dataContainer = document.getElementById("data-container");
+        const priceChangeDiv = document.getElementById("price-change");
 
         // Chart setup
         const chartData = {
@@ -122,61 +131,59 @@
         function updateUI(data) {
             console.log("Updating UI with new data...");
 
-            // Log the full data object for debugging
-            console.log("Fetched data:", data);
-
-            // Clear the log container for new updates
-            const container = document.getElementById("data-container");
-            if (!container) {
-                console.error("Error: 'data-container' element not found.");
-                appendLog("Error: 'data-container' element not found.");
-                return;
-            }
-
-            container.innerHTML = "";
+            // Clear the container for new updates
+            dataContainer.innerHTML = "";
 
             if (data && Array.isArray(data.data)) {
+                let latestPrice = null; // For price change calculation
+
                 data.data.forEach((message, index) => {
                     console.log(`Processing message #${index + 1}`);
-
-                    // Check if message has all required fields
                     const { time, price, volume, symbol } = message;
 
-                    if (!time || !price || !volume || !symbol) {
+                    if (!time || price == null || volume == null || !symbol) {
                         console.warn(`Incomplete data in message #${index + 1}:`, message);
                         appendLog(`Warning: Incomplete data in message #${index + 1}: ${JSON.stringify(message)}`);
-                        return; // Skip processing this message
+                        return;
                     }
 
-                    // Append log for valid data
+                    // Append log
                     appendLog(`Message #${index + 1}: Symbol: ${symbol}, Price: ${price}, Volume: ${volume}, Time: ${time}`);
 
-                    // Update chart data
-                    chartData.labels.push(`Message #${index + 1}`);
+                    // Update chart
+                    chartData.labels.push(`Msg #${index + 1}`);
                     chartData.datasets[0].data.push(price);
 
-                    // Limit chart to the last 50 points
+                    // Limit chart data
                     if (chartData.labels.length > 50) {
                         chartData.labels.shift();
                         chartData.datasets[0].data.shift();
                     }
 
-                    // Display message in UI
+                    // Update latest price
+                    latestPrice = price;
+
+                    // Add message to UI
                     const messageElement = document.createElement("div");
                     messageElement.classList.add("message-item");
                     messageElement.innerHTML = `
-                <div class="message-header">
-                    <strong>Message #${index + 1}</strong>
-                </div>
-                <div class="message-body">
-                    <p><strong>Symbol:</strong> ${symbol}</p>
-                    <p><strong>Price:</strong> ${price}</p>
-                    <p><strong>Volume:</strong> ${volume}</p>
-                    <p><strong>Time:</strong> ${time}</p>
-                </div>
-            `;
-                    container.appendChild(messageElement);
+                        <div><strong>Symbol:</strong> ${symbol}</div>
+                        <div><strong>Price:</strong> ${price}</div>
+                        <div><strong>Volume:</strong> ${volume}</div>
+                        <div><strong>Time:</strong> ${time}</div>
+                    `;
+                    dataContainer.appendChild(messageElement);
                 });
+
+                // Update price change
+                if (latestPrice != null) {
+                    const previousPrice = chartData.datasets[0].data.slice(-2, -1)[0] || latestPrice;
+                    const priceDiff = (latestPrice - previousPrice).toFixed(2);
+                    const color = priceDiff > 0 ? "green" : priceDiff < 0 ? "red" : "black";
+
+                    priceChangeDiv.textContent = `Price Change: ${priceDiff}`;
+                    priceChangeDiv.style.color = color;
+                }
             } else {
                 console.error("Fetched data is not in the expected format:", data);
                 appendLog("Error: Fetched data is not in the expected format.");
@@ -187,17 +194,15 @@
         }
 
         function appendLog(message, isError = false) {
-            const newLogEntry = document.createElement("div");
-            newLogEntry.textContent = message;
-            if (isError) newLogEntry.classList.add("error-message");
-            logDiv.appendChild(newLogEntry);
+            const logEntry = document.createElement("div");
+            logEntry.textContent = message;
+            if (isError) logEntry.classList.add("error-message");
+            logDiv.appendChild(logEntry);
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        // Periodic data fetch
+        // Fetch data periodically
         setInterval(fetchData, 3000);
-
-        // Initial fetch
         fetchData();
     </script>
 </body>
