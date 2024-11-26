@@ -120,54 +120,70 @@
         }
 
         function updateUI(data) {
-            console.log("Updating UI...");
+            console.log("Updating UI with new data...");
+
+            // Log the full data object for debugging
             console.log("Fetched data:", data);
 
-            if (!data || !Array.isArray(data.data)) {
-                appendLog("Error: Data format is invalid.", true);
-                console.error("Fetched data is not in the expected format:", data);
+            // Clear the log container for new updates
+            const container = document.getElementById("data-container");
+            if (!container) {
+                console.error("Error: 'data-container' element not found.");
+                appendLog("Error: 'data-container' element not found.");
                 return;
             }
 
-            dataContainer.innerHTML = ""; // Clear old data
-            data.data.forEach((message, index) => {
-                const { time, price, volume, symbol } = message;
+            container.innerHTML = "";
 
-                if (!time || !price || !volume || !symbol) {
-                    console.warn(`Incomplete data in message #${index + 1}:`, message);
-                    appendLog(`Warning: Missing fields in message #${index + 1}.`, true);
-                    return;
-                }
+            if (data && Array.isArray(data.data)) {
+                data.data.forEach((message, index) => {
+                    console.log(`Processing message #${index + 1}`);
 
-                appendLog(`Message #${index + 1}: Symbol: ${symbol}, Price: ${price}, Volume: ${volume}, Time: ${time}`);
+                    // Check if message has all required fields
+                    const { time, price, volume, symbol } = message;
 
-                const messageElement = document.createElement("div");
-                messageElement.classList.add("message-item");
-                messageElement.innerHTML = `
-                    <div class="message-header">
-                        <strong>Message #${index + 1}</strong>
-                    </div>
-                    <div class="message-body">
-                        <p><strong>Symbol:</strong> ${symbol}</p>
-                        <p><strong>Price:</strong> ${price}</p>
-                        <p><strong>Volume:</strong> ${volume}</p>
-                        <p><strong>Time:</strong> ${time}</p>
-                    </div>
-                `;
-                dataContainer.appendChild(messageElement);
+                    if (!time || !price || !volume || !symbol) {
+                        console.warn(`Incomplete data in message #${index + 1}:`, message);
+                        appendLog(`Warning: Incomplete data in message #${index + 1}: ${JSON.stringify(message)}`);
+                        return; // Skip processing this message
+                    }
 
-                // Update chart
-                chartData.labels.push(`Message #${index + 1}`);
-                chartData.datasets[0].data.push(price);
+                    // Append log for valid data
+                    appendLog(`Message #${index + 1}: Symbol: ${symbol}, Price: ${price}, Volume: ${volume}, Time: ${time}`);
 
-                if (chartData.labels.length > 50) {
-                    chartData.labels.shift();
-                    chartData.datasets[0].data.shift();
-                }
-            });
+                    // Update chart data
+                    chartData.labels.push(`Message #${index + 1}`);
+                    chartData.datasets[0].data.push(price);
 
-            lineChart.update(); // Refresh chart
-            console.log("UI updated successfully!");
+                    // Limit chart to the last 50 points
+                    if (chartData.labels.length > 50) {
+                        chartData.labels.shift();
+                        chartData.datasets[0].data.shift();
+                    }
+
+                    // Display message in UI
+                    const messageElement = document.createElement("div");
+                    messageElement.classList.add("message-item");
+                    messageElement.innerHTML = `
+                <div class="message-header">
+                    <strong>Message #${index + 1}</strong>
+                </div>
+                <div class="message-body">
+                    <p><strong>Symbol:</strong> ${symbol}</p>
+                    <p><strong>Price:</strong> ${price}</p>
+                    <p><strong>Volume:</strong> ${volume}</p>
+                    <p><strong>Time:</strong> ${time}</p>
+                </div>
+            `;
+                    container.appendChild(messageElement);
+                });
+            } else {
+                console.error("Fetched data is not in the expected format:", data);
+                appendLog("Error: Fetched data is not in the expected format.");
+            }
+
+            console.log("UI updated with new data!");
+            lineChart.update(); // Refresh the chart
         }
 
         function appendLog(message, isError = false) {
