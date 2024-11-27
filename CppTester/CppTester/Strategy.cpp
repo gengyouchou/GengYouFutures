@@ -3313,6 +3313,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     StrategyCaluOsTransactionListLongShort();
     BidOfferAndTransactionListLongShortSlope();
     CountNumberOfStocksRisingAndFalling();
+    StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
 
     if (!(gCurServerTime[0] <= 5 || gCurServerTime[0] >= 15) &&
         !(gCurServerTime[0] >= 8 && gCurServerTime[0] < 14))
@@ -3328,7 +3329,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         // Trend strategy, The middle-aged man's trading method
         // Fall slowly, Rise slowly K
 
-        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         bool TimeIsUp = StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 40);
@@ -3370,7 +3370,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     {
         // Trend strategy, Breakthrough Long red K Long black K
 
-        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         StrategyCloseOneRoundTakeProfit(g_strUserId, MtxCommodtyInfo);
@@ -3406,7 +3405,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     case 10:
     {
         // Counter-trend strategy, V turn or A turn
-        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         bool TimeIsUp = StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 29);
