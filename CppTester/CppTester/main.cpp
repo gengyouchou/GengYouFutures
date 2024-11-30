@@ -462,7 +462,7 @@ void thread_main()
 
             printf("EvaluatePosition: %ld, FutureRight: %f, ClosedProfitLoss: %f", gEvaluatePosition, gFutureRight, gClosedProfitLoss);
 
-            if (gOpenInterestInfo.NeedToUpdate == FALSE && gOpenInterestInfo.openPosition != 0)
+            if (gOpenInterestInfo.openPosition != 0)
             {
                 printf(", Open Position: %d, AvgCost:%f, ProfitAndLoss: %f\n",
                        gOpenInterestInfo.openPosition,
