@@ -1177,12 +1177,12 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
     NewClose = ORDER_CLOSE_POSITION;
 #endif
 
+    gClosedProfitLoss = gOpenInterestInfo.profitAndLoss;
+
     if (-gClosedProfitLoss >= gStrategyConfig.MaximumLoss)
     {
         NewClose = ORDER_CLOSE_POSITION;
     }
-
-    gClosedProfitLoss += gOpenInterestInfo.profitAndLoss;
 
     long g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
                                                 false, // bAsyncOrder
