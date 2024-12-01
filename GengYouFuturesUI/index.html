@@ -27,13 +27,11 @@
         canvas {
             width: 100%;
             height: 500px;
-            /* 增大走勢圖的高度 */
             margin: 20px auto;
         }
 
         #data-container {
             display: none;
-            /* 隱藏單筆資料輸出窗格 */
         }
 
         .message-item {
@@ -63,7 +61,6 @@
     <div id="price-change">Price Change: N/A</div>
     <canvas id="chart"></canvas>
     <div id="log"></div>
-    <!-- 已隱藏的資料輸出區塊 -->
     <div id="data-container"></div>
 
     <script>
@@ -72,8 +69,7 @@
         const dataContainer = document.getElementById("data-container");
         const priceChangeDiv = document.getElementById("price-change");
 
-        // 初始化圖表數據
-        let chartData = {
+        const chartData = {
             labels: [],
             datasets: [{
                 label: "Price",
@@ -84,20 +80,6 @@
                 fill: true,
             }]
         };
-
-        // 從 localStorage 加載圖表數據
-        function loadChartData() {
-            const savedData = localStorage.getItem('chartData');
-            if (savedData) {
-                chartData = JSON.parse(savedData); // 解析並恢復儲存的圖表數據
-                lineChart.update();  // 更新圖表顯示
-            }
-        }
-
-        // 儲存圖表數據到 localStorage
-        function saveChartData() {
-            localStorage.setItem('chartData', JSON.stringify(chartData)); // 將圖表數據轉為字串儲存
-        }
 
         const lineChart = new Chart(chartCtx, {
             type: "line",
@@ -113,6 +95,20 @@
                 }
             }
         });
+
+        // 檢查 localStorage 中是否有儲存的圖表資料
+        function loadChartData() {
+            const savedData = localStorage.getItem('chartData');
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                if (parsedData && parsedData.labels && parsedData.datasets) {
+                    chartData.labels = parsedData.labels;
+                    chartData.datasets = parsedData.datasets;
+                    lineChart.update(); // 更新圖表
+                    console.log("Loaded chart data from localStorage:", parsedData);
+                }
+            }
+        }
 
         async function fetchData() {
             try {
@@ -132,11 +128,11 @@
             if (Array.isArray(data?.data)) {
                 let latestPrice = processMessages(data.data);
                 updatePriceChange(latestPrice);
-                saveChartData(); // 更新完數據後儲存
             } else {
                 appendLog("Error: Data format invalid.", true);
             }
             lineChart.update();
+            saveChartData(); // 更新完數據後儲存
         }
 
         function processMessages(messages) {
@@ -145,10 +141,8 @@
                 const { time, price, volume, symbol } = msg;
                 if (time && price != null && volume != null && symbol) {
                     appendLog(`Msg #${index + 1}: ${symbol} - $${price} Vol: ${volume} at ${time}`);
-                    // 增加資料至圖表
                     chartData.labels.push(`Msg #${index + 1}`);
                     chartData.datasets[0].data.push(price);
-
                     latestPrice = price;
                 } else {
                     appendLog(`Incomplete data at Msg #${index + 1}`, true);
@@ -159,7 +153,6 @@
 
         function updatePriceChange(latestPrice) {
             if (latestPrice != null) {
-                // 只顯示最新價格，並直接覆蓋之前顯示的數值
                 priceChangeDiv.textContent = `Price Change: ${latestPrice}`;
                 priceChangeDiv.style.color = "black";
             }
@@ -173,12 +166,19 @@
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        // 頁面加載時加載之前的數據
-        window.onload = () => {
-            loadChartData();  // 加載儲存的圖表數據
-            setInterval(fetchData, 3000);  // 每3秒抓取新數據
-            fetchData();  // 初次抓取數據
-        };
+        // 儲存圖表數據到 localStorage
+        function saveChartData() {
+            const savedData = {
+                labels: chartData.labels,
+                datasets: chartData.datasets,
+            };
+            localStorage.setItem('chartData', JSON.stringify(savedData));
+            console.log("Chart data saved to localStorage:", savedData);
+        }
+
+        setInterval(fetchData, 3000);
+        fetchData();
+        loadChartData(); // 頁面加載時從 localStorage 更新資料
     </script>
 </body>
 
