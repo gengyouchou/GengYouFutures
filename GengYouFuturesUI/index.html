@@ -25,12 +25,15 @@
         }
 
         canvas {
-            max-width: 100%;
+            width: 100%;
+            height: 500px;
+            /* 增大走勢圖的高度 */
             margin: 20px auto;
         }
 
         #data-container {
-            margin-top: 20px;
+            display: none;
+            /* 隱藏單筆資料輸出窗格 */
         }
 
         .message-item {
@@ -60,6 +63,7 @@
     <div id="price-change">Price Change: N/A</div>
     <canvas id="chart"></canvas>
     <div id="log"></div>
+    <!-- 已隱藏的資料輸出區塊 -->
     <div id="data-container"></div>
 
     <script>
@@ -109,7 +113,7 @@
         }
 
         function updateUI(data) {
-            dataContainer.innerHTML = "";
+            dataContainer.innerHTML = ""; // 清空資料輸出區域
             if (Array.isArray(data?.data)) {
                 let latestPrice = processMessages(data.data);
                 updatePriceChange(latestPrice);
@@ -125,13 +129,10 @@
                 const { time, price, volume, symbol } = msg;
                 if (time && price != null && volume != null && symbol) {
                     appendLog(`Msg #${index + 1}: ${symbol} - $${price} Vol: ${volume} at ${time}`);
-                    addMessageElement(symbol, price, volume, time);
-
-                    // 這裡會儲存所有的數據，而不是僅顯示 50 條
+                    // 增加資料至圖表
                     chartData.labels.push(`Msg #${index + 1}`);
                     chartData.datasets[0].data.push(price);
 
-                    // 無需限制儲存的數據數量
                     latestPrice = price;
                 } else {
                     appendLog(`Incomplete data at Msg #${index + 1}`, true);
@@ -146,17 +147,6 @@
                 priceChangeDiv.textContent = `Price Change: ${latestPrice}`;
                 priceChangeDiv.style.color = "black";
             }
-        }
-
-        function addMessageElement(symbol, price, volume, time) {
-            const element = document.createElement("div");
-            element.classList.add("message-item");
-            element.innerHTML = `
-                <div><strong>Symbol:</strong> ${symbol}</div>
-                <div><strong>Price:</strong> ${price}</div>
-                <div><strong>Volume:</strong> ${volume}</div>
-                <div><strong>Time:</strong> ${time}</div>`;
-            dataContainer.appendChild(element);
         }
 
         function appendLog(message, isError = false) {
