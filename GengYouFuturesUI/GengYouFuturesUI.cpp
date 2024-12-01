@@ -2,6 +2,7 @@
 #include <winhttp.h>
 #include <iostream>
 #include <string>
+#include <thread> // 用於加入延遲
 
 #pragma comment(lib, "winhttp.lib")
 
@@ -33,53 +34,59 @@ int main()
         return 1;
     }
 
-    // 建立請求
-    HINTERNET hRequest = WinHttpOpenRequest(hConnect, L"POST", endpoint,
-                                            NULL, WINHTTP_NO_REFERER,
-                                            WINHTTP_DEFAULT_ACCEPT_TYPES,
-                                            WINHTTP_FLAG_REFRESH);
-    if (!hRequest)
+    while (true) // 無窮迴圈
     {
-        std::cerr << "WinHttpOpenRequest failed, error: " << GetLastError() << std::endl;
-        WinHttpCloseHandle(hConnect);
-        WinHttpCloseHandle(hSession);
-        return 1;
-    }
-
-    // 模擬發送的資料
-    std::string jsonData = R"({"time": "2024-11-17 10:05", "price": 1234.56, "volume": 100, "symbol": "FUTURE1"})";
-
-    // 設置標頭
-    BOOL result = WinHttpAddRequestHeaders(hRequest, L"Content-Type: application/json", -1L, WINHTTP_ADDREQ_FLAG_ADD);
-    if (!result)
-    {
-        std::cerr << "Failed to set request headers, error: " << GetLastError() << std::endl;
-    }
-
-    // 發送請求
-    result = WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0,
-                                (LPVOID)jsonData.c_str(), jsonData.size(),
-                                jsonData.size(), 0);
-    if (!result)
-    {
-        std::cerr << "WinHttpSendRequest failed, error: " << GetLastError() << std::endl;
-    }
-    else
-    {
-        // 等待伺服器響應
-        result = WinHttpReceiveResponse(hRequest, NULL);
-        if (result)
+        // 建立請求
+        HINTERNET hRequest = WinHttpOpenRequest(hConnect, L"POST", endpoint,
+                                                NULL, WINHTTP_NO_REFERER,
+                                                WINHTTP_DEFAULT_ACCEPT_TYPES,
+                                                WINHTTP_FLAG_REFRESH);
+        if (!hRequest)
         {
-            std::cout << "Data sent successfully: " << jsonData << std::endl;
+            std::cerr << "WinHttpOpenRequest failed, error: " << GetLastError() << std::endl;
+            break;
+        }
+
+        // 模擬發送的資料
+        std::string jsonData = R"({"time": "2024-11-25 10:05", "price": 1234.56, "volume": 100, "symbol": "FUTURE1"})";
+
+        // 設置標頭
+        BOOL result = WinHttpAddRequestHeaders(hRequest, L"Content-Type: application/json", -1L, WINHTTP_ADDREQ_FLAG_ADD);
+        if (!result)
+        {
+            std::cerr << "Failed to set request headers, error: " << GetLastError() << std::endl;
+        }
+
+        // 發送請求
+        result = WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0,
+                                    (LPVOID)jsonData.c_str(), jsonData.size(),
+                                    jsonData.size(), 0);
+        if (!result)
+        {
+            std::cerr << "WinHttpSendRequest failed, error: " << GetLastError() << std::endl;
         }
         else
         {
-            std::cerr << "WinHttpReceiveResponse failed, error: " << GetLastError() << std::endl;
+            // 等待伺服器響應
+            result = WinHttpReceiveResponse(hRequest, NULL);
+            if (result)
+            {
+                std::cout << "Data sent successfully: " << jsonData << std::endl;
+            }
+            else
+            {
+                std::cerr << "WinHttpReceiveResponse failed, error: " << GetLastError() << std::endl;
+            }
         }
+
+        // 清理當前請求資源
+        WinHttpCloseHandle(hRequest);
+
+        // 延遲 5 秒後再發送下一筆資料
+        std::this_thread::sleep_for(std::chrono::seconds(5));
     }
 
     // 清理資源
-    WinHttpCloseHandle(hRequest);
     WinHttpCloseHandle(hConnect);
     WinHttpCloseHandle(hSession);
 
