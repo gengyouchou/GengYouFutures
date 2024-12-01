@@ -72,7 +72,8 @@
         const dataContainer = document.getElementById("data-container");
         const priceChangeDiv = document.getElementById("price-change");
 
-        const chartData = {
+        // 初始化圖表數據
+        let chartData = {
             labels: [],
             datasets: [{
                 label: "Price",
@@ -83,6 +84,20 @@
                 fill: true,
             }]
         };
+
+        // 從 localStorage 加載圖表數據
+        function loadChartData() {
+            const savedData = localStorage.getItem('chartData');
+            if (savedData) {
+                chartData = JSON.parse(savedData); // 解析並恢復儲存的圖表數據
+                lineChart.update();  // 更新圖表顯示
+            }
+        }
+
+        // 儲存圖表數據到 localStorage
+        function saveChartData() {
+            localStorage.setItem('chartData', JSON.stringify(chartData)); // 將圖表數據轉為字串儲存
+        }
 
         const lineChart = new Chart(chartCtx, {
             type: "line",
@@ -117,6 +132,7 @@
             if (Array.isArray(data?.data)) {
                 let latestPrice = processMessages(data.data);
                 updatePriceChange(latestPrice);
+                saveChartData(); // 更新完數據後儲存
             } else {
                 appendLog("Error: Data format invalid.", true);
             }
@@ -157,8 +173,12 @@
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        setInterval(fetchData, 3000);
-        fetchData();
+        // 頁面加載時加載之前的數據
+        window.onload = () => {
+            loadChartData();  // 加載儲存的圖表數據
+            setInterval(fetchData, 3000);  // 每3秒抓取新數據
+            fetchData();  // 初次抓取數據
+        };
     </script>
 </body>
 
