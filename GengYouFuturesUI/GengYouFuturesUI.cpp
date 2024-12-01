@@ -52,7 +52,9 @@ int main()
     while (true) // 無窮迴圈
     {
         // 生成隨機價格
-        currentPrice = generateRandomPrice(currentPrice);
+        double RandomPrice = 1;
+        RandomPrice = generateRandomPrice(RandomPrice);
+        currentPrice += RandomPrice;
 
         // 建立請求
         HINTERNET hRequest = WinHttpOpenRequest(hConnect, L"POST", endpoint,
