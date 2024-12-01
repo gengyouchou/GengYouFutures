@@ -1,72 +1,87 @@
-#include <chrono>
+#include <windows.h>
+#include <winhttp.h>
 #include <iostream>
 #include <string>
-#include <thread>
-#include <windows.h>
+
+#pragma comment(lib, "winhttp.lib")
 
 int main()
 {
-    const char *pipeName = R"(\\.\pipe\FuturesPipe)"; // Named pipe name
+    // 伺服器資訊
+    LPCWSTR serverName = L"localhost";
+    INTERNET_PORT serverPort = 8080;
+    LPCWSTR endpoint = L"/futures";
 
-    // Create the named pipe
-    HANDLE hPipe = CreateNamedPipe(
-        pipeName,                                              // Pipe name
-        PIPE_ACCESS_DUPLEX,                                    // Duplex access permission
-        PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT, // Message mode
-        1,                                                     // Maximum instances
-        1024,                                                  // Output buffer size
-        1024,                                                  // Input buffer size
-        0,                                                     // Default wait time
-        nullptr);                                              // Default security attributes
+    // 初始化 WinHTTP Session
+    HINTERNET hSession = WinHttpOpen(L"Futures Client/1.0",
+                                     WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
+                                     WINHTTP_NO_PROXY_NAME,
+                                     WINHTTP_NO_PROXY_BYPASS, 0);
 
-    if (hPipe == INVALID_HANDLE_VALUE)
+    if (!hSession)
     {
-        std::cerr << "Failed to create pipe, error code: " << GetLastError() << std::endl;
+        std::cerr << "WinHttpOpen failed, error: " << GetLastError() << std::endl;
         return 1;
     }
 
-    std::cout << "Waiting for Python client to connect..." << std::endl;
-
-    // Wait for the Python client to connect
-    BOOL connected = ConnectNamedPipe(hPipe, nullptr);
-    if (!connected)
+    // 連接伺服器
+    HINTERNET hConnect = WinHttpConnect(hSession, serverName, serverPort, 0);
+    if (!hConnect)
     {
-        std::cerr << "Connection failed, error code: " << GetLastError() << std::endl;
-        CloseHandle(hPipe);
+        std::cerr << "WinHttpConnect failed, error: " << GetLastError() << std::endl;
+        WinHttpCloseHandle(hSession);
         return 1;
     }
 
-    std::cout << "Connection successful, starting to send data..." << std::endl;
-
-    // Simulate sending futures data continuously
-    int count = 0;
-    while (true)
+    // 建立請求
+    HINTERNET hRequest = WinHttpOpenRequest(hConnect, L"POST", endpoint,
+                                            NULL, WINHTTP_NO_REFERER,
+                                            WINHTTP_DEFAULT_ACCEPT_TYPES,
+                                            WINHTTP_FLAG_REFRESH);
+    if (!hRequest)
     {
-        // Simulate futures data
-        std::string data = R"({"time": "2024-11-17 10:05", "price": )" + std::to_string(1234.56 + count) +
-                           R"(, "volume": 100, "symbol": "FUTURE1"})";
+        std::cerr << "WinHttpOpenRequest failed, error: " << GetLastError() << std::endl;
+        WinHttpCloseHandle(hConnect);
+        WinHttpCloseHandle(hSession);
+        return 1;
+    }
 
-        // Write data to the pipe
-        DWORD bytesWritten;
-        BOOL writeResult = WriteFile(hPipe, data.c_str(), data.size(), &bytesWritten, nullptr);
-        if (writeResult)
+    // 模擬發送的資料
+    std::string jsonData = R"({"time": "2024-11-17 10:05", "price": 1234.56, "volume": 100, "symbol": "FUTURE1"})";
+
+    // 設置標頭
+    BOOL result = WinHttpAddRequestHeaders(hRequest, L"Content-Type: application/json", -1L, WINHTTP_ADDREQ_FLAG_ADD);
+    if (!result)
+    {
+        std::cerr << "Failed to set request headers, error: " << GetLastError() << std::endl;
+    }
+
+    // 發送請求
+    result = WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0,
+                                (LPVOID)jsonData.c_str(), jsonData.size(),
+                                jsonData.size(), 0);
+    if (!result)
+    {
+        std::cerr << "WinHttpSendRequest failed, error: " << GetLastError() << std::endl;
+    }
+    else
+    {
+        // 等待伺服器響應
+        result = WinHttpReceiveResponse(hRequest, NULL);
+        if (result)
         {
-            std::cout << "Successfully wrote data: " << data << std::endl;
+            std::cout << "Data sent successfully: " << jsonData << std::endl;
         }
         else
         {
-            std::cerr << "Failed to write data, error code: " << GetLastError() << std::endl;
-            break;
+            std::cerr << "WinHttpReceiveResponse failed, error: " << GetLastError() << std::endl;
         }
-
-        // Simulate a delay between data points
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-
-        // Increment count for new data
-        ++count;
     }
 
-    // Close the pipe
-    CloseHandle(hPipe);
+    // 清理資源
+    WinHttpCloseHandle(hRequest);
+    WinHttpCloseHandle(hConnect);
+    WinHttpCloseHandle(hSession);
+
     return 0;
 }

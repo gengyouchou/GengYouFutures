@@ -68,7 +68,6 @@
         const dataContainer = document.getElementById("data-container");
         const priceChangeDiv = document.getElementById("price-change");
 
-        // Chart setup
         const chartData = {
             labels: [],
             datasets: [{
@@ -81,127 +80,95 @@
             }]
         };
 
-        const chartOptions = {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: true,
-                },
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: "Message Index"
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: "Price"
-                    }
-                }
-            }
-        };
-
         const lineChart = new Chart(chartCtx, {
             type: "line",
             data: chartData,
-            options: chartOptions,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    x: { title: { display: true, text: "Message Index" } },
+                    y: { title: { display: true, text: "Price" } }
+                }
+            }
         });
 
-        // Fetch and update data
         async function fetchData() {
-            console.log("Fetching data...");
             try {
                 const response = await fetch("http://localhost:8080/");
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
+                if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
                 const data = await response.json();
                 updateUI(data);
             } catch (error) {
                 appendLog("Error fetching data: " + error.message, true);
-                console.error("Error fetching data:", error);
-
-                // Retry after 5 seconds
+                alert("Unable to fetch data, retrying in 5 seconds...");
                 setTimeout(fetchData, 5000);
             }
         }
 
         function updateUI(data) {
-            console.log("Updating UI with new data...");
-
-            // Clear the container for new updates
             dataContainer.innerHTML = "";
+            if (Array.isArray(data?.data)) {
+                let latestPrice = processMessages(data.data);
+                updatePriceChange(latestPrice);
+            } else {
+                appendLog("Error: Data format invalid.", true);
+            }
+            lineChart.update();
+        }
 
-            if (data && Array.isArray(data.data)) {
-                let latestPrice = null; // For price change calculation
-
-                data.data.forEach((message, index) => {
-                    console.log(`Processing message #${index + 1}`);
-                    const { time, price, volume, symbol } = message;
-
-                    if (!time || price == null || volume == null || !symbol) {
-                        console.warn(`Incomplete data in message #${index + 1}:`, message);
-                        appendLog(`Warning: Incomplete data in message #${index + 1}: ${JSON.stringify(message)}`);
-                        return;
-                    }
-
-                    // Append log
-                    appendLog(`Message #${index + 1}: Symbol: ${symbol}, Price: ${price}, Volume: ${volume}, Time: ${time}`);
-
-                    // Update chart
+        function processMessages(messages) {
+            let latestPrice = null;
+            messages.forEach((msg, index) => {
+                const { time, price, volume, symbol } = msg;
+                if (time && price != null && volume != null && symbol) {
+                    appendLog(`Msg #${index + 1}: ${symbol} - $${price} Vol: ${volume} at ${time}`);
+                    addMessageElement(symbol, price, volume, time);
                     chartData.labels.push(`Msg #${index + 1}`);
                     chartData.datasets[0].data.push(price);
-
-                    // Limit chart data
                     if (chartData.labels.length > 50) {
                         chartData.labels.shift();
                         chartData.datasets[0].data.shift();
                     }
-
-                    // Update latest price
                     latestPrice = price;
-
-                    // Add message to UI
-                    const messageElement = document.createElement("div");
-                    messageElement.classList.add("message-item");
-                    messageElement.innerHTML = `
-                        <div><strong>Symbol:</strong> ${symbol}</div>
-                        <div><strong>Price:</strong> ${price}</div>
-                        <div><strong>Volume:</strong> ${volume}</div>
-                        <div><strong>Time:</strong> ${time}</div>
-                    `;
-                    dataContainer.appendChild(messageElement);
-                });
-
-                // Update price change
-                if (latestPrice != null) {
-                    const previousPrice = chartData.datasets[0].data.slice(-2, -1)[0] || latestPrice;
-                    const priceDiff = (latestPrice - previousPrice).toFixed(2);
-                    const color = priceDiff > 0 ? "green" : priceDiff < 0 ? "red" : "black";
-
-                    priceChangeDiv.textContent = `Price Change: ${priceDiff}`;
-                    priceChangeDiv.style.color = color;
+                } else {
+                    appendLog(`Incomplete data at Msg #${index + 1}`, true);
                 }
-            } else {
-                console.error("Fetched data is not in the expected format:", data);
-                appendLog("Error: Fetched data is not in the expected format.");
-            }
+            });
+            return latestPrice;
+        }
 
-            console.log("UI updated with new data!");
-            lineChart.update(); // Refresh the chart
+        function updatePriceChange(latestPrice) {
+            if (latestPrice != null) {
+                const previousPrice = chartData.datasets[0].data.slice(-2, -1)[0] || latestPrice;
+                const diff = (latestPrice - previousPrice).toFixed(2);
+                const color = diff > 0 ? "green" : diff < 0 ? "red" : "black";
+                priceChangeDiv.textContent = `Price Change: ${diff}`;
+                priceChangeDiv.style.color = color;
+            }
+        }
+
+        function addMessageElement(symbol, price, volume, time) {
+            const element = document.createElement("div");
+            element.classList.add("message-item");
+            element.innerHTML = `
+                <div><strong>Symbol:</strong> ${symbol}</div>
+                <div><strong>Price:</strong> ${price}</div>
+                <div><strong>Volume:</strong> ${volume}</div>
+                <div><strong>Time:</strong> ${time}</div>`;
+            dataContainer.appendChild(element);
         }
 
         function appendLog(message, isError = false) {
-            const logEntry = document.createElement("div");
-            logEntry.textContent = message;
-            if (isError) logEntry.classList.add("error-message");
-            logDiv.appendChild(logEntry);
+            const entry = document.createElement("div");
+            entry.textContent = message;
+            if (isError) entry.classList.add("error-message");
+            logDiv.appendChild(entry);
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        // Fetch data periodically
         setInterval(fetchData, 3000);
         fetchData();
     </script>
