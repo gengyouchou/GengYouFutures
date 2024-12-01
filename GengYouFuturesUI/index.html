@@ -126,12 +126,12 @@
                 if (time && price != null && volume != null && symbol) {
                     appendLog(`Msg #${index + 1}: ${symbol} - $${price} Vol: ${volume} at ${time}`);
                     addMessageElement(symbol, price, volume, time);
+
+                    // 這裡會儲存所有的數據，而不是僅顯示 50 條
                     chartData.labels.push(`Msg #${index + 1}`);
                     chartData.datasets[0].data.push(price);
-                    if (chartData.labels.length > 50) {
-                        chartData.labels.shift();
-                        chartData.datasets[0].data.shift();
-                    }
+
+                    // 無需限制儲存的數據數量
                     latestPrice = price;
                 } else {
                     appendLog(`Incomplete data at Msg #${index + 1}`, true);
@@ -142,11 +142,9 @@
 
         function updatePriceChange(latestPrice) {
             if (latestPrice != null) {
-                const previousPrice = chartData.datasets[0].data.slice(-2, -1)[0] || latestPrice;
-                const diff = (latestPrice - previousPrice).toFixed(2);
-                const color = diff > 0 ? "green" : diff < 0 ? "red" : "black";
-                priceChangeDiv.textContent = `Price Change: ${diff}`;
-                priceChangeDiv.style.color = color;
+                // 只顯示最新價格，並直接覆蓋之前顯示的數值
+                priceChangeDiv.textContent = `Price Change: ${latestPrice}`;
+                priceChangeDiv.style.color = "black";
             }
         }
 
