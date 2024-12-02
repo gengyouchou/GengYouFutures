@@ -22,7 +22,7 @@ if exist "%SOURCE_DIR%\CMakeLists.txt" (
     )
     
     REM 运行 CMake 配置
-    cmake -S "%SOURCE_DIR%" -B "%BUILD_DIR%" -G "Visual Studio 16 2019" -A x64
+    cmake -S "%SOURCE_DIR%" -B "%BUILD_DIR%" -A x64
     if %errorlevel% neq 0 (
         echo Error: CMake configuration failed with error code %errorlevel%.
         exit /b %errorlevel%
