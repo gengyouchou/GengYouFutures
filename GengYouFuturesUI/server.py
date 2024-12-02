@@ -9,16 +9,19 @@ received_data = []
 # CORS 中间件
 @web.middleware
 async def cors_middleware(request, handler):
+    """
+    处理跨域请求的中间件，允许所有来源。
+    """
     if request.method == 'OPTIONS':
         return web.Response(headers={
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type'
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
         })
     response = await handler(request)
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
     return response
 
 # HTTP 处理函数，用于返回接收到的数据和当前时间
@@ -41,10 +44,13 @@ async def handle_http_post(request):
     """
     try:
         # 接收 JSON 数据
-        post_data = await request.json()  # 解析 JSON 数据
+        post_data = await request.json()
         received_data.append(post_data)
         print(f"Received POST data: {post_data}")
         return web.json_response({'status': 'success', 'received': post_data})
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON format.")
+        return web.json_response({'status': 'error', 'message': 'Invalid JSON format'}, status=400)
     except Exception as e:
         print(f"Error processing POST request: {e}")
         return web.json_response({'status': 'error', 'message': str(e)}, status=400)
@@ -59,8 +65,8 @@ async def main():
 
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, 'localhost', 8080)
-    print('HTTP server started at http://localhost:8080')
+    site = web.TCPSite(runner, '0.0.0.0', 8080)  # 开放给所有网络接口
+    print('HTTP server started at http://0.0.0.0:8080')
     await site.start()
 
     await asyncio.Event().wait()
