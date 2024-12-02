@@ -64,14 +64,14 @@ if not exist "server.py" (
     exit /b 1
 )
 
-:: 启动 HTTP 服务器（服务静态文件，如 index.html）
+:: 启动 HTTP 服务器（CORS 支持）
 if not exist "index.html" (
     echo index.html not found in the current directory. Please check your setup.
     pause
     exit /b 1
 )
 
-start cmd /k "echo Starting HTTP server on port 8000... && python -m http.server 8000"
+start cmd /k "echo Starting HTTP server with CORS support on port 8000... && python cors_server.py"
 if %errorlevel% neq 0 (
     echo HTTP server failed to start. Please check for errors.
     pause
