@@ -96,16 +96,17 @@
             }
         });
 
-        // 檢查 localStorage 中是否有儲存的圖表資料
         function loadChartData() {
             const savedData = localStorage.getItem('chartData');
             if (savedData) {
-                const parsedData = JSON.parse(savedData);
-                if (parsedData && parsedData.labels && parsedData.datasets) {
+                try {
+                    const parsedData = JSON.parse(savedData);
                     chartData.labels = parsedData.labels;
-                    chartData.datasets = parsedData.datasets;
-                    lineChart.update(); // 更新圖表
+                    chartData.datasets[0].data = parsedData.datasets[0].data;
+                    lineChart.update();
                     console.log("Loaded chart data from localStorage:", parsedData);
+                } catch (e) {
+                    console.error("Error loading chart data:", e);
                 }
             }
         }
@@ -117,22 +118,24 @@
                 const data = await response.json();
                 updateUI(data);
             } catch (error) {
+                if (error.message.includes("CORS")) {
+                    appendLog("CORS error: Server might be blocking requests from different origins.", true);
+                }
                 appendLog("Error fetching data: " + error.message, true);
-                alert("Unable to fetch data, retrying in 5 seconds...");
                 setTimeout(fetchData, 5000);
             }
         }
 
         function updateUI(data) {
-            dataContainer.innerHTML = ""; // 清空資料輸出區域
+            dataContainer.innerHTML = "";
             if (Array.isArray(data?.data)) {
                 let latestPrice = processMessages(data.data);
                 updatePriceChange(latestPrice);
             } else {
-                appendLog("Error: Data format invalid.", true);
+                appendLog("Invalid data format received.", true);
             }
             lineChart.update();
-            saveChartData(); // 更新完數據後儲存
+            saveChartData();
         }
 
         function processMessages(messages) {
@@ -166,19 +169,17 @@
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        // 儲存圖表數據到 localStorage
         function saveChartData() {
             const savedData = {
                 labels: chartData.labels,
-                datasets: chartData.datasets,
+                datasets: [{ ...chartData.datasets[0] }]
             };
             localStorage.setItem('chartData', JSON.stringify(savedData));
-            console.log("Chart data saved to localStorage:", savedData);
         }
 
         setInterval(fetchData, 3000);
         fetchData();
-        loadChartData(); // 頁面加載時從 localStorage 更新資料
+        loadChartData(); 
     </script>
 </body>
 
