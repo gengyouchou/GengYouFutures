@@ -147,4 +147,7 @@ DaysNightAllCommHighLowPoint:
   20241129:
     High: 22333
     Low: 22183
-LongShortIntegralValue: -656567
+  20241202:
+    High: 22579
+    Low: 22160
+LongShortIntegralValue: -644503
