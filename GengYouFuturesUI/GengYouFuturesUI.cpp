@@ -86,7 +86,7 @@ int main()
     double currentPrice = 1234.56;
     while (true)
     {
-        currentPrice = generateRandomPrice(currentPrice);
+        currentPrice = generateRandomPrice(1);
 
         std::string jsonData = R"({"time": ")" + std::to_string(time(0)) + R"(", "price": )" +
                                std::to_string(currentPrice) + R"(, "volume": 100, "symbol": "FUTURE1"})";
