@@ -78,14 +78,14 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-:: 启动 Python WebSocket 服务器
-echo Starting Python WebSocket server...
-python server.py
-if %errorlevel% neq 0 (
-    echo WebSocket server failed to start. Please check your server.py script for errors.
-    pause
-    exit /b 1
-)
+@REM :: 启动 Python WebSocket 服务器
+@REM echo Starting Python WebSocket server...
+@REM python server.py
+@REM if %errorlevel% neq 0 (
+@REM     echo WebSocket server failed to start. Please check your server.py script for errors.
+@REM     pause
+@REM     exit /b 1
+@REM )
 
 :: 脚本结束
 echo Both servers are running. Press any key to exit...
