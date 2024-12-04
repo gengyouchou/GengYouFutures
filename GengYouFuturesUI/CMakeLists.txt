@@ -14,11 +14,19 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(httplib)
 
+# 自動下載並導入 nlohmann/json
+FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.10.0  # 指定使用 v3.10.0 版本
+)
+FetchContent_MakeAvailable(nlohmann_json)
+
 # 定義項目的可執行文件
 add_executable(GengYouFuturesUI GengYouFuturesUI.cpp)
 
-# 添加 httplib 為外部庫依賴
-target_link_libraries(GengYouFuturesUI PRIVATE httplib::httplib)
+# 添加 httplib 和 json 作為外部庫依賴
+target_link_libraries(GengYouFuturesUI PRIVATE httplib::httplib nlohmann_json::nlohmann_json)
 
 # 移除 Windows 特定的命名管道支持
 if(MSVC)
