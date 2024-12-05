@@ -94,6 +94,8 @@ int main()
     {
         std::cout << "Processing market data..." << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(5));
+
+        currentPrice += 0.2;
     }
 
     serverThread.join();
