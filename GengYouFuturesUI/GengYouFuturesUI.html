@@ -1,142 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-time Data Viewer</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>交易策略資料顯示</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
         }
 
-        h1 {
-            text-align: center;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
 
-        #log {
-            border: 1px solid #ccc;
-            padding: 10px;
-            height: 300px;
-            overflow-y: scroll;
-            background-color: #f9f9f9;
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
         }
 
-        canvas {
-            max-width: 100%;
-            margin: 20px auto;
+        th {
+            background-color: #f2f2f2;
         }
     </style>
 </head>
 
 <body>
-    <h1>Real-time Data Viewer</h1>
-    <div id="log"></div>
-    <canvas id="chart"></canvas>
+    <h1>交易策略資料</h1>
+    <p>資料每秒自動更新中...</p>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>欄位名稱</th>
+                <th>值</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
     <script>
-        const serverIP = "127.0.0.1"; // HTTP Server IP
-        const port = 8080;           // HTTP Server Port
-        const logDiv = document.getElementById("log");
-        const chartCtx = document.getElementById("chart").getContext("2d");
-
-        // Line chart setup
-        const chartData = {
-            labels: [], // Timestamps
-            datasets: [{
-                label: "Price",
-                data: [],
-                borderColor: "blue",
-                backgroundColor: "rgba(0, 0, 255, 0.1)",
-                borderWidth: 2,
-                fill: true,
-            }]
-        };
-
-        const chartOptions = {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: true,
-                },
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: "Timestamp"
-                    }
-                },
-                y: {
-                    min: 1200, // Set minimum price range (adjust as needed)
-                    max: 1300, // Set maximum price range (adjust as needed)
-                    title: {
-                        display: true,
-                        text: "Price"
-                    }
-                }
-            }
-        };
-
-        const lineChart = new Chart(chartCtx, {
-            type: "line",
-            data: chartData,
-            options: chartOptions,
-        });
-
-        // Polling function to fetch data from HTTP server
         async function fetchData() {
             try {
-                const response = await fetch(`http://${serverIP}:${port}/`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
+                const response = await fetch('http://localhost:8000');
+                if (!response.ok) throw new Error("伺服器錯誤: " + response.status);
                 const data = await response.json();
-                updateUI(data);
+
+                // 清空舊資料
+                const tableBody = document.querySelector("#dataTable tbody");
+                tableBody.innerHTML = "";
+
+                // 插入新資料
+                for (const key in data) {
+                    const row = document.createElement("tr");
+                    const cellKey = document.createElement("td");
+                    const cellValue = document.createElement("td");
+
+                    cellKey.textContent = key;
+                    cellValue.textContent = data[key];
+
+                    row.appendChild(cellKey);
+                    row.appendChild(cellValue);
+                    tableBody.appendChild(row);
+                }
             } catch (error) {
-                console.error("Error fetching data:", error);
-                appendLog("Error fetching data: " + error.message);
+                console.error("資料抓取失敗: ", error);
             }
         }
 
-        // Update chart and log with fetched data
-        function updateUI(data) {
-            // Iterate over the received data
-            data.forEach(entry => {
-                const timestamp = new Date(entry.time).toLocaleTimeString();
-                const price = parseFloat(entry.price);
+        // 每秒自動更新資料
+        setInterval(fetchData, 1000);
 
-                // Log data
-                appendLog(`[${timestamp}] Symbol: ${entry.symbol}, Price: ${price}, Volume: ${entry.volume}`);
-
-                // Update chart
-                chartData.labels.push(timestamp);
-                chartData.datasets[0].data.push(price);
-
-                // Limit the chart to the last 50 data points
-                if (chartData.labels.length > 50) {
-                    chartData.labels.shift();
-                    chartData.datasets[0].data.shift();
-                }
-            });
-
-            lineChart.update();
-        }
-
-        // Append log to the logDiv and keep it scrolled to the bottom
-        function appendLog(message) {
-            const newLogEntry = document.createElement("div");
-            newLogEntry.textContent = message;
-            logDiv.appendChild(newLogEntry);
-            logDiv.scrollTop = logDiv.scrollHeight;
-        }
-
-        // Periodically fetch data every 3 seconds
-        setInterval(fetchData, 3000);
-
-        // Initial data fetch
-        fetchData();
+        // 初次加載時抓取資料
+        window.onload = fetchData;
     </script>
 </body>
 
