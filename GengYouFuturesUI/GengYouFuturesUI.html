@@ -43,24 +43,35 @@
     </table>
 
     <script>
+        function formatValue(key, value) {
+            // 模擬 C++ printf 格式化
+            if (typeof value === 'number') {
+                // 針對數字進行格式化
+                if (key.includes("價格") || key.includes("金額")) {
+                    return value.toFixed(2); // 顯示兩位小數
+                } else if (key.includes("數量") || key.includes("量")) {
+                    return Intl.NumberFormat('zh-Hant', { maximumFractionDigits: 0 }).format(value); // 加千分位
+                }
+            }
+            return value; // 字串不作變更
+        }
+
         async function fetchData() {
             try {
                 const response = await fetch('http://localhost:8000');
                 if (!response.ok) throw new Error("伺服器錯誤: " + response.status);
                 const data = await response.json();
 
-                // 清空舊資料
                 const tableBody = document.querySelector("#dataTable tbody");
                 tableBody.innerHTML = "";
 
-                // 插入新資料
                 for (const key in data) {
                     const row = document.createElement("tr");
                     const cellKey = document.createElement("td");
                     const cellValue = document.createElement("td");
 
                     cellKey.textContent = key;
-                    cellValue.textContent = data[key];
+                    cellValue.textContent = formatValue(key, data[key]);
 
                     row.appendChild(cellKey);
                     row.appendChild(cellValue);
@@ -71,10 +82,7 @@
             }
         }
 
-        // 每秒自動更新資料
         setInterval(fetchData, 1000);
-
-        // 初次加載時抓取資料
         window.onload = fetchData;
     </script>
 </body>
