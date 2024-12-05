@@ -77,6 +77,26 @@
             }
         });
 
+        // 从localStorage加载图表数据
+        function loadChartData() {
+            const savedData = localStorage.getItem("chartData");
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                chartData.labels = parsedData.labels || [];
+                chartData.datasets[0].data = parsedData.datasets[0].data || [];
+                lineChart.update();
+            }
+        }
+
+        // 保存图表数据到localStorage
+        function saveChartData() {
+            const dataToSave = {
+                labels: chartData.labels,
+                datasets: chartData.datasets
+            };
+            localStorage.setItem("chartData", JSON.stringify(dataToSave));
+        }
+
         async function fetchData() {
             try {
                 const response = await fetch("http://192.168.50.168:8080/");
@@ -98,6 +118,9 @@
             chartData.datasets[0].data.push(CurrentPrice);
             lineChart.update();
 
+            // 保存更新后的图表数据
+            saveChartData();
+
             priceChangeDiv.textContent = `Price Change: $${CurrentPrice} | Closed Profit: $${ClosedProfitLoss} | Future Right: $${FutureRight}`;
 
             appendLog(`[${Symbol}] Time: ${timeLabel}, Price: $${CurrentPrice}, Closed Profit: $${ClosedProfitLoss}`);
@@ -113,6 +136,9 @@
 
         setInterval(fetchData, 3000);
         fetchData();
+
+        // 页面加载时，从localStorage加载图表数据
+        loadChartData();
     </script>
 </body>
 
