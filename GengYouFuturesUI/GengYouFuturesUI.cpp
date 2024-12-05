@@ -29,6 +29,18 @@ void startHttpServer(double &currentPrice)
 {
     httplib::Server svr;
 
+    // CORS 支援的中介函數
+    svr.set_pre_routing_handler([](const httplib::Request &req, httplib::Response &res)
+                                {
+        res.set_header("Access-Control-Allow-Origin", "*");
+        res.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        if (req.method == "OPTIONS") {
+            res.status = 204; // 對 OPTIONS 請求回應 204 No Content
+            return httplib::Server::HandlerResponse::Handled;
+        }
+        return httplib::Server::HandlerResponse::Unhandled; });
+
     svr.Get("/", [&currentPrice](const httplib::Request &req, httplib::Response &res)
             {
         currentPrice += generateRandomPrice(1);
@@ -49,8 +61,7 @@ void startHttpServer(double &currentPrice)
             {"BidOfferLongShortSlope", gBidOfferLongShortSlope},
             {"NumberOfStocksRisingAndFalling", gNumberOfStocksRisingAndFalling},
             {"Time", time(0)},
-            {"Symbol", "FUTURE1"}
-        };
+            {"Symbol", "FUTURE1"}};
 
         std::cout << "Sending response: " << data.dump(4) << std::endl;
         res.set_content(data.dump(), "application/json"); });
@@ -60,7 +71,6 @@ void startHttpServer(double &currentPrice)
         res.set_content(R"({"error": "Unsupported method"})", "application/json");
         res.status = 501; });
 
-    // 檢查伺服器啟動是否成功
     if (!svr.listen("0.0.0.0", 8001))
     {
         std::cerr << "Error: Unable to start server on port 8001. Is the port already in use?" << std::endl;
@@ -73,16 +83,14 @@ int main()
     srand(static_cast<unsigned int>(time(0)));
     double currentPrice = 20000.0;
 
-    // 啟動 HTTP 伺服器執行緒
     std::thread serverThread(startHttpServer, std::ref(currentPrice));
 
-    // 主程式繼續執行其他任務 (例如抓取期貨報價資料)
     while (true)
     {
         std::cout << "Processing market data..." << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(5));
     }
 
-    serverThread.join(); // 等待伺服器執行緒結束
+    serverThread.join();
     return 0;
 }
