@@ -8,15 +8,7 @@
 
 using json = nlohmann::json;
 
-// // 模擬外部全域變數
-// extern std::string g_strUserId;
-// extern long gStrategyConfig_StrategyMode, gStrategyConfig_ClosingKeyPriceLevel, gStrategyConfig_BidOfferLongShortThreshold;
-// extern double gStrategyConfig_BidOfferLongShortAttackSlope, gStrategyConfig_MaximumLoss;
-// extern long gCurCommPrice[10], gEvaluatePosition;
-// extern double gFutureRight, gClosedProfitLoss;
-// extern long gDayAmpAndKeyPrice_LongKey1, gDayAmpAndKeyPrice_SmallestAmp;
-// extern double gBidOfferLongShortSlope, gNumberOfStocksRisingAndFalling;
-
+// 模擬外部全域變數
 std::string g_strUserId = "gengyou";
 long gStrategyConfig_StrategyMode = 1, gStrategyConfig_ClosingKeyPriceLevel = 2, gStrategyConfig_BidOfferLongShortThreshold = 40000;
 double gStrategyConfig_BidOfferLongShortAttackSlope = 1, gStrategyConfig_MaximumLoss = 2;
@@ -48,7 +40,7 @@ void startHttpServer(double &currentPrice)
             {"BidOfferLongShortThreshold", gStrategyConfig_BidOfferLongShortThreshold},
             {"BidOfferLongShortAttackSlope", gStrategyConfig_BidOfferLongShortAttackSlope},
             {"MaximumLoss", gStrategyConfig_MaximumLoss},
-            {"CurrentPrice", gCurCommPrice[0] / 100},
+            {"CurrentPrice", gCurCommPrice[0] / 100.0},
             {"EvaluatePosition", gEvaluatePosition},
             {"FutureRight", gFutureRight},
             {"ClosedProfitLoss", gClosedProfitLoss},
@@ -60,7 +52,7 @@ void startHttpServer(double &currentPrice)
             {"Symbol", "FUTURE1"}
         };
 
-        std::cout << "Sending response..." << std::endl;
+        std::cout << "Sending response: " << data.dump(4) << std::endl;
         res.set_content(data.dump(), "application/json"); });
 
     svr.set_error_handler([](const httplib::Request &req, httplib::Response &res)
@@ -68,8 +60,12 @@ void startHttpServer(double &currentPrice)
         res.set_content(R"({"error": "Unsupported method"})", "application/json");
         res.status = 501; });
 
-    std::cout << "Server started at http://localhost:8000" << std::endl;
-    svr.listen("0.0.0.0", 8000);
+    // 檢查伺服器啟動是否成功
+    if (!svr.listen("0.0.0.0", 8001))
+    {
+        std::cerr << "Error: Unable to start server on port 8001. Is the port already in use?" << std::endl;
+        return;
+    }
 }
 
 int main()

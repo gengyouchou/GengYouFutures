@@ -113,7 +113,7 @@
 
         async function fetchData() {
             try {
-                const response = await fetch("http://192.168.50.168:8000/");
+                const response = await fetch("http://192.168.50.168:8001/");
                 if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
                 const data = await response.json();
                 updateUI(data);
