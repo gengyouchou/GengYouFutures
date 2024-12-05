@@ -30,23 +30,6 @@
             margin: 20px auto;
         }
 
-        #data-container {
-            display: none;
-        }
-
-        .message-item {
-            border: 1px solid #ddd;
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #fff;
-        }
-
-        .error-message {
-            color: red;
-            font-weight: bold;
-        }
-
         #price-change {
             text-align: center;
             font-size: 1.5em;
@@ -61,18 +44,16 @@
     <div id="price-change">Price Change: N/A</div>
     <canvas id="chart"></canvas>
     <div id="log"></div>
-    <div id="data-container"></div>
 
     <script>
         const logDiv = document.getElementById("log");
         const chartCtx = document.getElementById("chart").getContext("2d");
-        const dataContainer = document.getElementById("data-container");
         const priceChangeDiv = document.getElementById("price-change");
 
         const chartData = {
             labels: [],
             datasets: [{
-                label: "Price",
+                label: "Current Price",
                 data: [],
                 borderColor: "blue",
                 backgroundColor: "rgba(0, 0, 255, 0.1)",
@@ -90,96 +71,48 @@
                     legend: { display: true }
                 },
                 scales: {
-                    x: { title: { display: true, text: "Message Index" } },
+                    x: { title: { display: true, text: "Time" } },
                     y: { title: { display: true, text: "Price" } }
                 }
             }
         });
 
-        function loadChartData() {
-            const savedData = localStorage.getItem('chartData');
-            if (savedData) {
-                try {
-                    const parsedData = JSON.parse(savedData);
-                    chartData.labels = parsedData.labels;
-                    chartData.datasets[0].data = parsedData.datasets[0].data;
-                    lineChart.update();
-                    console.log("Loaded chart data from localStorage:", parsedData);
-                } catch (e) {
-                    console.error("Error loading chart data:", e);
-                }
-            }
-        }
-
         async function fetchData() {
             try {
-                const response = await fetch("http://192.168.50.168:8001/");
+                const response = await fetch("http://192.168.50.168:8080/");
                 if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
                 const data = await response.json();
                 updateUI(data);
             } catch (error) {
-                if (error.message.includes("CORS")) {
-                    appendLog("CORS error: Server might be blocking requests from different origins.", true);
-                }
+                console.error("Error fetching data:", error);
                 appendLog("Error fetching data: " + error.message, true);
                 setTimeout(fetchData, 5000);
             }
         }
 
         function updateUI(data) {
-            dataContainer.innerHTML = "";
-            if (Array.isArray(data?.data)) {
-                let latestPrice = processMessages(data.data);
-                updatePriceChange(latestPrice);
-            } else {
-                appendLog("Invalid data format received.", true);
-            }
+            const { CurrentPrice, Time, Symbol, ClosedProfitLoss, FutureRight } = data;
+
+            const timeLabel = new Date(Time * 1000).toLocaleTimeString();
+            chartData.labels.push(timeLabel);
+            chartData.datasets[0].data.push(CurrentPrice);
             lineChart.update();
-            saveChartData();
-        }
 
-        function processMessages(messages) {
-            let latestPrice = null;
-            messages.forEach((msg, index) => {
-                const { time, price, volume, symbol } = msg;
-                if (time && price != null && volume != null && symbol) {
-                    appendLog(`Msg #${index + 1}: ${symbol} - $${price} Vol: ${volume} at ${time}`);
-                    chartData.labels.push(`Msg #${index + 1}`);
-                    chartData.datasets[0].data.push(price);
-                    latestPrice = price;
-                } else {
-                    appendLog(`Incomplete data at Msg #${index + 1}`, true);
-                }
-            });
-            return latestPrice;
-        }
+            priceChangeDiv.textContent = `Price Change: $${CurrentPrice} | Closed Profit: $${ClosedProfitLoss} | Future Right: $${FutureRight}`;
 
-        function updatePriceChange(latestPrice) {
-            if (latestPrice != null) {
-                priceChangeDiv.textContent = `Price Change: ${latestPrice}`;
-                priceChangeDiv.style.color = "black";
-            }
+            appendLog(`[${Symbol}] Time: ${timeLabel}, Price: $${CurrentPrice}, Closed Profit: $${ClosedProfitLoss}`);
         }
 
         function appendLog(message, isError = false) {
             const entry = document.createElement("div");
             entry.textContent = message;
-            if (isError) entry.classList.add("error-message");
+            if (isError) entry.style.color = "red";
             logDiv.appendChild(entry);
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        function saveChartData() {
-            const savedData = {
-                labels: chartData.labels,
-                datasets: [{ ...chartData.datasets[0] }]
-            };
-            localStorage.setItem('chartData', JSON.stringify(savedData));
-        }
-
         setInterval(fetchData, 3000);
         fetchData();
-        loadChartData(); 
     </script>
 </body>
 

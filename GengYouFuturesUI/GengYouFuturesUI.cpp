@@ -34,13 +34,14 @@ void startHttpServer(double &currentPrice)
                                 {
         res.set_header("Access-Control-Allow-Origin", "*");
         res.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        res.set_header("Access-Control-Allow-Headers", "*");
         if (req.method == "OPTIONS") {
             res.status = 204; // 對 OPTIONS 請求回應 204 No Content
             return httplib::Server::HandlerResponse::Handled;
         }
         return httplib::Server::HandlerResponse::Unhandled; });
 
+    // 處理根路徑的 GET 請求
     svr.Get("/", [&currentPrice](const httplib::Request &req, httplib::Response &res)
             {
         currentPrice += generateRandomPrice(1);
@@ -66,14 +67,16 @@ void startHttpServer(double &currentPrice)
         std::cout << "Sending response: " << data.dump(4) << std::endl;
         res.set_content(data.dump(), "application/json"); });
 
+    // 錯誤處理，若方法不支持則回傳 501
     svr.set_error_handler([](const httplib::Request &req, httplib::Response &res)
                           {
         res.set_content(R"({"error": "Unsupported method"})", "application/json");
         res.status = 501; });
 
-    if (!svr.listen("0.0.0.0", 8001))
+    // 開始監聽 HTTP 伺服器
+    if (!svr.listen("0.0.0.0", 8080))
     {
-        std::cerr << "Error: Unable to start server on port 8001. Is the port already in use?" << std::endl;
+        std::cerr << "Error: Unable to start server on port 8080. Is the port already in use?" << std::endl;
         return;
     }
 }
@@ -83,8 +86,10 @@ int main()
     srand(static_cast<unsigned int>(time(0)));
     double currentPrice = 20000.0;
 
+    // 開啟伺服器執行緒
     std::thread serverThread(startHttpServer, std::ref(currentPrice));
 
+    // 模擬市場數據處理，持續運行
     while (true)
     {
         std::cout << "Processing market data..." << std::endl;
