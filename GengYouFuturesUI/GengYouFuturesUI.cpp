@@ -3,53 +3,90 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
-#include <nlohmann/json.hpp> // 用於生成 JSON
+#include <nlohmann/json.hpp>
+#include <thread>
 
 using json = nlohmann::json;
+
+// // 模擬外部全域變數
+// extern std::string g_strUserId;
+// extern long gStrategyConfig_StrategyMode, gStrategyConfig_ClosingKeyPriceLevel, gStrategyConfig_BidOfferLongShortThreshold;
+// extern double gStrategyConfig_BidOfferLongShortAttackSlope, gStrategyConfig_MaximumLoss;
+// extern long gCurCommPrice[10], gEvaluatePosition;
+// extern double gFutureRight, gClosedProfitLoss;
+// extern long gDayAmpAndKeyPrice_LongKey1, gDayAmpAndKeyPrice_SmallestAmp;
+// extern double gBidOfferLongShortSlope, gNumberOfStocksRisingAndFalling;
+
+std::string g_strUserId = "gengyou";
+long gStrategyConfig_StrategyMode = 1, gStrategyConfig_ClosingKeyPriceLevel = 2, gStrategyConfig_BidOfferLongShortThreshold = 40000;
+double gStrategyConfig_BidOfferLongShortAttackSlope = 1, gStrategyConfig_MaximumLoss = 2;
+long gCurCommPrice[10] = {0}, gEvaluatePosition = 1;
+double gFutureRight = 10000, gClosedProfitLoss = 1234;
+long gDayAmpAndKeyPrice_LongKey1 = 0, gDayAmpAndKeyPrice_SmallestAmp = 100;
+double gBidOfferLongShortSlope = 1, gNumberOfStocksRisingAndFalling = 1;
+
+// 模擬生成隨機價格
 double generateRandomPrice(double currentPrice)
 {
-    // 模擬價格波動：隨機生成 -1 到 1 的價格波動，四捨五入到 1 位小數
     double fluctuation = (rand() % 21 - 10) / 10.0;
     return currentPrice + fluctuation;
+}
+
+// 啟動 HTTP 伺服器的函數
+void startHttpServer(double &currentPrice)
+{
+    httplib::Server svr;
+
+    svr.Get("/", [&currentPrice](const httplib::Request &req, httplib::Response &res)
+            {
+        currentPrice += generateRandomPrice(1);
+
+        json data = {
+            {"UserId", g_strUserId},
+            {"StrategyMode", gStrategyConfig_StrategyMode},
+            {"ClosingKeyPriceLevel", gStrategyConfig_ClosingKeyPriceLevel},
+            {"BidOfferLongShortThreshold", gStrategyConfig_BidOfferLongShortThreshold},
+            {"BidOfferLongShortAttackSlope", gStrategyConfig_BidOfferLongShortAttackSlope},
+            {"MaximumLoss", gStrategyConfig_MaximumLoss},
+            {"CurrentPrice", gCurCommPrice[0] / 100},
+            {"EvaluatePosition", gEvaluatePosition},
+            {"FutureRight", gFutureRight},
+            {"ClosedProfitLoss", gClosedProfitLoss},
+            {"DayAmpAndKeyPrice_LongKey1", gDayAmpAndKeyPrice_LongKey1},
+            {"SmallestAmp", gDayAmpAndKeyPrice_SmallestAmp},
+            {"BidOfferLongShortSlope", gBidOfferLongShortSlope},
+            {"NumberOfStocksRisingAndFalling", gNumberOfStocksRisingAndFalling},
+            {"Time", time(0)},
+            {"Symbol", "FUTURE1"}
+        };
+
+        std::cout << "Sending response..." << std::endl;
+        res.set_content(data.dump(), "application/json"); });
+
+    svr.set_error_handler([](const httplib::Request &req, httplib::Response &res)
+                          {
+        res.set_content(R"({"error": "Unsupported method"})", "application/json");
+        res.status = 501; });
+
+    std::cout << "Server started at http://localhost:8000" << std::endl;
+    svr.listen("0.0.0.0", 8000);
 }
 
 int main()
 {
     srand(static_cast<unsigned int>(time(0)));
-    httplib::Server svr;
-
     double currentPrice = 20000.0;
 
-    // 處理 GET 請求，返回最新的期貨價格資料
-    svr.Get("/", [&currentPrice](const httplib::Request &req, httplib::Response &res)
-            {
-        std::cout << "Received GET request for /" << std::endl; // 輸出接收到請求的訊息
+    // 啟動 HTTP 伺服器執行緒
+    std::thread serverThread(startHttpServer, std::ref(currentPrice));
 
-        // 更新價格
-        currentPrice += generateRandomPrice(1);
+    // 主程式繼續執行其他任務 (例如抓取期貨報價資料)
+    while (true)
+    {
+        std::cout << "Processing market data..." << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+    }
 
-        // 生成 JSON 回應資料
-        json data = {
-            {"time", time(0)}, // 當前時間（Unix 時間戳）
-            {"price", currentPrice}, // 當前價格
-            {"volume", 100}, // 假設的交易量
-            {"symbol", "FUTURE1"}}; // 商品名稱
-
-        std::cout << "Sending response with price: " << currentPrice << std::endl; // 輸出正在發送的價格
-
-        // 設置 JSON 响應
-        res.set_content(data.dump(), "application/json"); });
-
-    // 錯誤處理：返回方法不被支持的訊息
-    svr.set_error_handler([](const httplib::Request &req, httplib::Response &res)
-                          {
-        std::cout << "Error: Unsupported method for " << req.method << " " << req.path << std::endl; // 錯誤訊息
-        res.set_content(R"({"error": "Unsupported method"})", "application/json");
-        res.status = 501; });
-
-    // 讓伺服器開始監聽，並顯示伺服器啟動的訊息
-    std::cout << "Server started at http://localhost:8000" << std::endl;
-
-    // 開始監聽並處理請求
-    svr.listen("0.0.0.0", 8000);
+    serverThread.join(); // 等待伺服器執行緒結束
+    return 0;
 }
