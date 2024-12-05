@@ -96,6 +96,7 @@ int main()
         std::this_thread::sleep_for(std::chrono::seconds(5));
 
         currentPrice += 0.2;
+        ++gClosedProfitLoss;
     }
 
     serverThread.join();
