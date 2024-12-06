@@ -36,6 +36,25 @@
             margin: 20px;
             font-weight: bold;
         }
+
+        .product {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .product h2 {
+            margin-top: 0;
+        }
+
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
     </style>
 </head>
 
@@ -44,11 +63,14 @@
     <div id="price-change">Price Change: N/A</div>
     <canvas id="chart"></canvas>
     <div id="log"></div>
+    <h2>Bid/Offer Data Viewer</h2>
+    <div id="data-container"></div>
 
     <script>
         const logDiv = document.getElementById("log");
         const chartCtx = document.getElementById("chart").getContext("2d");
         const priceChangeDiv = document.getElementById("price-change");
+        const dataContainer = document.getElementById("data-container");
 
         const chartData = {
             labels: [],
@@ -77,7 +99,6 @@
             }
         });
 
-        // 从localStorage加载图表数据
         function loadChartData() {
             const savedData = localStorage.getItem("chartData");
             if (savedData) {
@@ -88,7 +109,6 @@
             }
         }
 
-        // 保存图表数据到localStorage
         function saveChartData() {
             const dataToSave = {
                 labels: chartData.labels,
@@ -97,7 +117,6 @@
             localStorage.setItem("chartData", JSON.stringify(dataToSave));
         }
 
-        // 请求数据并更新UI
         async function fetchData() {
             try {
                 const indexDataResponse = await fetch("http://192.168.50.168:8080/index-data");
@@ -116,7 +135,6 @@
             }
         }
 
-        // 更新UI
         function updateUI(indexData, bidOfferData) {
             const { CurrentPrice, Timestamp, ClosedProfitLoss, FutureRight } = indexData;
             const timeLabel = new Date(Timestamp * 1000).toLocaleTimeString();
@@ -124,16 +142,62 @@
             chartData.datasets[0].data.push(CurrentPrice);
             lineChart.update();
 
-            // 保存更新后的图表数据
             saveChartData();
 
             priceChangeDiv.textContent = `Price Change: $${CurrentPrice} | Closed Profit: $${ClosedProfitLoss} | Future Right: $${FutureRight}`;
 
             appendLog(`[Futures] Time: ${timeLabel}, Price: $${CurrentPrice}, Closed Profit: $${ClosedProfitLoss}`);
-            appendLog("[Bid/Offer Data] " + JSON.stringify(bidOfferData), false);
+            renderData(bidOfferData);
         }
 
-        // 追加日志
+        function renderData(data) {
+            dataContainer.innerHTML = "";
+
+            // 檢查是否為有效的物件
+            if (!data || typeof data !== "object" || !data.BidOffer) {
+                appendLog("Invalid bidOfferData structure", true);
+                return;
+            }
+
+            const productDiv = document.createElement("div");
+            productDiv.className = "product";
+
+            const { BidOffer, CurrentPrice, High, Low, Open, ProductName } = data;
+
+            const totalBidVolume = Object.values(BidOffer)
+                .filter((entry, index) => index < 5) // 前五個是 Bid
+                .reduce((sum, entry) => sum + entry.Volume, 0);
+
+            const totalOfferVolume = Object.values(BidOffer)
+                .filter((entry, index) => index >= 5) // 後五個是 Offer
+                .reduce((sum, entry) => sum + entry.Volume, 0);
+
+            const html = `
+        <h2>${ProductName}</h2>
+        <pre>
+Open: ${Open}, High: ${High}, Low: ${Low}, Current Price: ${CurrentPrice}
+Total Offer Volume: ${totalOfferVolume}
+-------------------------------------------------
+Ask5: [${BidOffer.Offer5.Price}]: [${BidOffer.Offer5.Volume}]
+Ask4: [${BidOffer.Offer4.Price}]: [${BidOffer.Offer4.Volume}]
+Ask3: [${BidOffer.Offer3.Price}]: [${BidOffer.Offer3.Volume}]
+Ask2: [${BidOffer.Offer2.Price}]: [${BidOffer.Offer2.Volume}]
+Ask1: [${BidOffer.Offer1.Price}]: [${BidOffer.Offer1.Volume}]
+=============================
+Bid1: [${BidOffer.Bid1.Price}]: [${BidOffer.Bid1.Volume}]
+Bid2: [${BidOffer.Bid2.Price}]: [${BidOffer.Bid2.Volume}]
+Bid3: [${BidOffer.Bid3.Price}]: [${BidOffer.Bid3.Volume}]
+Bid4: [${BidOffer.Bid4.Price}]: [${BidOffer.Bid4.Volume}]
+Bid5: [${BidOffer.Bid5.Price}]: [${BidOffer.Bid5.Volume}]
+-------------------------------------------------
+Total Bid Volume: ${totalBidVolume}
+        </pre>
+    `;
+            productDiv.innerHTML = html;
+            dataContainer.appendChild(productDiv);
+        }
+
+
         function appendLog(message, isError = false) {
             const entry = document.createElement("div");
             entry.textContent = message;
@@ -144,8 +208,6 @@
 
         setInterval(fetchData, 3000);
         fetchData();
-
-        // 页面加载时，从localStorage加载图表数据
         loadChartData();
     </script>
 </body>
