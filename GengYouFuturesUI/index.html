@@ -55,6 +55,14 @@
             border-radius: 4px;
             overflow-x: auto;
         }
+
+        .highlight-green {
+            color: green;
+        }
+
+        .highlight-red {
+            color: red;
+        }
     </style>
 </head>
 
@@ -136,7 +144,7 @@
         }
 
         function updateUI(indexData, bidOfferData) {
-            const { CurrentPrice, Timestamp, ClosedProfitLoss, FutureRight } = indexData;
+            const { CurrentPrice, Timestamp, ClosedProfitLoss, FutureRight, ClosePrice, High, Low, Open, ProductName } = indexData;
             const timeLabel = new Date(Timestamp * 1000).toLocaleTimeString();
             chartData.labels.push(timeLabel);
             chartData.datasets[0].data.push(CurrentPrice);
@@ -144,10 +152,11 @@
 
             saveChartData();
 
-            priceChangeDiv.textContent = `Price Change: $${CurrentPrice} | Closed Profit: $${ClosedProfitLoss} | Future Right: $${FutureRight}`;
+            priceChangeDiv.textContent = `Price Change: $${CurrentPrice} | Closed Profit: $${ClosedProfitLoss} | Future Right: $${FutureRight} | Close Price: $${ClosePrice}`;
 
-            appendLog(`[Futures] Time: ${timeLabel}, Price: $${CurrentPrice}, Closed Profit: $${ClosedProfitLoss}`);
-            renderData(bidOfferData);
+            appendLog(`[Futures] Time: ${timeLabel}, Price: $${CurrentPrice}, Closed Profit: $${ClosedProfitLoss}, Close Price: $${ClosePrice}`);
+
+            renderData(bidOfferData, ClosePrice); // 傳遞 ClosePrice 到 renderData
         }
 
         function renderData(data) {
@@ -162,7 +171,7 @@
             const productDiv = document.createElement("div");
             productDiv.className = "product";
 
-            const { BidOffer, CurrentPrice, High, Low, Open, ProductName } = data;
+            const { BidOffer, ClosePrice, High, Low, Open, ProductName } = data;
 
             const totalBidVolume = Object.values(BidOffer)
                 .filter((entry, index) => index < 5) // 前五個是 Bid
@@ -172,10 +181,23 @@
                 .filter((entry, index) => index >= 5) // 後五個是 Offer
                 .reduce((sum, entry) => sum + entry.Volume, 0);
 
+            // 判斷成交價格位置並高亮顯示
+            const bid1Price = BidOffer.Bid1.Price;
+            const offer1Price = BidOffer.Offer1.Price;
+
+            let bid1Class = "";
+            let offer1Class = "";
+
+            if (ClosePrice <= bid1Price) {
+                bid1Class = "highlight-green"; // 高亮 Bid1 為綠色
+            } else if (ClosePrice >= offer1Price) {
+                offer1Class = "highlight-red"; // 高亮 Offer1 為紅色
+            }
+
             const html = `
         <h2>${ProductName}</h2>
         <pre>
-Open: ${Open}, High: ${High}, Low: ${Low}, Current Price: ${CurrentPrice}
+Open: ${Open}, High: ${High}, Low: ${Low}, Current Price: ${ClosePrice}
 Total Offer Volume: ${totalOfferVolume}
 -------------------------------------------------
 Ask5: [${BidOffer.Offer5.Price}]: [${BidOffer.Offer5.Volume}]
@@ -184,7 +206,7 @@ Ask3: [${BidOffer.Offer3.Price}]: [${BidOffer.Offer3.Volume}]
 Ask2: [${BidOffer.Offer2.Price}]: [${BidOffer.Offer2.Volume}]
 Ask1: [${BidOffer.Offer1.Price}]: [${BidOffer.Offer1.Volume}]
 =============================
-Bid1: [${BidOffer.Bid1.Price}]: [${BidOffer.Bid1.Volume}]
+Bid1: <span class="${bid1Class}">[${BidOffer.Bid1.Price}]: [${BidOffer.Bid1.Volume}]</span>
 Bid2: [${BidOffer.Bid2.Price}]: [${BidOffer.Bid2.Volume}]
 Bid3: [${BidOffer.Bid3.Price}]: [${BidOffer.Bid3.Volume}]
 Bid4: [${BidOffer.Bid4.Price}]: [${BidOffer.Bid4.Volume}]
@@ -193,10 +215,10 @@ Bid5: [${BidOffer.Bid5.Price}]: [${BidOffer.Bid5.Volume}]
 Total Bid Volume: ${totalBidVolume}
         </pre>
     `;
+
             productDiv.innerHTML = html;
             dataContainer.appendChild(productDiv);
         }
-
 
         function appendLog(message, isError = false) {
             const entry = document.createElement("div");
