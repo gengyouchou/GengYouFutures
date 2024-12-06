@@ -26,6 +26,7 @@ struct StrategyConfig
 struct MarketData
 {
     long currentPrice[10] = {0};
+    long ClosePrice = 0;
     long evaluatePosition = 1;
     double futureRight = 10000.0;
     double closedProfitLoss = 1234.0;
@@ -61,6 +62,8 @@ void simulateMarketData()
     }
     gMarketData.best5BidOffer[productIdxNo] = bidOffer;
 
+    gMarketData.ClosePrice = priceDist(rng);
+
     // 更新當前價格
     currentPrice.store(priceDist(rng));
 }
@@ -71,7 +74,6 @@ double generateRandomPrice(double basePrice)
     double fluctuation = (rand() % 21 - 10) / 10.0; // ±1.0
     return basePrice + fluctuation;
 }
-
 // 將市場數據轉換為 JSON 格式
 json AutoBest5LongToJson(long productIdxNo, const std::string &productName)
 {
@@ -113,6 +115,9 @@ json AutoBest5LongToJson(long productIdxNo, const std::string &productName)
     {
         responseData["Error"] = "Insufficient bid-offer data.";
     }
+
+    // 添加 ClosePrice 和 evaluatePosition 的轉換
+    responseData["ClosePrice"] = gMarketData.ClosePrice;
 
     return responseData;
 }
