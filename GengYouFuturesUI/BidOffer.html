@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoBest5Long Data Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .product {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .product h2 {
+            margin-top: 0;
+        }
+
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>AutoBest5Long Data Viewer</h1>
+    <div id="data-container"></div>
+
+    <script>
+        // 模擬數據
+        const mockData = [
+            {
+                ProductIdxNo: 101,
+                ProductName: "Product A",
+                High: 1200,
+                Low: 1000,
+                Open: 1100,
+                CurrentPrice: 1150,
+                Best5BidOffer: [
+                    { price: 1140, volume: 50 },
+                    { price: 1135, volume: 45 },
+                    { price: 1130, volume: 60 },
+                    { price: 1125, volume: 30 },
+                    { price: 1120, volume: 25 },
+                    { price: 1160, volume: 20 },
+                    { price: 1165, volume: 25 },
+                    { price: 1170, volume: 30 },
+                    { price: 1175, volume: 40 },
+                    { price: 1180, volume: 50 }
+                ],
+                Close: 1150,
+                Quantity: 500
+            },
+            {
+                ProductIdxNo: 102,
+                ProductName: "Product B",
+                High: 1400,
+                Low: 1300,
+                Open: 1350,
+                CurrentPrice: 1375,
+                Best5BidOffer: [
+                    { price: 1370, volume: 60 },
+                    { price: 1365, volume: 55 },
+                    { price: 1360, volume: 40 },
+                    { price: 1355, volume: 35 },
+                    { price: 1350, volume: 20 },
+                    { price: 1380, volume: 10 },
+                    { price: 1385, volume: 15 },
+                    { price: 1390, volume: 20 },
+                    { price: 1395, volume: 25 },
+                    { price: 1400, volume: 30 }
+                ],
+                Close: 1375,
+                Quantity: 300
+            }
+        ];
+
+        // 渲染數據
+        function renderData(data) {
+            const container = document.getElementById("data-container");
+            container.innerHTML = ""; // 清空現有內容
+
+            data.forEach(product => {
+                const productDiv = document.createElement("div");
+                productDiv.className = "product";
+
+                let html = `
+                    <h2>${product.ProductName} (IdxNo: ${product.ProductIdxNo})</h2>
+                    <pre>
+Open: ${product.Open}, High: ${product.High}, Low: ${product.Low}
+Current Price: ${product.CurrentPrice}
+Total Offer: ${product.Best5BidOffer.slice(5).reduce((sum, o) => sum + o.volume, 0)}
+-------------------------------------------------
+Ask5: [${product.Best5BidOffer[9].price}]: [${product.Best5BidOffer[9].volume}]
+Ask4: [${product.Best5BidOffer[8].price}]: [${product.Best5BidOffer[8].volume}]
+Ask3: [${product.Best5BidOffer[7].price}]: [${product.Best5BidOffer[7].volume}]
+Ask2: [${product.Best5BidOffer[6].price}]: [${product.Best5BidOffer[6].volume}]
+Ask1: [${product.Best5BidOffer[5].price}]: [${product.Best5BidOffer[5].volume}]
+============================Close: [${product.Close}]: [${product.Quantity}]============
+Bid1: [${product.Best5BidOffer[0].price}]: [${product.Best5BidOffer[0].volume}]
+Bid2: [${product.Best5BidOffer[1].price}]: [${product.Best5BidOffer[1].volume}]
+Bid3: [${product.Best5BidOffer[2].price}]: [${product.Best5BidOffer[2].volume}]
+Bid4: [${product.Best5BidOffer[3].price}]: [${product.Best5BidOffer[3].volume}]
+Bid5: [${product.Best5BidOffer[4].price}]: [${product.Best5BidOffer[4].volume}]
+-------------------------------------------------
+Total Bid: ${product.Best5BidOffer.slice(0, 5).reduce((sum, b) => sum + b.volume, 0)}
+
+                    </pre>
+                `;
+
+                productDiv.innerHTML = html;
+                container.appendChild(productDiv);
+            });
+        }
+
+        // 初始渲染
+        renderData(mockData);
+    </script>
+</body>
+
+</html>
