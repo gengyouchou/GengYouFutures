@@ -97,12 +97,18 @@
             localStorage.setItem("chartData", JSON.stringify(dataToSave));
         }
 
+        // 请求数据并更新UI
         async function fetchData() {
             try {
-                const response = await fetch("http://192.168.50.168:8080/");
-                if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
-                const data = await response.json();
-                updateUI(data);
+                const indexDataResponse = await fetch("http://192.168.50.168:8080/index-data");
+                if (!indexDataResponse.ok) throw new Error(`HTTP status: ${indexDataResponse.status}`);
+                const indexData = await indexDataResponse.json();
+
+                const bidOfferDataResponse = await fetch("http://192.168.50.168:8080/bid-offer-data");
+                if (!bidOfferDataResponse.ok) throw new Error(`HTTP status: ${bidOfferDataResponse.status}`);
+                const bidOfferData = await bidOfferDataResponse.json();
+
+                updateUI(indexData, bidOfferData);
             } catch (error) {
                 console.error("Error fetching data:", error);
                 appendLog("Error fetching data: " + error.message, true);
@@ -110,10 +116,10 @@
             }
         }
 
-        function updateUI(data) {
-            const { CurrentPrice, Time, Symbol, ClosedProfitLoss, FutureRight } = data;
-
-            const timeLabel = new Date(Time * 1000).toLocaleTimeString();
+        // 更新UI
+        function updateUI(indexData, bidOfferData) {
+            const { CurrentPrice, Timestamp, ClosedProfitLoss, FutureRight } = indexData;
+            const timeLabel = new Date(Timestamp * 1000).toLocaleTimeString();
             chartData.labels.push(timeLabel);
             chartData.datasets[0].data.push(CurrentPrice);
             lineChart.update();
@@ -123,9 +129,11 @@
 
             priceChangeDiv.textContent = `Price Change: $${CurrentPrice} | Closed Profit: $${ClosedProfitLoss} | Future Right: $${FutureRight}`;
 
-            appendLog(`[${Symbol}] Time: ${timeLabel}, Price: $${CurrentPrice}, Closed Profit: $${ClosedProfitLoss}`);
+            appendLog(`[Futures] Time: ${timeLabel}, Price: $${CurrentPrice}, Closed Profit: $${ClosedProfitLoss}`);
+            appendLog("[Bid/Offer Data] " + JSON.stringify(bidOfferData), false);
         }
 
+        // 追加日志
         function appendLog(message, isError = false) {
             const entry = document.createElement("div");
             entry.textContent = message;
