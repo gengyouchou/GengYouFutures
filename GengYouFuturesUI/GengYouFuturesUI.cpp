@@ -6,6 +6,7 @@
 #include <array>
 #include <thread>
 #include <nlohmann/json.hpp>
+#include <random>
 #include <ctime>
 #include <atomic>
 
@@ -34,6 +35,35 @@ struct MarketData
 
 // 當前價格（使用 atomic 保證線程安全）
 std::atomic<double> currentPrice(20000.0);
+
+// 模擬填充 MarketData 的函數
+void simulateMarketData()
+{
+    static std::mt19937 rng(static_cast<unsigned int>(std::time(nullptr))); // 隨機數生成器
+    std::uniform_int_distribution<long> priceDist(19000, 21000);            // 模擬價格範圍
+    std::uniform_int_distribution<long> volumeDist(1, 100);                 // 模擬成交量範圍
+
+    long productIdxNo = 0; // 模擬產品索引
+
+    // 模擬高低點數據
+    long openPrice = priceDist(rng);
+    long highPrice = openPrice + priceDist(rng) % 100; // 模擬高點（略高於開盤價）
+    long lowPrice = openPrice - priceDist(rng) % 100;  // 模擬低點（略低於開盤價）
+    gMarketData.highLowPoints[productIdxNo] = {highPrice, lowPrice, openPrice, 0};
+
+    // 模擬買五檔和賣五檔數據
+    std::vector<std::pair<long, long>> bidOffer;
+    for (int i = 0; i < 10; ++i)
+    {
+        long price = priceDist(rng);
+        long volume = volumeDist(rng);
+        bidOffer.emplace_back(price, volume);
+    }
+    gMarketData.best5BidOffer[productIdxNo] = bidOffer;
+
+    // 更新當前價格
+    currentPrice.store(priceDist(rng));
+}
 
 // 生成隨機價格
 double generateRandomPrice(double basePrice)
@@ -151,8 +181,7 @@ int main()
     while (isRunning.load())
     {
         std::this_thread::sleep_for(std::chrono::seconds(5));
-        double randomPrice = generateRandomPrice(currentPrice.load());
-        currentPrice.store(randomPrice);
+        simulateMarketData();
         gMarketData.closedProfitLoss += 1.0;
 
         std::cout << "Current Price: " << currentPrice.load() << ", Closed Profit/Loss: " << gMarketData.closedProfitLoss << std::endl;
