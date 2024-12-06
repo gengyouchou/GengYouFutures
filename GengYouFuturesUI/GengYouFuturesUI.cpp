@@ -41,12 +41,12 @@ void startHttpServer(double &currentPrice)
         }
         return httplib::Server::HandlerResponse::Unhandled; });
 
-    // 處理根路徑的 GET 請求
-    svr.Get("/", [&currentPrice](const httplib::Request &req, httplib::Response &res)
+    // 處理 index.html 的數據
+    svr.Get("/index-data", [&currentPrice](const httplib::Request &req, httplib::Response &res)
             {
         currentPrice += generateRandomPrice(1);
 
-        json data = {
+        json indexData = {
             {"UserId", g_strUserId},
             {"StrategyMode", gStrategyConfig_StrategyMode},
             {"ClosingKeyPriceLevel", gStrategyConfig_ClosingKeyPriceLevel},
@@ -57,15 +57,30 @@ void startHttpServer(double &currentPrice)
             {"EvaluatePosition", gEvaluatePosition},
             {"FutureRight", gFutureRight},
             {"ClosedProfitLoss", gClosedProfitLoss},
-            {"DayAmpAndKeyPrice_LongKey1", gDayAmpAndKeyPrice_LongKey1},
-            {"SmallestAmp", gDayAmpAndKeyPrice_SmallestAmp},
-            {"BidOfferLongShortSlope", gBidOfferLongShortSlope},
+            {"Time", time(0)},
+            {"Symbol", "FUTURE1"}};
+
+        std::cout << "Sending index response: " << indexData.dump(4) << std::endl;
+        res.set_content(indexData.dump(), "application/json"); });
+
+    // 處理 BidOffer.html 的數據
+    svr.Get("/bid-offer-data", [&currentPrice](const httplib::Request &req, httplib::Response &res)
+            {
+        currentPrice += generateRandomPrice(1);
+
+        json bidOfferData = {
+            {"UserId", g_strUserId},
+            {"BidPrice", currentPrice - 5.0},
+            {"OfferPrice", currentPrice + 5.0},
+            {"BidVolume", rand() % 100 + 1},
+            {"OfferVolume", rand() % 100 + 1},
+            {"BidOfferSlope", gBidOfferLongShortSlope},
             {"NumberOfStocksRisingAndFalling", gNumberOfStocksRisingAndFalling},
             {"Time", time(0)},
             {"Symbol", "FUTURE1"}};
 
-        std::cout << "Sending response: " << data.dump(4) << std::endl;
-        res.set_content(data.dump(), "application/json"); });
+        std::cout << "Sending bid-offer response: " << bidOfferData.dump(4) << std::endl;
+        res.set_content(bidOfferData.dump(), "application/json"); });
 
     // 錯誤處理，若方法不支持則回傳 501
     svr.set_error_handler([](const httplib::Request &req, httplib::Response &res)
