@@ -195,3 +195,93 @@ int main()
     serverThread.join();
     return 0;
 }
+
+VOID MainOutputToJson(VOID)
+{
+    // Ouput start
+
+    printf("[UserId:%s], [StrategyMode:%ld], [SpecifyLongShort:%d], [ClosingKeyPriceLevel:%ld], [BidOfferLongShortThreshold:%ld], [BidOfferLongShortExtremeValue:%ld], [BidOfferLongShortAttackSlope:%f], [ActivePoint:%ld], [MaximumLoss:%f]\n",
+           g_strUserId.c_str(), gStrategyConfig.StrategyMode, gStrategyConfig.SpecifyLongShort, gStrategyConfig.ClosingKeyPriceLevel,
+           gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.BidOfferLongShortExtremeValue, gStrategyConfig.BidOfferLongShortAttackSlope, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss);
+    printf("=========================================\n");
+    printf("[CurMtxPrice: %ld] ", gCurCommPrice[MtxCommodtyInfo] / 100);
+    printf("[TSEA prices: %ld, Valume: %ld] ",
+           gCurCommPrice[gCommodtyInfo.TSEAIdxNo] / 100, gCurTaiexInfo[0][1]);
+    printf("[Diff: %d] ", (gCurCommPrice[MtxCommodtyInfo] - gCurCommPrice[gCommodtyInfo.TSEAIdxNo]) / 100);
+    printf("[ServerTime: %d: %d: %d]\n", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+
+    printf("=========================================\n");
+
+    printf("[CurNQPrice: %ld], [NQMa20: %f], [NQMa20LongShort: %f]\n",
+           gCurOsCommPrice[gCommodtyOsInfo.NQIdxNo], gNQMa20, gNQMa20LongShort);
+
+    printf("=========================================\n");
+
+    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
+    {
+
+        long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
+        long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
+        long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
+        long OpenPrice = gCurCommHighLowPoint[MtxCommodtyInfo][2] / 100;
+        double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2;
+        double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2;
+
+        printf("Open: %ld, CurHigh: %ld, CurLow: %ld, Ma5: %f, Ma5LongShort: %f, CostMovingAverage: %ld, ",
+               OpenPrice, CurHigh, CurLow, gMa5, gMa5LongShort, CostMovingAverage);
+        printf("CurAvg: %ld, CurAmp : %ld, ", (CurHigh + CurLow) / 2, CurHigh - CurLow);
+        printf("LongExtremeValue: %ld, ShortExtremeValue: %ld\n", static_cast<long>(ShockLongExtremeValue), static_cast<long>(ShockShortExtremeValue));
+    }
+
+    printf("=========================================\n");
+
+    printf("EvaluatePosition: %ld, FutureRight: %f, ClosedProfitLoss: %f", gEvaluatePosition, gFutureRight, gClosedProfitLoss);
+
+    if (gOpenInterestInfo.openPosition != 0)
+    {
+        printf(", Open Position: %d, AvgCost:%f, ProfitAndLoss: %f\n",
+               gOpenInterestInfo.openPosition,
+               gOpenInterestInfo.avgCost,
+               gOpenInterestInfo.profitAndLoss);
+    }
+
+    printf("\n=========================================\n");
+
+    printf("Long Key 5: %ld\n", gDayAmpAndKeyPrice.LongKey5);
+    printf("Long Key 4: %ld\n", gDayAmpAndKeyPrice.LongKey4);
+    printf("Long Key 3: %ld\n", gDayAmpAndKeyPrice.LongKey3);
+    printf("Long Key 2: %ld\n", gDayAmpAndKeyPrice.LongKey2);
+    printf("Long Key 1: %ld\n", gDayAmpAndKeyPrice.LongKey1);
+    printf("=========================================\n");
+    printf("Short Key 1: %ld\n", gDayAmpAndKeyPrice.ShortKey1);
+    printf("Short Key 2: %ld\n", gDayAmpAndKeyPrice.ShortKey2);
+    printf("Short Key 3: %ld\n", gDayAmpAndKeyPrice.ShortKey3);
+    printf("Short Key 4: %ld\n", gDayAmpAndKeyPrice.ShortKey4);
+    printf("Short Key 5: %ld\n", gDayAmpAndKeyPrice.ShortKey5);
+
+    printf("=========================================\n");
+
+    printf("SmallestAmp : %ld, ", gDayAmpAndKeyPrice.SmallestAmp);
+    printf("SmallAmp : %ld, ", gDayAmpAndKeyPrice.SmallAmp);
+    printf("AvgAmp : %ld, ", gDayAmpAndKeyPrice.AvgAmp);
+    printf("LargerAmp : %ld, ", gDayAmpAndKeyPrice.LargerAmp);
+    printf("LargestAmp : %ld\n", gDayAmpAndKeyPrice.LargestAmp);
+
+    printf("=========================================\n");
+
+    printf("BidOfferLongShortSlope: %f, LongShort: %ld, BidOfferLongShort: %ld, TransactionListLongShort: %ld, OsTransactionListLongShort: %ld, NumberOfStocksRisingAndFalling: %f\n",
+           gBidOfferLongShortSlope, gLongShort, gBidOfferLongShort, gTransactionListLongShort, gOsTransactionListLongShort, gNumberOfStocksRisingAndFalling);
+
+    printf("=========================================\n");
+
+    AutoBest5Long(gCommodtyInfo.TSMCIdxNo, TSMC);
+    AutoBest5Long(gCommodtyInfo.FOXCONNIdxNo, FOXCONN);
+    AutoBest5Long(gCommodtyInfo.MediaTekIdxNo, MEDIATEK);
+
+    printf("=========================================\n");
+
+    printf("TSEA Total OFFER: [%ld]\n", gCurTaiexInfo[0x00][3]);
+    printf("            BID : [%ld]\n", gCurTaiexInfo[0x00][2]);
+    printf("TPEX Total OFFER: [%ld]\n", gCurTaiexInfo[0x01][3]);
+    printf("            BID : [%ld]\n", gCurTaiexInfo[0x01][2]);
+}
