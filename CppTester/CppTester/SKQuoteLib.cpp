@@ -931,7 +931,6 @@ void GetCurPrice(IN long nStockIndex, IN long nClose, IN long nSimulate)
 
     gCurCommPrice[nStockIndex] = nClose;
 }
-
 // Function to load high/low points from database.yaml into global maps
 void loadHighLowPoints()
 {
@@ -941,34 +940,41 @@ void loadHighLowPoints()
         YAML::Node config = YAML::LoadFile(DATABASE_PATH);
 
         // Load day session high/low points into gDaysCommHighLowPoint
-        for (const auto &date : config["DaysCommHighLowPoint"])
+        if (config["DaysCommHighLowPoint"])
         {
-            std::string key = date.first.as<std::string>();
-            double high = date.second["High"].as<double>();
-            double low = date.second["Low"].as<double>();
-            gDaysCommHighLowPoint[key] = std::make_pair(high, low);
+            for (const auto &date : config["DaysCommHighLowPoint"])
+            {
+                std::string key = date.first.as<std::string>();
+                double high = date.second["High"].as<double>();
+                double low = date.second["Low"].as<double>();
+                gDaysCommHighLowPoint[key] = std::make_pair(high, low);
+            }
         }
 
         // Load night session high/low points into gDaysNightAllCommHighLowPoint
-        for (const auto &date : config["DaysNightAllCommHighLowPoint"])
+        if (config["DaysNightAllCommHighLowPoint"])
         {
-            std::string key = date.first.as<std::string>();
-            double high = date.second["High"].as<double>();
-            double low = date.second["Low"].as<double>();
-            gDaysNightAllCommHighLowPoint[key] = std::make_pair(high, low);
+            for (const auto &date : config["DaysNightAllCommHighLowPoint"])
+            {
+                std::string key = date.first.as<std::string>();
+                double high = date.second["High"].as<double>();
+                double low = date.second["Low"].as<double>();
+                gDaysNightAllCommHighLowPoint[key] = std::make_pair(high, low);
+            }
         }
     }
     catch (const YAML::BadFile &e)
     {
-
         std::cerr << "Failed to load database.yaml: " << e.what() << std::endl;
-
-        DEBUG(DEBUG_LEVEL_INFO, "Failed to load database.yaml");
-
+        DEBUG(DEBUG_LEVEL_ERROR, "Failed to load database.yaml");
         system("pause");
-
-        // Handle error if the file cannot be loaded
-
+        exit(1);
+    }
+    catch (const YAML::Exception &e)
+    {
+        std::cerr << "Error parsing database.yaml: " << e.what() << std::endl;
+        DEBUG(DEBUG_LEVEL_ERROR, "Error parsing database.yaml");
+        system("pause");
         exit(1);
     }
 }
@@ -976,46 +982,65 @@ void loadHighLowPoints()
 // Function to update high/low points for a specific date and maintain the last 20 entries
 void updateHighLowPoints(const std::string &date, double dayHigh, double dayLow, double nightHigh, double nightLow)
 {
-    YAML::Node config;
-
-    if (dayHigh > 0 && dayLow > 0)
+    try
     {
-        // Update day session high/low points for the given date
-        gDaysCommHighLowPoint[date] = std::make_pair(dayHigh, dayLow);
+        // Load the existing YAML file
+        YAML::Node config = YAML::LoadFile(DATABASE_PATH);
 
-        // Maintain only the last DAY_NIGHT_HIGH_LOW_K_LINE entries for day session
-        if (gDaysCommHighLowPoint.size() > DAY_NIGHT_HIGH_LOW_K_LINE)
+        // Update day session high/low points
+        if (dayHigh > 0 && dayLow > 0)
         {
-            gDaysCommHighLowPoint.erase(gDaysCommHighLowPoint.begin());
+            gDaysCommHighLowPoint[date] = std::make_pair(dayHigh, dayLow);
+
+            // Maintain only the last DAY_NIGHT_HIGH_LOW_K_LINE entries
+            if (gDaysCommHighLowPoint.size() > DAY_NIGHT_HIGH_LOW_K_LINE)
+            {
+                gDaysCommHighLowPoint.erase(gDaysCommHighLowPoint.begin());
+            }
         }
-    }
 
-    if (nightHigh > 0 && nightLow > 0)
-    {
-        // Update night session high/low points for the given date
-        gDaysNightAllCommHighLowPoint[date] = std::make_pair(nightHigh, nightLow);
-
-        // Maintain only the last DAY_NIGHT_HIGH_LOW_K_LINE entries for night session
-        if (gDaysNightAllCommHighLowPoint.size() > DAY_NIGHT_HIGH_LOW_K_LINE)
+        // Update night session high/low points
+        if (nightHigh > 0 && nightLow > 0)
         {
-            gDaysNightAllCommHighLowPoint.erase(gDaysNightAllCommHighLowPoint.begin());
+            gDaysNightAllCommHighLowPoint[date] = std::make_pair(nightHigh, nightLow);
+
+            // Maintain only the last DAY_NIGHT_HIGH_LOW_K_LINE entries
+            if (gDaysNightAllCommHighLowPoint.size() > DAY_NIGHT_HIGH_LOW_K_LINE)
+            {
+                gDaysNightAllCommHighLowPoint.erase(gDaysNightAllCommHighLowPoint.begin());
+            }
         }
-    }
 
-    // Write the entire gDaysCommHighLowPoint map back to database.yaml
-    for (const auto &pair : gDaysCommHighLowPoint)
+        // Update or add day session points in the config
+        for (const auto &pair : gDaysCommHighLowPoint)
+        {
+            config["DaysCommHighLowPoint"][pair.first]["High"] = pair.second.first;
+            config["DaysCommHighLowPoint"][pair.first]["Low"] = pair.second.second;
+        }
+
+        // Update or add night session points in the config
+        for (const auto &pair : gDaysNightAllCommHighLowPoint)
+        {
+            config["DaysNightAllCommHighLowPoint"][pair.first]["High"] = pair.second.first;
+            config["DaysNightAllCommHighLowPoint"][pair.first]["Low"] = pair.second.second;
+        }
+
+        // Save the updated configuration back to the file
+        std::ofstream fout(DATABASE_PATH);
+        fout << config;
+    }
+    catch (const YAML::BadFile &e)
     {
-        config["DaysCommHighLowPoint"][pair.first]["High"] = pair.second.first;
-        config["DaysCommHighLowPoint"][pair.first]["Low"] = pair.second.second;
+        std::cerr << "Failed to update database.yaml: " << e.what() << std::endl;
+        DEBUG(DEBUG_LEVEL_ERROR, "Failed to update database.yaml");
+        system("pause");
+        exit(1);
     }
-
-    // Write the entire gDaysNightAllCommHighLowPoint map back to database.yaml
-    for (const auto &pair : gDaysNightAllCommHighLowPoint)
+    catch (const YAML::Exception &e)
     {
-        config["DaysNightAllCommHighLowPoint"][pair.first]["High"] = pair.second.first;
-        config["DaysNightAllCommHighLowPoint"][pair.first]["Low"] = pair.second.second;
+        std::cerr << "Error updating database.yaml: " << e.what() << std::endl;
+        DEBUG(DEBUG_LEVEL_ERROR, "Error updating database.yaml");
+        system("pause");
+        exit(1);
     }
-
-    std::ofstream fout(DATABASE_PATH);
-    fout << config;
 }

@@ -247,6 +247,8 @@ void release()
 
     delete pSKOsQuoteLib;
 
+    UpdateLongShortIntegralValue(gLongShort);
+
     CoUninitialize();
 }
 
@@ -393,6 +395,12 @@ void thread_main()
 
         StrategySwitch(gStrategyConfig.StrategyMode, MtxCommodtyInfo);
 
+        if (gCurServerTime[0] == 5 && gCurServerTime[1] == 0 && gCurServerTime[2] == 0 ||
+            gCurServerTime[0] == 13 && gCurServerTime[1] == 45 && gCurServerTime[2] == 0)
+        {
+            UpdateLongShortIntegralValue(gLongShort);
+        }
+
         // Ouput start
 
         if (elapsed.count() >= refreshInterval)
@@ -417,8 +425,8 @@ void thread_main()
                 CheckConnected = 0;
             }
 
-            printf("[UserId:%s], [StrategyMode:%ld], [ClosingKeyPriceLevel:%ld], [BidOfferLongShortThreshold:%ld], [BidOfferLongShortExtremeValue:%ld], [BidOfferLongShortAttackSlope:%f], [ActivePoint:%ld], [MaximumLoss:%f]\n",
-                   g_strUserId.c_str(), gStrategyConfig.StrategyMode, gStrategyConfig.ClosingKeyPriceLevel,
+            printf("[UserId:%s], [StrategyMode:%ld], [SpecifyLongShort:%d], [ClosingKeyPriceLevel:%ld], [BidOfferLongShortThreshold:%ld], [BidOfferLongShortExtremeValue:%ld], [BidOfferLongShortAttackSlope:%f], [ActivePoint:%ld], [MaximumLoss:%f]\n",
+                   g_strUserId.c_str(), gStrategyConfig.StrategyMode, gStrategyConfig.SpecifyLongShort, gStrategyConfig.ClosingKeyPriceLevel,
                    gStrategyConfig.BidOfferLongShortThreshold, gStrategyConfig.BidOfferLongShortExtremeValue, gStrategyConfig.BidOfferLongShortAttackSlope, gStrategyConfig.ActivePoint, gStrategyConfig.MaximumLoss);
             printf("=========================================\n");
             printf("[CurMtxPrice: %ld] ", gCurCommPrice[MtxCommodtyInfo] / 100);
@@ -454,7 +462,7 @@ void thread_main()
 
             printf("EvaluatePosition: %ld, FutureRight: %f, ClosedProfitLoss: %f", gEvaluatePosition, gFutureRight, gClosedProfitLoss);
 
-            if (gOpenInterestInfo.NeedToUpdate == FALSE && gOpenInterestInfo.openPosition != 0)
+            if (gOpenInterestInfo.openPosition != 0)
             {
                 printf(", Open Position: %d, AvgCost:%f, ProfitAndLoss: %f\n",
                        gOpenInterestInfo.openPosition,
@@ -559,6 +567,11 @@ void readConfig()
             gStrategyConfig.StrategyMode = config["STRATEGY_MODE"].as<LONG>();
         }
 
+        if (config["SPECIFY_LONG_SHORT"])
+        {
+            gStrategyConfig.SpecifyLongShort = config["SPECIFY_LONG_SHORT"].as<SHORT>();
+        }
+
         DEBUG(DEBUG_LEVEL_INFO, "Closing Key Price Level: %ld", gStrategyConfig.ClosingKeyPriceLevel);
         DEBUG(DEBUG_LEVEL_INFO, "Bid Offer Long Short Threshold: %ld", gStrategyConfig.BidOfferLongShortThreshold);
         DEBUG(DEBUG_LEVEL_INFO, "Bid Offer Long Short Extreme Value: %ld", gStrategyConfig.BidOfferLongShortExtremeValue);
@@ -566,6 +579,7 @@ void readConfig()
         DEBUG(DEBUG_LEVEL_INFO, "Activity Point: %ld", gStrategyConfig.ActivePoint);
         DEBUG(DEBUG_LEVEL_INFO, "Maximum Loss: %f", gStrategyConfig.MaximumLoss);
         DEBUG(DEBUG_LEVEL_INFO, "STRATEGY_MODE: %ld", gStrategyConfig.StrategyMode);
+        DEBUG(DEBUG_LEVEL_INFO, "SPECIFY_LONG_SHORT: %d", gStrategyConfig.SpecifyLongShort);
     }
     catch (const YAML::BadFile &e)
     {
@@ -582,6 +596,7 @@ int main()
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     readConfig();
+    loadLongShortIntegralValue(gLongShort);
 
     CoInitialize(NULL);
 

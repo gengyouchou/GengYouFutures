@@ -44,6 +44,7 @@ struct STRATEGY_CONFIG
     LONG ActivePoint;
     DOUBLE MaximumLoss;
     LONG StrategyMode;
+    SHORT SpecifyLongShort;
 };
 
 VOID StrategyStopFuturesLoss(string strUserId, LONG MtxCommodtyInfo);
@@ -64,15 +65,17 @@ LONG EstimatedTodaysAmplitude(VOID);
 
 LONG StrategyCaluLongShort(VOID);
 VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
+void loadLongShortIntegralValue(LONG &gLongShort);
+void UpdateLongShortIntegralValue(LONG gLongShort);
 
 // Strategy
 
 #define SWING_POINTS 20
 #define ATTACK_RANGE 20
 #define LONG_AND_SHORT_TARGET_COUNT 3
-#define TRANSACTION_LIST_LONG_SHORT_WEIGHT_RATIO 1
-#define BID_OFFER_LONG_SHORT_WEIGHT_RATIO 3
+#define TRANSACTION_LIST_LONG_SHORT_WEIGHT_RATIO 2
 #define NQ_TRANSACTION_LIST_LONG_SHORT_WEIGHT_RATIO 200
+#define BID_OFFER_LONG_SHORT_WEIGHT_RATIO 1
 #define MAXIMUM_COST_AVG_BIAS_RATIO 100
 #define MAXIMUM_5MA_BIAS_RATIO 15
 #define TURNING_EXTREME_5MA_BIAS_RATIO 30
@@ -137,6 +140,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
 #define BID_OFFER_LONG_SHORT_EXTREME_VALUE 150000
 #define BID_OFFER_LONG_SHORT_ATTACK_SLOPE 30
 #define STRATEGY_MODE -1
+#define SPECIFY_LONG_SHORT 0
 
 // leading stocks
 

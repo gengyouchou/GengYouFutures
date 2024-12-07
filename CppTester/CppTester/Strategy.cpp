@@ -20,6 +20,7 @@
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 #include <vector>
+#include <yaml-cpp/yaml.h>
 
 using namespace std;
 
@@ -86,6 +87,93 @@ LONG EstimatedLongSideKeyPrice(VOID);
 LONG EstimatedShortSideKeyPrice(VOID);
 LONG CountBidOfferLongShort(LONG nStockidx);
 LONG CountTransactionListLongShort(LONG nStockidx);
+// Function to load LongShortIntegralValue from database.yaml into the global variable gLongShort
+void loadLongShortIntegralValue(LONG &gLongShort)
+{
+    try
+    {
+        // Load the YAML file
+        YAML::Node config = YAML::LoadFile(DATABASE_PATH);
+
+        // Check if LongShortIntegralValue exists in the YAML file
+        if (config["LongShortIntegralValue"])
+        {
+            // Load the value and assign it to gLongShort
+            gLongShort = config["LongShortIntegralValue"].as<LONG>();
+        }
+        else
+        {
+            std::cerr << "LongShortIntegralValue not found in database.yaml. Setting default value to 0 and appending to file." << std::endl;
+            DEBUG(DEBUG_LEVEL_ERROR, "LongShortIntegralValue not found in database.yaml. Setting default value to 0 and appending to file.");
+            gLongShort = 0; // Default value
+
+            // Append LongShortIntegralValue to the end of the file
+            std::ofstream fout(DATABASE_PATH, std::ios_base::app); // Open file in append mode
+            fout << "\nLongShortIntegralValue: " << gLongShort << "\n";
+        }
+    }
+    catch (const YAML::BadFile &e)
+    {
+        std::cerr << "Failed to load database.yaml: " << e.what() << std::endl;
+        DEBUG(DEBUG_LEVEL_ERROR, "Failed to load database.yaml");
+        system("pause");
+        exit(1); // Handle error if the file cannot be loaded
+    }
+    catch (const YAML::Exception &e)
+    {
+        std::cerr << "Error parsing database.yaml: " << e.what() << std::endl;
+        DEBUG(DEBUG_LEVEL_ERROR, "Error parsing database.yaml");
+        system("pause");
+        exit(1); // Handle parsing errors
+    }
+}
+
+// Function to update LongShortIntegralValue in database.yaml
+void UpdateLongShortIntegralValue(LONG gLongShort)
+{
+    try
+    {
+        // Load the YAML file
+        YAML::Node config;
+
+        // Try to load the file if it exists
+        try
+        {
+            config = YAML::LoadFile(DATABASE_PATH);
+        }
+        catch (const YAML::BadFile &e)
+        {
+            std::cerr << "database.yaml not found, creating a new one: " << e.what() << std::endl;
+            DEBUG(DEBUG_LEVEL_DEBUG, "database.yaml not found, creating a new one");
+        }
+
+        // Update or create LongShortIntegralValue in the config
+        config["LongShortIntegralValue"] = gLongShort;
+
+        // Write back to the file
+        std::ofstream fout(DATABASE_PATH);
+        if (!fout)
+        {
+            std::cerr << "Failed to open database.yaml for writing." << std::endl;
+            DEBUG(DEBUG_LEVEL_ERROR, "Failed to open database.yaml for writing");
+            system("pause");
+            exit(1); // Handle file writing errors
+        }
+
+        fout << config;
+        fout.close();
+
+        std::cout << "Updated LongShortIntegralValue to: " << gLongShort << std::endl;
+        DEBUG(DEBUG_LEVEL_INFO, "Updated LongShortIntegralValue to %ld", gLongShort);
+    }
+    catch (const YAML::Exception &e)
+    {
+        std::cerr << "Error updating database.yaml: " << e.what() << std::endl;
+        DEBUG(DEBUG_LEVEL_ERROR, "Error updating database.yaml: ");
+        system("pause");
+        exit(1); // Handle YAML-specific errors
+    }
+}
 
 // Function to calculate the 5-minute moving average (5MA)
 static double calculate5MA(std::deque<double> &closePrices)
@@ -1089,12 +1177,12 @@ LONG AutoOrder(IN string ProductNum, IN SHORT NewClose, IN SHORT BuySell)
     NewClose = ORDER_CLOSE_POSITION;
 #endif
 
+    gClosedProfitLoss = gOpenInterestInfo.profitAndLoss;
+
     if (-gClosedProfitLoss >= gStrategyConfig.MaximumLoss)
     {
         NewClose = ORDER_CLOSE_POSITION;
     }
-
-    gClosedProfitLoss += gOpenInterestInfo.profitAndLoss;
 
     long g_nCode = pSKOrderLib->SendFutureOrder(g_strUserId,
                                                 false, // bAsyncOrder
@@ -3225,6 +3313,7 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     StrategyCaluOsTransactionListLongShort();
     BidOfferAndTransactionListLongShortSlope();
     CountNumberOfStocksRisingAndFalling();
+    StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
 
     if (!(gCurServerTime[0] <= 5 || gCurServerTime[0] >= 15) &&
         !(gCurServerTime[0] >= 8 && gCurServerTime[0] < 14))
@@ -3240,7 +3329,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         // Trend strategy, The middle-aged man's trading method
         // Fall slowly, Rise slowly K
 
-        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         bool TimeIsUp = StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 40);
@@ -3262,13 +3350,15 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 
         if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * BID_OFFER_SHORT_ATTACK_SLOPE_PROPORTION &&
             gLongShort >= gStrategyConfig.BidOfferLongShortThreshold &&
-            gLongShort <= gStrategyConfig.BidOfferLongShortExtremeValue)
+            gLongShort <= gStrategyConfig.BidOfferLongShortExtremeValue &&
+            gStrategyConfig.SpecifyLongShort != -1)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
         }
         else if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope * BID_OFFER_LONG_ATTACK_SLOPE_PROPORTION &&
                  -gLongShort >= gStrategyConfig.BidOfferLongShortThreshold &&
-                 -gLongShort <= gStrategyConfig.BidOfferLongShortExtremeValue)
+                 -gLongShort <= gStrategyConfig.BidOfferLongShortExtremeValue &&
+                 gStrategyConfig.SpecifyLongShort != 1)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
         }
@@ -3280,7 +3370,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     {
         // Trend strategy, Breakthrough Long red K Long black K
 
-        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         StrategyCloseOneRoundTakeProfit(g_strUserId, MtxCommodtyInfo);
@@ -3300,12 +3389,14 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         }
 
         if (gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
-            gLongShort <= gStrategyConfig.BidOfferLongShortExtremeValue)
+            gLongShort <= gStrategyConfig.BidOfferLongShortExtremeValue &&
+            gBidOfferLongShort > 0)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 1);
         }
         else if (-gBidOfferLongShortSlope >= gStrategyConfig.BidOfferLongShortAttackSlope &&
-                 -gLongShort <= gStrategyConfig.BidOfferLongShortExtremeValue)
+                 -gLongShort <= gStrategyConfig.BidOfferLongShortExtremeValue &&
+                 gBidOfferLongShort < 0)
         {
             StrategySimpleNewLongShortPosition(g_strUserId, MtxCommodtyInfo, 0);
         }
@@ -3316,7 +3407,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
     case 10:
     {
         // Counter-trend strategy, V turn or A turn
-        StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         bool TimeIsUp = StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 29);
