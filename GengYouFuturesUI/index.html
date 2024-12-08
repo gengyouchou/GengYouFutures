@@ -127,11 +127,11 @@
 
         async function fetchData() {
             try {
-                const indexDataResponse = await fetch("http://192.168.50.168:8080/index-data");
+                const indexDataResponse = await fetch("http://localhost:8080/index-data");
                 if (!indexDataResponse.ok) throw new Error(`HTTP status: ${indexDataResponse.status}`);
                 const indexData = await indexDataResponse.json();
 
-                const bidOfferDataResponse = await fetch("http://192.168.50.168:8080/bid-offer-data");
+                const bidOfferDataResponse = await fetch("http://localhost:8080/bid-offer-data");
                 if (!bidOfferDataResponse.ok) throw new Error(`HTTP status: ${bidOfferDataResponse.status}`);
                 const bidOfferData = await bidOfferDataResponse.json();
 
