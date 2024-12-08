@@ -171,7 +171,7 @@
             const productDiv = document.createElement("div");
             productDiv.className = "product";
 
-            const { BidOffer, TotalOffer, TotalBid, ClosePrice, High, Low, Open, ProductName } = data;
+            const { BidOffer, TotalOffer, TotalBid, ClosePrice, Quantity, High, Low, Open, ProductName } = data;
 
             const totalBidVolume = Object.values(BidOffer)
                 .filter((entry, index) => index < 5) // 前五個是 Bid
@@ -204,7 +204,7 @@ Ask5: [${BidOffer.Offer5.Price}]: [${BidOffer.Offer5.Volume}]
 Ask4: [${BidOffer.Offer4.Price}]: [${BidOffer.Offer4.Volume}]
 Ask3: [${BidOffer.Offer3.Price}]: [${BidOffer.Offer3.Volume}]
 Ask2: [${BidOffer.Offer2.Price}]: [${BidOffer.Offer2.Volume}]
-Ask1: [${BidOffer.Offer1.Price}]: [${BidOffer.Offer1.Volume}]
+Ask1: <span class="${offer1Class}">[${BidOffer.Offer1.Price}]: [${BidOffer.Offer1.Volume}]</span>
 =============================
 Bid1: <span class="${bid1Class}">[${BidOffer.Bid1.Price}]: [${BidOffer.Bid1.Volume}]</span>
 Bid2: [${BidOffer.Bid2.Price}]: [${BidOffer.Bid2.Volume}]

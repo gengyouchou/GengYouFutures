@@ -54,6 +54,7 @@ void simulateMarketData()
     gMarketDataUI.gClosedProfitLoss += 1.0;
     currentPrice.store(priceDist(rng));
     gMarketDataUI.gTransactionList[productIdxNo][3] = priceDist(rng);
+    gMarketDataUI.gTransactionList[productIdxNo][4] = priceDist(rng);
 }
 
 // 將市場數據轉換為 JSON 格式
@@ -126,6 +127,7 @@ json AutoBest5LongToJson(long productIdxNo, const std::string &productName)
         nQty = gMarketDataUI.gTransactionList[productIdxNo][4];
     }
     responseData["ClosePrice"] = nClose;
+    responseData["Quantity"] = nQty;
 
     return responseData;
 }
