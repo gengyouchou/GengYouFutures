@@ -10,6 +10,8 @@
 #include <ctime>
 #include <atomic>
 
+#include "GengYouFuturesUI.h"
+
 using json = nlohmann::json;
 
 // 模擬全域設定
@@ -196,9 +198,20 @@ int main()
     return 0;
 }
 
-VOID MainOutputToJson(VOID)
+json MainOutputToJson(VOID)
 {
     // Ouput start
+
+    LONG MtxCommodtyInfo = 0;
+
+    if (gCurServerTime[0] < 8 || gCurServerTime[0] > 14)
+    {
+        MtxCommodtyInfo = gCommodtyInfo.MTXIdxNo;
+    }
+    else
+    {
+        MtxCommodtyInfo = gCommodtyInfo.MTXIdxNoAM;
+    }
 
     printf("[UserId:%s], [StrategyMode:%ld], [SpecifyLongShort:%d], [ClosingKeyPriceLevel:%ld], [BidOfferLongShortThreshold:%ld], [BidOfferLongShortExtremeValue:%ld], [BidOfferLongShortAttackSlope:%f], [ActivePoint:%ld], [MaximumLoss:%f]\n",
            g_strUserId.c_str(), gStrategyConfig.StrategyMode, gStrategyConfig.SpecifyLongShort, gStrategyConfig.ClosingKeyPriceLevel,
@@ -274,9 +287,9 @@ VOID MainOutputToJson(VOID)
 
     printf("=========================================\n");
 
-    AutoBest5Long(gCommodtyInfo.TSMCIdxNo, TSMC);
-    AutoBest5Long(gCommodtyInfo.FOXCONNIdxNo, FOXCONN);
-    AutoBest5Long(gCommodtyInfo.MediaTekIdxNo, MEDIATEK);
+    // AutoBest5Long(gCommodtyInfo.TSMCIdxNo, TSMC);
+    // AutoBest5Long(gCommodtyInfo.FOXCONNIdxNo, FOXCONN);
+    // AutoBest5Long(gCommodtyInfo.MediaTekIdxNo, MEDIATEK);
 
     printf("=========================================\n");
 
