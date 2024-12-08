@@ -79,12 +79,34 @@ json AutoBest5LongToJson(long productIdxNo, const std::string &productName)
     // Bid/Offer 數據
     if (gMarketDataUI.gBest5BidOffer.count(productIdxNo) > 0 && gMarketDataUI.gBest5BidOffer[productIdxNo].size() >= 10)
     {
+        long TotalBid = gMarketDataUI.gBest5BidOffer[productIdxNo][0].second +
+                        gMarketDataUI.gBest5BidOffer[productIdxNo][1].second +
+                        gMarketDataUI.gBest5BidOffer[productIdxNo][2].second +
+                        gMarketDataUI.gBest5BidOffer[productIdxNo][3].second +
+                        gMarketDataUI.gBest5BidOffer[productIdxNo][4].second;
+        long TotalOffer = gMarketDataUI.gBest5BidOffer[productIdxNo][9].second +
+                          gMarketDataUI.gBest5BidOffer[productIdxNo][8].second +
+                          gMarketDataUI.gBest5BidOffer[productIdxNo][7].second +
+                          gMarketDataUI.gBest5BidOffer[productIdxNo][6].second +
+                          gMarketDataUI.gBest5BidOffer[productIdxNo][5].second;
+
+        responseData["TotalBid"] = TotalBid;
+        responseData["TotalOffer"] = TotalOffer;
+
         const auto &bidOffer = gMarketDataUI.gBest5BidOffer[productIdxNo];
+
+        json bidOfferData;
+
         for (int i = 0; i < 5; ++i)
         {
-            responseData["Bid" + std::to_string(i + 1)] = {{"Price", bidOffer[i].first}, {"Volume", bidOffer[i].second}};
-            responseData["Offer" + std::to_string(i + 1)] = {{"Price", bidOffer[i + 5].first}, {"Volume", bidOffer[i + 5].second}};
+            bidOfferData["Bid" + std::to_string(i + 1)] = {{"Price", bidOffer[i].first}, {"Volume", bidOffer[i].second}};
         }
+        for (int i = 5; i < 10; ++i)
+        {
+            bidOfferData["Offer" + std::to_string(i - 4)] = {{"Price", bidOffer[i].first}, {"Volume", bidOffer[i].second}};
+        }
+
+        responseData["BidOffer"] = bidOfferData;
     }
     else
     {
@@ -92,8 +114,17 @@ json AutoBest5LongToJson(long productIdxNo, const std::string &productName)
     }
 
     // 其他數據
-    responseData["ClosePrice"] = gMarketDataUI.gClosedProfitLoss;
-    responseData["CurrentPrice"] = currentPrice.load();
+    long nPtr = 0, nBid = 0, nAsk = 0, nClose = 0, nQty = 0;
+
+    if (gMarketDataUI.gTransactionList.count(productIdxNo))
+    {
+        nPtr = gMarketDataUI.gTransactionList[productIdxNo][0];
+        nBid = gMarketDataUI.gTransactionList[productIdxNo][1];
+        nAsk = gMarketDataUI.gTransactionList[productIdxNo][2];
+        nClose = gMarketDataUI.gTransactionList[productIdxNo][3];
+        nQty = gMarketDataUI.gTransactionList[productIdxNo][4];
+    }
+    responseData["ClosePrice"] = nClose;
 
     return responseData;
 }

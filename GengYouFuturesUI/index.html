@@ -171,7 +171,7 @@
             const productDiv = document.createElement("div");
             productDiv.className = "product";
 
-            const { BidOffer, ClosePrice, High, Low, Open, ProductName } = data;
+            const { BidOffer, TotalOffer, TotalBid, ClosePrice, High, Low, Open, ProductName } = data;
 
             const totalBidVolume = Object.values(BidOffer)
                 .filter((entry, index) => index < 5) // 前五個是 Bid
