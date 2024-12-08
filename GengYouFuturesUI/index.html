@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real-time Futures Data Viewer</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,12 +21,6 @@
             height: 300px;
             overflow-y: scroll;
             background-color: #f9f9f9;
-        }
-
-        canvas {
-            width: 100%;
-            height: 500px;
-            margin: 20px auto;
         }
 
         #price-change {
@@ -69,61 +62,14 @@
 <body>
     <h1>Real-time Futures Data Viewer</h1>
     <div id="price-change">Price Change: N/A</div>
-    <canvas id="chart"></canvas>
     <div id="log"></div>
     <h2>Bid/Offer Data Viewer</h2>
     <div id="data-container"></div>
 
     <script>
         const logDiv = document.getElementById("log");
-        const chartCtx = document.getElementById("chart").getContext("2d");
         const priceChangeDiv = document.getElementById("price-change");
         const dataContainer = document.getElementById("data-container");
-
-        const chartData = {
-            labels: [],
-            datasets: [{
-                label: "Current Price",
-                data: [],
-                borderColor: "blue",
-                backgroundColor: "rgba(0, 0, 255, 0.1)",
-                borderWidth: 2,
-                fill: true,
-            }]
-        };
-
-        const lineChart = new Chart(chartCtx, {
-            type: "line",
-            data: chartData,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: true }
-                },
-                scales: {
-                    x: { title: { display: true, text: "Time" } },
-                    y: { title: { display: true, text: "Price" } }
-                }
-            }
-        });
-
-        function loadChartData() {
-            const savedData = localStorage.getItem("chartData");
-            if (savedData) {
-                const parsedData = JSON.parse(savedData);
-                chartData.labels = parsedData.labels || [];
-                chartData.datasets[0].data = parsedData.datasets[0].data || [];
-                lineChart.update();
-            }
-        }
-
-        function saveChartData() {
-            const dataToSave = {
-                labels: chartData.labels,
-                datasets: chartData.datasets
-            };
-            localStorage.setItem("chartData", JSON.stringify(dataToSave));
-        }
 
         async function fetchData() {
             try {
@@ -144,19 +90,14 @@
         }
 
         function updateUI(indexData, bidOfferData) {
-            const { LongShort, BidOfferLongShortSlope, CurServerTime } = indexData;
+            const { CurrentPrice, ClosedProfitLoss, FutureRight, ClosePrice, Timestamp } = indexData;
+
             const timeLabel = new Date(Timestamp * 1000).toLocaleTimeString();
-            chartData.labels.push(timeLabel);
-            chartData.datasets[0].data.push(CurrentPrice);
-            lineChart.update();
-
-            saveChartData();
-
             priceChangeDiv.textContent = `Price Change: $${CurrentPrice} | Closed Profit: $${ClosedProfitLoss} | Future Right: $${FutureRight} | Close Price: $${ClosePrice}`;
 
             appendLog(`[Futures] Time: ${timeLabel}, Price: $${CurrentPrice}, Closed Profit: $${ClosedProfitLoss}, Close Price: $${ClosePrice}`);
 
-            renderData(bidOfferData, ClosePrice); // 傳遞 ClosePrice 到 renderData
+            renderData(bidOfferData, ClosePrice);
         }
 
         function renderData(data) {
@@ -235,7 +176,6 @@ Total Bid Volume: ${totalBidVolume}
 
         setInterval(fetchData, 1000);
         fetchData();
-        loadChartData();
     </script>
 </body>
 
