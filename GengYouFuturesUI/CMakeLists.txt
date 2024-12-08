@@ -25,6 +25,24 @@ FetchContent_MakeAvailable(nlohmann_json)
 # 定義項目的可執行文件
 add_executable(GengYouFuturesUI GengYouFuturesUI.cpp)
 
+# 添加头文件
+set(HEADERS
+    GengYouFuturesUI.h
+    ../CppTester/CppTester/SKCenterLib.h
+    ../CppTester/CppTester/SKCOM_reference.h
+    ../CppTester/CppTester/SKOrderLib.h
+    ../CppTester/CppTester/SKQuoteLib.h
+    ../CppTester/CppTester/SKOSQuoteLib.h
+    ../CppTester/CppTester/SKReplyLib.h
+    ../CppTester/CppTester/TEventHandler.h
+    ../CppTester/CppTester/Strategy.h
+    ../Logger/Logger.h
+)
+
+include_directories("../Logger")
+include_directories("../../")
+include_directories("../CppTester/CppTester")
+
 # 添加 httplib 和 json 作為外部庫依賴
 target_link_libraries(GengYouFuturesUI PRIVATE httplib::httplib nlohmann_json::nlohmann_json)
 

@@ -1,45 +1,44 @@
+#include "GengYouFuturesUI.h"
 #include "httplib.h"
 #include <iostream>
-#include <string>
-#include <unordered_map>
-#include <vector>
-#include <array>
 #include <thread>
+#include <mutex>
 #include <nlohmann/json.hpp>
 #include <random>
 #include <ctime>
-#include <atomic>
-
-#include "GengYouFuturesUI.h"
-#include "nlohmann/json.hpp"
 
 // 使用 nlohmann::json 簡化 JSON 的生成
 using json = nlohmann::json;
 
-// 全局結構實例（假設這些變數是全局定義的）
+json MainOutputToJson();
+
+// 全局結構實例
 USER_ACCOUNT_UI gUserAccountUI;
 STRATEGY_CONFIG_UI gStrategyConfigUI;
 MARKET_DATA_UI gMarketDataUI;
 OPEN_INTEREST_INFO_UI gOpenInterestInfoUI;
-json MainOutputToJson();
 
-// 當前價格（使用 atomic 保證線程安全）
-std::atomic<double> currentPrice(20000.0);
+// 互斥鎖保護全局變數
+std::mutex marketDataMutex;
+std::atomic<double> currentPrice(20000.0); // 當前價格
 
 // 模擬填充 MarketData 的函數
 void simulateMarketData()
 {
-    static std::mt19937 rng(static_cast<unsigned int>(std::time(nullptr))); // 隨機數生成器
-    std::uniform_int_distribution<long> priceDist(19000, 21000);            // 模擬價格範圍
-    std::uniform_int_distribution<long> volumeDist(1, 100);                 // 模擬成交量範圍
+    static std::mt19937 rng(static_cast<unsigned int>(std::time(nullptr)));
+    std::uniform_int_distribution<long> priceDist(19000, 21000);
+    std::uniform_int_distribution<long> volumeDist(1, 100);
 
     long productIdxNo = 0; // 模擬產品索引
 
+    // 使用鎖保護全局數據
+    std::lock_guard<std::mutex> lock(marketDataMutex);
+
     // 模擬高低點數據
     long openPrice = priceDist(rng);
-    long highPrice = openPrice + priceDist(rng) % 100; // 模擬高點（略高於開盤價）
-    long lowPrice = openPrice - priceDist(rng) % 100;  // 模擬低點（略低於開盤價）
-    gMarketDataUI.highLowPoints[productIdxNo] = {highPrice, lowPrice, openPrice, 0};
+    long highPrice = openPrice + priceDist(rng) % 100;
+    long lowPrice = openPrice - priceDist(rng) % 100;
+    gMarketDataUI.gCurCommHighLowPoint[productIdxNo] = {highPrice, lowPrice, openPrice, 0};
 
     // 模擬買五檔和賣五檔數據
     std::vector<std::pair<long, long>> bidOffer;
@@ -49,31 +48,25 @@ void simulateMarketData()
         long volume = volumeDist(rng);
         bidOffer.emplace_back(price, volume);
     }
-    gMarketDataUI.best5BidOffer[productIdxNo] = bidOffer;
+    gMarketDataUI.gBest5BidOffer[productIdxNo] = bidOffer;
 
-    gMarketDataUI.ClosePrice = priceDist(rng);
-
-    // 更新當前價格
+    // 模擬其他數據
+    gMarketDataUI.gClosedProfitLoss += 1.0;
     currentPrice.store(priceDist(rng));
 }
 
-// 生成隨機價格
-double generateRandomPrice(double basePrice)
-{
-    double fluctuation = (rand() % 21 - 10) / 10.0; // ±1.0
-    return basePrice + fluctuation;
-}
 // 將市場數據轉換為 JSON 格式
 json AutoBest5LongToJson(long productIdxNo, const std::string &productName)
 {
     json responseData;
 
-    // 取得高低點數據
-    if (gMarketDataUI.highLowPoints.count(productIdxNo) > 0)
+    std::lock_guard<std::mutex> lock(marketDataMutex); // 鎖定數據
+
+    // 高低點數據
+    if (gMarketDataUI.gCurCommHighLowPoint.count(productIdxNo) > 0)
     {
-        auto &points = gMarketDataUI.highLowPoints[productIdxNo];
+        auto &points = gMarketDataUI.gCurCommHighLowPoint[productIdxNo];
         responseData["ProductName"] = productName;
-        responseData["CurrentPrice"] = gMarketDataUI.currentPrice[productIdxNo];
         responseData["High"] = points[0];
         responseData["Low"] = points[1];
         responseData["Open"] = points[2];
@@ -83,30 +76,24 @@ json AutoBest5LongToJson(long productIdxNo, const std::string &productName)
         responseData["Error"] = "High-Low data not available.";
     }
 
-    // 取得 Bid/Offer 數據
-    if (gMarketDataUI.best5BidOffer.count(productIdxNo) > 0 && gMarketDataUI.best5BidOffer[productIdxNo].size() >= 10)
+    // Bid/Offer 數據
+    if (gMarketDataUI.gBest5BidOffer.count(productIdxNo) > 0 && gMarketDataUI.gBest5BidOffer[productIdxNo].size() >= 10)
     {
-        const auto &bidOffer = gMarketDataUI.best5BidOffer[productIdxNo];
-        json bidOfferData;
-
+        const auto &bidOffer = gMarketDataUI.gBest5BidOffer[productIdxNo];
         for (int i = 0; i < 5; ++i)
         {
-            bidOfferData["Bid" + std::to_string(i + 1)] = {{"Price", bidOffer[i].first}, {"Volume", bidOffer[i].second}};
+            responseData["Bid" + std::to_string(i + 1)] = {{"Price", bidOffer[i].first}, {"Volume", bidOffer[i].second}};
+            responseData["Offer" + std::to_string(i + 1)] = {{"Price", bidOffer[i + 5].first}, {"Volume", bidOffer[i + 5].second}};
         }
-        for (int i = 5; i < 10; ++i)
-        {
-            bidOfferData["Offer" + std::to_string(i - 4)] = {{"Price", bidOffer[i].first}, {"Volume", bidOffer[i].second}};
-        }
-
-        responseData["BidOffer"] = bidOfferData;
     }
     else
     {
         responseData["Error"] = "Insufficient bid-offer data.";
     }
 
-    // 添加 ClosePrice 和 evaluatePosition 的轉換
-    responseData["ClosePrice"] = gMarketDataUI.ClosePrice;
+    // 其他數據
+    responseData["ClosePrice"] = gMarketDataUI.gClosedProfitLoss;
+    responseData["CurrentPrice"] = currentPrice.load();
 
     return responseData;
 }
@@ -116,85 +103,54 @@ void startHttpServer(std::atomic<bool> &isRunning)
 {
     httplib::Server svr;
 
-    // CORS 支援的中介函數
+    // 支援 CORS
     svr.set_pre_routing_handler([](const httplib::Request &req, httplib::Response &res)
                                 {
         res.set_header("Access-Control-Allow-Origin", "*");
         res.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         res.set_header("Access-Control-Allow-Headers", "*");
         if (req.method == "OPTIONS") {
-            res.status = 204; // 對 OPTIONS 請求回應 204 No Content
+            res.status = 204;
             return httplib::Server::HandlerResponse::Handled;
         }
         return httplib::Server::HandlerResponse::Unhandled; });
-    // index-data 路由
+
+    // 路由處理
     svr.Get("/index-data", [](const httplib::Request &, httplib::Response &res)
             {
-        json indexData = {
-            {"StrategyMode", gStrategyConfigUI.strategyMode},
-            {"ClosingKeyPriceLevel", gStrategyConfigUI.closingKeyPriceLevel},
-            {"BidOfferLongShortThreshold", gStrategyConfigUI.bidOfferLongShortThreshold},
-            {"BidOfferLongShortAttackSlope", gStrategyConfigUI.bidOfferLongShortAttackSlope},
-            {"MaximumLoss", gStrategyConfigUI.maximumLoss},
-            {"CurrentPrice", currentPrice.load()},
-            {"FutureRight", gMarketDataUI.futureRight},
-            {"ClosedProfitLoss", gMarketDataUI.closedProfitLoss},
-            {"Timestamp", time(0)},
-        };
+    auto jsonResponse = MainOutputToJson();
+    res.set_content(jsonResponse.dump(), "application/json"); });
 
-        res.set_content(indexData.dump(), "application/json"); });
-
-    // bid-offer-data 路由
     svr.Get("/bid-offer-data", [](const httplib::Request &, httplib::Response &res)
             {
-        long productIdxNo = 0; // 模擬產品索引
+        long productIdxNo = 0;
         std::string productName = "FUTURE1";
-
-        json bidOfferData = AutoBest5LongToJson(productIdxNo, productName);
-        res.set_content(bidOfferData.dump(), "application/json"); });
+        res.set_content(AutoBest5LongToJson(productIdxNo, productName).dump(), "application/json"); });
 
     // 啟動伺服器
     if (!svr.listen("0.0.0.0", 8080))
     {
-        std::cerr << "Error: Unable to start HTTP server. Check if port 8080 is in use." << std::endl;
-        isRunning.store(false); // 停止主線程
+        std::cerr << "Error: Unable to start HTTP server. Check port." << std::endl;
+        isRunning.store(false);
     }
 }
 
+// 主程序
 int main()
 {
-    srand(static_cast<unsigned int>(time(0)));
-
-    // 控制伺服器運行狀態
     std::atomic<bool> isRunning(true);
-
-    // 啟動伺服器執行緒
     std::thread serverThread(startHttpServer, std::ref(isRunning));
 
-    // 主線程模擬市場數據處理
     while (isRunning.load())
     {
         std::this_thread::sleep_for(std::chrono::seconds(5));
         simulateMarketData();
-        gMarketDataUI.closedProfitLoss += 1.0;
-
-        std::cout << "Current Price: " << currentPrice.load() << ", Closed Profit/Loss: " << gMarketDataUI.closedProfitLoss << std::endl;
+        std::cout << "Current Price: " << currentPrice.load() << std::endl;
     }
 
     serverThread.join();
     return 0;
 }
-
-#include "nlohmann/json.hpp"
-
-// 使用 nlohmann::json 簡化 JSON 的生成
-using json = nlohmann::json;
-
-// 全局結構實例（假設這些變數是全局定義的）
-USER_ACCOUNT_UI gUserAccountUI;
-STRATEGY_CONFIG_UI gStrategyConfigUI;
-MARKET_DATA_UI gMarketDataUI;
-OPEN_INTEREST_INFO_UI gOpenInterestInfoUI;
 
 json MainOutputToJson()
 {

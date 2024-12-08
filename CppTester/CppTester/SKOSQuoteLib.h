@@ -9,7 +9,6 @@
 
 #include "SKCOM_reference.h"
 #include "TEventHandler.h"
-#include "config.h"
 
 #define COMMODITY_OS_MAIN "CME,NQ0000"
 
