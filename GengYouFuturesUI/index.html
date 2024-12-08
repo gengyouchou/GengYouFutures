@@ -144,7 +144,7 @@
         }
 
         function updateUI(indexData, bidOfferData) {
-            const { CurrentPrice, Timestamp, ClosedProfitLoss, FutureRight, ClosePrice, High, Low, Open, ProductName } = indexData;
+            const { LongShort, BidOfferLongShortSlope, CurServerTime } = indexData;
             const timeLabel = new Date(Timestamp * 1000).toLocaleTimeString();
             chartData.labels.push(timeLabel);
             chartData.datasets[0].data.push(CurrentPrice);

@@ -55,6 +55,12 @@ void simulateMarketData()
     currentPrice.store(priceDist(rng));
     gMarketDataUI.gTransactionList[productIdxNo][3] = priceDist(rng);
     gMarketDataUI.gTransactionList[productIdxNo][4] = priceDist(rng);
+
+    // for Bid Offer Long Short
+
+    gMarketDataUI.gBidOfferLongShortSlope = priceDist(rng);
+    gMarketDataUI.gLongShort = gMarketDataUI.gLongShort + 10;
+    gMarketDataUI.gCurServerTime[2] += 1;
 }
 
 // 將市場數據轉換為 JSON 格式
@@ -174,6 +180,11 @@ int main()
 {
     std::atomic<bool> isRunning(true);
     std::thread serverThread(startHttpServer, std::ref(isRunning));
+
+    gMarketDataUI.gLongShort = 10;
+    gMarketDataUI.gCurServerTime[0] = 0;
+    gMarketDataUI.gCurServerTime[1] = 0;
+    gMarketDataUI.gCurServerTime[2] = 0;
 
     while (isRunning.load())
     {
