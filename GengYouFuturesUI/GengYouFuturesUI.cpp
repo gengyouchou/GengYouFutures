@@ -11,30 +11,17 @@
 #include <atomic>
 
 #include "GengYouFuturesUI.h"
+#include "nlohmann/json.hpp"
 
+// 使用 nlohmann::json 簡化 JSON 的生成
 using json = nlohmann::json;
 
-// 模擬全域設定
-struct StrategyConfig
-{
-    long strategyMode = 1;
-    long closingKeyPriceLevel = 2;
-    long bidOfferLongShortThreshold = 40000;
-    double bidOfferLongShortAttackSlope = 1.0;
-    double maximumLoss = 2.0;
-} gStrategyConfig;
-
-// 模擬全域數據
-struct MarketData
-{
-    long currentPrice[10] = {0};
-    long ClosePrice = 0;
-    long evaluatePosition = 1;
-    double futureRight = 10000.0;
-    double closedProfitLoss = 1234.0;
-    std::unordered_map<long, std::array<long, 4>> highLowPoints; // High, Low, Open, Data
-    std::unordered_map<long, std::vector<std::pair<long, long>>> best5BidOffer;
-} gMarketData;
+// 全局結構實例（假設這些變數是全局定義的）
+USER_ACCOUNT_UI gUserAccountUI;
+STRATEGY_CONFIG_UI gStrategyConfigUI;
+MARKET_DATA_UI gMarketDataUI;
+OPEN_INTEREST_INFO_UI gOpenInterestInfoUI;
+json MainOutputToJson();
 
 // 當前價格（使用 atomic 保證線程安全）
 std::atomic<double> currentPrice(20000.0);
@@ -52,7 +39,7 @@ void simulateMarketData()
     long openPrice = priceDist(rng);
     long highPrice = openPrice + priceDist(rng) % 100; // 模擬高點（略高於開盤價）
     long lowPrice = openPrice - priceDist(rng) % 100;  // 模擬低點（略低於開盤價）
-    gMarketData.highLowPoints[productIdxNo] = {highPrice, lowPrice, openPrice, 0};
+    gMarketDataUI.highLowPoints[productIdxNo] = {highPrice, lowPrice, openPrice, 0};
 
     // 模擬買五檔和賣五檔數據
     std::vector<std::pair<long, long>> bidOffer;
@@ -62,9 +49,9 @@ void simulateMarketData()
         long volume = volumeDist(rng);
         bidOffer.emplace_back(price, volume);
     }
-    gMarketData.best5BidOffer[productIdxNo] = bidOffer;
+    gMarketDataUI.best5BidOffer[productIdxNo] = bidOffer;
 
-    gMarketData.ClosePrice = priceDist(rng);
+    gMarketDataUI.ClosePrice = priceDist(rng);
 
     // 更新當前價格
     currentPrice.store(priceDist(rng));
@@ -82,11 +69,11 @@ json AutoBest5LongToJson(long productIdxNo, const std::string &productName)
     json responseData;
 
     // 取得高低點數據
-    if (gMarketData.highLowPoints.count(productIdxNo) > 0)
+    if (gMarketDataUI.highLowPoints.count(productIdxNo) > 0)
     {
-        auto &points = gMarketData.highLowPoints[productIdxNo];
+        auto &points = gMarketDataUI.highLowPoints[productIdxNo];
         responseData["ProductName"] = productName;
-        responseData["CurrentPrice"] = gMarketData.currentPrice[productIdxNo];
+        responseData["CurrentPrice"] = gMarketDataUI.currentPrice[productIdxNo];
         responseData["High"] = points[0];
         responseData["Low"] = points[1];
         responseData["Open"] = points[2];
@@ -97,9 +84,9 @@ json AutoBest5LongToJson(long productIdxNo, const std::string &productName)
     }
 
     // 取得 Bid/Offer 數據
-    if (gMarketData.best5BidOffer.count(productIdxNo) > 0 && gMarketData.best5BidOffer[productIdxNo].size() >= 10)
+    if (gMarketDataUI.best5BidOffer.count(productIdxNo) > 0 && gMarketDataUI.best5BidOffer[productIdxNo].size() >= 10)
     {
-        const auto &bidOffer = gMarketData.best5BidOffer[productIdxNo];
+        const auto &bidOffer = gMarketDataUI.best5BidOffer[productIdxNo];
         json bidOfferData;
 
         for (int i = 0; i < 5; ++i)
@@ -119,7 +106,7 @@ json AutoBest5LongToJson(long productIdxNo, const std::string &productName)
     }
 
     // 添加 ClosePrice 和 evaluatePosition 的轉換
-    responseData["ClosePrice"] = gMarketData.ClosePrice;
+    responseData["ClosePrice"] = gMarketDataUI.ClosePrice;
 
     return responseData;
 }
@@ -144,14 +131,14 @@ void startHttpServer(std::atomic<bool> &isRunning)
     svr.Get("/index-data", [](const httplib::Request &, httplib::Response &res)
             {
         json indexData = {
-            {"StrategyMode", gStrategyConfig.strategyMode},
-            {"ClosingKeyPriceLevel", gStrategyConfig.closingKeyPriceLevel},
-            {"BidOfferLongShortThreshold", gStrategyConfig.bidOfferLongShortThreshold},
-            {"BidOfferLongShortAttackSlope", gStrategyConfig.bidOfferLongShortAttackSlope},
-            {"MaximumLoss", gStrategyConfig.maximumLoss},
+            {"StrategyMode", gStrategyConfigUI.strategyMode},
+            {"ClosingKeyPriceLevel", gStrategyConfigUI.closingKeyPriceLevel},
+            {"BidOfferLongShortThreshold", gStrategyConfigUI.bidOfferLongShortThreshold},
+            {"BidOfferLongShortAttackSlope", gStrategyConfigUI.bidOfferLongShortAttackSlope},
+            {"MaximumLoss", gStrategyConfigUI.maximumLoss},
             {"CurrentPrice", currentPrice.load()},
-            {"FutureRight", gMarketData.futureRight},
-            {"ClosedProfitLoss", gMarketData.closedProfitLoss},
+            {"FutureRight", gMarketDataUI.futureRight},
+            {"ClosedProfitLoss", gMarketDataUI.closedProfitLoss},
             {"Timestamp", time(0)},
         };
 
@@ -189,108 +176,102 @@ int main()
     {
         std::this_thread::sleep_for(std::chrono::seconds(5));
         simulateMarketData();
-        gMarketData.closedProfitLoss += 1.0;
+        gMarketDataUI.closedProfitLoss += 1.0;
 
-        std::cout << "Current Price: " << currentPrice.load() << ", Closed Profit/Loss: " << gMarketData.closedProfitLoss << std::endl;
+        std::cout << "Current Price: " << currentPrice.load() << ", Closed Profit/Loss: " << gMarketDataUI.closedProfitLoss << std::endl;
     }
 
     serverThread.join();
     return 0;
 }
 
+#include "nlohmann/json.hpp"
+
+// 使用 nlohmann::json 簡化 JSON 的生成
+using json = nlohmann::json;
+
+// 全局結構實例（假設這些變數是全局定義的）
+USER_ACCOUNT_UI gUserAccountUI;
+STRATEGY_CONFIG_UI gStrategyConfigUI;
+MARKET_DATA_UI gMarketDataUI;
+OPEN_INTEREST_INFO_UI gOpenInterestInfoUI;
 
 json MainOutputToJson()
 {
+    // 構建 JSON 對象
     json output;
 
-    // 获取当前期货代号
-    LONG MtxCommodtyInfo = (gCurServerTime[0] < 8 || gCurServerTime[0] > 14)
-                               ? gCommodtyInfo.MTXIdxNo
-                               : gCommodtyInfo.MTXIdxNoAM;
+    // User account 信息
+    output["UserAccount"] = {
+        {"UserId", gUserAccountUI.g_strUserId}};
 
-    // 用户信息和策略配置
-    output["UserInfo"] = {
-        {"UserId", g_strUserId},
-        {"StrategyMode", gStrategyConfig.StrategyMode},
-        {"SpecifyLongShort", gStrategyConfig.SpecifyLongShort},
-        {"ClosingKeyPriceLevel", gStrategyConfig.ClosingKeyPriceLevel},
-        {"BidOfferLongShortThreshold", gStrategyConfig.BidOfferLongShortThreshold},
-        {"BidOfferLongShortExtremeValue", gStrategyConfig.BidOfferLongShortExtremeValue},
-        {"BidOfferLongShortAttackSlope", gStrategyConfig.BidOfferLongShortAttackSlope},
-        {"ActivePoint", gStrategyConfig.ActivePoint},
-        {"MaximumLoss", gStrategyConfig.MaximumLoss}};
+    // Strategy 配置
+    output["StrategyConfig"] = {
+        {"ClosingKeyPriceLevel", gStrategyConfigUI.ClosingKeyPriceLevel},
+        {"BidOfferLongShortThreshold", gStrategyConfigUI.BidOfferLongShortThreshold},
+        {"BidOfferLongShortExtremeValue", gStrategyConfigUI.BidOfferLongShortExtremeValue},
+        {"BidOfferLongShortAttackSlope", gStrategyConfigUI.BidOfferLongShortAttackSlope},
+        {"ActivePoint", gStrategyConfigUI.ActivePoint},
+        {"MaximumLoss", gStrategyConfigUI.MaximumLoss},
+        {"StrategyMode", gStrategyConfigUI.StrategyMode},
+        {"SpecifyLongShort", gStrategyConfigUI.SpecifyLongShort}};
 
-    // 当前市场价格和时间信息
-    output["MarketInfo"] = {
-        {"CurMtxPrice", gCurCommPrice[MtxCommodtyInfo] / 100},
-        {"TSEA", {{"Price", gCurCommPrice[gCommodtyInfo.TSEAIdxNo] / 100}, {"Volume", gCurTaiexInfo[0][1]}}},
-        {"Diff", (gCurCommPrice[MtxCommodtyInfo] - gCurCommPrice[gCommodtyInfo.TSEAIdxNo]) / 100},
-        {"ServerTime", {{"Hour", gCurServerTime[0]}, {"Minute", gCurServerTime[1]}, {"Second", gCurServerTime[2]}}}};
+    // Market Data
+    output["MarketData"] = {
+        {"CurCommPrice", gMarketDataUI.gCurCommPrice},
+        {"CurTaiexInfo", gMarketDataUI.gCurTaiexInfo},
+        {"CurServerTime", {gMarketDataUI.gCurServerTime[0], gMarketDataUI.gCurServerTime[1], gMarketDataUI.gCurServerTime[2]}},
+        {"CurOsCommPrice", gMarketDataUI.gCurOsCommPrice},
+        {"BidOfferLongShort", gMarketDataUI.gBidOfferLongShort},
+        {"TransactionListLongShort", gMarketDataUI.gTransactionListLongShort},
+        {"OsTransactionListLongShort", gMarketDataUI.gOsTransactionListLongShort},
+        {"LongShort", gMarketDataUI.gLongShort},
+        {"CostMovingAverageVal", gMarketDataUI.gCostMovingAverageVal},
+        {"Ma5", gMarketDataUI.gMa5},
+        {"Ma5LongShort", gMarketDataUI.gMa5LongShort},
+        {"NQMa20", gMarketDataUI.gNQMa20},
+        {"NQMa20LongShort", gMarketDataUI.gNQMa20LongShort},
+        {"BidOfferLongShortSlope", gMarketDataUI.gBidOfferLongShortSlope},
+        {"NumberOfStocksRisingAndFalling", gMarketDataUI.gNumberOfStocksRisingAndFalling},
+        {"EvaluatePosition", gMarketDataUI.gEvaluatePosition},
+        {"ClosedProfitLoss", gMarketDataUI.gClosedProfitLoss},
+        {"FutureRight", gMarketDataUI.gFutureRight}};
 
-    // NQ 信息
-    output["NQInfo"] = {
-        {"CurNQPrice", gCurOsCommPrice[gCommodtyOsInfo.NQIdxNo]},
-        {"NQMa20", gNQMa20},
-        {"NQMa20LongShort", gNQMa20LongShort}};
-
-    // 高低点和成本移动均线
-    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
+    // 高低點數據
+    json highLowData;
+    for (const auto &[key, value] : gMarketDataUI.gCurCommHighLowPoint)
     {
-        long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
-        long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
-        long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
-        long OpenPrice = gCurCommHighLowPoint[MtxCommodtyInfo][2] / 100;
-        double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2;
-        double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2;
-
-        output["HighLowInfo"] = {
-            {"OpenPrice", OpenPrice},
-            {"CurHigh", CurHigh},
-            {"CurLow", CurLow},
-            {"Ma5", gMa5},
-            {"Ma5LongShort", gMa5LongShort},
-            {"CostMovingAverage", CostMovingAverage},
-            {"CurAvg", (CurHigh + CurLow) / 2},
-            {"CurAmp", CurHigh - CurLow},
-            {"ShockLongExtremeValue", static_cast<long>(ShockLongExtremeValue)},
-            {"ShockShortExtremeValue", static_cast<long>(ShockShortExtremeValue)}};
+        highLowData[std::to_string(key)] = {value[0], value[1], value[2], value[3]};
     }
+    output["MarketData"]["CurCommHighLowPoint"] = highLowData;
 
-    // 开仓信息
-    output["PositionInfo"] = {
-        {"EvaluatePosition", gEvaluatePosition},
-        {"FutureRight", gFutureRight},
-        {"ClosedProfitLoss", gClosedProfitLoss}};
+    // Day Amp and Key Price
+    output["MarketData"]["DayAmpAndKeyPrice"] = {
+        {"SmallestAmp", gMarketDataUI.gDayAmpAndKeyPrice.SmallestAmp},
+        {"SmallAmp", gMarketDataUI.gDayAmpAndKeyPrice.SmallAmp},
+        {"AvgAmp", gMarketDataUI.gDayAmpAndKeyPrice.AvgAmp},
+        {"LargerAmp", gMarketDataUI.gDayAmpAndKeyPrice.LargerAmp},
+        {"LargestAmp", gMarketDataUI.gDayAmpAndKeyPrice.LargestAmp},
+        {"LongKey5", gMarketDataUI.gDayAmpAndKeyPrice.LongKey5},
+        {"LongKey4", gMarketDataUI.gDayAmpAndKeyPrice.LongKey4},
+        {"LongKey3", gMarketDataUI.gDayAmpAndKeyPrice.LongKey3},
+        {"LongKey2", gMarketDataUI.gDayAmpAndKeyPrice.LongKey2},
+        {"LongKey1", gMarketDataUI.gDayAmpAndKeyPrice.LongKey1},
+        {"ShortKey5", gMarketDataUI.gDayAmpAndKeyPrice.ShortKey5},
+        {"ShortKey4", gMarketDataUI.gDayAmpAndKeyPrice.ShortKey4},
+        {"ShortKey3", gMarketDataUI.gDayAmpAndKeyPrice.ShortKey3},
+        {"ShortKey2", gMarketDataUI.gDayAmpAndKeyPrice.ShortKey2},
+        {"ShortKey1", gMarketDataUI.gDayAmpAndKeyPrice.ShortKey1}};
 
-    if (gOpenInterestInfo.openPosition != 0)
-    {
-        output["PositionInfo"]["OpenInterest"] = {
-            {"OpenPosition", gOpenInterestInfo.openPosition},
-            {"AvgCost", gOpenInterestInfo.avgCost},
-            {"ProfitAndLoss", gOpenInterestInfo.profitAndLoss}};
-    }
-
-    // 长短仓关键价格
-    output["KeyPrices"] = {
-        {"LongKeys", {gDayAmpAndKeyPrice.LongKey1, gDayAmpAndKeyPrice.LongKey2, gDayAmpAndKeyPrice.LongKey3, gDayAmpAndKeyPrice.LongKey4, gDayAmpAndKeyPrice.LongKey5}},
-        {"ShortKeys", {gDayAmpAndKeyPrice.ShortKey1, gDayAmpAndKeyPrice.ShortKey2, gDayAmpAndKeyPrice.ShortKey3, gDayAmpAndKeyPrice.ShortKey4, gDayAmpAndKeyPrice.ShortKey5}}};
-
-    // 幅度信息
-    output["AmplitudeInfo"] = {
-        {"SmallestAmp", gDayAmpAndKeyPrice.SmallestAmp},
-        {"SmallAmp", gDayAmpAndKeyPrice.SmallAmp},
-        {"AvgAmp", gDayAmpAndKeyPrice.AvgAmp},
-        {"LargerAmp", gDayAmpAndKeyPrice.LargerAmp},
-        {"LargestAmp", gDayAmpAndKeyPrice.LargestAmp}};
-
-    // 其他信息
-    output["MiscInfo"] = {
-        {"BidOfferLongShortSlope", gBidOfferLongShortSlope},
-        {"LongShort", gLongShort},
-        {"BidOfferLongShort", gBidOfferLongShort},
-        {"TransactionListLongShort", gTransactionListLongShort},
-        {"OsTransactionListLongShort", gOsTransactionListLongShort},
-        {"NumberOfStocksRisingAndFalling", gNumberOfStocksRisingAndFalling}};
+    // Open Interest Info
+    output["OpenInterestInfo"] = {
+        {"Product", gOpenInterestInfoUI.product},
+        {"BuySell", gOpenInterestInfoUI.buySell},
+        {"OpenPosition", gOpenInterestInfoUI.openPosition},
+        {"DayTradePosition", gOpenInterestInfoUI.dayTradePosition},
+        {"AvgCost", gOpenInterestInfoUI.avgCost},
+        {"ProfitAndLoss", gOpenInterestInfoUI.profitAndLoss},
+        {"NeedToUpdate", gOpenInterestInfoUI.NeedToUpdate}};
 
     return output;
 }
