@@ -53,6 +53,7 @@ void simulateMarketData()
     // 模擬其他數據
     gMarketDataUI.gClosedProfitLoss += 1.0;
     currentPrice.store(priceDist(rng));
+    gMarketDataUI.gTransactionList[productIdxNo][3] = priceDist(rng);
 }
 
 // 將市場數據轉換為 JSON 格式
@@ -174,7 +175,7 @@ int main()
 
     while (isRunning.load())
     {
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         simulateMarketData();
         std::cout << "Current Price: " << currentPrice.load() << std::endl;
     }
