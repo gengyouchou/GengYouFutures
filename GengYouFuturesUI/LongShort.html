@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LongShort & BidOffer Slope Viewer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        canvas {
+            width: 100%;
+            height: 300px;
+            margin: 20px auto;
+        }
+
+        #log {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>LongShort & BidOffer Slope Viewer</h1>
+    <canvas id="longShortChart"></canvas>
+    <canvas id="bidOfferSlopeChart"></canvas>
+    <div id="log"></div>
+
+    <script>
+        const logDiv = document.getElementById("log");
+        const longShortChartCtx = document.getElementById("longShortChart").getContext("2d");
+        const bidOfferSlopeChartCtx = document.getElementById("bidOfferSlopeChart").getContext("2d");
+
+        const longShortData = {
+            labels: [],
+            datasets: [{
+                label: "LongShort",
+                data: [],
+                borderColor: "green",
+                borderWidth: 2
+            }]
+        };
+
+        const bidOfferSlopeData = {
+            labels: [],
+            datasets: [{
+                label: "BidOfferLongShortSlope",
+                data: [],
+                borderColor: "red",
+                borderWidth: 2
+            }]
+        };
+
+        const longShortChart = new Chart(longShortChartCtx, {
+            type: "line",
+            data: longShortData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true },
+                    tooltip: { mode: "index", intersect: false }
+                },
+                scales: {
+                    x: { title: { display: true, text: "Time" } },
+                    y: { title: { display: true, text: "LongShort" } }
+                }
+            }
+        });
+
+        const bidOfferSlopeChart = new Chart(bidOfferSlopeChartCtx, {
+            type: "line",
+            data: bidOfferSlopeData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true },
+                    tooltip: { mode: "index", intersect: false }
+                },
+                scales: {
+                    x: { title: { display: true, text: "Time" } },
+                    y: { title: { display: true, text: "BidOffer Slope" } }
+                }
+            }
+        });
+
+        async function fetchData() {
+            try {
+                const indexDataResponse = await fetch("http://localhost:8080/index-data");
+                if (!indexDataResponse.ok) throw new Error(`HTTP status: ${indexDataResponse.status}`);
+                const indexData = await indexDataResponse.json();
+
+                updateUI(indexData);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                appendLog("Error fetching data: " + error.message, true);
+                setTimeout(fetchData, 5000);
+            }
+        }
+
+        function updateUI(indexData) {
+            const { LongShort, BidOfferLongShortSlope, CurServerTime } = indexData;
+            const timeLabel = `${CurServerTime[0].toString().padStart(2, "0")}:${CurServerTime[1].toString().padStart(2, "0")}:${CurServerTime[2].toString().padStart(2, "0")}`;
+
+            // Update LongShort chart
+            longShortData.labels.push(timeLabel);
+            longShortData.datasets[0].data.push(LongShort);
+            longShortChart.update();
+
+            // Update BidOfferLongShortSlope chart
+            bidOfferSlopeData.labels.push(timeLabel);
+            bidOfferSlopeData.datasets[0].data.push(BidOfferLongShortSlope);
+            bidOfferSlopeChart.update();
+
+            // Log updates
+            appendLog(`[Time: ${timeLabel}] LongShort: ${LongShort}, BidOfferSlope: ${BidOfferLongShortSlope}`);
+        }
+
+        function appendLog(message, isError = false) {
+            const entry = document.createElement("div");
+            entry.textContent = message;
+            if (isError) entry.style.color = "red";
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        setInterval(fetchData, 1000);
+        fetchData();
+    </script>
+</body>
+
+</html>
