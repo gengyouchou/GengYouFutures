@@ -187,11 +187,16 @@
 
             let bid1Class = "";
             let offer1Class = "";
+            let bid1QuantityDisplay = "";
+            let offer1QuantityDisplay = "";
 
+            // 高亮顯示成交價，並顯示成交量
             if (ClosePrice <= bid1Price) {
-                bid1Class = "highlight-green"; // 高亮 Bid1 為綠色
+                bid1Class = "highlight-green";
+                bid1QuantityDisplay = ` (${Quantity})`; // 在 Bid1 行顯示成交量
             } else if (ClosePrice >= offer1Price) {
-                offer1Class = "highlight-red"; // 高亮 Offer1 為紅色
+                offer1Class = "highlight-red";
+                offer1QuantityDisplay = ` (${Quantity})`; // 在 Offer1 行顯示成交量
             }
 
             const html = `
@@ -204,9 +209,9 @@ Ask5: [${BidOffer.Offer5.Price}]: [${BidOffer.Offer5.Volume}]
 Ask4: [${BidOffer.Offer4.Price}]: [${BidOffer.Offer4.Volume}]
 Ask3: [${BidOffer.Offer3.Price}]: [${BidOffer.Offer3.Volume}]
 Ask2: [${BidOffer.Offer2.Price}]: [${BidOffer.Offer2.Volume}]
-Ask1: <span class="${offer1Class}">[${BidOffer.Offer1.Price}]: [${BidOffer.Offer1.Volume}]</span>
+Ask1: <span class="${offer1Class}">[${BidOffer.Offer1.Price}]: [${BidOffer.Offer1.Volume}]${offer1QuantityDisplay}</span>
 =============================
-Bid1: <span class="${bid1Class}">[${BidOffer.Bid1.Price}]: [${BidOffer.Bid1.Volume}]</span>
+Bid1: <span class="${bid1Class}">[${BidOffer.Bid1.Price}]: [${BidOffer.Bid1.Volume}]${bid1QuantityDisplay}</span>
 Bid2: [${BidOffer.Bid2.Price}]: [${BidOffer.Bid2.Volume}]
 Bid3: [${BidOffer.Bid3.Price}]: [${BidOffer.Bid3.Volume}]
 Bid4: [${BidOffer.Bid4.Price}]: [${BidOffer.Bid4.Volume}]
