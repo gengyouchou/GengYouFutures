@@ -624,7 +624,18 @@ int main()
 
     thread tMain(thread_main);
     if (tMain.joinable())
-        tMain.detach();
+    {
+        tMain.join();
+    }
+
+    // GengYouFuturesUI start
+    {
+        while (true)
+        {
+            CopyDataToTheOrderMachine();
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
+    }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 
