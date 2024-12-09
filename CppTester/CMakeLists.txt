@@ -33,12 +33,14 @@ set(HEADERS
     CppTester/TEventHandler.h
     CppTester/Strategy.h
     ../Logger/Logger.h
+    ../GengYouFuturesUI/GengYouFuturesUI.h
 )
 
 # 添加头文件目录
 include_directories(${CMAKE_SOURCE_DIR}/CppTester)
 include_directories("../Logger")
 include_directories("../../")
+include_directories("../GengYouFuturesUI/")
 
 # 设置不同配置的编译选项
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)

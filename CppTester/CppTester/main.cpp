@@ -15,7 +15,7 @@
 #include <yaml-cpp/yaml.h>
 
 #include "Strategy.h"
-#include <GengYouFuturesUI/GengYouFuturesUI.h>
+#include <GengYouFuturesUI.h>
 
 extern std::deque<long> gDaysKlineDiff;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
