@@ -176,27 +176,27 @@ void startHttpServer(std::atomic<bool> &isRunning)
     }
 }
 
-// 主程序
-int main()
-{
-    std::atomic<bool> isRunning(true);
-    std::thread serverThread(startHttpServer, std::ref(isRunning));
+// // 主程序
+// int main()
+// {
+//     std::atomic<bool> isRunning(true);
+//     std::thread serverThread(startHttpServer, std::ref(isRunning));
 
-    gMarketDataUI.gLongShort = 10;
-    gMarketDataUI.gCurServerTime[0] = 0;
-    gMarketDataUI.gCurServerTime[1] = 0;
-    gMarketDataUI.gCurServerTime[2] = 0;
+//     gMarketDataUI.gLongShort = 10;
+//     gMarketDataUI.gCurServerTime[0] = 0;
+//     gMarketDataUI.gCurServerTime[1] = 0;
+//     gMarketDataUI.gCurServerTime[2] = 0;
 
-    while (isRunning.load())
-    {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        simulateMarketData();
-        std::cout << "Current Price: " << currentPrice.load() << std::endl;
-    }
+//     while (isRunning.load())
+//     {
+//         std::this_thread::sleep_for(std::chrono::seconds(1));
+//         simulateMarketData();
+//         std::cout << "Current Price: " << currentPrice.load() << std::endl;
+//     }
 
-    serverThread.join();
-    return 0;
-}
+//     serverThread.join();
+//     return 0;
+// }
 
 json MainOutputToJson()
 {
