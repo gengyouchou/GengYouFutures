@@ -1,7 +1,7 @@
 # File: CMakeLists.txt
 
 # 指定所需的最低 CMake 版本
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.10...3.24)
 
 # 项目信息
 project(CppTester)
@@ -55,11 +55,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(yaml-cpp)
 
+# 添加子目录
+add_subdirectory("${CMAKE_SOURCE_DIR}/../GengYouFuturesUI" "${CMAKE_BINARY_DIR}/GengYouFuturesUI")
+
 # 定义生成的目标
 add_executable(CppTester ${SOURCES} ${HEADERS})
 
-# 链接 yaml-cpp 库
-target_link_libraries(CppTester PUBLIC yaml-cpp)
+# 链接 yaml-cpp 库和靜態庫 GengYouFuturesUI
+target_link_libraries(CppTester PUBLIC yaml-cpp GengYouFuturesUI)
 
 # 设置编译器标志
 target_compile_options(CppTester PRIVATE
