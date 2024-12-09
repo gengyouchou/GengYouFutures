@@ -1,4 +1,3 @@
-#include "GengYouFuturesUI.h"
 #include "httplib.h"
 #include <iostream>
 #include <thread>
@@ -6,6 +5,8 @@
 #include <nlohmann/json.hpp>
 #include <random>
 #include <ctime>
+#include "GengYouFuturesUI.h"
+
 
 // 使用 nlohmann::json 簡化 JSON 的生成
 using json = nlohmann::json;

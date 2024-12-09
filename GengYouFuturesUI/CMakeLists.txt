@@ -22,10 +22,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(nlohmann_json)
 
-# 定義項目的可執行文件
-add_executable(GengYouFuturesUI GengYouFuturesUI.cpp)
+# 定義庫
+add_library(GengYouFuturesUI STATIC GengYouFuturesUI.cpp)
 
-# 添加头文件
+# 添加頭文件
 set(HEADERS
     GengYouFuturesUI.h
     ../CppTester/CppTester/SKCenterLib.h
@@ -39,14 +39,17 @@ set(HEADERS
     ../Logger/Logger.h
 )
 
-include_directories("../Logger")
-include_directories("../../")
-include_directories("../CppTester/CppTester")
+# 設定包含目錄
+target_include_directories(GengYouFuturesUI PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}  # 添加庫的源文件目錄
+    ../Logger
+    ../../
+    ../CppTester/CppTester
+)
 
 # 添加 httplib 和 json 作為外部庫依賴
 target_link_libraries(GengYouFuturesUI PRIVATE httplib::httplib nlohmann_json::nlohmann_json)
 
-# 移除 Windows 特定的命名管道支持
-if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_CRT_SECURE_NO_WARNINGS")
-endif()
+# 安裝靜態庫和頭文件
+install(TARGETS GengYouFuturesUI DESTINATION lib)
+install(FILES ${HEADERS} DESTINATION include)
