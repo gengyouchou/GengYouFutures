@@ -252,42 +252,10 @@ void release()
     CoUninitialize();
 }
 
-// To do list:
-//  (done)
-// Estimated trading volume
-// need VIX index
-// current time (done)
-// Instant profit and loss
-// Add open position query.
-// Add stop loss and profit stop mechanism
-
-// Bug:
-// The price will be unstable at the beginning and will change from high to low.
-
-// To do list:
-//
-// Estimated trading volume
-// Instant profit and loss
-// need VIX index
-// current time
-// Estimated trading volume
-// Instant profit and loss
-
-// Test code:
-
-// Function to generate random price
-// long getRandomPrice()
-// {
-//     // Generate a random number in the range of 2000000 to 2500000
-//     return rand() % 500001 + 2000000; // 500001 is because 2500000 - 2000000 = 500000 + 1
-// }
-
-// // Function to update the price periodically (every second)
-// void updatePricePeriodically(long MtxCommodtyInfo)
-// {
-//     // Generate a random price and update the corresponding value in the global variable
-//     gCurCommPrice[MtxCommodtyInfo] = getRandomPrice();
-// }
+VOID CopyDataToTheOrderMachine(VOID)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+}
 
 void thread_main()
 {
@@ -405,6 +373,11 @@ void thread_main()
 
         if (elapsed.count() >= refreshInterval)
         {
+            // GengYouFuturesUI start
+            {
+                CopyDataToTheOrderMachine();
+            }
+
             system("cls");
             lastClearTime = now;
 
@@ -591,10 +564,6 @@ void readConfig()
     }
 }
 
-VOID CopyDataToTheOrderMachine(VOID)
-{
-}
-
 int main()
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
@@ -630,15 +599,6 @@ int main()
     while (GetMessageW(&msg, NULL, 0, 0)) // Get SendMessage loop
     {
         DispatchMessageW(&msg);
-    }
-
-    // GengYouFuturesUI start
-    {
-        while (true)
-        {
-            CopyDataToTheOrderMachine();
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
     }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
