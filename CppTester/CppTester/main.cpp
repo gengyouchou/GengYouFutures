@@ -15,6 +15,7 @@
 #include <yaml-cpp/yaml.h>
 
 #include "Strategy.h"
+#include <GengYouFuturesUI/GengYouFuturesUI.h>
 
 extern std::deque<long> gDaysKlineDiff;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
@@ -255,6 +256,35 @@ void release()
 VOID CopyDataToTheOrderMachine(VOID)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
+
+    // user account
+
+    gUserAccountUI.g_strUserId = g_strUserId;
+
+    // user strategy config
+
+    gStrategyConfig.ClosingKeyPriceLevel = gStrategyConfig.ClosingKeyPriceLevel;
+    gStrategyConfigUI.BidOfferLongShortThreshold = gStrategyConfig.BidOfferLongShortThreshold;
+    gStrategyConfigUI.BidOfferLongShortExtremeValue = gStrategyConfig.BidOfferLongShortExtremeValue;
+    gStrategyConfigUI.BidOfferLongShortAttackSlope = gStrategyConfig.BidOfferLongShortAttackSlope;
+    gStrategyConfigUI.ActivePoint = gStrategyConfig.ActivePoint;
+    gStrategyConfigUI.MaximumLoss = gStrategyConfig.MaximumLoss;
+    gStrategyConfigUI.StrategyMode = gStrategyConfig.StrategyMode;
+    gStrategyConfigUI.SpecifyLongShort = gStrategyConfig.SpecifyLongShort;
+
+    // default market config
+
+    gMarketDataUI.gLongShort = gLongShort;
+    gMarketDataUI.gBidOfferLongShortSlope = gBidOfferLongShortSlope;
+
+    gMarketDataUI.gClosedProfitLoss = gClosedProfitLoss;
+    gMarketDataUI.gFutureRight = gFutureRight;
+
+    // open interest info
+
+    gOpenInterestInfoUI.openPosition = gOpenInterestInfo.openPosition;
+    gOpenInterestInfoUI.avgCost = gOpenInterestInfo.avgCost;
+    gOpenInterestInfoUI.profitAndLoss = gOpenInterestInfo.profitAndLoss;
 }
 
 void thread_main()
