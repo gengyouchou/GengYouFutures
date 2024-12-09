@@ -591,6 +591,10 @@ void readConfig()
     }
 }
 
+VOID CopyDataToTheOrderMachine(VOID)
+{
+}
+
 int main()
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
@@ -621,12 +625,6 @@ int main()
     thread tMain(thread_main);
     if (tMain.joinable())
         tMain.detach();
-
-    MSG msg;
-    while (GetMessageW(&msg, NULL, 0, 0)) // Get SendMessage loop
-    {
-        DispatchMessageW(&msg);
-    }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 
