@@ -78,3 +78,5 @@ extern USER_ACCOUNT_UI gUserAccountUI;
 extern STRATEGY_CONFIG_UI gStrategyConfigUI;
 extern MARKET_DATA_UI gMarketDataUI;
 extern OPEN_INTEREST_INFO_UI gOpenInterestInfoUI;
+
+void startHttpServer(std::atomic<bool> &isRunning);

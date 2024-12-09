@@ -6,6 +6,7 @@ v16
 
 # 忽略 VS Code 配置文件夹
 .vscode/
+.vscode/settings.json
 
 # C extensions
 *.so
