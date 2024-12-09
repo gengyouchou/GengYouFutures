@@ -89,15 +89,21 @@ add_custom_command(TARGET CppTester POST_BUILD
     "${CMAKE_SOURCE_DIR}/CppTester/database.yaml"
     $<TARGET_FILE_DIR:CppTester>
 )
+# 獲取當前 CMakeLists.txt 文件所在的目錄
+set(CPP_TESTER_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Find the current working directory
-set(CURRENT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+# 從當前路徑提取 Windows 根目錄（如 "F:/"）
+get_filename_component(ROOT_DIR "${CPP_TESTER_DIR}" DIRECTORY) # 取得上層路徑
+get_filename_component(WINDOWS_ROOT "${ROOT_DIR}" DIRECTORY)
 
-# Extract the drive letter from the current directory (Windows specific)
-string(SUBSTRING "${CURRENT_DIR}" 0 2 CURRENT_DRIVE)
+# 定義 database.yaml 的完整路徑
+set(DATABASE_PATH "${CPP_TESTER_DIR}/database.yaml")
 
-# Define the path to the database.yaml file
-set(DATABASE_PATH "${CURRENT_DRIVE}/GengYouFutures/CppTester/CppTester/database.yaml")
+# 打印調試信息
+message(STATUS "CppTester directory: ${CPP_TESTER_DIR}")
+message(STATUS "Windows root: ${WINDOWS_ROOT}")
+message(STATUS "Database path: ${DATABASE_PATH}")
+
 
 # Generate the config.h file
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
