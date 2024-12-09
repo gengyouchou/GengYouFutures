@@ -97,7 +97,7 @@ get_filename_component(ROOT_DIR "${CPP_TESTER_DIR}" DIRECTORY) # 取得上層路
 get_filename_component(WINDOWS_ROOT "${ROOT_DIR}" DIRECTORY)
 
 # 定義 database.yaml 的完整路徑
-set(DATABASE_PATH "${CPP_TESTER_DIR}/database.yaml")
+set(DATABASE_PATH "${CPP_TESTER_DIR}/CppTester/database.yaml")
 
 # 打印調試信息
 message(STATUS "CppTester directory: ${CPP_TESTER_DIR}")
