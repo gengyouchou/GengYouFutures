@@ -624,8 +624,12 @@ int main()
 
     thread tMain(thread_main);
     if (tMain.joinable())
+        tMain.detach();
+
+    MSG msg;
+    while (GetMessageW(&msg, NULL, 0, 0)) // Get SendMessage loop
     {
-        tMain.join();
+        DispatchMessageW(&msg);
     }
 
     // GengYouFuturesUI start
