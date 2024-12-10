@@ -623,7 +623,17 @@ int main()
 
     thread tMain(thread_main);
     if (tMain.joinable())
+    {
         tMain.detach();
+    }
+
+    std::atomic<bool> isRunning(true);
+    std::thread serverThread(startHttpServer, std::ref(isRunning));
+
+    if (isRunning.load())
+    {
+        DEBUG(DEBUG_LEVEL_INFO, "serverThread running");
+    }
 
     MSG msg;
     while (GetMessageW(&msg, NULL, 0, 0)) // Get SendMessage loop
@@ -631,9 +641,11 @@ int main()
         DispatchMessageW(&msg);
     }
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "end");
+    serverThread.join();
 
-    system("pause");
+    DEBUG(DEBUG_LEVEL_INFO, "serverThread exit");
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 
     return 0;
 }
