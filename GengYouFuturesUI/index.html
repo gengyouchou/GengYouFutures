@@ -60,8 +60,7 @@
 </head>
 
 <body>
-    <h1>Real-time Futures Data Viewer</h1>
-    <div id="price-change">Price Change: N/A</div>
+    <h1>GengYouFutures</h1>
     <div id="log"></div>
     <h2>Bid/Offer Data Viewer</h2>
     <div id="data-container"></div>
@@ -102,15 +101,12 @@
                 FutureRight
             } = indexData;
 
-            const timeLabel = new Date(Timestamp * 1000).toLocaleTimeString();
             priceChangeDiv.textContent = `ClosingKeyPriceLevel: $${ClosingKeyPriceLevel} | 
             BidOfferLongShortThreshold: $${BidOfferLongShortThreshold} | 
             BidOfferLongShortExtremeValue: $${FutureRight} | 
-            BidOfferLongShortAttackSlope: $${BidOfferLongShortAttackSlope} |
-            BidOfferLongShortAttackSlope: $${BidOfferLongShortAttackSlope}
-            BidOfferLongShortAttackSlope: $${BidOfferLongShortAttackSlope}
-            BidOfferLongShortAttackSlope: $${BidOfferLongShortAttackSlope}
-            BidOfferLongShortAttackSlope: $${BidOfferLongShortAttackSlope}`;
+            ClosedProfitLoss: $${ClosedProfitLoss} |
+            MaximumLoss: $${MaximumLoss}
+            StrategyMode: $${StrategyMode}`;
 
             appendLog(`[Futures] Time: ${timeLabel}, Price: $${CurrentPrice}, Closed Profit: $${ClosedProfitLoss}, Close Price: $${ClosePrice}`);
 
