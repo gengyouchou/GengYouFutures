@@ -993,7 +993,7 @@ void updateHighLowPoints(const std::string &date, double dayHigh, double dayLow,
             gDaysCommHighLowPoint[date] = std::make_pair(dayHigh, dayLow);
 
             // Maintain only the last DAY_NIGHT_HIGH_LOW_K_LINE entries
-            if (gDaysCommHighLowPoint.size() > DAY_NIGHT_HIGH_LOW_K_LINE)
+            while (gDaysCommHighLowPoint.size() > DAY_NIGHT_HIGH_LOW_K_LINE)
             {
                 gDaysCommHighLowPoint.erase(gDaysCommHighLowPoint.begin());
             }
@@ -1005,7 +1005,7 @@ void updateHighLowPoints(const std::string &date, double dayHigh, double dayLow,
             gDaysNightAllCommHighLowPoint[date] = std::make_pair(nightHigh, nightLow);
 
             // Maintain only the last DAY_NIGHT_HIGH_LOW_K_LINE entries
-            if (gDaysNightAllCommHighLowPoint.size() > DAY_NIGHT_HIGH_LOW_K_LINE)
+            while (gDaysNightAllCommHighLowPoint.size() > DAY_NIGHT_HIGH_LOW_K_LINE)
             {
                 gDaysNightAllCommHighLowPoint.erase(gDaysNightAllCommHighLowPoint.begin());
             }
