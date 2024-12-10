@@ -43,6 +43,7 @@
         const longShortChartCtx = document.getElementById("longShortChart").getContext("2d");
         const bidOfferSlopeChartCtx = document.getElementById("bidOfferSlopeChart").getContext("2d");
 
+        // 初始化圖表數據
         const longShortData = {
             labels: [],
             datasets: [{
@@ -63,6 +64,40 @@
             }]
         };
 
+        // 恢復數據 (從 localStorage)
+        function restoreData() {
+            const storedLongShort = localStorage.getItem("longShortData");
+            const storedBidOfferSlope = localStorage.getItem("bidOfferSlopeData");
+
+            if (storedLongShort) {
+                const parsedLongShort = JSON.parse(storedLongShort);
+                longShortData.labels = parsedLongShort.labels;
+                longShortData.datasets[0].data = parsedLongShort.data;
+            }
+
+            if (storedBidOfferSlope) {
+                const parsedBidOfferSlope = JSON.parse(storedBidOfferSlope);
+                bidOfferSlopeData.labels = parsedBidOfferSlope.labels;
+                bidOfferSlopeData.datasets[0].data = parsedBidOfferSlope.data;
+            }
+        }
+
+        // 儲存數據到 localStorage
+        function saveData() {
+            localStorage.setItem("longShortData", JSON.stringify({
+                labels: longShortData.labels,
+                data: longShortData.datasets[0].data
+            }));
+
+            localStorage.setItem("bidOfferSlopeData", JSON.stringify({
+                labels: bidOfferSlopeData.labels,
+                data: bidOfferSlopeData.datasets[0].data
+            }));
+        }
+
+        restoreData();
+
+        // 初始化圖表
         const longShortChart = new Chart(longShortChartCtx, {
             type: "line",
             data: longShortData,
@@ -95,6 +130,7 @@
             }
         });
 
+        // 更新 UI
         async function fetchData() {
             try {
                 const indexDataResponse = await fetch("http://localhost:8080/index-data");
@@ -108,8 +144,8 @@
                 setTimeout(fetchData, 5000);
             }
         }
+
         function updateUI(data) {
-            // 從數據中提取 MarketData
             const { MarketData } = data;
             if (!MarketData) {
                 appendLog("Error: Missing MarketData field in response.", true);
@@ -118,27 +154,24 @@
 
             const { LongShort, BidOfferLongShortSlope, CurServerTime } = MarketData;
 
-            // 確保 CurServerTime 格式正確
             if (!CurServerTime || !Array.isArray(CurServerTime) || CurServerTime.length !== 3) {
                 appendLog("Error: Invalid CurServerTime format. Expected [hour, minute, second].", true);
                 return;
             }
 
-            // 格式化時間為 HH:mm:ss
             const timeLabel = `${CurServerTime[0].toString().padStart(2, "0")}:${CurServerTime[1].toString().padStart(2, "0")}:${CurServerTime[2].toString().padStart(2, "0")}`;
 
-            // 更新 LongShort 圖表
             longShortData.labels.push(timeLabel);
             longShortData.datasets[0].data.push(LongShort);
             longShortChart.update();
 
-            // 更新 BidOfferLongShortSlope 圖表
             bidOfferSlopeData.labels.push(timeLabel);
             bidOfferSlopeData.datasets[0].data.push(BidOfferLongShortSlope);
             bidOfferSlopeChart.update();
 
-            // 記錄日誌
             appendLog(`[Time: ${timeLabel}] LongShort: ${LongShort}, BidOfferSlope: ${BidOfferLongShortSlope}`);
+
+            saveData(); // 儲存最新的數據到 localStorage
         }
 
         function appendLog(message, isError = false) {
