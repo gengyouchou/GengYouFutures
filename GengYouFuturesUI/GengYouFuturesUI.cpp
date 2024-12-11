@@ -7,7 +7,6 @@
 #include <ctime>
 #include "GengYouFuturesUI.h"
 
-
 // 使用 nlohmann::json 簡化 JSON 的生成
 using json = nlohmann::json;
 
@@ -18,6 +17,8 @@ USER_ACCOUNT_UI gUserAccountUI;
 STRATEGY_CONFIG_UI gStrategyConfigUI;
 MARKET_DATA_UI gMarketDataUI;
 OPEN_INTEREST_INFO_UI gOpenInterestInfoUI;
+
+gMarketDataUI.Updating = FALSE;
 
 // 互斥鎖保護全局變數
 std::mutex marketDataMutex;
@@ -157,10 +158,14 @@ void startHttpServer(std::atomic<bool> &isRunning)
         return httplib::Server::HandlerResponse::Unhandled; });
 
     // 路由處理
-    svr.Get("/index-data", [](const httplib::Request &, httplib::Response &res)
-            {
-    auto jsonResponse = MainOutputToJson();
-    res.set_content(jsonResponse.dump(), "application/json"); });
+
+    if (gMarketDataUI.Updating == TRUE)
+    {
+        svr.Get("/index-data", [](const httplib::Request &, httplib::Response &res)
+                {
+            auto jsonResponse = MainOutputToJson();
+            res.set_content(jsonResponse.dump(), "application/json"); });
+    }
 
     svr.Get("/bid-offer-data", [](const httplib::Request &, httplib::Response &res)
             {

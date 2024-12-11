@@ -257,6 +257,8 @@ VOID CopyDataToTheOrderMachine(VOID)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
+    gMarketDataUI.Updating = TRUE;
+
     // user account
 
     gUserAccountUI.g_strUserId = g_strUserId;

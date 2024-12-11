@@ -35,6 +35,7 @@ struct STRATEGY_CONFIG_UI
 
 struct MARKET_DATA_UI
 {
+    BOOL Updating;
     std::unordered_map<long, long> gCurCommPrice;
     LONG MtxPrices;
     std::unordered_map<SHORT, std::array<long, 6>> gCurTaiexInfo;
