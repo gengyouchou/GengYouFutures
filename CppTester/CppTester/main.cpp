@@ -276,7 +276,7 @@ VOID CopyDataToTheOrderMachine(VOID)
 
     // default market config
 
-    gMarketDataUI.MtxPrices = gCurCommPrice[MtxCommodtyInfo] / 100;
+    gMarketDataUI.MtxPrices = 0;
 
     gMarketDataUI.gLongShort = gLongShort;
     gMarketDataUI.gBidOfferLongShortSlope = gBidOfferLongShortSlope;
@@ -336,6 +336,8 @@ void thread_main()
     // For calculate 5MA
     AutoQuoteTicks(COMMODITY_TX_MAIN, -1);
     AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
+
+    gMarketDataUI.Updating = FALSE;
 
     while (true)
     {

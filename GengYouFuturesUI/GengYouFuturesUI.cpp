@@ -18,8 +18,6 @@ STRATEGY_CONFIG_UI gStrategyConfigUI;
 MARKET_DATA_UI gMarketDataUI;
 OPEN_INTEREST_INFO_UI gOpenInterestInfoUI;
 
-gMarketDataUI.Updating = FALSE;
-
 // 互斥鎖保護全局變數
 std::mutex marketDataMutex;
 std::atomic<double> currentPrice(20000.0); // 當前價格
