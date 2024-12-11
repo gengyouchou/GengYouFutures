@@ -157,13 +157,10 @@ void startHttpServer(std::atomic<bool> &isRunning)
 
     // 路由處理
 
-    if (gMarketDataUI.Updating == TRUE)
-    {
-        svr.Get("/index-data", [](const httplib::Request &, httplib::Response &res)
-                {
+    svr.Get("/index-data", [](const httplib::Request &, httplib::Response &res)
+            {
             auto jsonResponse = MainOutputToJson();
             res.set_content(jsonResponse.dump(), "application/json"); });
-    }
 
     svr.Get("/bid-offer-data", [](const httplib::Request &, httplib::Response &res)
             {
