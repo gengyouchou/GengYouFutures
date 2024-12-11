@@ -274,6 +274,8 @@ VOID CopyDataToTheOrderMachine(VOID)
 
     // default market config
 
+    gMarketDataUI.MtxPrices = gCurCommPrice[MtxCommodtyInfo] / 100;
+
     gMarketDataUI.gLongShort = gLongShort;
     gMarketDataUI.gBidOfferLongShortSlope = gBidOfferLongShortSlope;
 
