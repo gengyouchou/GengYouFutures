@@ -222,6 +222,8 @@ json MainOutputToJson()
     output["MarketData"] = {
         {"Updating", gMarketDataUI.Updating},
         {"CurCommPrice", gMarketDataUI.gCurCommPrice},
+        {"MtxPrices", gMarketDataUI.MtxPrices},
+        {"Diff", gMarketDataUI.Diff},
         {"CurTaiexInfo", gMarketDataUI.gCurTaiexInfo},
         {"CurServerTime", {gMarketDataUI.gCurServerTime[0], gMarketDataUI.gCurServerTime[1], gMarketDataUI.gCurServerTime[2]}},
         {"CurOsCommPrice", gMarketDataUI.gCurOsCommPrice},
@@ -238,7 +240,18 @@ json MainOutputToJson()
         {"NumberOfStocksRisingAndFalling", gMarketDataUI.gNumberOfStocksRisingAndFalling},
         {"EvaluatePosition", gMarketDataUI.gEvaluatePosition},
         {"ClosedProfitLoss", gMarketDataUI.gClosedProfitLoss},
-        {"FutureRight", gMarketDataUI.gFutureRight},
+        {"FutureRight", gMarketDataUI.gFutureRight}};
+
+    // 高低點數據
+    json highLowData;
+    for (const auto &[key, value] : gMarketDataUI.gCurCommHighLowPoint)
+    {
+        highLowData[std::to_string(key)] = {value[0], value[1], value[2], value[3]};
+    }
+    output["MarketData"]["CurCommHighLowPoint"] = highLowData;
+
+    // 高低點數據以及其他的統計指標
+    output["MarketData"]["Statistics"] = {
         {"CurHigh", gMarketDataUI.CurHigh},
         {"CurLow", gMarketDataUI.CurLow},
         {"CurAvg", gMarketDataUI.CurAvg},
@@ -248,13 +261,18 @@ json MainOutputToJson()
         {"ShockLongExtremeValue", gMarketDataUI.ShockLongExtremeValue},
         {"ShockShortExtremeValue", gMarketDataUI.ShockShortExtremeValue}};
 
-    // 高低點數據
-    json highLowData;
-    for (const auto &[key, value] : gMarketDataUI.gCurCommHighLowPoint)
+    // Best 5 Bid/Offer 數據
+    json best5Data;
+    for (const auto &[key, value] : gMarketDataUI.gBest5BidOffer)
     {
-        highLowData[std::to_string(key)] = {value[0], value[1], value[2], value[3]};
+        json best5Array;
+        for (const auto &[price, volume] : value)
+        {
+            best5Array.push_back({{"Price", price}, {"Volume", volume}});
+        }
+        best5Data[std::to_string(key)] = best5Array;
     }
-    output["MarketData"]["CurCommHighLowPoint"] = highLowData;
+    output["MarketData"]["Best5BidOffer"] = best5Data;
 
     // Day Amp and Key Price
     output["MarketData"]["DayAmpAndKeyPrice"] = {

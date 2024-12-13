@@ -109,12 +109,14 @@
             } = indexData.StrategyConfig;
 
             const {
+                MtxPrices = "N/A",
                 ClosedProfitLoss = "N/A",
                 FutureRight = "N/A"
             } = indexData.MarketData;
 
             // 更新主页面
             priceChangeDiv.textContent = `
+        MtxPrices: $${MtxPrices} | 
         ClosingKeyPriceLevel: $${ClosingKeyPriceLevel} | 
         Threshold: $${BidOfferLongShortThreshold} | 
         Extreme Value: $${BidOfferLongShortExtremeValue} | 
