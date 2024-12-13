@@ -106,9 +106,12 @@
                 BidOfferLongShortExtremeValue = "N/A",
                 MaximumLoss = "N/A",
                 StrategyMode = "N/A",
+            } = indexData.StrategyConfig;
+
+            const {
                 ClosedProfitLoss = "N/A",
                 FutureRight = "N/A"
-            } = indexData.StrategyConfig;
+            } = indexData.MarketData;
 
             // 更新主页面
             priceChangeDiv.textContent = `

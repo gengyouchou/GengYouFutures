@@ -265,7 +265,7 @@ VOID CopyDataToTheOrderMachine(VOID)
 
     // user strategy config
 
-    gStrategyConfig.ClosingKeyPriceLevel = gStrategyConfig.ClosingKeyPriceLevel;
+    gStrategyConfigUI.ClosingKeyPriceLevel = gStrategyConfig.ClosingKeyPriceLevel;
     gStrategyConfigUI.BidOfferLongShortThreshold = gStrategyConfig.BidOfferLongShortThreshold;
     gStrategyConfigUI.BidOfferLongShortExtremeValue = gStrategyConfig.BidOfferLongShortExtremeValue;
     gStrategyConfigUI.BidOfferLongShortAttackSlope = gStrategyConfig.BidOfferLongShortAttackSlope;
