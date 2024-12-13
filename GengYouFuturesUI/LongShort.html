@@ -152,6 +152,12 @@
                 return;
             }
 
+            // 檢查 Updating 屬性是否為 TRUE
+            if (!MarketData.Updating) {
+                appendLog("Info: Updating is FALSE, skipping chart update.");
+                return;
+            }
+
             const { LongShort, BidOfferLongShortSlope, CurServerTime } = MarketData;
 
             if (!CurServerTime || !Array.isArray(CurServerTime) || CurServerTime.length !== 3) {
