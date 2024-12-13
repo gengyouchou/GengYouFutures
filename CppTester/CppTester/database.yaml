@@ -101,6 +101,9 @@ DaysCommHighLowPoint:
   20241212:
     High: 23211
     Low: 23003
+  20241213:
+    High: 23092
+    Low: 22888
 DaysNightAllCommHighLowPoint:
   20241029:
     High: 23386
@@ -198,4 +201,7 @@ DaysNightAllCommHighLowPoint:
   20241212:
     High: 23211
     Low: 22800
-LongShortIntegralValue: -1627702
+  20241213:
+    High: 23142
+    Low: 22850
+LongShortIntegralValue: -2070236
