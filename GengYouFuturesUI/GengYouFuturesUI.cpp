@@ -238,7 +238,15 @@ json MainOutputToJson()
         {"NumberOfStocksRisingAndFalling", gMarketDataUI.gNumberOfStocksRisingAndFalling},
         {"EvaluatePosition", gMarketDataUI.gEvaluatePosition},
         {"ClosedProfitLoss", gMarketDataUI.gClosedProfitLoss},
-        {"FutureRight", gMarketDataUI.gFutureRight}};
+        {"FutureRight", gMarketDataUI.gFutureRight},
+        {"CurHigh", gMarketDataUI.CurHigh},
+        {"CurLow", gMarketDataUI.CurLow},
+        {"CurAvg", gMarketDataUI.CurAvg},
+        {"CurAmp", gMarketDataUI.CurAmp},
+        {"CostMovingAverage", gMarketDataUI.CostMovingAverage},
+        {"OpenPrice", gMarketDataUI.OpenPrice},
+        {"ShockLongExtremeValue", gMarketDataUI.ShockLongExtremeValue},
+        {"ShockShortExtremeValue", gMarketDataUI.ShockShortExtremeValue}};
 
     // 高低點數據
     json highLowData;
