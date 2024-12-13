@@ -73,25 +73,29 @@
 
         async function fetchData() {
             try {
-                const indexDataResponse = await fetch("http://localhost:8080/index-data");
-                if (!indexDataResponse.ok) throw new Error(`HTTP status: ${indexDataResponse.status}`);
-                const indexData = await indexDataResponse.json();
+                const [indexDataResponse, bidOfferDataResponse] = await Promise.all([
+                    fetch("http://localhost:8080/index-data"),
+                    fetch("http://localhost:8080/bid-offer-data")
+                ]);
 
-                const bidOfferDataResponse = await fetch("http://localhost:8080/bid-offer-data");
-                if (!bidOfferDataResponse.ok) throw new Error(`HTTP status: ${bidOfferDataResponse.status}`);
+                if (!indexDataResponse.ok || !bidOfferDataResponse.ok) {
+                    throw new Error(`HTTP error: ${indexDataResponse.status} or ${bidOfferDataResponse.status}`);
+                }
+
+                const indexData = await indexDataResponse.json();
                 const bidOfferData = await bidOfferDataResponse.json();
 
                 updateUI(indexData, bidOfferData);
             } catch (error) {
                 console.error("Error fetching data:", error);
                 appendLog("Error fetching data: " + error.message, true);
-                setTimeout(fetchData, 5000);
+            } finally {
+                setTimeout(fetchData, 3000); // 控制调用频率
             }
         }
 
-        function updateUI(indexData) {
-            // 驗證數據結構
-            if (!indexData || typeof indexData !== "object") {
+        function updateUI(indexData, bidOfferData) {
+            if (!indexData || typeof indexData.StrategyConfig !== "object") {
                 appendLog("Invalid index data structure", true);
                 return;
             }
@@ -104,22 +108,29 @@
                 StrategyMode = "N/A",
                 ClosedProfitLoss = "N/A",
                 FutureRight = "N/A"
-            } = indexData;
+            } = indexData.StrategyConfig;
 
-            // 更新頁面數據
+            // 更新主页面
             priceChangeDiv.textContent = `
-            ClosingKeyPriceLevel: $${ClosingKeyPriceLevel} | 
-            Threshold: $${BidOfferLongShortThreshold} | 
-            Extreme Value: $${BidOfferLongShortExtremeValue} | 
-            FutureRight: $${FutureRight} | 
-            Closed P/L: $${ClosedProfitLoss} | 
-            Max Loss: $${MaximumLoss} |
-            Mode: ${StrategyMode}
-        `;
+        ClosingKeyPriceLevel: $${ClosingKeyPriceLevel} | 
+        Threshold: $${BidOfferLongShortThreshold} | 
+        Extreme Value: $${BidOfferLongShortExtremeValue} | 
+        FutureRight: $${FutureRight} | 
+        Closed P/L: $${ClosedProfitLoss} | 
+        Max Loss: $${MaximumLoss} |
+        Mode: ${StrategyMode}
+    `;
 
             appendLog(`[Index Data Updated] Threshold: ${BidOfferLongShortThreshold}, Closed P/L: ${ClosedProfitLoss}`);
-            renderData(bidOfferData, ClosePrice);
+
+            // 验证并渲染 bidOfferData
+            if (bidOfferData) {
+                renderData(bidOfferData);
+            } else {
+                appendLog("Error: BidOffer data is missing", true);
+            }
         }
+
 
         function renderData(data) {
             dataContainer.innerHTML = "";
