@@ -253,7 +253,7 @@ void release()
     CoUninitialize();
 }
 
-VOID CopyDataToTheOrderMachine(VOID)
+VOID CopyDataToTheOrderMachine(LONG MtxCommodtyInfo)
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
@@ -276,7 +276,30 @@ VOID CopyDataToTheOrderMachine(VOID)
 
     // default market config
 
-    gMarketDataUI.MtxPrices = 0;
+    gMarketDataUI.MtxPrices = gCurCommPrice[MtxCommodtyInfo] / 100;
+    gMarketDataUI.Diff = (gCurCommPrice[MtxCommodtyInfo] - gCurCommPrice[gCommodtyInfo.TSEAIdxNo]) / 100;
+    gMarketDataUI.gCurServerTime[0] = gCurServerTime[0];
+    gMarketDataUI.gCurServerTime[1] = gCurServerTime[1];
+    gMarketDataUI.gCurServerTime[2] = gCurServerTime[2];
+
+    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
+    {
+        long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
+        long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
+        long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
+        long OpenPrice = gCurCommHighLowPoint[MtxCommodtyInfo][2] / 100;
+        double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2;
+        double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2;
+
+        gMarketDataUI.OpenPrice = OpenPrice;
+        gMarketDataUI.CurHigh = CurHigh;
+        gMarketDataUI.CurLow = CurLow;
+        gMarketDataUI.CostMovingAverage = CostMovingAverage;
+        gMarketDataUI.CurAmp = CurHigh - CurLow;
+        gMarketDataUI.CurAvg = (CurHigh + CurLow) / 2;
+        gMarketDataUI.ShockLongExtremeValue = static_cast<long>(ShockLongExtremeValue);
+        gMarketDataUI.ShockShortExtremeValue = static_cast<long>(ShockShortExtremeValue);
+    }
 
     gMarketDataUI.gLongShort = gLongShort;
     gMarketDataUI.gBidOfferLongShortSlope = gBidOfferLongShortSlope;
@@ -411,7 +434,7 @@ void thread_main()
         {
             // GengYouFuturesUI start
             {
-                CopyDataToTheOrderMachine();
+                CopyDataToTheOrderMachine(MtxCommodtyInfo);
             }
 
             system("cls");

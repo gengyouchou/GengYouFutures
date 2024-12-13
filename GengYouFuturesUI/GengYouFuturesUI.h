@@ -38,6 +38,7 @@ struct MARKET_DATA_UI
     bool Updating;
     std::unordered_map<long, long> gCurCommPrice;
     LONG MtxPrices;
+    LONG Diff;
     std::unordered_map<SHORT, std::array<long, 6>> gCurTaiexInfo;
     SHORT gCurServerTime[3];
     std::unordered_map<long, long> gCurOsCommPrice;
@@ -45,6 +46,15 @@ struct MARKET_DATA_UI
     std::unordered_map<long, std::array<long, 6>> gTransactionList;
 
     DAY_AMP_AND_KEY_PRICE gDayAmpAndKeyPrice;
+
+    long CurHigh;
+    long CurLow;
+    long CurAvg;
+    long CurAmp;
+    long CostMovingAverage;
+    long OpenPrice;
+    double ShockLongExtremeValue;
+    double ShockShortExtremeValue;
 
     LONG gBidOfferLongShort;
     LONG gTransactionListLongShort;
