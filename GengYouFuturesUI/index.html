@@ -89,28 +89,35 @@
             }
         }
 
-        function updateUI(indexData, bidOfferData) {
+        function updateUI(indexData) {
+            // 驗證數據結構
+            if (!indexData || typeof indexData !== "object") {
+                appendLog("Invalid index data structure", true);
+                return;
+            }
+
             const {
-                ClosingKeyPriceLevel,
-                BidOfferLongShortThreshold,
-                BidOfferLongShortExtremeValue,
-                BidOfferLongShortAttackSlope,
-                MaximumLoss,
-                StrategyMode,
-                SpecifyLongShort,
-                ClosedProfitLoss,
-                FutureRight
+                ClosingKeyPriceLevel = "N/A",
+                BidOfferLongShortThreshold = "N/A",
+                BidOfferLongShortExtremeValue = "N/A",
+                MaximumLoss = "N/A",
+                StrategyMode = "N/A",
+                ClosedProfitLoss = "N/A",
+                FutureRight = "N/A"
             } = indexData;
 
-            priceChangeDiv.textContent = `ClosingKeyPriceLevel: $${ClosingKeyPriceLevel} | 
-            BidOfferLongShortThreshold: $${BidOfferLongShortThreshold} | 
-            BidOfferLongShortExtremeValue: $${FutureRight} | 
-            ClosedProfitLoss: $${ClosedProfitLoss} |
-            MaximumLoss: $${MaximumLoss}
-            StrategyMode: $${StrategyMode}`;
+            // 更新頁面數據
+            priceChangeDiv.textContent = `
+            ClosingKeyPriceLevel: $${ClosingKeyPriceLevel} | 
+            Threshold: $${BidOfferLongShortThreshold} | 
+            Extreme Value: $${BidOfferLongShortExtremeValue} | 
+            FutureRight: $${FutureRight} | 
+            Closed P/L: $${ClosedProfitLoss} | 
+            Max Loss: $${MaximumLoss} |
+            Mode: ${StrategyMode}
+        `;
 
-            appendLog(`[Futures] Time: ${timeLabel}, Price: $${CurrentPrice}, Closed Profit: $${ClosedProfitLoss}, Close Price: $${ClosePrice}`);
-
+            appendLog(`[Index Data Updated] Threshold: ${BidOfferLongShortThreshold}, Closed P/L: ${ClosedProfitLoss}`);
             renderData(bidOfferData, ClosePrice);
         }
 

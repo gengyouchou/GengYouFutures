@@ -220,6 +220,7 @@ json MainOutputToJson()
 
     // Market Data
     output["MarketData"] = {
+        {"Updating", gMarketDataUI.Updating},
         {"CurCommPrice", gMarketDataUI.gCurCommPrice},
         {"CurTaiexInfo", gMarketDataUI.gCurTaiexInfo},
         {"CurServerTime", {gMarketDataUI.gCurServerTime[0], gMarketDataUI.gCurServerTime[1], gMarketDataUI.gCurServerTime[2]}},
