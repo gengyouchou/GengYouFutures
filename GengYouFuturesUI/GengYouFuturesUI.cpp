@@ -6,6 +6,7 @@
 #include <random>
 #include <ctime>
 #include "GengYouFuturesUI.h"
+#include <sqlite3.h>
 
 // 使用 nlohmann::json 簡化 JSON 的生成
 using json = nlohmann::json;
@@ -21,6 +22,85 @@ OPEN_INTEREST_INFO_UI gOpenInterestInfoUI;
 // 互斥鎖保護全局變數
 std::mutex marketDataMutex;
 std::atomic<double> currentPrice(20000.0); // 當前價格
+
+// 初始化 SQLite 資料庫
+sqlite3 *initDatabase(const std::string &dbPath)
+{
+    sqlite3 *db = nullptr;
+    if (sqlite3_open(dbPath.c_str(), &db) != SQLITE_OK)
+    {
+        std::cerr << "Error: Unable to open SQLite database." << std::endl;
+        return nullptr;
+    }
+
+    const char *createTableSQL = R"(
+        CREATE TABLE IF NOT EXISTS history_data (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp TEXT NOT NULL,
+            data TEXT NOT NULL
+        );
+    )";
+
+    char *errMsg = nullptr;
+    if (sqlite3_exec(db, createTableSQL, nullptr, nullptr, &errMsg) != SQLITE_OK)
+    {
+        std::cerr << "Error creating table: " << errMsg << std::endl;
+        sqlite3_free(errMsg);
+        sqlite3_close(db);
+        return nullptr;
+    }
+
+    return db;
+}
+
+// 插入歷史數據
+void insertHistoryData(sqlite3 *db, const std::string &timestamp, const std::string &data)
+{
+    const char *insertSQL = "INSERT INTO history_data (timestamp, data) VALUES (?, ?);";
+    sqlite3_stmt *stmt = nullptr;
+
+    if (sqlite3_prepare_v2(db, insertSQL, -1, &stmt, nullptr) == SQLITE_OK)
+    {
+        sqlite3_bind_text(stmt, 1, timestamp.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 2, data.c_str(), -1, SQLITE_STATIC);
+
+        if (sqlite3_step(stmt) != SQLITE_DONE)
+        {
+            std::cerr << "Error inserting data: " << sqlite3_errmsg(db) << std::endl;
+        }
+        sqlite3_finalize(stmt);
+    }
+    else
+    {
+        std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+    }
+}
+
+// 查詢歷史數據
+json getHistoryData(sqlite3 *db)
+{
+    const char *selectSQL = "SELECT timestamp, data FROM history_data ORDER BY id ASC;";
+    sqlite3_stmt *stmt = nullptr;
+    json result = json::array();
+
+    if (sqlite3_prepare_v2(db, selectSQL, -1, &stmt, nullptr) == SQLITE_OK)
+    {
+        while (sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            std::string timestamp = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 0));
+            std::string data = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
+
+            result.push_back({{"timestamp", timestamp}, {"data", data}});
+        }
+        sqlite3_finalize(stmt);
+    }
+    else
+    {
+        std::cerr << "Error querying data: " << sqlite3_errmsg(db) << std::endl;
+    }
+
+    return result;
+}
 
 // 模擬填充 MarketData 的函數
 void simulateMarketData()

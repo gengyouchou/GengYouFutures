@@ -22,6 +22,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(nlohmann_json)
 
+# 自動下載並導入 sqlite3
+FetchContent_Declare(
+    sqlite3
+    GIT_REPOSITORY https://github.com/sqlite/sqlite.git
+    GIT_TAG        version-3.43.2  # 替換為你需要的 SQLite 版本
+)
+FetchContent_MakeAvailable(sqlite3)
+
 # 定義庫
 add_library(GengYouFuturesUI STATIC GengYouFuturesUI.cpp)
 
@@ -45,10 +53,15 @@ target_include_directories(GengYouFuturesUI PUBLIC
     ../Logger
     ../../
     ../CppTester/CppTester
+    ${sqlite3_SOURCE_DIR}  # 添加 SQLite3 的頭文件路徑
 )
 
-# 添加 httplib 和 json 作為外部庫依賴
-target_link_libraries(GengYouFuturesUI PRIVATE httplib::httplib nlohmann_json::nlohmann_json)
+# 添加 httplib, json 和 sqlite3 作為外部庫依賴
+target_link_libraries(GengYouFuturesUI PRIVATE 
+    httplib::httplib 
+    nlohmann_json::nlohmann_json
+    sqlite3  # 連接 sqlite3 库
+)
 
 # 安裝靜態庫和頭文件
 install(TARGETS GengYouFuturesUI DESTINATION lib)
