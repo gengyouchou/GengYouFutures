@@ -301,6 +301,39 @@ VOID CopyDataToTheOrderMachine(LONG MtxCommodtyInfo)
         gMarketDataUI.ShockShortExtremeValue = static_cast<long>(ShockShortExtremeValue);
     }
 
+    // {
+    //     gMarketDataUI.
+
+    //         printf("\n=========================================\n");
+
+    //     printf("Long Key 5: %ld\n", gDayAmpAndKeyPrice.LongKey5);
+    //     printf("Long Key 4: %ld\n", gDayAmpAndKeyPrice.LongKey4);
+    //     printf("Long Key 3: %ld\n", gDayAmpAndKeyPrice.LongKey3);
+    //     printf("Long Key 2: %ld\n", gDayAmpAndKeyPrice.LongKey2);
+    //     printf("Long Key 1: %ld\n", gDayAmpAndKeyPrice.LongKey1);
+    //     printf("=========================================\n");
+    //     printf("Short Key 1: %ld\n", gDayAmpAndKeyPrice.ShortKey1);
+    //     printf("Short Key 2: %ld\n", gDayAmpAndKeyPrice.ShortKey2);
+    //     printf("Short Key 3: %ld\n", gDayAmpAndKeyPrice.ShortKey3);
+    //     printf("Short Key 4: %ld\n", gDayAmpAndKeyPrice.ShortKey4);
+    //     printf("Short Key 5: %ld\n", gDayAmpAndKeyPrice.ShortKey5);
+
+    //     printf("=========================================\n");
+
+    //     printf("SmallestAmp : %ld, ", gDayAmpAndKeyPrice.SmallestAmp);
+    //     printf("SmallAmp : %ld, ", gDayAmpAndKeyPrice.SmallAmp);
+    //     printf("AvgAmp : %ld, ", gDayAmpAndKeyPrice.AvgAmp);
+    //     printf("LargerAmp : %ld, ", gDayAmpAndKeyPrice.LargerAmp);
+    //     printf("LargestAmp : %ld\n", gDayAmpAndKeyPrice.LargestAmp);
+
+    //     printf("=========================================\n");
+
+    //     printf("BidOfferLongShortSlope: %f, LongShort: %ld, BidOfferLongShort: %ld, TransactionListLongShort: %ld, OsTransactionListLongShort: %ld, NumberOfStocksRisingAndFalling: %f\n",
+    //            gBidOfferLongShortSlope, gLongShort, gBidOfferLongShort, gTransactionListLongShort, gOsTransactionListLongShort, gNumberOfStocksRisingAndFalling);
+
+    //     printf("=========================================\n");
+    // }
+
     gMarketDataUI.gLongShort = gLongShort;
     gMarketDataUI.gBidOfferLongShortSlope = gBidOfferLongShortSlope;
 
