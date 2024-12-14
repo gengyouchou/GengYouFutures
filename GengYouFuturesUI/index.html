@@ -74,8 +74,8 @@
         async function fetchData() {
             try {
                 const [indexDataResponse, bidOfferDataResponse] = await Promise.all([
-                    fetch("http://localhost:8080/index-data"),
-                    fetch("http://localhost:8080/bid-offer-data")
+                    fetch("http://192.168.50.168:8080/index-data"),
+                    fetch("http://192.168.50.168:8080/bid-offer-data")
                 ]);
 
                 if (!indexDataResponse.ok || !bidOfferDataResponse.ok) {
