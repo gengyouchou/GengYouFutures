@@ -30,6 +30,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(sqlite3)
 
+# 檢查 SQLite3 下載並確保有正確的路徑
+message(STATUS "SQLite3 source directory: ${sqlite3_SOURCE_DIR}")
+message(STATUS "SQLite3 binary directory: ${sqlite3_BINARY_DIR}")
+
 # 定義庫
 add_library(GengYouFuturesUI STATIC GengYouFuturesUI.cpp)
 
@@ -47,13 +51,14 @@ set(HEADERS
     ../Logger/Logger.h
 )
 
-# 設定包含目錄
+# 設定包含目錄，確認 sqlite3 的頭文件路徑正確
 target_include_directories(GengYouFuturesUI PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}  # 添加庫的源文件目錄
     ../Logger
     ../../
     ../CppTester/CppTester
     ${sqlite3_SOURCE_DIR}  # 添加 SQLite3 的頭文件路徑
+    ${sqlite3_BINARY_DIR}   # 添加 SQLite3 的編譯輸出目錄
 )
 
 # 添加 httplib, json 和 sqlite3 作為外部庫依賴
