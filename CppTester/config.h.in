@@ -3,3 +3,4 @@
 #pragma once
 
 #define DATABASE_PATH "@DATABASE_PATH@"
+#define CACHE_DATABASE_PATH "@CACHE_DATABASE_PATH@"

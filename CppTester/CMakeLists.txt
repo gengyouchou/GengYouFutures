@@ -98,6 +98,7 @@ get_filename_component(WINDOWS_ROOT "${ROOT_DIR}" DIRECTORY)
 
 # 定義 database.yaml 的完整路徑
 set(DATABASE_PATH "${CPP_TESTER_DIR}/CppTester/database.yaml")
+set(CACHE_DATABASE_PATH "${CMAKE_CURRENT_BINARY_DIR}/cache.yaml")
 
 # 打印調試信息
 message(STATUS "CppTester directory: ${CPP_TESTER_DIR}")
