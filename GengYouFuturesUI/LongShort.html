@@ -133,7 +133,7 @@
         // 更新 UI
         async function fetchData() {
             try {
-                const indexDataResponse = await fetch("http://192.168.50.168:8080/index-data");
+                const indexDataResponse = await fetch("http://localhost:8080/index-data");
                 if (!indexDataResponse.ok) throw new Error(`HTTP status: ${indexDataResponse.status}`);
                 const indexData = await indexDataResponse.json();
 
