@@ -304,38 +304,30 @@ VOID CopyDataToTheOrderMachine(LONG MtxCommodtyInfo)
         gMarketDataUI.ShockShortExtremeValue = static_cast<long>(ShockShortExtremeValue);
     }
 
-    // {
-    //     gMarketDataUI.
+    {
+        gMarketDataUI.gDayAmpAndKeyPrice.LongKey5 = gDayAmpAndKeyPrice.LongKey5;
+        gMarketDataUI.gDayAmpAndKeyPrice.LongKey4 = gDayAmpAndKeyPrice.LongKey4;
+        gMarketDataUI.gDayAmpAndKeyPrice.LongKey3 = gDayAmpAndKeyPrice.LongKey3;
+        gMarketDataUI.gDayAmpAndKeyPrice.LongKey2 = gDayAmpAndKeyPrice.LongKey2;
+        gMarketDataUI.gDayAmpAndKeyPrice.LongKey1 = gDayAmpAndKeyPrice.LongKey1;
 
-    //         printf("\n=========================================\n");
+        gMarketDataUI.gDayAmpAndKeyPrice.ShortKey1 = gDayAmpAndKeyPrice.ShortKey1;
+        gMarketDataUI.gDayAmpAndKeyPrice.ShortKey2 = gDayAmpAndKeyPrice.ShortKey2;
+        gMarketDataUI.gDayAmpAndKeyPrice.ShortKey3 = gDayAmpAndKeyPrice.ShortKey3;
+        gMarketDataUI.gDayAmpAndKeyPrice.ShortKey4 = gDayAmpAndKeyPrice.ShortKey4;
+        gMarketDataUI.gDayAmpAndKeyPrice.ShortKey5 = gDayAmpAndKeyPrice.ShortKey5;
 
-    //     printf("Long Key 5: %ld\n", gDayAmpAndKeyPrice.LongKey5);
-    //     printf("Long Key 4: %ld\n", gDayAmpAndKeyPrice.LongKey4);
-    //     printf("Long Key 3: %ld\n", gDayAmpAndKeyPrice.LongKey3);
-    //     printf("Long Key 2: %ld\n", gDayAmpAndKeyPrice.LongKey2);
-    //     printf("Long Key 1: %ld\n", gDayAmpAndKeyPrice.LongKey1);
-    //     printf("=========================================\n");
-    //     printf("Short Key 1: %ld\n", gDayAmpAndKeyPrice.ShortKey1);
-    //     printf("Short Key 2: %ld\n", gDayAmpAndKeyPrice.ShortKey2);
-    //     printf("Short Key 3: %ld\n", gDayAmpAndKeyPrice.ShortKey3);
-    //     printf("Short Key 4: %ld\n", gDayAmpAndKeyPrice.ShortKey4);
-    //     printf("Short Key 5: %ld\n", gDayAmpAndKeyPrice.ShortKey5);
+        gMarketDataUI.gDayAmpAndKeyPrice.SmallestAmp = gDayAmpAndKeyPrice.SmallestAmp;
+        gMarketDataUI.gDayAmpAndKeyPrice.SmallAmp = gDayAmpAndKeyPrice.SmallAmp;
+        gMarketDataUI.gDayAmpAndKeyPrice.AvgAmp = gDayAmpAndKeyPrice.AvgAmp;
+        gMarketDataUI.gDayAmpAndKeyPrice.LargerAmp = gDayAmpAndKeyPrice.LargerAmp;
+        gMarketDataUI.gDayAmpAndKeyPrice.LargestAmp = gDayAmpAndKeyPrice.LargestAmp;
 
-    //     printf("=========================================\n");
-
-    //     printf("SmallestAmp : %ld, ", gDayAmpAndKeyPrice.SmallestAmp);
-    //     printf("SmallAmp : %ld, ", gDayAmpAndKeyPrice.SmallAmp);
-    //     printf("AvgAmp : %ld, ", gDayAmpAndKeyPrice.AvgAmp);
-    //     printf("LargerAmp : %ld, ", gDayAmpAndKeyPrice.LargerAmp);
-    //     printf("LargestAmp : %ld\n", gDayAmpAndKeyPrice.LargestAmp);
-
-    //     printf("=========================================\n");
-
-    //     printf("BidOfferLongShortSlope: %f, LongShort: %ld, BidOfferLongShort: %ld, TransactionListLongShort: %ld, OsTransactionListLongShort: %ld, NumberOfStocksRisingAndFalling: %f\n",
-    //            gBidOfferLongShortSlope, gLongShort, gBidOfferLongShort, gTransactionListLongShort, gOsTransactionListLongShort, gNumberOfStocksRisingAndFalling);
-
-    //     printf("=========================================\n");
-    // }
+        gMarketDataUI.gNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
+        gMarketDataUI.gOsTransactionListLongShort = gOsTransactionListLongShort;
+        gMarketDataUI.gTransactionListLongShort = gTransactionListLongShort;
+        gMarketDataUI.gBidOfferLongShort = gBidOfferLongShort;
+    }
 
     gMarketDataUI.gLongShort = gLongShort;
     gMarketDataUI.gBidOfferLongShortSlope = gBidOfferLongShortSlope;
