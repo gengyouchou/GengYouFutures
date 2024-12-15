@@ -76,27 +76,20 @@
             color: #333;
         }
 
-        .ui-section .grid-container {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 10px;
-            align-items: center;
+        .row {
+            display: flex;
+            margin-bottom: 10px;
         }
 
-        .ui-section .key-value {
+        .key-value {
+            flex: 1;
             font-weight: bold;
             color: #333;
         }
 
-        .ui-section .value {
+        .value {
+            flex: 2;
             color: #555;
-        }
-
-        .ui-section .row {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 10px;
-            align-items: center;
         }
 
         .key-value.green {
@@ -105,10 +98,6 @@
 
         .key-value.red {
             color: red;
-        }
-
-        .ui-section .row {
-            margin-bottom: 10px;
         }
 
         .long-short-container {
@@ -154,10 +143,9 @@
                 console.error("Error fetching index data:", error);
                 appendLog("Error fetching index data: " + error.message, true);
             } finally {
-                setTimeout(fetchIndexData, 3000); // 控制刷新頻率
+                setTimeout(fetchIndexData, 3000);
             }
         }
-
         function updateIndexUI(indexData) {
             if (!indexData || typeof indexData.StrategyConfig !== "object") {
                 appendLog("Invalid index data structure", true);
@@ -189,27 +177,27 @@
             const uiContent = `
         <div class="ui-section">
             <h3>Strategy Config</h3>
-            <div class="grid-container">
-                <span class="key-value">Strategy Mode:</span><span class="value">${StrategyMode}</span>
-                <span class="key-value">BidOfferLongShortThreshold:</span><span class="value">$${BidOfferLongShortThreshold}</span>
-                <span class="key-value">BidOfferLongShortExtremeValue:</span><span class="value">$${BidOfferLongShortExtremeValue}</span>
-                <span class="key-value">Closing Key Price Level:</span><span class="value">$${ClosingKeyPriceLevel}</span>
-                <span class="key-value">Maximum Loss:</span><span class="value">$${MaximumLoss}</span>
-            </div>
+            <pre>
+Strategy Mode: ${StrategyMode}
+BidOfferLongShortThreshold: ${BidOfferLongShortThreshold}
+BidOfferLongShortExtremeValue: ${BidOfferLongShortExtremeValue}
+Closing Key Price Level: ${ClosingKeyPriceLevel}
+Maximum Loss: ${MaximumLoss}
+            </pre>
         </div>
 
         <div class="ui-section">
             <h3>Market Data</h3>
-            <div class="grid-container">
-                <span class="key-value">Mtx Prices:</span><span class="value">$${MtxPrices}</span>
-                <span class="key-value">Closed P/L:</span><span class="value">$${ClosedProfitLoss}</span>
-                <span class="key-value">Future Right:</span><span class="value">$${FutureRight}</span>
-                <span class="key-value">Diff:</span><span class="value">${Diff}</span>
-                <span class="key-value">Long/Short:</span><span class="value">${LongShort}</span>
-                <span class="key-value">BidOfferLongShortSlope:</span><span class="value">${BidOfferLongShortSlope}</span>
-                <span class="key-value">Transaction List Long/Short:</span><span class="value">${TransactionListLongShort}</span>
-                <span class="key-value">Number of Stocks Rising/Falling:</span><span class="value">${NumberOfStocksRisingAndFalling}</span>
-            </div>
+            <pre>
+Mtx Prices: ${MtxPrices}
+Closed P/L: ${ClosedProfitLoss}
+Future Right: ${FutureRight}
+Diff: ${Diff}
+Long/Short: ${LongShort}
+BidOfferLongShortSlope: ${BidOfferLongShortSlope}
+Transaction List Long/Short: ${TransactionListLongShort}
+Number of Stocks Rising/Falling: ${NumberOfStocksRisingAndFalling}
+            </pre>
         </div>
 
         <div class="ui-section">
@@ -237,11 +225,11 @@ Smallest Amp: ${dayAmpAndKeyPrice.SmallestAmp}
 
         <div class="ui-section">
             <h3>Open Interest Info</h3>
-            <div class="grid-container">
-                <span class="key-value">Open Position:</span><span class="value">${openInterestInfo.OpenPosition || "N/A"}</span>
-                <span class="key-value">Avg Cost:</span><span class="value">${openInterestInfo.AvgCost || "N/A"}</span>
-                <span class="key-value">Profit and Loss:</span><span class="value">${openInterestInfo.ProfitAndLoss || "N/A"}</span>
-            </div>
+            <pre>
+Open Position: ${openInterestInfo.OpenPosition || "N/A"}
+Avg Cost: ${openInterestInfo.AvgCost || "N/A"}
+Profit and Loss: ${openInterestInfo.ProfitAndLoss || "N/A"}
+            </pre>
         </div>
     `;
 
