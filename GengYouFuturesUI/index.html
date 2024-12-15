@@ -43,6 +43,29 @@
         .highlight-red {
             color: red;
         }
+
+        .iframe-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        iframe {
+            flex: 1;
+            height: 400px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .iframe-container {
+                flex-direction: column;
+            }
+
+            iframe {
+                height: 300px;
+            }
+        }
     </style>
 </head>
 
@@ -50,6 +73,11 @@
     <h1>Index Data Viewer</h1>
     <div id="price-change">Price Change: N/A</div>
     <div id="log"></div>
+
+    <div class="iframe-container">
+        <iframe src="http://localhost:8000/LongShort.html" title="Long Short Strategy"></iframe>
+        <iframe src="http://localhost:8000/BidOffer.html" title="Bid Offer Strategy"></iframe>
+    </div>
 
     <script>
         const logDiv = document.getElementById("log");
