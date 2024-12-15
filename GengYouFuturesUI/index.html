@@ -99,7 +99,6 @@
                 setTimeout(fetchIndexData, 3000); // 控制刷新頻率
             }
         }
-
         function updateIndexUI(indexData) {
             if (!indexData || typeof indexData.StrategyConfig !== "object") {
                 appendLog("Invalid index data structure", true);
@@ -117,22 +116,71 @@
             const {
                 MtxPrices = "N/A",
                 ClosedProfitLoss = "N/A",
-                FutureRight = "N/A"
+                FutureRight = "N/A",
+                Diff = "N/A",
+                LongShort = "N/A",
+                TransactionListLongShort = "N/A",
+                NumberOfStocksRisingAndFalling = "N/A"
             } = indexData.MarketData;
 
-            priceChangeDiv.textContent = `
-                MtxPrices: $${MtxPrices} | 
-                ClosingKeyPriceLevel: $${ClosingKeyPriceLevel} | 
-                Threshold: $${BidOfferLongShortThreshold} | 
-                Extreme Value: $${BidOfferLongShortExtremeValue} | 
-                FutureRight: $${FutureRight} | 
-                Closed P/L: $${ClosedProfitLoss} | 
-                Max Loss: $${MaximumLoss} |
-                Mode: ${StrategyMode}
-            `;
+            const dayAmpAndKeyPrice = indexData.MarketData.DayAmpAndKeyPrice || {};
+            const openInterestInfo = indexData.OpenInterestInfo || {};
+
+            const uiContent = `
+        <div class="ui-section">
+            <h3>Strategy Config</h3>
+            <p><strong>Strategy Mode:</strong> ${StrategyMode}</p>
+            <p><strong>BidOfferLongShortThreshold:</strong> $${BidOfferLongShortThreshold}</p>
+            <p><strong>BidOfferLongShortExtremeValue:</strong> $${BidOfferLongShortExtremeValue}</p>
+            <p><strong>Closing Key Price Level:</strong> $${ClosingKeyPriceLevel}</p>
+            <p><strong>Maximum Loss:</strong> $${MaximumLoss}</p>
+        </div>
+
+        <div class="ui-section">
+            <h3>Market Data</h3>
+            <p><strong>Mtx Prices:</strong> $${MtxPrices}</p>
+            <p><strong>Closed P/L:</strong> $${ClosedProfitLoss}</p>
+            <p><strong>Future Right:</strong> $${FutureRight}</p>
+            <p><strong>Diff:</strong> ${Diff}</p>
+            <p><strong>Long/Short Position:</strong> ${LongShort}</p>
+            <p><strong>Transaction List Long/Short:</strong> ${TransactionListLongShort}</p>
+            <p><strong>Number of Stocks Rising/Falling:</strong> ${NumberOfStocksRisingAndFalling}</p>
+        </div>
+
+        <div class="ui-section">
+            <h3>Day Amp and Key Price</h3>
+            <p><strong>Long Key 5:</strong> ${dayAmpAndKeyPrice.LongKey5}</p>
+            <p><strong>Long Key 4:</strong> ${dayAmpAndKeyPrice.LongKey4}</p>
+            <p><strong>Long Key 3:</strong> ${dayAmpAndKeyPrice.LongKey3}</p>
+            <p><strong>Long Key 2:</strong> ${dayAmpAndKeyPrice.LongKey2}</p>
+            <p><strong>Long Key 1:</strong> ${dayAmpAndKeyPrice.LongKey1}</p>
+            <p><strong>Short Key 5:</strong> ${dayAmpAndKeyPrice.ShortKey5}</p>
+            <p><strong>Short Key 4:</strong> ${dayAmpAndKeyPrice.ShortKey4}</p>
+            <p><strong>Short Key 3:</strong> ${dayAmpAndKeyPrice.ShortKey3}</p>
+            <p><strong>Short Key 2:</strong> ${dayAmpAndKeyPrice.ShortKey2}</p>
+            <p><strong>Short Key 1:</strong> ${dayAmpAndKeyPrice.ShortKey1}</p>
+            <p><strong>Smallest Amp:</strong> ${dayAmpAndKeyPrice.SmallestAmp}</p>
+            <p><strong>Small Amp:</strong> ${dayAmpAndKeyPrice.SmallAmp}</p>
+            <p><strong>Avg Amp:</strong> ${dayAmpAndKeyPrice.AvgAmp}</p>
+            <p><strong>Larger Amp:</strong> ${dayAmpAndKeyPrice.LargerAmp}</p>
+            <p><strong>Largest Amp:</strong> ${dayAmpAndKeyPrice.LargestAmp}</p>
+        </div>
+
+        <div class="ui-section">
+            <h3>Open Interest Info</h3>
+            <p><strong>Open Position:</strong> ${openInterestInfo.OpenPosition || "N/A"}</p>
+            <p><strong>Avg Cost:</strong> ${openInterestInfo.AvgCost || "N/A"}</p>
+            <p><strong>Profit and Loss:</strong> ${openInterestInfo.ProfitAndLoss || "N/A"}</p>
+        </div>
+    `;
+
+            // Assuming priceChangeDiv is a container element in the DOM
+            priceChangeDiv.innerHTML = uiContent;
 
             appendLog(`[Index Data Updated] Threshold: ${BidOfferLongShortThreshold}, Closed P/L: ${ClosedProfitLoss}`);
         }
+
+
 
         function appendLog(message, isError = false) {
             const entry = document.createElement("div");
