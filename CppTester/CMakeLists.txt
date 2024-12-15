@@ -1,7 +1,7 @@
 # File: CMakeLists.txt
 
 # 指定所需的最低 CMake 版本
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.10...3.24)
 
 # 项目信息
 project(CppTester)
@@ -33,12 +33,14 @@ set(HEADERS
     CppTester/TEventHandler.h
     CppTester/Strategy.h
     ../Logger/Logger.h
+    ../GengYouFuturesUI/GengYouFuturesUI.h
 )
 
 # 添加头文件目录
 include_directories(${CMAKE_SOURCE_DIR}/CppTester)
 include_directories("../Logger")
 include_directories("../../")
+include_directories("../GengYouFuturesUI/")
 
 # 设置不同配置的编译选项
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
@@ -49,15 +51,21 @@ include(FetchContent)
 FetchContent_Declare(
   yaml-cpp
   GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
-  GIT_TAG yaml-cpp-0.7.0  # 可以指定具体的 tag、分支名或 commit hash
+  GIT_TAG yaml-cpp-0.7.0
 )
 FetchContent_MakeAvailable(yaml-cpp)
+
+# 添加 GengYouFuturesUI 子目录
+add_subdirectory("${CMAKE_SOURCE_DIR}/../GengYouFuturesUI" "${CMAKE_BINARY_DIR}/GengYouFuturesUI")
+
+# 链接 yaml-cpp 到 GengYouFuturesUI
+target_link_libraries(GengYouFuturesUI PUBLIC yaml-cpp)
 
 # 定义生成的目标
 add_executable(CppTester ${SOURCES} ${HEADERS})
 
-# 链接 yaml-cpp 库
-target_link_libraries(CppTester PUBLIC yaml-cpp)
+# 链接 yaml-cpp 和 GengYouFuturesUI 到 CppTester
+target_link_libraries(CppTester PUBLIC yaml-cpp GengYouFuturesUI)
 
 # 设置编译器标志
 target_compile_options(CppTester PRIVATE
@@ -84,15 +92,22 @@ add_custom_command(TARGET CppTester POST_BUILD
     "${CMAKE_SOURCE_DIR}/CppTester/database.yaml"
     $<TARGET_FILE_DIR:CppTester>
 )
+# 獲取當前 CMakeLists.txt 文件所在的目錄
+set(CPP_TESTER_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Find the current working directory
-set(CURRENT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+# 從當前路徑提取 Windows 根目錄（如 "F:/"）
+get_filename_component(ROOT_DIR "${CPP_TESTER_DIR}" DIRECTORY) # 取得上層路徑
+get_filename_component(WINDOWS_ROOT "${ROOT_DIR}" DIRECTORY)
 
-# Extract the drive letter from the current directory (Windows specific)
-string(SUBSTRING "${CURRENT_DIR}" 0 2 CURRENT_DRIVE)
+# 定義 database.yaml 的完整路徑
+set(DATABASE_PATH "${CPP_TESTER_DIR}/CppTester/database.yaml")
+set(CACHE_DATABASE_PATH "${CMAKE_CURRENT_BINARY_DIR}/cache.yaml")
 
-# Define the path to the database.yaml file
-set(DATABASE_PATH "${CURRENT_DRIVE}/GengYouFutures/CppTester/CppTester/database.yaml")
+# 打印調試信息
+message(STATUS "CppTester directory: ${CPP_TESTER_DIR}")
+message(STATUS "Windows root: ${WINDOWS_ROOT}")
+message(STATUS "Database path: ${DATABASE_PATH}")
+
 
 # Generate the config.h file
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)

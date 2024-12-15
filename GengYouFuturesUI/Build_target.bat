@@ -1,33 +1,48 @@
 @echo off
+setlocal enabledelayedexpansion
 
-REM Set source and build directories
+REM 设置源代码和构建目录
 set "SOURCE_DIR=%cd%"
 set "BUILD_DIR=%cd%\x64"
 
-REM Create build directory if it doesn't exist
-if not exist "%BUILD_DIR%" mkdir "%BUILD_DIR%"
+REM 检查构建目录是否存在，不存在则创建
+if not exist "%BUILD_DIR%" (
+    echo Creating build directory at %BUILD_DIR%...
+    mkdir "%BUILD_DIR%"
+)
 
-REM Navigate to build directory
-
-REM 确保 CMakeLists.txt 文件存在于指定目录
+REM 确保在源目录中存在 CMakeLists.txt 文件
 if exist "%SOURCE_DIR%\CMakeLists.txt" (
-    echo CMakeLists.txt found in %SOURCE_DIR%. Running CMake...
-    cmake -S "%SOURCE_DIR%" -B "%BUILD_DIR%"
+    echo CMakeLists.txt found in %SOURCE_DIR%. Running CMake configuration...
+
+    REM 如果构建目录已存在，清理旧的构建文件
+    if exist "%BUILD_DIR%" (
+        echo Cleaning old build files...
+        rd /s /q "%BUILD_DIR%"
+    )
+    
+    REM 运行 CMake 配置
+    cmake -S "%SOURCE_DIR%" -B "%BUILD_DIR%" -A x64
+    if %errorlevel% neq 0 (
+        echo Error: CMake configuration failed with error code %errorlevel%.
+        exit /b %errorlevel%
+    )
 ) else (
     echo Error: CMakeLists.txt not found in %SOURCE_DIR%.
     exit /b 1
 )
 
-REM 使用 CMake 和 Visual Studio 进行构建
-echo Building project...
+REM 构建项目
+echo Starting build process...
 cmake --build "%BUILD_DIR%" --config Release
-
-REM 打印构建结果
 if %errorlevel% neq 0 (
-    echo Build failed with error code %errorlevel%.
+    echo Error: Build process failed with error code %errorlevel%.
     exit /b %errorlevel%
 ) else (
-    echo Build succeeded.
+    echo Build succeeded. Executable should be in:
+    echo %BUILD_DIR%\Release
 )
 
-REM Optional: If you need to return to the root directory
+REM 可选：返回源代码目录
+cd "%SOURCE_DIR%"
+endlocal

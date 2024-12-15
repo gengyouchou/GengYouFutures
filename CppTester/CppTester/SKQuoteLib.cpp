@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include <yaml-cpp/yaml.h>
+#include "config.h"
 
 #define SK_SUBJECT_CONNECTION_CONNECTED 3001
 #define SK_SUBJECT_CONNECTION_DISCONNECT 3002

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index Data Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #price-change {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 20px;
+            font-weight: bold;
+        }
+
+        #log {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 200px;
+            overflow-y: scroll;
+            background-color: #f9f9f9;
+        }
+
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 1.2em;
+            /* 调整内容字体大小 */
+        }
+
+        .highlight-green {
+            color: green;
+        }
+
+        .highlight-red {
+            color: red;
+        }
+
+        .iframe-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        iframe {
+            flex: 1;
+            height: 400px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .iframe-container {
+                flex-direction: column;
+            }
+
+            iframe {
+                height: 300px;
+            }
+        }
+
+        .ui-section {
+            margin-bottom: 20px;
+        }
+
+        .ui-section h3 {
+            font-size: 1em;
+            /* 调整子标题字体大小 */
+            color: #333;
+        }
+
+        .row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .key-value {
+            flex: 1;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .value {
+            flex: 2;
+            color: #555;
+        }
+
+        .key-value.green {
+            color: green;
+        }
+
+        .key-value.red {
+            color: red;
+        }
+
+        .long-short-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .long-short-item {
+            width: 150px;
+            margin-right: 20px;
+        }
+
+        .long-short-item p {
+            margin: 5px 0;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h1>Index Data Viewer</h1>
+    <div id="price-change">Price Change: N/A</div>
+    <div id="log"></div>
+
+    <div class="iframe-container">
+        <iframe src="http://192.168.50.168:8000/LongShort.html" title="Long Short Strategy"></iframe>
+        <iframe src="http://192.168.50.168:8000/BidOffer.html" title="Bid Offer Strategy"></iframe>
+    </div>
+
+    <script>
+        const logDiv = document.getElementById("log");
+        const priceChangeDiv = document.getElementById("price-change");
+
+        async function fetchIndexData() {
+            try {
+                const response = await fetch("http://192.168.50.168:8080/index-data");
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+
+                const indexData = await response.json();
+                updateIndexUI(indexData);
+            } catch (error) {
+                console.error("Error fetching index data:", error);
+                appendLog("Error fetching index data: " + error.message, true);
+            } finally {
+                setTimeout(fetchIndexData, 1000);
+            }
+        }
+        function updateIndexUI(indexData) {
+            if (!indexData || typeof indexData.StrategyConfig !== "object") {
+                appendLog("Invalid index data structure", true);
+                return;
+            }
+
+            const {
+                ClosingKeyPriceLevel = "N/A",
+                BidOfferLongShortThreshold = "N/A",
+                BidOfferLongShortExtremeValue = "N/A",
+                MaximumLoss = "N/A",
+                StrategyMode = "N/A",
+                SpecifyLongShort = "N/A",
+                ActivePoint = "N/A"
+            } = indexData.StrategyConfig;
+
+            const {
+                MtxPrices = "N/A",
+                BidOfferLongShort = "N/A",
+                BidOfferLongShortSlope = "N/A",
+                Diff = "N/A",
+                LongShort = "N/A",
+                TransactionListLongShort = "N/A",
+                NumberOfStocksRisingAndFalling = "N/A",
+            } = indexData.MarketData;
+
+            const {
+                AvgAmp = "N/A",
+                LargerAmp = "N/A",
+                LargestAmp = "N/A",
+                SmallAmp = "N/A",
+                SmallestAmp = "N/A",
+                LongKey1 = "N/A",
+                LongKey2 = "N/A",
+                LongKey3 = "N/A",
+                LongKey4 = "N/A",
+                LongKey5 = "N/A",
+                ShortKey1 = "N/A",
+                ShortKey2 = "N/A",
+                ShortKey3 = "N/A",
+                ShortKey4 = "N/A",
+                ShortKey5 = "N/A"
+            } = indexData.MarketData.DayAmpAndKeyPrice || {};
+
+            const {
+                AvgCost = "N/A",
+                BuySell = "N/A",
+                DayTradePosition = "N/A",
+                OpenPosition = "N/A",
+                ProfitAndLoss = "N/A",
+                NeedToUpdate = "N/A"
+            } = indexData.OpenInterestInfo || {};
+
+            const {
+                CostMovingAverage = "N/A",
+                CurAmp = "N/A",
+                CurAvg = "N/A",
+                CurHigh = "N/A",
+                CurLow = "N/A",
+                OpenPrice = "N/A",
+                ShockLongExtremeValue = "N/A",
+                ShockShortExtremeValue = "N/A"
+            } = indexData.MarketData.Statistics || {};
+
+            const { CurServerTime = [] } = indexData.MarketData;
+            const serverTimeStr = CurServerTime.length === 3 ? `${CurServerTime[0]}:${CurServerTime[1]}:${CurServerTime[2]}` : "N/A";
+
+            const uiContent = `
+        <div class="ui-header">
+            <div class="server-time">Server Time: ${serverTimeStr}</div>
+        </div>
+
+        <div class="ui-section">
+            <h3>Strategy Config</h3>
+            <pre>
+Strategy Mode: ${StrategyMode}
+Active Point: ${ActivePoint}
+Specify Long/Short: ${SpecifyLongShort}
+BidOfferLongShortThreshold: ${BidOfferLongShortThreshold}
+BidOfferLongShortExtremeValue: ${BidOfferLongShortExtremeValue}
+Closing Key Price Level: ${ClosingKeyPriceLevel}
+Maximum Loss: ${MaximumLoss}
+            </pre>
+        </div>
+
+        <div class="ui-section">
+            <h3>Market Data</h3>
+            <pre>
+Mtx Prices: ${MtxPrices}
+BidOfferLongShort: ${BidOfferLongShort}
+BidOfferLongShortSlope: ${BidOfferLongShortSlope}
+Diff: ${Diff}
+Long/Short: ${LongShort}
+Transaction List Long/Short: ${TransactionListLongShort}
+Number of Stocks Rising/Falling: ${NumberOfStocksRisingAndFalling}
+            </pre>
+        </div>
+
+        <div class="ui-section">
+            <h3>Day Amp and Key Price</h3>
+            <pre>
+Long Key 5: ${LongKey5}
+Long Key 4: ${LongKey4}
+Long Key 3: ${LongKey3}
+Long Key 2: ${LongKey2}
+Long Key 1: ${LongKey1}
+=========================================
+Short Key 1: ${ShortKey1}
+Short Key 2: ${ShortKey2}
+Short Key 3: ${ShortKey3}
+Short Key 4: ${ShortKey4}
+Short Key 5: ${ShortKey5}
+=========================================
+Largest Amp: ${LargestAmp}
+Larger Amp: ${LargerAmp} 
+Avg Amp: ${AvgAmp}
+Small Amp: ${SmallAmp} 
+Smallest Amp: ${SmallestAmp}
+            </pre>
+        </div>
+
+        <div class="ui-section">
+            <h3>Statistics</h3>
+            <pre>
+Cost Moving Average: ${CostMovingAverage}
+Cur Amp: ${CurAmp}
+Cur Avg: ${CurAvg}
+Cur High: ${CurHigh}
+Cur Low: ${CurLow}
+Open Price: ${OpenPrice}
+Shock Long Extreme Value: ${ShockLongExtremeValue}
+Shock Short Extreme Value: ${ShockShortExtremeValue}
+            </pre>
+        </div>
+
+        <div class="ui-section">
+            <h3>Open Interest Info</h3>
+            <pre>
+Open Position: ${OpenPosition}
+Avg Cost: ${AvgCost}
+Buy/Sell: ${BuySell}
+Day Trade Position: ${DayTradePosition}
+Profit and Loss: ${ProfitAndLoss}
+Closed P/L: ${indexData.MarketData.ClosedProfitLoss || "N/A"}
+Future Right: ${indexData.MarketData.FutureRight || "N/A"}
+Need to Update: ${NeedToUpdate}
+            </pre>
+        </div>
+    `;
+
+            // Update UI content
+            priceChangeDiv.innerHTML = uiContent;
+
+            appendLog(`[Index Data Updated] Threshold: ${BidOfferLongShortThreshold}, Closed P/L: ${indexData.MarketData.ClosedProfitLoss}`);
+        }
+
+        function appendLog(message, isError = false) {
+            const entry = document.createElement("div");
+            entry.textContent = message;
+            if (isError) entry.style.color = "red";
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        fetchIndexData();
+    </script>
+</body>
+
+</html>

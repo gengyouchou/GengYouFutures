@@ -9,7 +9,6 @@
 
 #include "SKCOM_reference.h"
 #include "TEventHandler.h"
-#include "config.h"
 
 #define COMMODITY_MAIN "MTX00"
 #define COMMODITY_OTHER "TM0000"

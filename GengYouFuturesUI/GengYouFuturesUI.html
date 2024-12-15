@@ -1,130 +1,175 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-time Data Viewer</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>期貨交易介面</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
         }
 
-        h1 {
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
             text-align: center;
         }
 
-        #log {
-            border: 1px solid #ccc;
-            padding: 10px;
-            height: 300px;
-            overflow-y: scroll;
-            background-color: #f9f9f9;
+        main {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
         }
 
-        canvas {
-            max-width: 100%;
-            margin: 20px auto;
+        section {
+            flex: 1 1 calc(50% - 40px);
+            background: white;
+            margin: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #007bff;
+        }
+
+        .log {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .stat-value {
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
-    <h1>Real-time Data Viewer</h1>
-    <div id="log"></div>
-    <canvas id="chart"></canvas>
-
+    <header>
+        <h1>期貨交易介面</h1>
+    </header>
+    <main>
+        <section>
+            <h2>市場數據</h2>
+            <p>當前價格：<span id="cur-price" class="stat-value">N/A</span></p>
+            <p>長短差：<span id="long-short" class="stat-value">N/A</span></p>
+            <p>損益平倉：<span id="closed-pnl" class="stat-value">N/A</span></p>
+            <p>未平倉：<span id="open-interest" class="stat-value">N/A</span></p>
+        </section>
+        <section>
+            <h2>策略配置</h2>
+            <p>策略模式：<span id="strategy-mode" class="stat-value">N/A</span></p>
+            <p>最大損失：<span id="max-loss" class="stat-value">N/A</span></p>
+            <p>極限值：<span id="extreme-value" class="stat-value">N/A</span></p>
+            <p>閾值：<span id="threshold" class="stat-value">N/A</span></p>
+        </section>
+        <section>
+            <h2>關鍵價格</h2>
+            <p>多方關鍵價：<span id="long-keys" class="stat-value">N/A</span></p>
+            <p>空方關鍵價：<span id="short-keys" class="stat-value">N/A</span></p>
+        </section>
+        <section>
+            <h2>日間幅度</h2>
+            <p>當前振幅：<span id="cur-amp" class="stat-value">N/A</span></p>
+            <p>平均振幅：<span id="avg-amp" class="stat-value">N/A</span></p>
+            <p>最小振幅：<span id="smallest-amp" class="stat-value">N/A</span></p>
+            <p>最大振幅：<span id="largest-amp" class="stat-value">N/A</span></p>
+        </section>
+    </main>
+    <footer>
+        <section>
+            <h2>操作日誌</h2>
+            <div id="log" class="log"></div>
+        </section>
+    </footer>
     <script>
-        // WebSocket connection setup
-        const serverIP = "127.0.0.1"; // Replace with your server's IP
-        const port = 8080;           // Replace with your WebSocket server's port
-        const ws = new WebSocket(`ws://${serverIP}:${port}`);
-
-        const logDiv = document.getElementById("log");
-        const chartCtx = document.getElementById("chart").getContext("2d");
-
-        // Line chart data setup
-        const chartData = {
-            labels: [], // Timestamps
-            datasets: [{
-                label: "Real-time Data",
-                data: [],
-                borderColor: "blue",
-                backgroundColor: "rgba(0, 0, 255, 0.1)",
-                borderWidth: 2,
-                fill: true,
-            }]
-        };
-
-        const chartOptions = {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: true,
-                },
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: "Timestamp"
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: "Value"
-                    }
+        async function fetchData() {
+            try {
+                const response = await fetch("http://192.168.50.168:8080/index-data");
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
                 }
+                const data = await response.json();
+                updateUI(data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                appendLog("Error fetching data: " + error.message, true);
+            } finally {
+                setTimeout(fetchData, 3000); // 定期刷新數據
             }
-        };
+        }
 
-        const lineChart = new Chart(chartCtx, {
-            type: "line",
-            data: chartData,
-            options: chartOptions,
-        });
+        function updateUI(data) {
+            const marketData = data.MarketData;
+            const strategyConfig = data.StrategyConfig;
+            const dayAmpAndKeyPrice = marketData.DayAmpAndKeyPrice;
 
-        // Handle incoming messages
-        ws.onmessage = function (event) {
-            const data = event.data.trim();
-            const timestamp = new Date().toLocaleTimeString();
+            // 更新市場數據
+            document.getElementById("cur-price").textContent = marketData.MtxPrices || "N/A";
+            document.getElementById("long-short").textContent = marketData.LongShort || "N/A";
+            document.getElementById("closed-pnl").textContent = marketData.ClosedProfitLoss || "N/A";
+            document.getElementById("open-interest").textContent = data.OpenInterestInfo.OpenPosition || "N/A";
 
-            // Log data
-            const newLogEntry = document.createElement("div");
-            newLogEntry.textContent = `[${timestamp}] ${data}`;
-            logDiv.appendChild(newLogEntry);
-            logDiv.scrollTop = logDiv.scrollHeight;
+            // 更新策略配置
+            document.getElementById("strategy-mode").textContent = strategyConfig.StrategyMode || "N/A";
+            document.getElementById("max-loss").textContent = strategyConfig.MaximumLoss || "N/A";
+            document.getElementById("extreme-value").textContent = strategyConfig.BidOfferLongShortExtremeValue || "N/A";
+            document.getElementById("threshold").textContent = strategyConfig.BidOfferLongShortThreshold || "N/A";
 
-            // Update chart
-            const numericValue = parseFloat(data); // Assuming numeric data
-            if (!isNaN(numericValue)) {
-                chartData.labels.push(timestamp);
-                chartData.datasets[0].data.push(numericValue);
+            // 更新關鍵價格
+            document.getElementById("long-keys").textContent = [
+                dayAmpAndKeyPrice.LongKey1,
+                dayAmpAndKeyPrice.LongKey2,
+                dayAmpAndKeyPrice.LongKey3,
+                dayAmpAndKeyPrice.LongKey4,
+                dayAmpAndKeyPrice.LongKey5
+            ].join(", ") || "N/A";
+            document.getElementById("short-keys").textContent = [
+                dayAmpAndKeyPrice.ShortKey1,
+                dayAmpAndKeyPrice.ShortKey2,
+                dayAmpAndKeyPrice.ShortKey3,
+                dayAmpAndKeyPrice.ShortKey4,
+                dayAmpAndKeyPrice.ShortKey5
+            ].join(", ") || "N/A";
 
-                // Limit the chart to the last 20 data points
-                if (chartData.labels.length > 20) {
-                    chartData.labels.shift();
-                    chartData.datasets[0].data.shift();
-                }
+            // 更新日間幅度
+            document.getElementById("cur-amp").textContent = marketData.Statistics.CurAmp || "N/A";
+            document.getElementById("avg-amp").textContent = dayAmpAndKeyPrice.AvgAmp || "N/A";
+            document.getElementById("smallest-amp").textContent = dayAmpAndKeyPrice.SmallestAmp || "N/A";
+            document.getElementById("largest-amp").textContent = dayAmpAndKeyPrice.LargestAmp || "N/A";
 
-                lineChart.update();
+            // 日誌
+            appendLog(`[更新時間] ${marketData.CurServerTime.join(":")} 更新成功`);
+        }
+
+        function appendLog(message, isError = false) {
+            const logDiv = document.getElementById("log");
+            const logEntry = document.createElement("p");
+            logEntry.textContent = message;
+            if (isError) {
+                logEntry.classList.add("error");
             }
-        };
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight; // 保持滾動條在底部
+        }
 
-        ws.onopen = function () {
-            console.log("WebSocket connection established");
-        };
-
-        ws.onerror = function (error) {
-            console.error("WebSocket error:", error);
-        };
-
-        ws.onclose = function () {
-            console.log("WebSocket connection closed");
-        };
+        fetchData();
     </script>
 </body>
 

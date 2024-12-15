@@ -13,8 +13,12 @@
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 #include <yaml-cpp/yaml.h>
+#include <fstream>
+#include <sstream>
 
 #include "Strategy.h"
+#include <GengYouFuturesUI.h>
+#include "config.h"
 
 extern std::deque<long> gDaysKlineDiff;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
@@ -252,42 +256,163 @@ void release()
     CoUninitialize();
 }
 
-// To do list:
-//  (done)
-// Estimated trading volume
-// need VIX index
-// current time (done)
-// Instant profit and loss
-// Add open position query.
-// Add stop loss and profit stop mechanism
+VOID CopyDataToTheOrderMachine(LONG MtxCommodtyInfo)
+{
+    DEBUG(DEBUG_LEVEL_DEBUG, "Start");
 
-// Bug:
-// The price will be unstable at the beginning and will change from high to low.
+    gMarketDataUI.Updating = TRUE;
 
-// To do list:
-//
-// Estimated trading volume
-// Instant profit and loss
-// need VIX index
-// current time
-// Estimated trading volume
-// Instant profit and loss
+    // user account
 
-// Test code:
+    gUserAccountUI.g_strUserId = g_strUserId;
 
-// Function to generate random price
-// long getRandomPrice()
-// {
-//     // Generate a random number in the range of 2000000 to 2500000
-//     return rand() % 500001 + 2000000; // 500001 is because 2500000 - 2000000 = 500000 + 1
-// }
+    // user strategy config
 
-// // Function to update the price periodically (every second)
-// void updatePricePeriodically(long MtxCommodtyInfo)
-// {
-//     // Generate a random price and update the corresponding value in the global variable
-//     gCurCommPrice[MtxCommodtyInfo] = getRandomPrice();
-// }
+    gStrategyConfigUI.ClosingKeyPriceLevel = gStrategyConfig.ClosingKeyPriceLevel;
+    gStrategyConfigUI.BidOfferLongShortThreshold = gStrategyConfig.BidOfferLongShortThreshold;
+    gStrategyConfigUI.BidOfferLongShortExtremeValue = gStrategyConfig.BidOfferLongShortExtremeValue;
+    gStrategyConfigUI.BidOfferLongShortAttackSlope = gStrategyConfig.BidOfferLongShortAttackSlope;
+    gStrategyConfigUI.ActivePoint = gStrategyConfig.ActivePoint;
+    gStrategyConfigUI.MaximumLoss = gStrategyConfig.MaximumLoss;
+    gStrategyConfigUI.StrategyMode = gStrategyConfig.StrategyMode;
+    gStrategyConfigUI.SpecifyLongShort = gStrategyConfig.SpecifyLongShort;
+
+    // default market config
+
+    gMarketDataUI.MtxPrices = gCurCommPrice[MtxCommodtyInfo] / 100;
+    gMarketDataUI.Diff = (gCurCommPrice[MtxCommodtyInfo] - gCurCommPrice[gCommodtyInfo.TSEAIdxNo]) / 100;
+    gMarketDataUI.gCurServerTime[0] = gCurServerTime[0];
+    gMarketDataUI.gCurServerTime[1] = gCurServerTime[1];
+    gMarketDataUI.gCurServerTime[2] = gCurServerTime[2];
+
+    if (gCurCommHighLowPoint.count(MtxCommodtyInfo) > 0)
+    {
+        long CurHigh = gCurCommHighLowPoint[MtxCommodtyInfo][0] / 100;
+        long CurLow = gCurCommHighLowPoint[MtxCommodtyInfo][1] / 100;
+        long CostMovingAverage = static_cast<long>(gCostMovingAverageVal);
+        long OpenPrice = gCurCommHighLowPoint[MtxCommodtyInfo][2] / 100;
+        double ShockLongExtremeValue = gCostMovingAverageVal - EstimatedTodaysAmplitude() / 2;
+        double ShockShortExtremeValue = gCostMovingAverageVal + EstimatedTodaysAmplitude() / 2;
+
+        gMarketDataUI.OpenPrice = OpenPrice;
+        gMarketDataUI.CurHigh = CurHigh;
+        gMarketDataUI.CurLow = CurLow;
+        gMarketDataUI.CostMovingAverage = CostMovingAverage;
+        gMarketDataUI.CurAmp = CurHigh - CurLow;
+        gMarketDataUI.CurAvg = (CurHigh + CurLow) / 2;
+        gMarketDataUI.ShockLongExtremeValue = static_cast<long>(ShockLongExtremeValue);
+        gMarketDataUI.ShockShortExtremeValue = static_cast<long>(ShockShortExtremeValue);
+    }
+
+    {
+        gMarketDataUI.gDayAmpAndKeyPrice.LongKey5 = gDayAmpAndKeyPrice.LongKey5;
+        gMarketDataUI.gDayAmpAndKeyPrice.LongKey4 = gDayAmpAndKeyPrice.LongKey4;
+        gMarketDataUI.gDayAmpAndKeyPrice.LongKey3 = gDayAmpAndKeyPrice.LongKey3;
+        gMarketDataUI.gDayAmpAndKeyPrice.LongKey2 = gDayAmpAndKeyPrice.LongKey2;
+        gMarketDataUI.gDayAmpAndKeyPrice.LongKey1 = gDayAmpAndKeyPrice.LongKey1;
+
+        gMarketDataUI.gDayAmpAndKeyPrice.ShortKey1 = gDayAmpAndKeyPrice.ShortKey1;
+        gMarketDataUI.gDayAmpAndKeyPrice.ShortKey2 = gDayAmpAndKeyPrice.ShortKey2;
+        gMarketDataUI.gDayAmpAndKeyPrice.ShortKey3 = gDayAmpAndKeyPrice.ShortKey3;
+        gMarketDataUI.gDayAmpAndKeyPrice.ShortKey4 = gDayAmpAndKeyPrice.ShortKey4;
+        gMarketDataUI.gDayAmpAndKeyPrice.ShortKey5 = gDayAmpAndKeyPrice.ShortKey5;
+
+        gMarketDataUI.gDayAmpAndKeyPrice.SmallestAmp = gDayAmpAndKeyPrice.SmallestAmp;
+        gMarketDataUI.gDayAmpAndKeyPrice.SmallAmp = gDayAmpAndKeyPrice.SmallAmp;
+        gMarketDataUI.gDayAmpAndKeyPrice.AvgAmp = gDayAmpAndKeyPrice.AvgAmp;
+        gMarketDataUI.gDayAmpAndKeyPrice.LargerAmp = gDayAmpAndKeyPrice.LargerAmp;
+        gMarketDataUI.gDayAmpAndKeyPrice.LargestAmp = gDayAmpAndKeyPrice.LargestAmp;
+
+        gMarketDataUI.gNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
+        gMarketDataUI.gOsTransactionListLongShort = gOsTransactionListLongShort;
+        gMarketDataUI.gTransactionListLongShort = gTransactionListLongShort;
+        gMarketDataUI.gBidOfferLongShort = gBidOfferLongShort;
+    }
+
+    gMarketDataUI.gLongShort = gLongShort;
+    gMarketDataUI.gBidOfferLongShortSlope = gBidOfferLongShortSlope;
+
+    gMarketDataUI.gClosedProfitLoss = gClosedProfitLoss;
+    gMarketDataUI.gFutureRight = gFutureRight;
+
+    // open interest info
+
+    gOpenInterestInfoUI.openPosition = gOpenInterestInfo.openPosition;
+    gOpenInterestInfoUI.avgCost = gOpenInterestInfo.avgCost;
+    gOpenInterestInfoUI.profitAndLoss = gOpenInterestInfo.profitAndLoss;
+}
+
+VOID SaveCacheForOrderMachine(VOID)
+{
+    static SHORT PreCurServerTimeSec = -1; // Stores the last recorded second to track changes
+    static bool isInitialized = false;     // Indicates if the file data has been loaded into memory
+
+    // Load file data into memory on the first call
+    if (!isInitialized)
+    {
+        isInitialized = true;
+        std::ifstream inputFile(CACHE_DATABASE_PATH);
+        if (inputFile.is_open())
+        {
+            try
+            {
+                YAML::Node existingData = YAML::Load(inputFile);
+                for (const auto &record : existingData)
+                {
+                    gCacheData.push_back(record); // Add existing records to the cache
+                }
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << "Error loading YAML file: " << e.what() << std::endl; // Handle file loading errors
+            }
+        }
+        inputFile.close();
+    }
+
+    // Check if new data needs to be saved
+    if (PreCurServerTimeSec != gCurServerTime[2])
+    {
+        PreCurServerTimeSec = gCurServerTime[2]; // Update the last recorded second
+
+        // Generate a timestamp string for the new record
+        std::ostringstream timestamp;
+        timestamp << gCurServerTime[0] << ":" << gCurServerTime[1] << ":" << gCurServerTime[2];
+
+        // Prepare the new record
+        YAML::Node newRecord;
+        newRecord["timestamp"] = timestamp.str();                                     // Save the timestamp
+        newRecord["gLongShort"] = gMarketDataUI.gLongShort;                           // Save market data
+        newRecord["gBidOfferLongShortSlope"] = gMarketDataUI.gBidOfferLongShortSlope; // Save slope data
+
+        // Add the new record to the cache and maintain the maximum length
+        gCacheData.push_back(newRecord);
+        if (gCacheData.size() > MAX_CACHE_LEN)
+        {
+            gCacheData.pop_front(); // Remove the oldest record if the maximum size is exceeded
+        }
+
+        // Periodically sync the runtime data to the file to reduce file I/O frequency
+        static int syncCounter = 0;   // Counter to track sync intervals
+        const int syncThreshold = 60; // Sync to the file every 60 seconds
+        if (++syncCounter >= syncThreshold)
+        {
+            syncCounter = 0; // Reset the counter
+            std::ofstream outputFile(CACHE_DATABASE_PATH, std::ios::trunc);
+            if (outputFile.is_open())
+            {
+                YAML::Emitter out;
+                out << YAML::BeginSeq; // Begin writing a YAML sequence
+                for (const auto &record : gCacheData)
+                {
+                    out << record; // Write each record in the cache
+                }
+                out << YAML::EndSeq;       // End the YAML sequence
+                outputFile << out.c_str(); // Write the entire output to the file
+            }
+        }
+    }
+}
 
 void thread_main()
 {
@@ -334,6 +459,8 @@ void thread_main()
     // For calculate 5MA
     AutoQuoteTicks(COMMODITY_TX_MAIN, -1);
     AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
+
+    gMarketDataUI.Updating = FALSE;
 
     while (true)
     {
@@ -405,6 +532,12 @@ void thread_main()
 
         if (elapsed.count() >= refreshInterval)
         {
+            // GengYouFuturesUI start
+            {
+                CopyDataToTheOrderMachine(MtxCommodtyInfo);
+                SaveCacheForOrderMachine();
+            }
+
             system("cls");
             lastClearTime = now;
 
@@ -620,7 +753,17 @@ int main()
 
     thread tMain(thread_main);
     if (tMain.joinable())
+    {
         tMain.detach();
+    }
+
+    std::atomic<bool> isRunning(true);
+    std::thread serverThread(startHttpServer, std::ref(isRunning));
+
+    if (isRunning.load())
+    {
+        DEBUG(DEBUG_LEVEL_INFO, "serverThread running");
+    }
 
     MSG msg;
     while (GetMessageW(&msg, NULL, 0, 0)) // Get SendMessage loop
@@ -628,9 +771,11 @@ int main()
         DispatchMessageW(&msg);
     }
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "end");
+    serverThread.join();
 
-    system("pause");
+    DEBUG(DEBUG_LEVEL_INFO, "serverThread exit");
+
+    DEBUG(DEBUG_LEVEL_DEBUG, "end");
 
     return 0;
 }

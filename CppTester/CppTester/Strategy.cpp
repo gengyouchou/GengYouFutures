@@ -21,6 +21,7 @@
 #include <unordered_map>
 #include <vector>
 #include <yaml-cpp/yaml.h>
+#include "config.h"
 
 using namespace std;
 

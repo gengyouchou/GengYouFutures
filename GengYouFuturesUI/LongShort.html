@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LongShort & BidOffer Slope Viewer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        canvas {
+            width: 100%;
+            height: 300px;
+            margin: 20px auto;
+        }
+
+        #log {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>LongShort & BidOffer Slope Viewer</h1>
+    <canvas id="longShortChart"></canvas>
+    <canvas id="bidOfferSlopeChart"></canvas>
+    <div id="log"></div>
+
+    <script>
+        const logDiv = document.getElementById("log");
+        const longShortChartCtx = document.getElementById("longShortChart").getContext("2d");
+        const bidOfferSlopeChartCtx = document.getElementById("bidOfferSlopeChart").getContext("2d");
+
+        // 初始化圖表數據
+        const MAX_DATA_LENGTH = 30000; // 控制圖表數據長度
+        const MAX_LOG_ENTRIES = 100; // 控制日誌長度
+
+        const chartConfigs = [
+            {
+                ctx: longShortChartCtx,
+                data: { labels: [], datasets: [{ label: "LongShort", data: [], borderColor: "green", borderWidth: 2, tension: 0.4 }] },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true }, tooltip: { mode: "index", intersect: false } },
+                    scales: {
+                        x: { title: { display: true, text: "Time" } },
+                        y: { title: { display: true, text: "LongShort Value" } }
+                    }
+                }
+            },
+            {
+                ctx: bidOfferSlopeChartCtx,
+                data: { labels: [], datasets: [{ label: "BidOfferLongShortSlope", data: [], borderColor: "red", borderWidth: 2, tension: 0.4 }] },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true }, tooltip: { mode: "index", intersect: false } },
+                    scales: {
+                        x: { title: { display: true, text: "Time" } },
+                        y: { title: { display: true, text: "BidOffer Slope Value" } }
+                    }
+                }
+            }
+        ];
+
+        const [longShortChart, bidOfferSlopeChart] = chartConfigs.map(config => new Chart(config.ctx, { type: "line", data: config.data, options: config.options }));
+
+        // 更新圖表數據
+        async function fetchData() {
+            try {
+                const response = await fetch("http://192.168.50.168:8080/Long-Short-Cache-data");
+                if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
+                const data = await response.json();
+
+                updateUI(data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                appendLog(`Error fetching data: ${error.message}`, true);
+            }
+        }
+
+        // 更新圖表數據並截斷
+        function updateChartData(chartData, newLabel, newValue) {
+            chartData.labels.push(newLabel);
+            chartData.datasets[0].data.push(newValue);
+
+            if (chartData.labels.length > MAX_DATA_LENGTH) {
+                chartData.labels.shift();
+                chartData.datasets[0].data.shift();
+            }
+        }
+        // 更新 UI
+        function updateUI(data) {
+            // 如果資料格式不包含 MarketData
+            if (!Array.isArray(data)) {
+                appendLog("Error: Invalid data format.", true);
+                return;
+            }
+
+            // 在更新數據之前，清除舊的圖表數據
+            longShortChart.data.labels = [];
+            longShortChart.data.datasets[0].data = [];
+            bidOfferSlopeChart.data.labels = [];
+            bidOfferSlopeChart.data.datasets[0].data = [];
+
+            // 遍歷所有的數據點並更新圖表
+            data.forEach(point => {
+                const { timestamp, gLongShort, gBidOfferLongShortSlope } = point;
+
+                // 使用 timestamp 直接作為圖表的時間標籤
+                updateChartData(longShortChart.data, timestamp, gLongShort);
+                updateChartData(bidOfferSlopeChart.data, timestamp, gBidOfferLongShortSlope);
+            });
+
+            longShortChart.update();
+            bidOfferSlopeChart.update();
+
+            // 記錄每次更新的時間和數據
+            const latestPoint = data[data.length - 1];
+            appendLog(`[Time: ${latestPoint.timestamp}] LongShort: ${latestPoint.gLongShort}, BidOfferSlope: ${latestPoint.gBidOfferLongShortSlope}`);
+        }
+
+
+        // 日誌管理
+        function appendLog(message, isError = false) {
+            const entry = document.createElement("div");
+            entry.textContent = message;
+            if (isError) entry.style.color = "red";
+
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+
+            while (logDiv.childNodes.length > MAX_LOG_ENTRIES) {
+                logDiv.removeChild(logDiv.firstChild);
+            }
+        }
+
+        // 啟動數據輪詢
+        setInterval(fetchData, 2000);
+    </script>
+</body>
+
+</html>
