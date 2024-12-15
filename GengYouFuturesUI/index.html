@@ -66,6 +66,59 @@
                 height: 300px;
             }
         }
+
+        .ui-section {
+            margin-bottom: 20px;
+        }
+
+        .ui-section h3 {
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .ui-section p {
+            font-size: 1em;
+            margin: 5px 0;
+        }
+
+        .key-value {
+            display: inline-block;
+            width: 200px;
+            font-weight: bold;
+        }
+
+        .value {
+            display: inline-block;
+            font-weight: normal;
+            color: #555;
+        }
+
+        .key-value,
+        .value {
+            margin-right: 20px;
+        }
+
+        .key-value.green {
+            color: green;
+        }
+
+        .key-value.red {
+            color: red;
+        }
+
+        .long-short-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .long-short-item {
+            width: 150px;
+            margin-right: 20px;
+        }
+
+        .long-short-item p {
+            margin: 5px 0;
+        }
     </style>
 </head>
 
@@ -99,6 +152,7 @@
                 setTimeout(fetchIndexData, 3000); // 控制刷新頻率
             }
         }
+
         function updateIndexUI(indexData) {
             if (!indexData || typeof indexData.StrategyConfig !== "object") {
                 appendLog("Invalid index data structure", true);
@@ -129,58 +183,58 @@
             const uiContent = `
         <div class="ui-section">
             <h3>Strategy Config</h3>
-            <p><strong>Strategy Mode:</strong> ${StrategyMode}</p>
-            <p><strong>BidOfferLongShortThreshold:</strong> $${BidOfferLongShortThreshold}</p>
-            <p><strong>BidOfferLongShortExtremeValue:</strong> $${BidOfferLongShortExtremeValue}</p>
-            <p><strong>Closing Key Price Level:</strong> $${ClosingKeyPriceLevel}</p>
-            <p><strong>Maximum Loss:</strong> $${MaximumLoss}</p>
+            <p><span class="key-value">Strategy Mode:</span><span class="value">${StrategyMode}</span></p>
+            <p><span class="key-value">BidOfferLongShortThreshold:</span><span class="value">$${BidOfferLongShortThreshold}</span></p>
+            <p><span class="key-value">BidOfferLongShortExtremeValue:</span><span class="value">$${BidOfferLongShortExtremeValue}</span></p>
+            <p><span class="key-value">Closing Key Price Level:</span><span class="value">$${ClosingKeyPriceLevel}</span></p>
+            <p><span class="key-value">Maximum Loss:</span><span class="value">$${MaximumLoss}</span></p>
         </div>
 
         <div class="ui-section">
             <h3>Market Data</h3>
-            <p><strong>Mtx Prices:</strong> $${MtxPrices}</p>
-            <p><strong>Closed P/L:</strong> $${ClosedProfitLoss}</p>
-            <p><strong>Future Right:</strong> $${FutureRight}</p>
-            <p><strong>Diff:</strong> ${Diff}</p>
-            <p><strong>Long/Short Position:</strong> ${LongShort}</p>
-            <p><strong>Transaction List Long/Short:</strong> ${TransactionListLongShort}</p>
-            <p><strong>Number of Stocks Rising/Falling:</strong> ${NumberOfStocksRisingAndFalling}</p>
+            <p><span class="key-value">Mtx Prices:</span><span class="value">$${MtxPrices}</span></p>
+            <p><span class="key-value">Closed P/L:</span><span class="value">$${ClosedProfitLoss}</span></p>
+            <p><span class="key-value">Future Right:</span><span class="value">$${FutureRight}</span></p>
+            <p><span class="key-value">Diff:</span><span class="value">${Diff}</span></p>
+            <p><span class="key-value">Long/Short Position:</span><span class="value">${LongShort}</span></p>
+            <p><span class="key-value">Transaction List Long/Short:</span><span class="value">${TransactionListLongShort}</span></p>
+            <p><span class="key-value">Number of Stocks Rising/Falling:</span><span class="value">${NumberOfStocksRisingAndFalling}</span></p>
         </div>
 
         <div class="ui-section">
             <h3>Day Amp and Key Price</h3>
-            <p><strong>Long Key 5:</strong> ${dayAmpAndKeyPrice.LongKey5}</p>
-            <p><strong>Long Key 4:</strong> ${dayAmpAndKeyPrice.LongKey4}</p>
-            <p><strong>Long Key 3:</strong> ${dayAmpAndKeyPrice.LongKey3}</p>
-            <p><strong>Long Key 2:</strong> ${dayAmpAndKeyPrice.LongKey2}</p>
-            <p><strong>Long Key 1:</strong> ${dayAmpAndKeyPrice.LongKey1}</p>
-            <p><strong>Short Key 5:</strong> ${dayAmpAndKeyPrice.ShortKey5}</p>
-            <p><strong>Short Key 4:</strong> ${dayAmpAndKeyPrice.ShortKey4}</p>
-            <p><strong>Short Key 3:</strong> ${dayAmpAndKeyPrice.ShortKey3}</p>
-            <p><strong>Short Key 2:</strong> ${dayAmpAndKeyPrice.ShortKey2}</p>
-            <p><strong>Short Key 1:</strong> ${dayAmpAndKeyPrice.ShortKey1}</p>
-            <p><strong>Smallest Amp:</strong> ${dayAmpAndKeyPrice.SmallestAmp}</p>
-            <p><strong>Small Amp:</strong> ${dayAmpAndKeyPrice.SmallAmp}</p>
-            <p><strong>Avg Amp:</strong> ${dayAmpAndKeyPrice.AvgAmp}</p>
-            <p><strong>Larger Amp:</strong> ${dayAmpAndKeyPrice.LargerAmp}</p>
-            <p><strong>Largest Amp:</strong> ${dayAmpAndKeyPrice.LargestAmp}</p>
+            <pre>
+Long Key 5: ${dayAmpAndKeyPrice.LongKey5}
+Long Key 4: ${dayAmpAndKeyPrice.LongKey4}
+Long Key 3: ${dayAmpAndKeyPrice.LongKey3}
+Long Key 2: ${dayAmpAndKeyPrice.LongKey2}
+Long Key 1: ${dayAmpAndKeyPrice.LongKey1}
+=========================================
+Short Key 1: ${dayAmpAndKeyPrice.ShortKey1}
+Short Key 2: ${dayAmpAndKeyPrice.ShortKey2}
+Short Key 3: ${dayAmpAndKeyPrice.ShortKey3}
+Short Key 4: ${dayAmpAndKeyPrice.ShortKey4}
+Short Key 5: ${dayAmpAndKeyPrice.ShortKey5}
+=========================================
+Smallest Amp: ${dayAmpAndKeyPrice.SmallestAmp}, Small Amp: ${dayAmpAndKeyPrice.SmallAmp}, 
+Avg Amp: ${dayAmpAndKeyPrice.AvgAmp}, Larger Amp: ${dayAmpAndKeyPrice.LargerAmp}, 
+Largest Amp: ${dayAmpAndKeyPrice.LargestAmp}
+            </pre>
         </div>
 
         <div class="ui-section">
             <h3>Open Interest Info</h3>
-            <p><strong>Open Position:</strong> ${openInterestInfo.OpenPosition || "N/A"}</p>
-            <p><strong>Avg Cost:</strong> ${openInterestInfo.AvgCost || "N/A"}</p>
-            <p><strong>Profit and Loss:</strong> ${openInterestInfo.ProfitAndLoss || "N/A"}</p>
+            <p><span class="key-value">Open Position:</span><span class="value">${openInterestInfo.OpenPosition || "N/A"}</span></p>
+            <p><span class="key-value">Avg Cost:</span><span class="value">${openInterestInfo.AvgCost || "N/A"}</span></p>
+            <p><span class="key-value">Profit and Loss:</span><span class="value">${openInterestInfo.ProfitAndLoss || "N/A"}</span></p>
         </div>
     `;
 
-            // Assuming priceChangeDiv is a container element in the DOM
+            // Update UI content
             priceChangeDiv.innerHTML = uiContent;
 
             appendLog(`[Index Data Updated] Threshold: ${BidOfferLongShortThreshold}, Closed P/L: ${ClosedProfitLoss}`);
         }
-
-
 
         function appendLog(message, isError = false) {
             const entry = document.createElement("div");
