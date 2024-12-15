@@ -1,89 +1,175 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>交易策略資料顯示</title>
+    <title>期貨交易介面</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        main {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+
+        section {
+            flex: 1 1 calc(50% - 40px);
+            background: white;
+            margin: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #007bff;
+        }
+
+        .log {
             margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            max-height: 150px;
+            overflow-y: auto;
         }
 
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+        .error {
+            color: red;
         }
 
-        th {
-            background-color: #f2f2f2;
+        .stat-value {
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
-    <h1>交易策略資料</h1>
-    <p>資料每秒自動更新中...</p>
-    <table id="dataTable">
-        <thead>
-            <tr>
-                <th>欄位名稱</th>
-                <th>值</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
+    <header>
+        <h1>期貨交易介面</h1>
+    </header>
+    <main>
+        <section>
+            <h2>市場數據</h2>
+            <p>當前價格：<span id="cur-price" class="stat-value">N/A</span></p>
+            <p>長短差：<span id="long-short" class="stat-value">N/A</span></p>
+            <p>損益平倉：<span id="closed-pnl" class="stat-value">N/A</span></p>
+            <p>未平倉：<span id="open-interest" class="stat-value">N/A</span></p>
+        </section>
+        <section>
+            <h2>策略配置</h2>
+            <p>策略模式：<span id="strategy-mode" class="stat-value">N/A</span></p>
+            <p>最大損失：<span id="max-loss" class="stat-value">N/A</span></p>
+            <p>極限值：<span id="extreme-value" class="stat-value">N/A</span></p>
+            <p>閾值：<span id="threshold" class="stat-value">N/A</span></p>
+        </section>
+        <section>
+            <h2>關鍵價格</h2>
+            <p>多方關鍵價：<span id="long-keys" class="stat-value">N/A</span></p>
+            <p>空方關鍵價：<span id="short-keys" class="stat-value">N/A</span></p>
+        </section>
+        <section>
+            <h2>日間幅度</h2>
+            <p>當前振幅：<span id="cur-amp" class="stat-value">N/A</span></p>
+            <p>平均振幅：<span id="avg-amp" class="stat-value">N/A</span></p>
+            <p>最小振幅：<span id="smallest-amp" class="stat-value">N/A</span></p>
+            <p>最大振幅：<span id="largest-amp" class="stat-value">N/A</span></p>
+        </section>
+    </main>
+    <footer>
+        <section>
+            <h2>操作日誌</h2>
+            <div id="log" class="log"></div>
+        </section>
+    </footer>
     <script>
-        function formatValue(key, value) {
-            // 模擬 C++ printf 格式化
-            if (typeof value === 'number') {
-                // 針對數字進行格式化
-                if (key.includes("價格") || key.includes("金額")) {
-                    return value.toFixed(2); // 顯示兩位小數
-                } else if (key.includes("數量") || key.includes("量")) {
-                    return Intl.NumberFormat('zh-Hant', { maximumFractionDigits: 0 }).format(value); // 加千分位
-                }
-            }
-            return value; // 字串不作變更
-        }
-
         async function fetchData() {
             try {
-                const response = await fetch('http://localhost:8000');
-                if (!response.ok) throw new Error("伺服器錯誤: " + response.status);
-                const data = await response.json();
-
-                const tableBody = document.querySelector("#dataTable tbody");
-                tableBody.innerHTML = "";
-
-                for (const key in data) {
-                    const row = document.createElement("tr");
-                    const cellKey = document.createElement("td");
-                    const cellValue = document.createElement("td");
-
-                    cellKey.textContent = key;
-                    cellValue.textContent = formatValue(key, data[key]);
-
-                    row.appendChild(cellKey);
-                    row.appendChild(cellValue);
-                    tableBody.appendChild(row);
+                const response = await fetch("http://localhost:8080/index-data");
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
                 }
+                const data = await response.json();
+                updateUI(data);
             } catch (error) {
-                console.error("資料抓取失敗: ", error);
+                console.error("Error fetching data:", error);
+                appendLog("Error fetching data: " + error.message, true);
+            } finally {
+                setTimeout(fetchData, 3000); // 定期刷新數據
             }
         }
 
-        setInterval(fetchData, 1000);
-        window.onload = fetchData;
+        function updateUI(data) {
+            const marketData = data.MarketData;
+            const strategyConfig = data.StrategyConfig;
+            const dayAmpAndKeyPrice = marketData.DayAmpAndKeyPrice;
+
+            // 更新市場數據
+            document.getElementById("cur-price").textContent = marketData.MtxPrices || "N/A";
+            document.getElementById("long-short").textContent = marketData.LongShort || "N/A";
+            document.getElementById("closed-pnl").textContent = marketData.ClosedProfitLoss || "N/A";
+            document.getElementById("open-interest").textContent = data.OpenInterestInfo.OpenPosition || "N/A";
+
+            // 更新策略配置
+            document.getElementById("strategy-mode").textContent = strategyConfig.StrategyMode || "N/A";
+            document.getElementById("max-loss").textContent = strategyConfig.MaximumLoss || "N/A";
+            document.getElementById("extreme-value").textContent = strategyConfig.BidOfferLongShortExtremeValue || "N/A";
+            document.getElementById("threshold").textContent = strategyConfig.BidOfferLongShortThreshold || "N/A";
+
+            // 更新關鍵價格
+            document.getElementById("long-keys").textContent = [
+                dayAmpAndKeyPrice.LongKey1,
+                dayAmpAndKeyPrice.LongKey2,
+                dayAmpAndKeyPrice.LongKey3,
+                dayAmpAndKeyPrice.LongKey4,
+                dayAmpAndKeyPrice.LongKey5
+            ].join(", ") || "N/A";
+            document.getElementById("short-keys").textContent = [
+                dayAmpAndKeyPrice.ShortKey1,
+                dayAmpAndKeyPrice.ShortKey2,
+                dayAmpAndKeyPrice.ShortKey3,
+                dayAmpAndKeyPrice.ShortKey4,
+                dayAmpAndKeyPrice.ShortKey5
+            ].join(", ") || "N/A";
+
+            // 更新日間幅度
+            document.getElementById("cur-amp").textContent = marketData.Statistics.CurAmp || "N/A";
+            document.getElementById("avg-amp").textContent = dayAmpAndKeyPrice.AvgAmp || "N/A";
+            document.getElementById("smallest-amp").textContent = dayAmpAndKeyPrice.SmallestAmp || "N/A";
+            document.getElementById("largest-amp").textContent = dayAmpAndKeyPrice.LargestAmp || "N/A";
+
+            // 日誌
+            appendLog(`[更新時間] ${marketData.CurServerTime.join(":")} 更新成功`);
+        }
+
+        function appendLog(message, isError = false) {
+            const logDiv = document.getElementById("log");
+            const logEntry = document.createElement("p");
+            logEntry.textContent = message;
+            if (isError) {
+                logEntry.classList.add("error");
+            }
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight; // 保持滾動條在底部
+        }
+
+        fetchData();
     </script>
 </body>
 
