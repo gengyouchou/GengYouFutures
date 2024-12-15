@@ -51,17 +51,20 @@ include(FetchContent)
 FetchContent_Declare(
   yaml-cpp
   GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
-  GIT_TAG yaml-cpp-0.7.0  # 可以指定具体的 tag、分支名或 commit hash
+  GIT_TAG yaml-cpp-0.7.0
 )
 FetchContent_MakeAvailable(yaml-cpp)
 
-# 添加子目录
+# 添加 GengYouFuturesUI 子目录
 add_subdirectory("${CMAKE_SOURCE_DIR}/../GengYouFuturesUI" "${CMAKE_BINARY_DIR}/GengYouFuturesUI")
+
+# 链接 yaml-cpp 到 GengYouFuturesUI
+target_link_libraries(GengYouFuturesUI PUBLIC yaml-cpp)
 
 # 定义生成的目标
 add_executable(CppTester ${SOURCES} ${HEADERS})
 
-# 链接 yaml-cpp 库和靜態庫 GengYouFuturesUI
+# 链接 yaml-cpp 和 GengYouFuturesUI 到 CppTester
 target_link_libraries(CppTester PUBLIC yaml-cpp GengYouFuturesUI)
 
 # 设置编译器标志

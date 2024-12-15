@@ -350,11 +350,6 @@ VOID CopyDataToTheOrderMachine(LONG MtxCommodtyInfo)
     gOpenInterestInfoUI.profitAndLoss = gOpenInterestInfo.profitAndLoss;
 }
 
-#define MAX_LEN 20000
-
-// Runtime cache to store in-memory data
-std::deque<YAML::Node> cacheData;
-
 VOID SaveCacheForOrderMachine(VOID)
 {
     static SHORT PreCurServerTimeSec = -1; // Stores the last recorded second to track changes
@@ -372,7 +367,7 @@ VOID SaveCacheForOrderMachine(VOID)
                 YAML::Node existingData = YAML::Load(inputFile);
                 for (const auto &record : existingData)
                 {
-                    cacheData.push_back(record); // Add existing records to the cache
+                    gCacheData.push_back(record); // Add existing records to the cache
                 }
             }
             catch (const std::exception &e)
@@ -399,10 +394,10 @@ VOID SaveCacheForOrderMachine(VOID)
         newRecord["gBidOfferLongShortSlope"] = gMarketDataUI.gBidOfferLongShortSlope; // Save slope data
 
         // Add the new record to the cache and maintain the maximum length
-        cacheData.push_back(newRecord);
-        if (cacheData.size() > MAX_LEN)
+        gCacheData.push_back(newRecord);
+        if (gCacheData.size() > MAX_CACHE_LEN)
         {
-            cacheData.pop_front(); // Remove the oldest record if the maximum size is exceeded
+            gCacheData.pop_front(); // Remove the oldest record if the maximum size is exceeded
         }
 
         // Periodically sync the runtime data to the file to reduce file I/O frequency
@@ -416,7 +411,7 @@ VOID SaveCacheForOrderMachine(VOID)
             {
                 YAML::Emitter out;
                 out << YAML::BeginSeq; // Begin writing a YAML sequence
-                for (const auto &record : cacheData)
+                for (const auto &record : gCacheData)
                 {
                     out << record; // Write each record in the cache
                 }

@@ -5,6 +5,7 @@
 #include <nlohmann/json.hpp>
 #include <random>
 #include <ctime>
+#include <yaml-cpp/yaml.h>
 #include "GengYouFuturesUI.h"
 
 // 使用 nlohmann::json 簡化 JSON 的生成
@@ -17,6 +18,9 @@ USER_ACCOUNT_UI gUserAccountUI;
 STRATEGY_CONFIG_UI gStrategyConfigUI;
 MARKET_DATA_UI gMarketDataUI;
 OPEN_INTEREST_INFO_UI gOpenInterestInfoUI;
+
+// Runtime cache to store in-memory data
+std::deque<YAML::Node> gCacheData;
 
 // 互斥鎖保護全局變數
 std::mutex marketDataMutex;
