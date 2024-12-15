@@ -44,7 +44,7 @@
         const bidOfferSlopeChartCtx = document.getElementById("bidOfferSlopeChart").getContext("2d");
 
         // 初始化圖表數據
-        const MAX_DATA_LENGTH = 50; // 控制圖表數據長度
+        const MAX_DATA_LENGTH = 30000; // 控制圖表數據長度
         const MAX_LOG_ENTRIES = 100; // 控制日誌長度
 
         const chartConfigs = [
@@ -100,36 +100,37 @@
                 chartData.datasets[0].data.shift();
             }
         }
-
         // 更新 UI
         function updateUI(data) {
-            const { MarketData } = data;
-            if (!MarketData) {
-                appendLog("Error: Missing MarketData field in response.", true);
+            // 如果資料格式不包含 MarketData
+            if (!Array.isArray(data)) {
+                appendLog("Error: Invalid data format.", true);
                 return;
             }
 
-            if (!MarketData.Updating) {
-                appendLog("Info: Updating is FALSE, skipping chart update.");
-                return;
-            }
+            // 在更新數據之前，清除舊的圖表數據
+            longShortChart.data.labels = [];
+            longShortChart.data.datasets[0].data = [];
+            bidOfferSlopeChart.data.labels = [];
+            bidOfferSlopeChart.data.datasets[0].data = [];
 
-            const { LongShort, BidOfferLongShortSlope, CurServerTime } = MarketData;
-            if (!CurServerTime || CurServerTime.length !== 3) {
-                appendLog("Error: Invalid CurServerTime format.", true);
-                return;
-            }
+            // 遍歷所有的數據點並更新圖表
+            data.forEach(point => {
+                const { timestamp, gLongShort, gBidOfferLongShortSlope } = point;
 
-            const timeLabel = `${CurServerTime[0].toString().padStart(2, "0")}:${CurServerTime[1].toString().padStart(2, "0")}:${CurServerTime[2].toString().padStart(2, "0")}`;
-
-            updateChartData(longShortChart.data, timeLabel, LongShort);
-            updateChartData(bidOfferSlopeChart.data, timeLabel, BidOfferLongShortSlope);
+                // 使用 timestamp 直接作為圖表的時間標籤
+                updateChartData(longShortChart.data, timestamp, gLongShort);
+                updateChartData(bidOfferSlopeChart.data, timestamp, gBidOfferLongShortSlope);
+            });
 
             longShortChart.update();
             bidOfferSlopeChart.update();
 
-            appendLog(`[Time: ${timeLabel}] LongShort: ${LongShort}, BidOfferSlope: ${BidOfferLongShortSlope}`);
+            // 記錄每次更新的時間和數據
+            const latestPoint = data[data.length - 1];
+            appendLog(`[Time: ${latestPoint.timestamp}] LongShort: ${latestPoint.gLongShort}, BidOfferSlope: ${latestPoint.gBidOfferLongShortSlope}`);
         }
+
 
         // 日誌管理
         function appendLog(message, isError = false) {
