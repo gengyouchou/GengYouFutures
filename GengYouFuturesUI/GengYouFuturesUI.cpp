@@ -142,6 +142,23 @@ json AutoBest5LongToJson(long productIdxNo, const std::string &productName)
     return responseData;
 }
 
+json ConvertDequeToJSON(const std::deque<YAML::Node> &gCacheData)
+{
+    json jsonData = json::array(); // 使用 JSON 數組格式初始化
+
+    // 遍歷 gCacheData，將每個節點轉換為 JSON 對象並添加到數組中
+    for (const auto &node : gCacheData)
+    {
+        json record;
+        record["timestamp"] = node["timestamp"].as<std::string>();
+        record["gLongShort"] = node["gLongShort"].as<int>();
+        record["gBidOfferLongShortSlope"] = node["gBidOfferLongShortSlope"].as<int>();
+        jsonData.push_back(record); // 插入數據到 JSON 數組中
+    }
+
+    return jsonData; // 返回 JSON 數據
+}
+
 // 啟動 HTTP 伺服器
 void startHttpServer(std::atomic<bool> &isRunning)
 {
@@ -161,10 +178,10 @@ void startHttpServer(std::atomic<bool> &isRunning)
 
     // 路由處理
 
-    // svr.Get("/Long-Short-Cache-data", [](const httplib::Request &, httplib::Response &res)
-    //         {
-    //         auto jsonResponse = MainOutputToJson();
-    //         res.set_content(jsonResponse.dump(), "application/json"); });
+    svr.Get("/Long-Short-Cache-data", [](const httplib::Request &, httplib::Response &res)
+            {
+            auto jsonResponse = ConvertDequeToJSON(gCacheData);
+            res.set_content(jsonResponse.dump(), "application/json"); });
 
     svr.Get("/index-data", [](const httplib::Request &, httplib::Response &res)
             {

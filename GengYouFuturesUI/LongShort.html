@@ -44,74 +44,64 @@
         const bidOfferSlopeChartCtx = document.getElementById("bidOfferSlopeChart").getContext("2d");
 
         // 初始化圖表數據
-        const longShortData = {
-            labels: [],
-            datasets: [{
-                label: "LongShort",
-                data: [],
-                borderColor: "green",
-                borderWidth: 2
-            }]
-        };
+        const MAX_DATA_LENGTH = 50; // 控制圖表數據長度
+        const MAX_LOG_ENTRIES = 100; // 控制日誌長度
 
-        const bidOfferSlopeData = {
-            labels: [],
-            datasets: [{
-                label: "BidOfferLongShortSlope",
-                data: [],
-                borderColor: "red",
-                borderWidth: 2
-            }]
-        };
-
-        // 初始化圖表
-        const longShortChart = new Chart(longShortChartCtx, {
-            type: "line",
-            data: longShortData,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: true },
-                    tooltip: { mode: "index", intersect: false }
-                },
-                scales: {
-                    x: { title: { display: true, text: "Time" } },
-                    y: { title: { display: true, text: "LongShort" } }
+        const chartConfigs = [
+            {
+                ctx: longShortChartCtx,
+                data: { labels: [], datasets: [{ label: "LongShort", data: [], borderColor: "green", borderWidth: 2, tension: 0.4 }] },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true }, tooltip: { mode: "index", intersect: false } },
+                    scales: {
+                        x: { title: { display: true, text: "Time" } },
+                        y: { title: { display: true, text: "LongShort Value" } }
+                    }
+                }
+            },
+            {
+                ctx: bidOfferSlopeChartCtx,
+                data: { labels: [], datasets: [{ label: "BidOfferLongShortSlope", data: [], borderColor: "red", borderWidth: 2, tension: 0.4 }] },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true }, tooltip: { mode: "index", intersect: false } },
+                    scales: {
+                        x: { title: { display: true, text: "Time" } },
+                        y: { title: { display: true, text: "BidOffer Slope Value" } }
+                    }
                 }
             }
-        });
+        ];
 
-        const bidOfferSlopeChart = new Chart(bidOfferSlopeChartCtx, {
-            type: "line",
-            data: bidOfferSlopeData,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: true },
-                    tooltip: { mode: "index", intersect: false }
-                },
-                scales: {
-                    x: { title: { display: true, text: "Time" } },
-                    y: { title: { display: true, text: "BidOffer Slope" } }
-                }
-            }
-        });
+        const [longShortChart, bidOfferSlopeChart] = chartConfigs.map(config => new Chart(config.ctx, { type: "line", data: config.data, options: config.options }));
 
-        // 更新 UI
+        // 更新圖表數據
         async function fetchData() {
             try {
-                const indexDataResponse = await fetch("http://localhost:8080/index-data");
-                if (!indexDataResponse.ok) throw new Error(`HTTP status: ${indexDataResponse.status}`);
-                const indexData = await indexDataResponse.json();
+                const response = await fetch("http://localhost:8080/Long-Short-Cache-data");
+                if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
+                const data = await response.json();
 
-                updateUI(indexData);
+                updateUI(data);
             } catch (error) {
                 console.error("Error fetching data:", error);
-                appendLog("Error fetching data: " + error.message, true);
-                setTimeout(fetchData, 5000);
+                appendLog(`Error fetching data: ${error.message}`, true);
             }
         }
 
+        // 更新圖表數據並截斷
+        function updateChartData(chartData, newLabel, newValue) {
+            chartData.labels.push(newLabel);
+            chartData.datasets[0].data.push(newValue);
+
+            if (chartData.labels.length > MAX_DATA_LENGTH) {
+                chartData.labels.shift();
+                chartData.datasets[0].data.shift();
+            }
+        }
+
+        // 更新 UI
         function updateUI(data) {
             const { MarketData } = data;
             if (!MarketData) {
@@ -119,42 +109,44 @@
                 return;
             }
 
-            // 檢查 Updating 屬性是否為 TRUE
             if (!MarketData.Updating) {
                 appendLog("Info: Updating is FALSE, skipping chart update.");
                 return;
             }
 
             const { LongShort, BidOfferLongShortSlope, CurServerTime } = MarketData;
-
-            if (!CurServerTime || !Array.isArray(CurServerTime) || CurServerTime.length !== 3) {
-                appendLog("Error: Invalid CurServerTime format. Expected [hour, minute, second].", true);
+            if (!CurServerTime || CurServerTime.length !== 3) {
+                appendLog("Error: Invalid CurServerTime format.", true);
                 return;
             }
 
             const timeLabel = `${CurServerTime[0].toString().padStart(2, "0")}:${CurServerTime[1].toString().padStart(2, "0")}:${CurServerTime[2].toString().padStart(2, "0")}`;
 
-            longShortData.labels.push(timeLabel);
-            longShortData.datasets[0].data.push(LongShort);
-            longShortChart.update();
+            updateChartData(longShortChart.data, timeLabel, LongShort);
+            updateChartData(bidOfferSlopeChart.data, timeLabel, BidOfferLongShortSlope);
 
-            bidOfferSlopeData.labels.push(timeLabel);
-            bidOfferSlopeData.datasets[0].data.push(BidOfferLongShortSlope);
+            longShortChart.update();
             bidOfferSlopeChart.update();
 
             appendLog(`[Time: ${timeLabel}] LongShort: ${LongShort}, BidOfferSlope: ${BidOfferLongShortSlope}`);
         }
 
+        // 日誌管理
         function appendLog(message, isError = false) {
             const entry = document.createElement("div");
             entry.textContent = message;
             if (isError) entry.style.color = "red";
+
             logDiv.appendChild(entry);
             logDiv.scrollTop = logDiv.scrollHeight;
+
+            while (logDiv.childNodes.length > MAX_LOG_ENTRIES) {
+                logDiv.removeChild(logDiv.firstChild);
+            }
         }
 
-        setInterval(fetchData, 1000);
-        fetchData();
+        // 啟動數據輪詢
+        setInterval(fetchData, 2000);
     </script>
 </body>
 
