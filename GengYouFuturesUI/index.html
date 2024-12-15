@@ -143,7 +143,7 @@
                 console.error("Error fetching index data:", error);
                 appendLog("Error fetching index data: " + error.message, true);
             } finally {
-                setTimeout(fetchIndexData, 3000);
+                setTimeout(fetchIndexData, 1000);
             }
         }
         function updateIndexUI(indexData) {
@@ -158,27 +158,61 @@
                 BidOfferLongShortExtremeValue = "N/A",
                 MaximumLoss = "N/A",
                 StrategyMode = "N/A",
+                SpecifyLongShort = "N/A",
+                ActivePoint = "N/A"
             } = indexData.StrategyConfig;
 
             const {
                 MtxPrices = "N/A",
-                ClosedProfitLoss = "N/A",
-                FutureRight = "N/A",
+                BidOfferLongShort = "N/A",
+                BidOfferLongShortSlope = "N/A",
                 Diff = "N/A",
                 LongShort = "N/A",
-                BidOfferLongShortSlope = "N/A",
                 TransactionListLongShort = "N/A",
-                NumberOfStocksRisingAndFalling = "N/A"
+                NumberOfStocksRisingAndFalling = "N/A",
             } = indexData.MarketData;
 
-            const dayAmpAndKeyPrice = indexData.MarketData.DayAmpAndKeyPrice || {};
-            const openInterestInfo = indexData.OpenInterestInfo || {};
+            const {
+                AvgAmp = "N/A",
+                LargerAmp = "N/A",
+                LargestAmp = "N/A",
+                SmallAmp = "N/A",
+                SmallestAmp = "N/A",
+                LongKey1 = "N/A",
+                LongKey2 = "N/A",
+                LongKey3 = "N/A",
+                LongKey4 = "N/A",
+                LongKey5 = "N/A",
+                ShortKey1 = "N/A",
+                ShortKey2 = "N/A",
+                ShortKey3 = "N/A",
+                ShortKey4 = "N/A",
+                ShortKey5 = "N/A"
+            } = indexData.MarketData.DayAmpAndKeyPrice || {};
+
+            const {
+                AvgCost = "N/A",
+                BuySell = "N/A",
+                DayTradePosition = "N/A",
+                OpenPosition = "N/A",
+                ProfitAndLoss = "N/A",
+                NeedToUpdate = "N/A"
+            } = indexData.OpenInterestInfo || {};
+
+            const { CurServerTime = [] } = indexData.MarketData;
+            const serverTimeStr = CurServerTime.length === 3 ? `${CurServerTime[0]}:${CurServerTime[1]}:${CurServerTime[2]}` : "N/A";
 
             const uiContent = `
+        <div class="ui-header">
+            <div class="server-time">Server Time: ${serverTimeStr}</div>
+        </div>
+
         <div class="ui-section">
             <h3>Strategy Config</h3>
             <pre>
 Strategy Mode: ${StrategyMode}
+Active Point: ${ActivePoint}
+Specify Long/Short: ${SpecifyLongShort}
 BidOfferLongShortThreshold: ${BidOfferLongShortThreshold}
 BidOfferLongShortExtremeValue: ${BidOfferLongShortExtremeValue}
 Closing Key Price Level: ${ClosingKeyPriceLevel}
@@ -190,11 +224,10 @@ Maximum Loss: ${MaximumLoss}
             <h3>Market Data</h3>
             <pre>
 Mtx Prices: ${MtxPrices}
-Closed P/L: ${ClosedProfitLoss}
-Future Right: ${FutureRight}
+BidOfferLongShort: ${BidOfferLongShort}
+BidOfferLongShortSlope: ${BidOfferLongShortSlope}
 Diff: ${Diff}
 Long/Short: ${LongShort}
-BidOfferLongShortSlope: ${BidOfferLongShortSlope}
 Transaction List Long/Short: ${TransactionListLongShort}
 Number of Stocks Rising/Falling: ${NumberOfStocksRisingAndFalling}
             </pre>
@@ -203,32 +236,37 @@ Number of Stocks Rising/Falling: ${NumberOfStocksRisingAndFalling}
         <div class="ui-section">
             <h3>Day Amp and Key Price</h3>
             <pre>
-Long Key 5: ${dayAmpAndKeyPrice.LongKey5}
-Long Key 4: ${dayAmpAndKeyPrice.LongKey4}
-Long Key 3: ${dayAmpAndKeyPrice.LongKey3}
-Long Key 2: ${dayAmpAndKeyPrice.LongKey2}
-Long Key 1: ${dayAmpAndKeyPrice.LongKey1}
+Long Key 5: ${LongKey5}
+Long Key 4: ${LongKey4}
+Long Key 3: ${LongKey3}
+Long Key 2: ${LongKey2}
+Long Key 1: ${LongKey1}
 =========================================
-Short Key 1: ${dayAmpAndKeyPrice.ShortKey1}
-Short Key 2: ${dayAmpAndKeyPrice.ShortKey2}
-Short Key 3: ${dayAmpAndKeyPrice.ShortKey3}
-Short Key 4: ${dayAmpAndKeyPrice.ShortKey4}
-Short Key 5: ${dayAmpAndKeyPrice.ShortKey5}
+Short Key 1: ${ShortKey1}
+Short Key 2: ${ShortKey2}
+Short Key 3: ${ShortKey3}
+Short Key 4: ${ShortKey4}
+Short Key 5: ${ShortKey5}
 =========================================
-Largest Amp: ${dayAmpAndKeyPrice.LargestAmp}
-Larger Amp: ${dayAmpAndKeyPrice.LargerAmp} 
-Avg Amp: ${dayAmpAndKeyPrice.AvgAmp}
-Small Amp: ${dayAmpAndKeyPrice.SmallAmp} 
-Smallest Amp: ${dayAmpAndKeyPrice.SmallestAmp}
+Largest Amp: ${LargestAmp}
+Larger Amp: ${LargerAmp} 
+Avg Amp: ${AvgAmp}
+Small Amp: ${SmallAmp} 
+Smallest Amp: ${SmallestAmp}
             </pre>
         </div>
 
         <div class="ui-section">
             <h3>Open Interest Info</h3>
             <pre>
-Open Position: ${openInterestInfo.OpenPosition || "N/A"}
-Avg Cost: ${openInterestInfo.AvgCost || "N/A"}
-Profit and Loss: ${openInterestInfo.ProfitAndLoss || "N/A"}
+Open Position: ${OpenPosition}
+Avg Cost: ${AvgCost}
+Buy/Sell: ${BuySell}
+Day Trade Position: ${DayTradePosition}
+Profit and Loss: ${ProfitAndLoss}
+Closed P/L: ${indexData.MarketData.ClosedProfitLoss || "N/A"}
+Future Right: ${indexData.MarketData.FutureRight || "N/A"}
+Need to Update: ${NeedToUpdate}
             </pre>
         </div>
     `;
@@ -236,7 +274,7 @@ Profit and Loss: ${openInterestInfo.ProfitAndLoss || "N/A"}
             // Update UI content
             priceChangeDiv.innerHTML = uiContent;
 
-            appendLog(`[Index Data Updated] Threshold: ${BidOfferLongShortThreshold}, Closed P/L: ${ClosedProfitLoss}`);
+            appendLog(`[Index Data Updated] Threshold: ${BidOfferLongShortThreshold}, Closed P/L: ${indexData.MarketData.ClosedProfitLoss}`);
         }
 
         function appendLog(message, isError = false) {
