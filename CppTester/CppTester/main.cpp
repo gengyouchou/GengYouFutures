@@ -13,9 +13,12 @@
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 #include <yaml-cpp/yaml.h>
+#include <fstream>
+#include <sstream>
 
 #include "Strategy.h"
 #include <GengYouFuturesUI.h>
+#include "config.h"
 
 extern std::deque<long> gDaysKlineDiff;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
@@ -347,6 +350,83 @@ VOID CopyDataToTheOrderMachine(LONG MtxCommodtyInfo)
     gOpenInterestInfoUI.profitAndLoss = gOpenInterestInfo.profitAndLoss;
 }
 
+#define MAX_LEN 20000
+
+// Runtime cache to store in-memory data
+std::deque<YAML::Node> cacheData;
+
+VOID SaveCacheForOrderMachine(VOID)
+{
+    static SHORT PreCurServerTimeSec = -1; // Stores the last recorded second to track changes
+    static bool isInitialized = false;     // Indicates if the file data has been loaded into memory
+
+    // Load file data into memory on the first call
+    if (!isInitialized)
+    {
+        isInitialized = true;
+        std::ifstream inputFile(CACHE_DATABASE_PATH);
+        if (inputFile.is_open())
+        {
+            try
+            {
+                YAML::Node existingData = YAML::Load(inputFile);
+                for (const auto &record : existingData)
+                {
+                    cacheData.push_back(record); // Add existing records to the cache
+                }
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << "Error loading YAML file: " << e.what() << std::endl; // Handle file loading errors
+            }
+        }
+        inputFile.close();
+    }
+
+    // Check if new data needs to be saved
+    if (PreCurServerTimeSec != gCurServerTime[2])
+    {
+        PreCurServerTimeSec = gCurServerTime[2]; // Update the last recorded second
+
+        // Generate a timestamp string for the new record
+        std::ostringstream timestamp;
+        timestamp << gCurServerTime[0] << ":" << gCurServerTime[1] << ":" << gCurServerTime[2];
+
+        // Prepare the new record
+        YAML::Node newRecord;
+        newRecord["timestamp"] = timestamp.str();                                     // Save the timestamp
+        newRecord["gLongShort"] = gMarketDataUI.gLongShort;                           // Save market data
+        newRecord["gBidOfferLongShortSlope"] = gMarketDataUI.gBidOfferLongShortSlope; // Save slope data
+
+        // Add the new record to the cache and maintain the maximum length
+        cacheData.push_back(newRecord);
+        if (cacheData.size() > MAX_LEN)
+        {
+            cacheData.pop_front(); // Remove the oldest record if the maximum size is exceeded
+        }
+
+        // Periodically sync the runtime data to the file to reduce file I/O frequency
+        static int syncCounter = 0;   // Counter to track sync intervals
+        const int syncThreshold = 60; // Sync to the file every 60 seconds
+        if (++syncCounter >= syncThreshold)
+        {
+            syncCounter = 0; // Reset the counter
+            std::ofstream outputFile(CACHE_DATABASE_PATH, std::ios::trunc);
+            if (outputFile.is_open())
+            {
+                YAML::Emitter out;
+                out << YAML::BeginSeq; // Begin writing a YAML sequence
+                for (const auto &record : cacheData)
+                {
+                    out << record; // Write each record in the cache
+                }
+                out << YAML::EndSeq;       // End the YAML sequence
+                outputFile << out.c_str(); // Write the entire output to the file
+            }
+        }
+    }
+}
+
 void thread_main()
 {
     const int refreshInterval = 1000; // 1000 ms
@@ -468,6 +548,7 @@ void thread_main()
             // GengYouFuturesUI start
             {
                 CopyDataToTheOrderMachine(MtxCommodtyInfo);
+                SaveCacheForOrderMachine();
             }
 
             system("cls");
