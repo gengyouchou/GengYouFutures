@@ -79,7 +79,7 @@
         // 更新圖表數據
         async function fetchData() {
             try {
-                const response = await fetch("http://localhost:8080/Long-Short-Cache-data");
+                const response = await fetch("http://192.168.50.168:8080/Long-Short-Cache-data");
                 if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
                 const data = await response.json();
 
