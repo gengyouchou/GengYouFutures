@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GengYouFutures</title>
+    <title>Index Data Viewer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,14 +15,6 @@
             text-align: center;
         }
 
-        #log {
-            border: 1px solid #ccc;
-            padding: 10px;
-            height: 300px;
-            overflow-y: scroll;
-            background-color: #f9f9f9;
-        }
-
         #price-change {
             text-align: center;
             font-size: 1.5em;
@@ -30,23 +22,18 @@
             font-weight: bold;
         }
 
-        .product {
-            margin-bottom: 20px;
-            padding: 10px;
+        #log {
             border: 1px solid #ccc;
-            border-radius: 8px;
+            padding: 10px;
+            height: 200px;
+            overflow-y: scroll;
             background-color: #f9f9f9;
-        }
-
-        .product h2 {
-            margin-top: 0;
         }
 
         pre {
             background-color: #f0f0f0;
             padding: 10px;
             border-radius: 4px;
-            overflow-x: auto;
         }
 
         .highlight-green {
@@ -60,41 +47,32 @@
 </head>
 
 <body>
-    <h1>GengYouFutures</h1>
+    <h1>Index Data Viewer</h1>
     <div id="price-change">Price Change: N/A</div>
     <div id="log"></div>
-    <h2>Bid/Offer Data Viewer</h2>
-    <div id="data-container"></div>
 
     <script>
         const logDiv = document.getElementById("log");
         const priceChangeDiv = document.getElementById("price-change");
-        const dataContainer = document.getElementById("data-container");
 
-        async function fetchData() {
+        async function fetchIndexData() {
             try {
-                const [indexDataResponse, bidOfferDataResponse] = await Promise.all([
-                    fetch("http://localhost:8080/index-data"),
-                    fetch("http://localhost:8080/bid-offer-data")
-                ]);
-
-                if (!indexDataResponse.ok || !bidOfferDataResponse.ok) {
-                    throw new Error(`HTTP error: ${indexDataResponse.status} or ${bidOfferDataResponse.status}`);
+                const response = await fetch("http://localhost:8080/index-data");
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
                 }
 
-                const indexData = await indexDataResponse.json();
-                const bidOfferData = await bidOfferDataResponse.json();
-
-                updateUI(indexData, bidOfferData);
+                const indexData = await response.json();
+                updateIndexUI(indexData);
             } catch (error) {
-                console.error("Error fetching data:", error);
-                appendLog("Error fetching data: " + error.message, true);
+                console.error("Error fetching index data:", error);
+                appendLog("Error fetching index data: " + error.message, true);
             } finally {
-                setTimeout(fetchData, 3000); // 控制调用频率
+                setTimeout(fetchIndexData, 3000); // 控制刷新頻率
             }
         }
 
-        function updateUI(indexData, bidOfferData) {
+        function updateIndexUI(indexData) {
             if (!indexData || typeof indexData.StrategyConfig !== "object") {
                 appendLog("Invalid index data structure", true);
                 return;
@@ -114,93 +92,18 @@
                 FutureRight = "N/A"
             } = indexData.MarketData;
 
-            // 更新主页面
             priceChangeDiv.textContent = `
-        MtxPrices: $${MtxPrices} | 
-        ClosingKeyPriceLevel: $${ClosingKeyPriceLevel} | 
-        Threshold: $${BidOfferLongShortThreshold} | 
-        Extreme Value: $${BidOfferLongShortExtremeValue} | 
-        FutureRight: $${FutureRight} | 
-        Closed P/L: $${ClosedProfitLoss} | 
-        Max Loss: $${MaximumLoss} |
-        Mode: ${StrategyMode}
-    `;
+                MtxPrices: $${MtxPrices} | 
+                ClosingKeyPriceLevel: $${ClosingKeyPriceLevel} | 
+                Threshold: $${BidOfferLongShortThreshold} | 
+                Extreme Value: $${BidOfferLongShortExtremeValue} | 
+                FutureRight: $${FutureRight} | 
+                Closed P/L: $${ClosedProfitLoss} | 
+                Max Loss: $${MaximumLoss} |
+                Mode: ${StrategyMode}
+            `;
 
             appendLog(`[Index Data Updated] Threshold: ${BidOfferLongShortThreshold}, Closed P/L: ${ClosedProfitLoss}`);
-
-            // 验证并渲染 bidOfferData
-            if (bidOfferData) {
-                renderData(bidOfferData);
-            } else {
-                appendLog("Error: BidOffer data is missing", true);
-            }
-        }
-
-
-        function renderData(data) {
-            dataContainer.innerHTML = "";
-
-            // 檢查是否為有效的物件
-            if (!data || typeof data !== "object" || !data.BidOffer) {
-                appendLog("Invalid bidOfferData structure", true);
-                return;
-            }
-
-            const productDiv = document.createElement("div");
-            productDiv.className = "product";
-
-            const { BidOffer, TotalOffer, TotalBid, ClosePrice, Quantity, High, Low, Open, ProductName } = data;
-
-            const totalBidVolume = Object.values(BidOffer)
-                .filter((entry, index) => index < 5) // 前五個是 Bid
-                .reduce((sum, entry) => sum + entry.Volume, 0);
-
-            const totalOfferVolume = Object.values(BidOffer)
-                .filter((entry, index) => index >= 5) // 後五個是 Offer
-                .reduce((sum, entry) => sum + entry.Volume, 0);
-
-            // 判斷成交價格位置並高亮顯示
-            const bid1Price = BidOffer.Bid1.Price;
-            const offer1Price = BidOffer.Offer1.Price;
-
-            let bid1Class = "";
-            let offer1Class = "";
-            let bid1QuantityDisplay = "";
-            let offer1QuantityDisplay = "";
-
-            // 高亮顯示成交價，並顯示成交量
-            if (ClosePrice <= bid1Price) {
-                bid1Class = "highlight-green";
-                bid1QuantityDisplay = ` (${Quantity})`; // 在 Bid1 行顯示成交量
-            } else if (ClosePrice >= offer1Price) {
-                offer1Class = "highlight-red";
-                offer1QuantityDisplay = ` (${Quantity})`; // 在 Offer1 行顯示成交量
-            }
-
-            const html = `
-        <h2>${ProductName}</h2>
-        <pre>
-Open: ${Open}, High: ${High}, Low: ${Low}, Current Price: ${ClosePrice}
-Total Offer Volume: ${totalOfferVolume}
--------------------------------------------------
-Ask5: [${BidOffer.Offer5.Price}]: [${BidOffer.Offer5.Volume}]
-Ask4: [${BidOffer.Offer4.Price}]: [${BidOffer.Offer4.Volume}]
-Ask3: [${BidOffer.Offer3.Price}]: [${BidOffer.Offer3.Volume}]
-Ask2: [${BidOffer.Offer2.Price}]: [${BidOffer.Offer2.Volume}]
-Ask1: <span class="${offer1Class}">[${BidOffer.Offer1.Price}]: [${BidOffer.Offer1.Volume}]${offer1QuantityDisplay}</span>
-=============================
-Bid1: <span class="${bid1Class}">[${BidOffer.Bid1.Price}]: [${BidOffer.Bid1.Volume}]${bid1QuantityDisplay}</span>
-Bid2: [${BidOffer.Bid2.Price}]: [${BidOffer.Bid2.Volume}]
-Bid3: [${BidOffer.Bid3.Price}]: [${BidOffer.Bid3.Volume}]
-Bid4: [${BidOffer.Bid4.Price}]: [${BidOffer.Bid4.Volume}]
-Bid5: [${BidOffer.Bid5.Price}]: [${BidOffer.Bid5.Volume}]
--------------------------------------------------
-Total Bid Volume: ${totalBidVolume}
-        </pre>
-    `;
-
-            productDiv.innerHTML = html;
-            dataContainer.appendChild(productDiv);
         }
 
         function appendLog(message, isError = false) {
@@ -211,8 +114,7 @@ Total Bid Volume: ${totalBidVolume}
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        setInterval(fetchData, 1000);
-        fetchData();
+        fetchIndexData();
     </script>
 </body>
 

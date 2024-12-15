@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GengYouFutures</title>
+    <title>BidOfferDataViewer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,12 +15,33 @@
             text-align: center;
         }
 
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #data-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            width: 80%;
+            /* 限制最大宽度 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
         #log {
             border: 1px solid #ccc;
             padding: 10px;
             height: 300px;
             overflow-y: scroll;
             background-color: #f9f9f9;
+            margin-top: 20px;
         }
 
         #price-change {
@@ -35,11 +56,14 @@
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 8px;
-            background-color: #f9f9f9;
+            background-color: #fff;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .product h2 {
             margin-top: 0;
+            text-align: center;
         }
 
         pre {
@@ -60,15 +84,12 @@
 </head>
 
 <body>
-    <h1>GengYouFutures</h1>
-    <div id="price-change">Price Change: N/A</div>
-    <div id="log"></div>
     <h2>Bid/Offer Data Viewer</h2>
     <div id="data-container"></div>
+    <div id="log"></div>
 
     <script>
         const logDiv = document.getElementById("log");
-        const priceChangeDiv = document.getElementById("price-change");
         const dataContainer = document.getElementById("data-container");
 
         async function fetchData() {
@@ -86,7 +107,7 @@
                 console.error("Error fetching data:", error);
                 appendLog("Error fetching data: " + error.message, true);
             } finally {
-                setTimeout(fetchData, 3000); // 控制调用频率
+                setTimeout(fetchData, 3000);
             }
         }
 
@@ -101,7 +122,6 @@
         function renderData(data) {
             dataContainer.innerHTML = "";
 
-            // 檢查是否為有效的物件
             if (!data || typeof data !== "object" || !data.BidOffer) {
                 appendLog("Invalid bidOfferData structure", true);
                 return;
@@ -113,14 +133,13 @@
             const { BidOffer, TotalOffer, TotalBid, ClosePrice, Quantity, High, Low, Open, ProductName } = data;
 
             const totalBidVolume = Object.values(BidOffer)
-                .filter((entry, index) => index < 5) // 前五個是 Bid
+                .filter((entry, index) => index < 5)
                 .reduce((sum, entry) => sum + entry.Volume, 0);
 
             const totalOfferVolume = Object.values(BidOffer)
-                .filter((entry, index) => index >= 5) // 後五個是 Offer
+                .filter((entry, index) => index >= 5)
                 .reduce((sum, entry) => sum + entry.Volume, 0);
 
-            // 判斷成交價格位置並高亮顯示
             const bid1Price = BidOffer.Bid1.Price;
             const offer1Price = BidOffer.Offer1.Price;
 
@@ -129,13 +148,12 @@
             let bid1QuantityDisplay = "";
             let offer1QuantityDisplay = "";
 
-            // 高亮顯示成交價，並顯示成交量
             if (ClosePrice <= bid1Price) {
                 bid1Class = "highlight-green";
-                bid1QuantityDisplay = ` (${Quantity})`; // 在 Bid1 行顯示成交量
+                bid1QuantityDisplay = ` (${Quantity})`;
             } else if (ClosePrice >= offer1Price) {
                 offer1Class = "highlight-red";
-                offer1QuantityDisplay = ` (${Quantity})`; // 在 Offer1 行顯示成交量
+                offer1QuantityDisplay = ` (${Quantity})`;
             }
 
             const html = `
