@@ -199,6 +199,17 @@
                 NeedToUpdate = "N/A"
             } = indexData.OpenInterestInfo || {};
 
+            const {
+                CostMovingAverage = "N/A",
+                CurAmp = "N/A",
+                CurAvg = "N/A",
+                CurHigh = "N/A",
+                CurLow = "N/A",
+                OpenPrice = "N/A",
+                ShockLongExtremeValue = "N/A",
+                ShockShortExtremeValue = "N/A"
+            } = indexData.MarketData.Statistics || {};
+
             const { CurServerTime = [] } = indexData.MarketData;
             const serverTimeStr = CurServerTime.length === 3 ? `${CurServerTime[0]}:${CurServerTime[1]}:${CurServerTime[2]}` : "N/A";
 
@@ -253,6 +264,20 @@ Larger Amp: ${LargerAmp}
 Avg Amp: ${AvgAmp}
 Small Amp: ${SmallAmp} 
 Smallest Amp: ${SmallestAmp}
+            </pre>
+        </div>
+
+        <div class="ui-section">
+            <h3>Statistics</h3>
+            <pre>
+Cost Moving Average: ${CostMovingAverage}
+Cur Amp: ${CurAmp}
+Cur Avg: ${CurAvg}
+Cur High: ${CurHigh}
+Cur Low: ${CurLow}
+Open Price: ${OpenPrice}
+Shock Long Extreme Value: ${ShockLongExtremeValue}
+Shock Short Extreme Value: ${ShockShortExtremeValue}
             </pre>
         </div>
 
