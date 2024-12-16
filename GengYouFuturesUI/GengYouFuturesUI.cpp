@@ -151,9 +151,9 @@ json ConvertDequeToJSON(const std::deque<YAML::Node> &gCacheData)
     {
         json record;
         record["timestamp"] = node["timestamp"].as<std::string>();
-        record["gLongShort"] = node["gLongShort"].as<int>();
-        record["gBidOfferLongShortSlope"] = node["gBidOfferLongShortSlope"].as<int>();
-        jsonData.push_back(record); // 插入數據到 JSON 數組中
+        record["gLongShort"] = node["gLongShort"].as<LONG>();
+        record["gBidOfferLongShortSlope"] = node["gBidOfferLongShortSlope"].as<double>(); // 將資料作為 double 處理
+        jsonData.push_back(record);                                                       // 插入數據到 JSON 數組中
     }
 
     return jsonData; // 返回 JSON 數據
