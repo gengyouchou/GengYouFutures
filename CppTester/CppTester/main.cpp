@@ -361,6 +361,12 @@ VOID SaveCacheForOrderMachine(VOID)
                 {
                     gCacheData.push_back(record); // Add existing records to the cache
                 }
+
+                // Ensure cache does not exceed MAX_CACHE_LEN after loading
+                while (gCacheData.size() > MAX_CACHE_LEN)
+                {
+                    gCacheData.pop_front(); // Remove oldest records if necessary
+                }
             }
             catch (const std::exception &e)
             {
@@ -394,10 +400,10 @@ VOID SaveCacheForOrderMachine(VOID)
 
         // Periodically sync the runtime data to the file to reduce file I/O frequency
         static int syncCounter = 0;   // Counter to track sync intervals
-        const int syncThreshold = 60; // Sync to the file every 60 seconds
+        const int syncThreshold = 10; // Sync to the file every 60 seconds
         if (++syncCounter >= syncThreshold)
         {
-            syncCounter = 0; // Reset the counter
+            syncCounter = 0; // Reset the counter        
             std::ofstream outputFile(CACHE_DATABASE_PATH, std::ios::trunc);
             if (outputFile.is_open())
             {
