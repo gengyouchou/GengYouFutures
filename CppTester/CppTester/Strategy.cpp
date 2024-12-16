@@ -3333,7 +3333,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         bool TimeIsUp = StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 40);
-        TimeIsUp = TimeIsUp | StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 04, 40);
 
         if (TimeIsUp == TRUE)
         {
@@ -3411,7 +3410,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
         StrategyTakeFuturesProfit(g_strUserId, MtxCommodtyInfo);
         StrategyClosePosition(g_strUserId, MtxCommodtyInfo);
         bool TimeIsUp = StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 13, 29);
-        TimeIsUp = TimeIsUp | StrategyClosePositionOnDayTrade(g_strUserId, MtxCommodtyInfo, 04, 40);
 
         if (TimeIsUp == TRUE)
         {
