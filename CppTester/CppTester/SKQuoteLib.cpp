@@ -980,13 +980,17 @@ void loadHighLowPoints()
     }
 }
 
-// Function to update high/low points for a specific date and maintain the last 20 entries
+// Function to update high/low points for a specific date and write only the last DAY_NIGHT_HIGH_LOW_K_LINE entries
 void updateHighLowPoints(const std::string &date, double dayHigh, double dayLow, double nightHigh, double nightLow)
 {
     try
     {
         // Load the existing YAML file
-        YAML::Node config = YAML::LoadFile(DATABASE_PATH);
+        YAML::Node config;
+
+        // clean old data not append
+        config["DaysCommHighLowPoint"] = YAML::Node();
+        config["DaysNightAllCommHighLowPoint"] = YAML::Node();
 
         // Update day session high/low points
         if (dayHigh > 0 && dayLow > 0)
@@ -1029,6 +1033,8 @@ void updateHighLowPoints(const std::string &date, double dayHigh, double dayLow,
         // Save the updated configuration back to the file
         std::ofstream fout(DATABASE_PATH);
         fout << config;
+
+        DEBUG(DEBUG_LEVEL_INFO, "Successfully updated database.yaml with last DAY_NIGHT_HIGH_LOW_K_LINE entries.");
     }
     catch (const YAML::BadFile &e)
     {
