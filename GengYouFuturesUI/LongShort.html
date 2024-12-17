@@ -45,7 +45,18 @@
         const chartConfigs = [
             {
                 ctx: longShortChartCtx,
-                data: { labels: [], datasets: [{ label: "LongShort", data: [], borderColor: "green", borderWidth: 2, tension: 0.4 }] },
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: "LongShort",
+                            data: [],
+                            borderColor: "green",
+                            borderWidth: 1, // 線條變細
+                            tension: 0.4
+                        }
+                    ]
+                },
                 options: {
                     responsive: true,
                     plugins: { legend: { display: true }, tooltip: { mode: "index", intersect: false } },
@@ -57,7 +68,18 @@
             },
             {
                 ctx: bidOfferSlopeChartCtx,
-                data: { labels: [], datasets: [{ label: "BidOfferLongShortSlope", data: [], borderColor: "red", borderWidth: 2, tension: 0.4 }] },
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: "BidOfferLongShortSlope",
+                            data: [],
+                            borderColor: "red",
+                            borderWidth: 1, // 線條變細
+                            tension: 0.4
+                        }
+                    ]
+                },
                 options: {
                     responsive: true,
                     plugins: { legend: { display: true }, tooltip: { mode: "index", intersect: false } },
