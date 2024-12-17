@@ -65,8 +65,6 @@ LONG EstimatedTodaysAmplitude(VOID);
 
 LONG StrategyCaluLongShort(VOID);
 VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo);
-void loadLongShortIntegralValue(LONG &gLongShort);
-void UpdateLongShortIntegralValue(LONG gLongShort);
 
 // Strategy
 
