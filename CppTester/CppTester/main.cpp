@@ -374,6 +374,16 @@ VOID SaveCacheForOrderMachine(VOID)
         inputFile.close();
     }
 
+    if (!gCacheData.empty())
+    {
+        YAML::Node lastNode = gCacheData.back();
+
+        if (lastNode["gLongShort"])
+        {
+            gLongShort = lastNode["gLongShort"].as<long>();
+        }
+    }
+
     // Check if new data needs to be saved
     if (PreCurServerTimeSec != gCurServerTime[2])
     {
@@ -401,7 +411,7 @@ VOID SaveCacheForOrderMachine(VOID)
         const int syncThreshold = 10; // Sync to the file every 60 seconds
         if (++syncCounter >= syncThreshold)
         {
-            syncCounter = 0; // Reset the counter        
+            syncCounter = 0; // Reset the counter
             std::ofstream outputFile(CACHE_DATABASE_PATH, std::ios::trunc);
             if (outputFile.is_open())
             {
