@@ -340,10 +340,9 @@ VOID CopyDataToTheOrderMachine(LONG MtxCommodtyInfo)
     gOpenInterestInfoUI.profitAndLoss = gOpenInterestInfo.profitAndLoss;
 }
 
-VOID SaveCacheForOrderMachine(VOID)
+VOID LoadLongShort(VOID)
 {
-    static SHORT PreCurServerTimeSec = -1; // Stores the last recorded second to track changes
-    static bool isInitialized = false;     // Indicates if the file data has been loaded into memory
+    static bool isInitialized = false; // Indicates if the file data has been loaded into memory
 
     // Load file data into memory on the first call
     if (!isInitialized)
@@ -383,6 +382,13 @@ VOID SaveCacheForOrderMachine(VOID)
             gLongShort = lastNode["gLongShort"].as<long>();
         }
     }
+}
+
+VOID SaveCacheForOrderMachine(VOID)
+{
+    static SHORT PreCurServerTimeSec = -1; // Stores the last recorded second to track changes
+
+    LoadLongShort();
 
     // Check if new data needs to be saved
     if (PreCurServerTimeSec != gCurServerTime[2])
@@ -737,6 +743,7 @@ int main()
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
     readConfig();
+    LoadLongShort();
 
     CoInitialize(NULL);
 
