@@ -1,7 +1,4 @@
 DaysCommHighLowPoint:
-  20241120:
-    High: 22956
-    Low: 22668
   20241121:
     High: 22733
     Low: 22514
@@ -59,55 +56,10 @@ DaysCommHighLowPoint:
   20241217:
     High: 23215
     Low: 23024
+  20241218:
+    High: 23200
+    Low: 22902
 DaysNightAllCommHighLowPoint:
-  20241029:
-    High: 23386
-    Low: 22705
-  20241030:
-    High: 23138
-    Low: 22879
-  20241031:
-    High: 22996
-    Low: 22635
-  20241101:
-    High: 22996
-    Low: 22232
-  20241104:
-    High: 22986
-    Low: 22692
-  20241105:
-    High: 23107
-    Low: 22790
-  20241106:
-    High: 23346
-    Low: 23047
-  20241107:
-    High: 23475
-    Low: 22938
-  20241108:
-    High: 23794
-    Low: 23478
-  20241111:
-    High: 23840
-    Low: 23494
-  20241112:
-    High: 23564
-    Low: 22958
-  20241113:
-    High: 22926
-    Low: 22572
-  20241114:
-    High: 23078
-    Low: 22576
-  20241115:
-    High: 22879
-    Low: 22592
-  20241118:
-    High: 22832
-    Low: 22470
-  20241119:
-    High: 22659
-    Low: 22339
   20241120:
     High: 22929
     Low: 22654
@@ -165,3 +117,6 @@ DaysNightAllCommHighLowPoint:
   20241217:
     High: 23215
     Low: 22962
+  20241218:
+    High: 23200
+    Low: 22836
