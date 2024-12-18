@@ -39,7 +39,7 @@
         const longShortChartCtx = document.getElementById("longShortChart").getContext("2d");
         const bidOfferSlopeChartCtx = document.getElementById("bidOfferSlopeChart").getContext("2d");
 
-        const MAX_DATA_LENGTH = 30000; // 控制圖表數據長度
+        const MAX_DATA_LENGTH = 20000; // 控制圖表數據長度
         const MAX_LOG_ENTRIES = 100; // 控制日誌長度
 
         const chartConfigs = [
@@ -106,40 +106,52 @@
             }
         }
 
-        function updateChartData(chartData, newLabel, newValue) {
-            chartData.labels.push(newLabel);
-            chartData.datasets[0].data.push(newValue);
+        function batchUpdateChartData(chartData, labels, values) {
+            // 批次更新 labels 和 data
+            chartData.labels.push(...labels);
+            chartData.datasets[0].data.push(...values);
 
+            // 保持資料長度限制
             if (chartData.labels.length > MAX_DATA_LENGTH) {
-                chartData.labels.shift();
-                chartData.datasets[0].data.shift();
+                const excess = chartData.labels.length - MAX_DATA_LENGTH;
+                chartData.labels.splice(0, excess);
+                chartData.datasets[0].data.splice(0, excess);
             }
         }
 
         function updateUI(data) {
-            if (!Array.isArray(data)) {
-                appendLog("Error: Invalid data format.", true);
+            if (!Array.isArray(data) || data.length === 0) {
+                appendLog("Error: Invalid or empty data format.", true);
                 return;
             }
 
-            longShortChart.data.labels = [];
-            longShortChart.data.datasets[0].data = [];
-            bidOfferSlopeChart.data.labels = [];
-            bidOfferSlopeChart.data.datasets[0].data = [];
+            // 批次收集需要更新的資料
+            const longShortLabels = [];
+            const longShortValues = [];
+            const bidOfferSlopeLabels = [];
+            const bidOfferSlopeValues = [];
 
             data.forEach(point => {
                 const { timestamp, gLongShort, gBidOfferLongShortSlope } = point;
-
-                updateChartData(longShortChart.data, timestamp, gLongShort);
-                updateChartData(bidOfferSlopeChart.data, timestamp, gBidOfferLongShortSlope);
+                longShortLabels.push(timestamp);
+                longShortValues.push(gLongShort);
+                bidOfferSlopeLabels.push(timestamp);
+                bidOfferSlopeValues.push(gBidOfferLongShortSlope);
             });
 
+            // 批次更新圖表資料
+            batchUpdateChartData(longShortChart.data, longShortLabels, longShortValues);
+            batchUpdateChartData(bidOfferSlopeChart.data, bidOfferSlopeLabels, bidOfferSlopeValues);
+
+            // 更新圖表一次
             longShortChart.update();
             bidOfferSlopeChart.update();
 
+            // 取得最新一筆資料，顯示在日誌中
             const latestPoint = data[data.length - 1];
             appendLog(`[Time: ${latestPoint.timestamp}] LongShort: ${latestPoint.gLongShort}, BidOfferSlope: ${latestPoint.gBidOfferLongShortSlope}`);
         }
+
 
         function appendLog(message, isError = false) {
             const entry = document.createElement("div");
