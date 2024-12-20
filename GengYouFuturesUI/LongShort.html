@@ -51,15 +51,19 @@
                         {
                             label: "LongShort",
                             data: [],
-                            borderColor: "green",
-                            borderWidth: 1, // 線條變細
-                            tension: 0.4
+                            borderColor: "green", // 線條顏色
+                            borderWidth: 1, // 線條寬度
+                            tension: 0.4, // 平滑曲線
+                            pointRadius: 0, // 禁用數據點的圓圈標記
                         }
                     ]
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { display: true }, tooltip: { mode: "index", intersect: false } },
+                    plugins: {
+                        legend: { display: true },
+                        tooltip: { mode: "index", intersect: false }
+                    },
                     scales: {
                         x: { title: { display: true, text: "Time" } },
                         y: { title: { display: true, text: "LongShort Value" } }
@@ -74,15 +78,19 @@
                         {
                             label: "BidOfferLongShortSlope",
                             data: [],
-                            borderColor: "red",
-                            borderWidth: 0.5, // 線條變細
-                            tension: 0.4
+                            borderColor: "red", // 線條顏色
+                            borderWidth: 1, // 線條寬度
+                            tension: 0.4, // 平滑曲線
+                            pointRadius: 0, // 禁用數據點的圓圈標記
                         }
                     ]
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { display: true }, tooltip: { mode: "index", intersect: false } },
+                    plugins: {
+                        legend: { display: true },
+                        tooltip: { mode: "index", intersect: false }
+                    },
                     scales: {
                         x: { title: { display: true, text: "Time" } },
                         y: { title: { display: true, text: "BidOffer Slope Value" } }

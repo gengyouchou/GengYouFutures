@@ -60,9 +60,6 @@ DaysCommHighLowPoint:
     High: 22906
     Low: 22718
 DaysNightAllCommHighLowPoint:
-  20241121:
-    High: 22822
-    Low: 22496
   20241122:
     High: 23021
     Low: 22393
@@ -120,3 +117,6 @@ DaysNightAllCommHighLowPoint:
   20241219:
     High: 23386
     Low: 22602
+  20241220:
+    High: 22972
+    Low: 22729
