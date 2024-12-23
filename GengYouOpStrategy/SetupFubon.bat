@@ -1,58 +1,48 @@
 @echo off
-
-REM 設置變數
+REM Set up virtual environment and install packages
 set VENV_DIR=venv
 set WHL_FILE=fubon_neo-2.1.0-cp37-abi3-win_amd64.whl
-set MODULE_NAME=fubon_neo
+set DOC_DIR=docs
 
-REM 檢查 Python 是否安裝
-python --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [錯誤] 未找到 Python，請先安裝 Python。
-    exit /b 1
-)
-
-REM 創建虛擬環境
-if not exist %VENV_DIR% (
-    echo [信息] 正在創建虛擬環境...
-    python -m venv %VENV_DIR%
-)
-
-REM 激活虛擬環境
-call %VENV_DIR%\Scripts\activate.bat
-if %errorlevel% neq 0 (
-    echo [錯誤] 無法激活虛擬環境。
-    exit /b 1
-)
-
-REM 確保 pip 已更新
-echo [信息] 正在更新 pip...
-pip install --upgrade pip
-
-REM 安裝 WHL 文件
-echo [信息] 正在安裝 %WHL_FILE%...
-pip install %WHL_FILE%
-if %errorlevel% neq 0 (
-    echo [錯誤] 無法安裝 WHL 文件。
-    exit /b 1
-)
-
-REM 生成文檔
-echo [信息] 正在生成 %MODULE_NAME% 的文檔...
-python -m pydoc -w %MODULE_NAME%
-if %errorlevel% neq 0 (
-    echo [錯誤] 無法生成文檔。
-    exit /b 1
-)
-
-REM 檢查文檔生成
-if exist %MODULE_NAME%.html (
-    echo [完成] 文檔已生成為 %MODULE_NAME%.html。
+REM Step 1: Create virtual environment
+if not exist "%VENV_DIR%" (
+    echo Creating virtual environment...
+    python -m venv "%VENV_DIR%"
 ) else (
-    echo [錯誤] 未找到生成的文檔。
-    exit /b 1
+    echo Virtual environment already exists.
 )
 
-REM 結束
-echo [完成] 所有操作成功完成！
-exit /b 0
+REM Step 2: Activate virtual environment
+call "%VENV_DIR%\Scripts\activate"
+
+REM Step 3: Update pip
+echo Updating pip...
+python -m pip install --upgrade pip
+
+REM Step 4: Install the .whl file
+echo Installing %WHL_FILE%...
+pip install %WHL_FILE%
+
+REM Step 5: Create documentation directory
+if not exist "%DOC_DIR%" (
+    echo Creating documentation directory...
+    mkdir "%DOC_DIR%"
+)
+
+REM Step 6: Generate documentation
+echo Generating documentation...
+python -m pydoc -w fubon_neo
+
+REM Move generated .html file to the documentation directory
+if exist "fubon_neo.html" (
+    move "fubon_neo.html" "%DOC_DIR%\fubon_neo.html"
+    echo Documentation generated at %DOC_DIR%\fubon_neo.html
+) else (
+    echo Documentation generation failed!
+)
+
+REM Deactivate virtual environment
+deactivate
+
+echo All tasks completed successfully.
+pause
