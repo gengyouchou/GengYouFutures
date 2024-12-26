@@ -128,7 +128,11 @@ LONG AutoQuote(IN string ProductNum, short sPageNo)
 
     g_nCode = pSKQuoteLib->RequestStocks(&sPageNo, ProductNum);
     pSKCenterLib->PrintfCodeMessage("Quote", "RequestStocks", g_nCode);
-    DEBUG(DEBUG_LEVEL_INFO, "g_nCode= %d", g_nCode);
+    DEBUG(DEBUG_LEVEL_INFO, "RequestStocks g_nCode= %d", g_nCode);
+
+    g_nCode = pSKQuoteLib->GetStrikePrices();
+    pSKCenterLib->PrintfCodeMessage("Quote", "GetStrikePrices", g_nCode);
+    DEBUG(DEBUG_LEVEL_INFO, "GetStrikePrices g_nCode= %d", g_nCode);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 

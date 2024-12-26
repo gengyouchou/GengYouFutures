@@ -42,6 +42,7 @@ public:
     long IsConnected();
     long LeaveMonitor();
     long RequestStocks(short *psPageNo, string strStockNos);
+    long GetStrikePrices(VOID);
     long RequestTicks(short *psPageNo, string strStockNos);
     long RequestStockList(short MarketNo);
     long GetStockByIndexLONG(short sMarketNo, long bStockIndex, SKCOMLib::SKSTOCKLONG *pSKStock);
@@ -55,6 +56,7 @@ public:
     // Events
     void OnConnection(long nKind, long nCode);
     void OnNotifyQuoteLONG(short sMarketNo, long nStockIndex);
+    void OnNotifyStrikePrices(BSTR bstrOptionData);
     void OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate);
     void OnNotifyHistoryTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate);
     void OnNotifyBest5LONG(

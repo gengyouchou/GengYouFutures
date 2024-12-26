@@ -68,7 +68,7 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
     EXCEPINFO *pexcepinfo,
     UINT *puArgErr)
 {
-    DEBUG(DEBUG_LEVEL_DEBUG, "dispidMember == %d", dispidMember);
+    DEBUG(DEBUG_LEVEL_INFO, "dispidMember == %d", dispidMember);
 
     VARIANT varlValue;
     VariantInit(&varlValue);
@@ -123,6 +123,12 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
         long nQty = V_I4(&(pdispparams->rgvarg)[1]);
         long nSimulate = V_I4(&(pdispparams->rgvarg)[0]);
         OnNotifyTicksLONG(nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty, nSimulate);
+        break;
+    }
+    case 15: // SKQuoteLib_GetStrikePrices
+    {
+        _bstr_t OptionData = V_BSTR(&(pdispparams->rgvarg)[0]);
+        OnNotifyStrikePrices(OptionData);
         break;
     }
     case 22: // OnNotifyBest5LONG
@@ -308,6 +314,11 @@ long CSKQuoteLib::RequestStocks(short *psPageNo, string strStockNos)
 long CSKQuoteLib::GetStockByIndexLONG(short sMarketNo, long nStockIndex, SKCOMLib::SKSTOCKLONG *pSKStock)
 {
     return m_pSKQuoteLib->SKQuoteLib_GetStockByIndexLONG(sMarketNo, nStockIndex, pSKStock);
+}
+
+long CSKQuoteLib::GetStrikePrices(VOID)
+{
+    return m_pSKQuoteLib->SKQuoteLib_GetStrikePrices();
 }
 
 long CSKQuoteLib::RequestTicks(short *psPageNo, string strStockNos)
@@ -648,6 +659,17 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
 
     delete[] szStockName;
     delete[] szStockNo;
+}
+
+void CSKQuoteLib::OnNotifyStrikePrices(BSTR bstrOptionData)
+{
+    DEBUG(DEBUG_LEVEL_INFO, "start");
+
+    string OptionData = string(_bstr_t(bstrOptionData));
+
+    DEBUG(DEBUG_LEVEL_INFO, "OptionData= %s", OptionData);
+
+    DEBUG(DEBUG_LEVEL_INFO, "end");
 }
 
 void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate)
