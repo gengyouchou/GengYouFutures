@@ -63,28 +63,72 @@ def display_all_product_details(sdk):
     except Exception as e:
         print(f"查询商品数据失败: {e}")
 
-
-# Function to fetch intraday quote for a specific symbol
 def fetch_intraday_quote(sdk, symbol):
     """
-    获取商品的即时报价。
+    获取指定商品的日盘和盘后交易的即时报价。
     :param sdk: FubonSDK 实例
-    :param symbol: 商品代号
+    :param symbol: 商品代码
     """
     try:
-        quote = sdk.marketdata.rest_client.futopt.intraday.quote(symbol=symbol)
-        print(f"商品代碼: {quote.get('symbol', 'N/A')}")
-        print(f"商品名稱: {quote.get('name', 'N/A')}")
-        print(f"最後成交價: {quote.get('lastPrice', 'N/A')}")
-        print(f"漲跌: {quote.get('change', 'N/A')}")
-        print(f"漲跌幅: {quote.get('changePercent', 'N/A')}%")
-        print(f"開盤價: {quote.get('openPrice', 'N/A')}")
-        print(f"最高價: {quote.get('highPrice', 'N/A')}")
-        print(f"最低價: {quote.get('lowPrice', 'N/A')}")
-        print(f"累計成交量: {quote.get('total', {}).get('tradeVolume', 'N/A')}")
-        print(f"最後成交時間: {quote.get('lastTrade', {}).get('time', 'N/A')}")
+        # 获取日盘数据
+        day_quote = sdk.marketdata.rest_client.futopt.intraday.quote(symbol=symbol)
+        print("日盘数据:")
+        print_quote(day_quote)
+
+        # 获取盘后交易数据
+        afterhours_quote = sdk.marketdata.rest_client.futopt.intraday.quote(symbol=symbol, session="afterhours")
+        print("盘后交易数据:")
+        print_quote(afterhours_quote)
+
     except Exception as e:
-        print(f"無法取得即时报价: {e}")
+        print(f"获取报价时发生错误: {e}")
+
+def print_quote(quote):
+    """
+    输出报价数据的详细信息。
+    :param quote: 报价数据（字典）
+    """
+    if not quote:
+        print("无可用数据")
+        return
+
+    print(f"日期: {quote.get('date', 'N/A')}")
+    print(f"类型: {quote.get('type', 'N/A')}")
+    print(f"交易所: {quote.get('exchange', 'N/A')}")
+    print(f"商品代号: {quote.get('symbol', 'N/A')}")
+    print(f"商品名称: {quote.get('name', 'N/A')}")
+    print(f"昨收: {quote.get('previousClose', 'N/A')}")
+    print(f"开盘价: {quote.get('openPrice', 'N/A')}")
+    print(f"开盘时间: {quote.get('openTime', 'N/A')}")
+    print(f"最高价: {quote.get('highPrice', 'N/A')}")
+    print(f"最高时间: {quote.get('highTime', 'N/A')}")
+    print(f"最低价: {quote.get('lowPrice', 'N/A')}")
+    print(f"最低时间: {quote.get('lowTime', 'N/A')}")
+    print(f"收盘价: {quote.get('closePrice', 'N/A')}")
+    print(f"收盘时间: {quote.get('closeTime', 'N/A')}")
+    print(f"平均价: {quote.get('avgPrice', 'N/A')}")
+    print(f"涨跌: {quote.get('change', 'N/A')}")
+    print(f"涨跌幅: {quote.get('changePercent', 'N/A')}%")
+    print(f"振幅: {quote.get('amplitude', 'N/A')}")
+    print(f"最新成交价: {quote.get('lastPrice', 'N/A')}")
+    print(f"最新成交量: {quote.get('lastSize', 'N/A')}")
+    
+    # 累计数据
+    total = quote.get('total', {})
+    print(f"累计成交量: {total.get('tradeVolume', 'N/A')}")
+    print(f"累计内盘成交量: {total.get('tradeVolumeAtBid', 'N/A')}")
+    print(f"累计外盘成交量: {total.get('tradeVolumeAtAsk', 'N/A')}")
+
+    # 最后一笔成交数据
+    last_trade = quote.get('lastTrade', {})
+    print(f"最后一笔成交价: {last_trade.get('price', 'N/A')}")
+    print(f"最后一笔成交量: {last_trade.get('size', 'N/A')}")
+    print(f"最后一笔成交时间: {last_trade.get('time', 'N/A')}")
+    print(f"交易流水号: {last_trade.get('serial', 'N/A')}")
+    print(f"流水号: {quote.get('serial', 'N/A')}")
+    print(f"最后更新时间: {quote.get('lastUpdated', 'N/A')}")
+    print("-" * 50)
+
 
 def main():
     """
@@ -113,7 +157,7 @@ def main():
     display_all_product_details(sdk)
 
     
-    fetch_intraday_quote(sdk, "TX123400")
+    fetch_intraday_quote(sdk, "TX123400A5")
 
 if __name__ == "__main__":
     main()
