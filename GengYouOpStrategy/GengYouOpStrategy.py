@@ -34,39 +34,35 @@ def login_sdk(sdk, config):
     except Exception as e:
         print(f"登录失败: {e}")
         return None
-
-# Function to find and display near-month weekly options
-def find_near_month_weekly_options(sdk):
+    
+# Function to display all product details
+def display_all_product_details(sdk):
     """
-    查询并筛选近月周选择权 (W1)。
+    查询并输出所有商品的完整细节。
     :param sdk: FubonSDK 实例
     """
     try:
         restfutopt = sdk.marketdata.rest_client.futopt
         response = restfutopt.intraday.products(
-            type='OPTION',
+            type='OPTION',  # 根据需求调整商品类型
             exchange='TAIFEX',
-            contractType='I',  # 指数类期权
+            contractType='I',  # 指数类期货
             session='REGULAR',  # 一般交易时段，可根据需要调整
         )
 
-        # 筛选结果，找到近月周选择权 (W1)
-        weekly_options = [
-            item for item in response['data']
-            if item['expiryType'] == 'W' and item['symbol'].endswith('W1')
-        ]
-
-        if weekly_options:
-            print("近月周选择权 (W1) 代号:")
-            for option in weekly_options:
-                print(f"代号: {option['symbol']}, 名称: {option['name']}")
-            return weekly_options[0]['symbol']  # 返回第一个找到的商品代号
+        # 输出完整的商品数据
+        if 'data' in response and response['data']:
+            print("查询到的商品完整细节:")
+            for item in response['data']:
+                print("-" * 50)
+                for key, value in item.items():
+                    print(f"{key}: {value}")
+            print("-" * 50)
         else:
-            print("未找到近月周选择权 (W1) 数据。")
-            return None
+            print("未查询到任何商品数据。")
     except Exception as e:
-        print(f"查询期权数据失败: {e}")
-        return None
+        print(f"查询商品数据失败: {e}")
+
 
 # Function to fetch intraday quote for a specific symbol
 def fetch_intraday_quote(sdk, symbol):
@@ -113,11 +109,11 @@ def main():
     except Exception as e:
         print(f"初始化实时行情失败: {e}")
         return
+    
+    display_all_product_details(sdk)
 
-    # 查询近月周选择权并获取其报价
-    symbol = find_near_month_weekly_options(sdk)
-    if symbol:
-        fetch_intraday_quote(sdk, symbol)
+    
+    fetch_intraday_quote(sdk, "TX123400")
 
 if __name__ == "__main__":
     main()
