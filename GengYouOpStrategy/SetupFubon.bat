@@ -45,8 +45,10 @@ if exist "fubon_neo.html" (
     echo Documentation generation failed!
 )
 
-REM Deactivate virtual environment
-deactivate
+call python GengYouOpStrategy.py
+
+@REM REM Deactivate virtual environment
+@REM deactivate
 
 echo All tasks completed successfully.
 pause
