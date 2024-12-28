@@ -231,9 +231,13 @@ def main():
     
     fetch_intraday_quote(sdk, "TX123400A5")
     fetch_intraday_quote(sdk, "TX123300A5")
+    fetch_intraday_quote(sdk, "TXFA5")
+
     
     fetch_intraday_quote_live(sdk, "TX123400A5")
     fetch_intraday_quote_live(sdk, "TX123300A5")
+    fetch_intraday_quote_live(sdk, "TXFA5")
+
 
 
 if __name__ == "__main__":
