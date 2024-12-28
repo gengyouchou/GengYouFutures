@@ -129,6 +129,78 @@ def print_quote(quote):
     print(f"最后更新时间: {quote.get('lastUpdated', 'N/A')}")
     print("-" * 50)
 
+def fetch_intraday_quote_live(sdk, symbol):
+    """
+    获取指定商品的日盘和盘后交易的即时报价。
+    :param sdk: FubonSDK 实例
+    :param symbol: 商品代码
+    """
+    try:
+        # 订阅日盘数据
+        print("订阅日盘数据...")
+        subscribe_trades(sdk, symbol, after_hours=False)
+
+        # 订阅盘后数据
+        print("订阅盘后交易数据...")
+        subscribe_trades(sdk, symbol, after_hours=True)
+
+    except Exception as e:
+        print(f"获取报价时发生错误: {e}")
+
+def subscribe_trades(sdk, symbol, after_hours):
+    """
+    订阅指定商品的成交信息。
+    :param sdk: FubonSDK 实例
+    :param symbol: 商品代码
+    :param after_hours: 是否订阅夜盘行情
+    """
+    def handle_message(message):
+        print("接收到成交信息:")
+        print_quote_live(message.get("data", {}))
+
+    channel = "trades"
+    sdk.init_realtime()  # 建立行情连接
+    futopt = sdk.marketdata.websocket_client.futopt
+    futopt.on('message', handle_message)
+    futopt.connect()
+    futopt.subscribe({
+        'channel': channel,
+        'symbol': symbol,
+        'afterHours': after_hours
+    })
+
+def print_quote_live(quote):
+    """
+    输出报价数据的详细信息。
+    :param quote: 报价数据（字典）
+    """
+    if not quote:
+        print("无可用数据")
+        return
+
+    print(f"商品代号: {quote.get('symbol', 'N/A')}")
+    print(f"类型: {quote.get('type', 'N/A')}")
+    print(f"交易所: {quote.get('exchange', 'N/A')}")
+    
+    # 成交数据
+    trades = quote.get('trades', [])
+    for trade in trades:
+        print(f"成交价格: {trade.get('price', 'N/A')}")
+        print(f"成交单量: {trade.get('size', 'N/A')}")
+        print(f"成交买价: {trade.get('bid', 'N/A')}")
+        print(f"成交卖价: {trade.get('ask', 'N/A')}")
+
+    # 累计数据
+    total = quote.get('total', {})
+    print(f"累计成交总量: {total.get('tradeVolume', 'N/A')}")
+    print(f"累计内盘成交量: {total.get('totalBidMatch', 'N/A')}")
+    print(f"累计外盘成交量: {total.get('totalAskMatch', 'N/A')}")
+
+    print(f"时间: {quote.get('time', 'N/A')}")
+    print(f"流水号: {quote.get('serial', 'N/A')}")
+    print("-" * 50)
+
+
 
 def main():
     """
@@ -158,6 +230,11 @@ def main():
 
     
     fetch_intraday_quote(sdk, "TX123400A5")
+    fetch_intraday_quote(sdk, "TX123300A5")
+    
+    fetch_intraday_quote_live(sdk, "TX123400A5")
+    fetch_intraday_quote_live(sdk, "TX123300A5")
+
 
 if __name__ == "__main__":
     main()
