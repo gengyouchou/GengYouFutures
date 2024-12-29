@@ -257,18 +257,25 @@ def calculate_spread_strategy(sdk, base_symbol):
 
     for i in range(len(long_symbols) - 1):
         long_symbol1, long_symbol2 = long_symbols[i], long_symbols[i + 1]
-        short_symbol1, short_symbol2 = short_symbols[i], short_symbols[i + 1]
 
         long_premium1 = fetch_premium(sdk, long_symbol1)
         long_premium2 = fetch_premium(sdk, long_symbol2)
+        
+        long_spread_premium = long_premium1 - long_premium2
+
+        print(f"指數上漲: {long_symbol1}, {long_symbol2} | 权利金: {long_premium1}, {long_premium2} | 差值: {long_spread_premium}")
+
+    print("=====================================================================================================================")
+
+    for i in range(len(long_symbols) - 1):
+        short_symbol1, short_symbol2 = short_symbols[i], short_symbols[i + 1]
+
         short_premium1 = fetch_premium(sdk, short_symbol1)
         short_premium2 = fetch_premium(sdk, short_symbol2)
 
-        long_spread_premium = long_premium1 - long_premium2
         short_spread_premium = short_premium2 - short_premium1
 
-        print(f"多头合约: {long_symbol1}, {long_symbol2} | 权利金: {long_premium1}, {long_premium2} | 差值: {long_spread_premium}")
-        print(f"空头合约: {short_symbol1}, {short_symbol2} | 权利金: {short_premium1}, {short_premium2} | 差值: {short_spread_premium}")
+        print(f"指數下跌: {short_symbol1}, {short_symbol2} | 权利金: {short_premium1}, {short_premium2} | 差值: {short_spread_premium}")
 
 # 示例调用
 # sdk = FubonSDK()  # 假设 SDK 已经初始化
