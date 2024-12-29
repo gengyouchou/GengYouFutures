@@ -1,4 +1,6 @@
 import json
+import os
+import time
 from fubon_neo.sdk import FubonSDK
 
 # Function to read configuration from LogConfig.json
@@ -34,88 +36,6 @@ def login_sdk(sdk, config):
     except Exception as e:
         print(f"登录失败: {e}")
         return None
-    
-# Function to display all product details
-def display_all_product_details(sdk):
-    """
-    查询并输出所有商品的完整细节。
-    :param sdk: FubonSDK 实例
-    """
-    try:
-        restfutopt = sdk.marketdata.rest_client.futopt
-        response = restfutopt.intraday.products(
-            type='OPTION',  # 根据需求调整商品类型
-            exchange='TAIFEX',
-            contractType='I',  # 指数类期货
-            session='REGULAR',  # 一般交易时段，可根据需要调整
-        )
-
-        # 输出完整的商品数据
-        if 'data' in response and response['data']:
-            print("查询到的商品完整细节:")
-            for item in response['data']:
-                print("-" * 50)
-                for key, value in item.items():
-                    print(f"{key}: {value}")
-            print("-" * 50)
-        else:
-            print("未查询到任何商品数据。")
-    except Exception as e:
-        print(f"查询商品数据失败: {e}")
-
-def subscribe_trades(sdk, symbol, after_hours):
-    """
-    订阅指定商品的成交信息。
-    :param sdk: FubonSDK 实例
-    :param symbol: 商品代码
-    :param after_hours: 是否订阅夜盘行情
-    """
-    def handle_message(message):
-        print("接收到成交信息:")
-        print_quote_live(message.get("data", {}))
-
-    channel = "trades"
-    sdk.init_realtime()  # 建立行情连接
-    futopt = sdk.marketdata.websocket_client.futopt
-    futopt.on('message', handle_message)
-    futopt.connect()
-    futopt.subscribe({
-        'channel': channel,
-        'symbol': symbol,
-        'afterHours': after_hours
-    })
-
-def print_quote_live(quote):
-    """
-    输出报价数据的详细信息。
-    :param quote: 报价数据（字典）
-    """
-    if not quote:
-        print("无可用数据")
-        return
-
-    print(f"商品代号: {quote.get('symbol', 'N/A')}")
-    print(f"类型: {quote.get('type', 'N/A')}")
-    print(f"交易所: {quote.get('exchange', 'N/A')}")
-    
-    # 成交数据
-    trades = quote.get('trades', [])
-    for trade in trades:
-        print(f"成交价格: {trade.get('price', 'N/A')}")
-        print(f"成交单量: {trade.get('size', 'N/A')}")
-        print(f"成交买价: {trade.get('bid', 'N/A')}")
-        print(f"成交卖价: {trade.get('ask', 'N/A')}")
-
-    # 累计数据
-    total = quote.get('total', {})
-    print(f"累计成交总量: {total.get('tradeVolume', 'N/A')}")
-    print(f"累计内盘成交量: {total.get('totalBidMatch', 'N/A')}")
-    print(f"累计外盘成交量: {total.get('totalAskMatch', 'N/A')}")
-
-    print(f"时间: {quote.get('time', 'N/A')}")
-    print(f"流水号: {quote.get('serial', 'N/A')}")
-    print("-" * 50)
-
 
 
 def fetch_intraday_quote(sdk, symbol):
@@ -183,25 +103,6 @@ def print_quote(quote):
     print(f"流水号: {quote.get('serial', 'N/A')}")
     print(f"最后更新时间: {quote.get('lastUpdated', 'N/A')}")
     print("-" * 50)
-
-def fetch_intraday_quote_live(sdk, symbol):
-    """
-    获取指定商品的日盘和盘后交易的即时报价。
-    :param sdk: FubonSDK 实例
-    :param symbol: 商品代码
-    """
-    try:
-        # 订阅日盘数据
-        print("订阅日盘数据...")
-        subscribe_trades(sdk, symbol, after_hours=False)
-
-        # 订阅盘后数据
-        print("订阅盘后交易数据...")
-        subscribe_trades(sdk, symbol, after_hours=True)
-
-    except Exception as e:
-        print(f"获取报价时发生错误: {e}")
-
 
 def parse_strike_price(symbol):
     """
@@ -276,6 +177,115 @@ def calculate_spread_strategy(sdk, base_symbol):
 # sdk = FubonSDK()  # 假設已初始化
 # calculate_100_point_spreads(sdk, "TX123300A5")
 
+def subscribe_trades(sdk, symbol, after_hours):
+    """
+    订阅指定商品的成交信息。
+    :param sdk: FubonSDK 实例
+    :param symbol: 商品代码
+    :param after_hours: 是否订阅夜盘行情
+    """
+    def handle_message(message):
+        print("接收到成交信息:")
+        print_quote_live(message.get("data", {}))
+
+    channel = "trades"
+    sdk.init_realtime()  # 建立行情连接
+    futopt = sdk.marketdata.websocket_client.futopt
+    futopt.on('message', handle_message)
+    futopt.connect()
+    futopt.subscribe({
+        'channel': channel,
+        'symbol': symbol,
+        'afterHours': after_hours
+    })
+
+def print_quote_live(quote):
+    """
+    输出报价数据的详细信息。
+    :param quote: 报价数据（字典）
+    """
+    if not quote:
+        print("无可用数据")
+        return
+
+    print(f"商品代号: {quote.get('symbol', 'N/A')}")
+    print(f"类型: {quote.get('type', 'N/A')}")
+    print(f"交易所: {quote.get('exchange', 'N/A')}")
+    
+    # 成交数据
+    trades = quote.get('trades', [])
+    for trade in trades:
+        print(f"成交价格: {trade.get('price', 'N/A')}")
+        print(f"成交单量: {trade.get('size', 'N/A')}")
+        print(f"成交买价: {trade.get('bid', 'N/A')}")
+        print(f"成交卖价: {trade.get('ask', 'N/A')}")
+
+    # 累计数据
+    total = quote.get('total', {})
+    print(f"累计成交总量: {total.get('tradeVolume', 'N/A')}")
+    print(f"累计内盘成交量: {total.get('totalBidMatch', 'N/A')}")
+    print(f"累计外盘成交量: {total.get('totalAskMatch', 'N/A')}")
+
+    print(f"时间: {quote.get('time', 'N/A')}")
+    print(f"流水号: {quote.get('serial', 'N/A')}")
+    print("-" * 50)
+
+def fetch_intraday_quote_live(sdk, symbol):
+    """
+    获取指定商品的日盘和盘后交易的即时报价。
+    :param sdk: FubonSDK 实例
+    :param symbol: 商品代码
+    """
+    try:
+        # 订阅日盘数据
+        print("订阅日盘数据...")
+        subscribe_trades(sdk, symbol, after_hours=False)
+
+        # 订阅盘后数据
+        print("订阅盘后交易数据...")
+        subscribe_trades(sdk, symbol, after_hours=True)
+
+    except Exception as e:
+        print(f"获取报价时发生错误: {e}")
+
+def OptionChipsTable(sdk, base_symbol):
+    """
+    生成包含價平合約及其上下5個履約價的期權籌碼表。
+    :param sdk: FubonSDK 實例
+    :param base_symbol: 價平合約代碼，例如 "TX123300A5"
+    """
+    print(f"生成期權籌碼表，基準合約: {base_symbol}")
+
+    # 生成價平上下5檔的合約代碼
+    symbols = generate_ordered_symbols(base_symbol, steps=5)
+
+    # 收集每個合約的數據
+    data = {}
+    for symbol in symbols:
+        try:
+            quote = sdk.marketdata.rest_client.futopt.intraday.quote(symbol=symbol)
+            data[symbol] = {
+                "strike_price": parse_strike_price(symbol),
+                "last_price": quote.get("lastPrice", 0.0),
+                "open_interest": quote.get("openInterest", 0),
+                "bid_volume": quote.get("bidVolume", 0),
+                "ask_volume": quote.get("askVolume", 0),
+                "change_percent": quote.get("changePercent", 0.0)
+            }
+        except Exception as e:
+            print(f"獲取合約 {symbol} 數據失敗: {e}")
+
+    # 打印表格
+    print("-" * 50)
+    print(f"{'履約價':<10}{'最新價':<10}{'持倉量':<10}{'買量':<10}{'賣量':<10}{'漲跌幅(%)':<10}")
+    print("-" * 50)
+    for symbol, info in sorted(data.items(), key=lambda x: x[1]["strike_price"]):
+        print(
+            f"{info['strike_price']:<10}{info['last_price']:<10.2f}"
+            f"{info['open_interest']:<10}{info['bid_volume']:<10}"
+            f"{info['ask_volume']:<10}{info['change_percent']:<10.2f}"
+        )
+    print("-" * 50)
 
 
 def main():
@@ -314,9 +324,17 @@ def main():
     # fetch_intraday_quote_live(sdk, "TX123300A5")
     # fetch_intraday_quote_live(sdk, "TXFA5")
 
-    calculate_spread_strategy(sdk, "TX123300A5")
+    while True:
+        # 清空輸出
+        os.system('cls' if os.name == 'nt' else 'clear')
+        
+        # 執行計算函數
+        calculate_spread_strategy(sdk, "TX123300A5")
+        calculate_spread_strategy(sdk, "TX123300M5")
+        time.sleep(5)
 
 
+    OptionChipsTable(sdk, "TX123300M5")
 
 if __name__ == "__main__":
     main()
