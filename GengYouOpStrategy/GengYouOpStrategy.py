@@ -201,85 +201,82 @@ def fetch_intraday_quote_live(sdk, symbol):
 
     except Exception as e:
         print(f"获取报价时发生错误: {e}")
+
+
 def parse_strike_price(symbol):
     """
-    从选择权合约代码中提取执行价格。
-    :param symbol: 合约代码，例如 "TX123300A5"
-    :return: 执行价格（整数）
+    從合約代碼提取執行價格。
+    :param symbol: 合約代碼，例如 "TX123300A5"
+    :return: 執行價格（整數）
     """
     try:
-        # 直接提取合约代码中表示执行价格的部分
         return int(symbol[3:8])
     except ValueError:
-        raise ValueError(f"无法从合约代码中解析执行价格: {symbol}")
+        raise ValueError(f"無法解析合約代碼中的執行價格: {symbol}")
 
-def generate_option_symbols(base_symbol, strike_price, steps=10, interval=50):
+
+def generate_ordered_symbols(base_symbol, steps=10, interval=50):
     """
-    生成指定价平合约向多空两个方向的选择权合约代码。
-    :param base_symbol: 基础合约代码，例如 "TX123300A5"
-    :param strike_price: 当前执行价格
-    :param steps: 遍历的档数
-    :param interval: 每档价差（点数）
-    :return: 多空方向的合约代码列表
+    按順序生成包含價平合約及上下多檔的合約代碼。
+    :param base_symbol: 價平合約代碼，例如 "TX123300A5"
+    :param steps: 向上和向下的檔數
+    :param interval: 每檔價差（點數）
+    :return: 排序後的合約代碼列表
     """
     base_prefix = base_symbol[:3]
     base_suffix = base_symbol[8:]
+    base_price = parse_strike_price(base_symbol)
 
-    long_symbols = [f"{base_prefix}{strike_price + i * interval:05d}{base_suffix}" for i in range(1, steps + 1)]
-    short_symbols = [f"{base_prefix}{strike_price - i * interval:05d}{base_suffix}" for i in range(1, steps + 1)]
+    return [
+        f"{base_prefix}{base_price + i * interval:05d}{base_suffix}"
+        for i in range(-steps, steps + 1)
+    ]
 
-    return long_symbols, short_symbols
 
 def fetch_premium(sdk, symbol):
     """
-    获取指定选择权合约的当前权利金。
-    :param sdk: FubonSDK 实例
-    :param symbol: 合约代码
-    :return: 权利金（浮点数）
+    獲取指定合約的權利金。
+    :param sdk: FubonSDK 實例
+    :param symbol: 合約代碼
+    :return: 權利金（浮點數）
     """
     try:
+        # 模擬權利金數據查詢
         quote = sdk.marketdata.rest_client.futopt.intraday.quote(symbol=symbol)
         return quote.get("closePrice", 0.0)
     except Exception as e:
-        print(f"无法获取 {symbol} 的权利金: {e}")
+        print(f"無法獲取 {symbol} 的權利金: {e}")
         return 0.0
+
 
 def calculate_spread_strategy(sdk, base_symbol):
     """
-    从价平合约出发，计算价差为 100 点的两对合约的权利金差值。
-    :param sdk: FubonSDK 实例
-    :param base_symbol: 价平合约代码，例如 "TX123300A5"
+    計算包含價平合約在內的所有 100 點差合約對的權利金差額。
+    :param sdk: FubonSDK 實例
+    :param base_symbol: 價平合約代碼，例如 "TX123300A5"
     """
-    strike_price = parse_strike_price(base_symbol)
-    long_symbols, short_symbols = generate_option_symbols(base_symbol, strike_price)
+    symbols = generate_ordered_symbols(base_symbol)
+    premiums = {symbol: fetch_premium(sdk, symbol) for symbol in symbols}
 
-    print(f"价平合约: {base_symbol}, 执行价格: {strike_price}")
+    print(f"價平合約: {base_symbol}, 執行價格: {parse_strike_price(base_symbol)}")
 
-    for i in range(len(long_symbols) - 1):
-        long_symbol1, long_symbol2 = long_symbols[i], long_symbols[i + 1]
+    for i in range(len(symbols) - 2):  # 遍歷當前與下一檔（100 點差）的合約對
+        current_symbol = symbols[i]
+        next_symbol = symbols[i + 2]  # 價差為 100 點的合約對
 
-        long_premium1 = fetch_premium(sdk, long_symbol1)
-        long_premium2 = fetch_premium(sdk, long_symbol2)
-        
-        long_spread_premium = long_premium1 - long_premium2
+        if next_symbol in premiums and current_symbol in premiums:
+            premium_diff = premiums[current_symbol] - premiums[next_symbol]
+            print(
+                f"合約對: {current_symbol}, {next_symbol} | "
+                f"權利金: {premiums[current_symbol]}, {premiums[next_symbol]} | 差值: {premium_diff}"
+            )
 
-        print(f"指數上漲: {long_symbol1}, {long_symbol2} | 权利金: {long_premium1}, {long_premium2} | 差值: {long_spread_premium}")
 
-    print("=====================================================================================================================")
+# 示例調用
+# sdk = FubonSDK()  # 假設已初始化
+# calculate_100_point_spreads(sdk, "TX123300A5")
 
-    for i in range(len(long_symbols) - 1):
-        short_symbol1, short_symbol2 = short_symbols[i], short_symbols[i + 1]
 
-        short_premium1 = fetch_premium(sdk, short_symbol1)
-        short_premium2 = fetch_premium(sdk, short_symbol2)
-
-        short_spread_premium = short_premium2 - short_premium1
-
-        print(f"指數下跌: {short_symbol1}, {short_symbol2} | 权利金: {short_premium1}, {short_premium2} | 差值: {short_spread_premium}")
-
-# 示例调用
-# sdk = FubonSDK()  # 假设 SDK 已经初始化
-# calculate_spread_strategy(sdk, "TX123300A5")
 
 def main():
     """
