@@ -201,29 +201,29 @@ def fetch_intraday_quote_live(sdk, symbol):
 
     except Exception as e:
         print(f"获取报价时发生错误: {e}")
-
 def parse_strike_price(symbol):
     """
     从选择权合约代码中提取执行价格。
-    :param symbol: 合约代码，例如 "TX123400A5"
+    :param symbol: 合约代码，例如 "TX123300A5"
     :return: 执行价格（整数）
     """
     try:
-        return int(symbol[2:7])
+        # 直接提取合约代码中表示执行价格的部分
+        return int(symbol[3:8])
     except ValueError:
         raise ValueError(f"无法从合约代码中解析执行价格: {symbol}")
 
 def generate_option_symbols(base_symbol, strike_price, steps=10, interval=50):
     """
     生成指定价平合约向多空两个方向的选择权合约代码。
-    :param base_symbol: 基础合约代码，例如 "TX123400A5"
+    :param base_symbol: 基础合约代码，例如 "TX123300A5"
     :param strike_price: 当前执行价格
     :param steps: 遍历的档数
     :param interval: 每档价差（点数）
     :return: 多空方向的合约代码列表
     """
-    base_prefix = base_symbol[:2]
-    base_suffix = base_symbol[7:]
+    base_prefix = base_symbol[:3]
+    base_suffix = base_symbol[8:]
 
     long_symbols = [f"{base_prefix}{strike_price + i * interval:05d}{base_suffix}" for i in range(1, steps + 1)]
     short_symbols = [f"{base_prefix}{strike_price - i * interval:05d}{base_suffix}" for i in range(1, steps + 1)]
@@ -248,7 +248,7 @@ def calculate_spread_strategy(sdk, base_symbol):
     """
     从价平合约出发，计算价差为 100 点的两对合约的权利金差值。
     :param sdk: FubonSDK 实例
-    :param base_symbol: 价平合约代码，例如 "TX123400A5"
+    :param base_symbol: 价平合约代码，例如 "TX123300A5"
     """
     strike_price = parse_strike_price(base_symbol)
     long_symbols, short_symbols = generate_option_symbols(base_symbol, strike_price)
@@ -256,18 +256,14 @@ def calculate_spread_strategy(sdk, base_symbol):
     print(f"价平合约: {base_symbol}, 执行价格: {strike_price}")
 
     for i in range(len(long_symbols) - 1):
-        # 获取当前档位的两个多头合约
         long_symbol1, long_symbol2 = long_symbols[i], long_symbols[i + 1]
-        # 获取当前档位的两个空头合约
         short_symbol1, short_symbol2 = short_symbols[i], short_symbols[i + 1]
 
-        # 计算权利金
         long_premium1 = fetch_premium(sdk, long_symbol1)
         long_premium2 = fetch_premium(sdk, long_symbol2)
         short_premium1 = fetch_premium(sdk, short_symbol1)
         short_premium2 = fetch_premium(sdk, short_symbol2)
 
-        # 计算价差为 100 点的权利金差值
         long_spread_premium = long_premium1 - long_premium2
         short_spread_premium = short_premium2 - short_premium1
 
@@ -275,9 +271,8 @@ def calculate_spread_strategy(sdk, base_symbol):
         print(f"空头合约: {short_symbol1}, {short_symbol2} | 权利金: {short_premium1}, {short_premium2} | 差值: {short_spread_premium}")
 
 # 示例调用
-# sdk = FubonSDK() # 假设 SDK 已经初始化
-# calculate_spread_strategy(sdk, "TX123400A5")
-
+# sdk = FubonSDK()  # 假设 SDK 已经初始化
+# calculate_spread_strategy(sdk, "TX123300A5")
 
 def main():
     """
