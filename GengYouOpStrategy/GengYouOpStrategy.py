@@ -338,11 +338,16 @@ def main():
         return
 
     # 初始化实时行情
-    try:
-        sdk.init_realtime()
-        print("实时行情初始化完成。")
-    except Exception as e:
-        print(f"初始化实时行情失败: {e}")
+    def init_realtime():
+        try:
+            sdk.init_realtime()
+            print("实时行情初始化完成。")
+        except Exception as e:
+            print(f"初始化实时行情失败: {e}")
+            return False
+        return True
+
+    if not init_realtime():
         return
 
     while True:
@@ -361,20 +366,25 @@ def main():
         TxfPrices = fetch_premium(sdk, "TXFA5", session)
         print(f"TxfPrices ({session}): {TxfPrices}")
 
-        # 计算价平合约
-        if TxfPrices is not None:
-            nearest_strike_price = round(TxfPrices / 50) * 50
-            at_the_money_contract = f"TX1{nearest_strike_price:05d}A5"
-            print(f"价平合约: {at_the_money_contract}")
+        # 检查 TxfPrices 的有效性
+        if TxfPrices is None or TxfPrices < 0:
+            print("TxfPrices 无效，重新初始化实时行情...")
+            if not init_realtime():
+                return
+            continue
 
-            # 执行计算函数
-            calculate_spread_strategy(sdk, at_the_money_contract, session)
-            calculate_spread_strategy(sdk, at_the_money_contract.replace("A5", "M5"), session)
-        else:
-            print("无法获取 TxfPrices，跳过计算。")
+        # 计算价平合约
+        nearest_strike_price = round(TxfPrices / 50) * 50
+        at_the_money_contract = f"TX1{nearest_strike_price:05d}A5"
+        print(f"价平合约: {at_the_money_contract}")
+
+        # 执行计算函数
+        calculate_spread_strategy(sdk, at_the_money_contract, session)
+        calculate_spread_strategy(sdk, at_the_money_contract.replace("A5", "M5"), session)
 
         # 延迟 1 秒
         time.sleep(1)
+
 
 
 
