@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import datetime
 from fubon_neo.sdk import FubonSDK
 
 # Function to read configuration from LogConfig.json
@@ -343,39 +344,30 @@ def main():
     except Exception as e:
         print(f"初始化实时行情失败: {e}")
         return
-    
-    # display_all_product_details(sdk)
-
-    
-    # fetch_intraday_quote(sdk, "TX123400A5")
-    # fetch_intraday_quote(sdk, "TX123300A5")
-
-    
-    # fetch_intraday_quote_live(sdk, "TX123400A5")
-    # fetch_intraday_quote_live(sdk, "TX123300A5")
-    #fetch_intraday_quote_live(sdk, "TXFA5")
 
     while True:
+        # 获取当前时间
+        now = datetime.datetime.now()
+        # 判断时段
+        if 8 <= now.hour < 13 or (now.hour == 13 and now.minute <= 45):
+            session = "beforehours"
+        else:
+            session = "afterhours"
+
         # 清空輸出
         os.system('cls' if os.name == 'nt' else 'clear')
 
-        TxfPricesbeforehours = fetch_premium(sdk, "TXFA5", "beforehours")
-        TxfPricesAfterhours = fetch_premium(sdk, "TXFA5", "afterhours")
+        # 根据时段获取权利金
+        TxfPrices = fetch_premium(sdk, "TXFA5", session)
+        print(f"TxfPrices ({session}): {TxfPrices}")
 
-     
-        print(f"TxfPricesbeforehours : {TxfPricesbeforehours}")
-        print(f"TxfPricesAfterhours : {TxfPricesAfterhours}")
+        # 执行计算函数
+        calculate_spread_strategy(sdk, "TX123300A5", session)
+        calculate_spread_strategy(sdk, "TX123300M5", session)
 
+        # 延迟 5 秒
+        time.sleep(1)
 
-        # 執行計算函數
-        calculate_spread_strategy(sdk, "TX123300A5", "beforehours")
-        calculate_spread_strategy(sdk, "TX123300M5", "beforehours")
-        calculate_spread_strategy(sdk, "TX123300A5", "afterhours")
-        calculate_spread_strategy(sdk, "TX123300M5", "afterhours")
-        time.sleep(5)
-
-
-    # OptionChipsTable(sdk, "TX123300M5")
 
 if __name__ == "__main__":
     main()
