@@ -134,30 +134,37 @@ def generate_ordered_symbols(base_symbol, steps=10, interval=50):
     ]
 
 
-def fetch_premium(sdk, symbol):
+def fetch_premium(sdk, symbol, session):
     """
     獲取指定合約的權利金。
     :param sdk: FubonSDK 實例
     :param symbol: 合約代碼
+    :param session: 行情會話類型 ("beforehours" 或 "afterhours")
     :return: 權利金（浮點數）
     """
     try:
         # 模擬權利金數據查詢
-        quote = sdk.marketdata.rest_client.futopt.intraday.quote(symbol=symbol)
+        if session == "beforehours":
+            quote = sdk.marketdata.rest_client.futopt.intraday.quote(symbol=symbol)
+        elif session == "afterhours":
+            quote = sdk.marketdata.rest_client.futopt.intraday.quote(symbol=symbol, session=session)
+        else:
+            raise ValueError("無效的 session 類型，只能為 'beforehours' 或 'afterhours'")
+        
         return quote.get("closePrice", 0.0)
     except Exception as e:
         print(f"無法獲取 {symbol} 的權利金: {e}")
         return 0.0
 
 
-def calculate_spread_strategy(sdk, base_symbol):
+def calculate_spread_strategy(sdk, base_symbol, session):
     """
     計算包含價平合約在內的所有 100 點差合約對的權利金差額。
     :param sdk: FubonSDK 實例
     :param base_symbol: 價平合約代碼，例如 "TX123300A5"
     """
     symbols = generate_ordered_symbols(base_symbol)
-    premiums = {symbol: fetch_premium(sdk, symbol) for symbol in symbols}
+    premiums = {symbol: fetch_premium(sdk, symbol, session) for symbol in symbols}
 
     print(f"價平合約: {base_symbol}, 執行價格: {parse_strike_price(base_symbol)}")
 
@@ -329,8 +336,10 @@ def main():
         os.system('cls' if os.name == 'nt' else 'clear')
         
         # 執行計算函數
-        calculate_spread_strategy(sdk, "TX123300A5")
-        calculate_spread_strategy(sdk, "TX123300M5")
+        calculate_spread_strategy(sdk, "TX123300A5", "beforehours")
+        calculate_spread_strategy(sdk, "TX123300M5", "beforehours")
+        calculate_spread_strategy(sdk, "TX123300A5", "afterhours")
+        calculate_spread_strategy(sdk, "TX123300M5", "afterhours")
         time.sleep(5)
 
 
