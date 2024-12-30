@@ -117,7 +117,7 @@ def parse_strike_price(symbol):
         raise ValueError(f"無法解析合約代碼中的執行價格: {symbol}")
 
 
-def generate_ordered_symbols(base_symbol, steps=5, interval=50):
+def generate_ordered_symbols(base_symbol, steps=3, interval=50):
     """
     按順序生成包含價平合約及上下多檔的合約代碼。
     :param base_symbol: 價平合約代碼，例如 "TX123300A5"
@@ -359,9 +359,6 @@ def main():
         else:
             session = "afterhours"
 
-        # 清空輸出
-        os.system('cls' if os.name == 'nt' else 'clear')
-
         # 根据时段获取权利金
         TxfPrices = fetch_premium(sdk, "TXFA5", session)
         print(f"TxfPrices ({session}): {TxfPrices}")
@@ -385,7 +382,10 @@ def main():
         calculate_spread_strategy(sdk, at_the_money_contract.replace("A5", "M5"), session)
 
         # 延迟 1 秒
-        time.sleep(5)
+        time.sleep(2)
+        
+        # 清空輸出
+        os.system('cls' if os.name == 'nt' else 'clear')
 
 
 
