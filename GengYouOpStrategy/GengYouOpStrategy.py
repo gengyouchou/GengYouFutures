@@ -361,12 +361,21 @@ def main():
         TxfPrices = fetch_premium(sdk, "TXFA5", session)
         print(f"TxfPrices ({session}): {TxfPrices}")
 
-        # 执行计算函数
-        calculate_spread_strategy(sdk, "TX123300A5", session)
-        calculate_spread_strategy(sdk, "TX123300M5", session)
+        # 计算价平合约
+        if TxfPrices is not None:
+            nearest_strike_price = round(TxfPrices / 50) * 50
+            at_the_money_contract = f"TX1{nearest_strike_price:05d}A5"
+            print(f"价平合约: {at_the_money_contract}")
 
-        # 延迟 5 秒
+            # 执行计算函数
+            calculate_spread_strategy(sdk, at_the_money_contract, session)
+            calculate_spread_strategy(sdk, at_the_money_contract.replace("A5", "M5"), session)
+        else:
+            print("无法获取 TxfPrices，跳过计算。")
+
+        # 延迟 1 秒
         time.sleep(1)
+
 
 
 if __name__ == "__main__":
