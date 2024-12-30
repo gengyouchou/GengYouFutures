@@ -189,22 +189,47 @@ def subscribe_trades(sdk, symbol, after_hours):
     订阅指定商品的成交信息。
     :param sdk: FubonSDK 实例
     :param symbol: 商品代码
-    :param after_hours: 是否订阅夜盘行情
+    :param after_hours: 是否订阅夜盘行情 (True 为夜盘, False 为日盘)
     """
     def handle_message(message):
-        print("接收到成交信息:")
-        print_quote_live(message.get("data", {}))
+        # 检查消息是否为行情数据
+        if message.get("event") == "data":
+            data = message.get("data", {})
+            print(f"接收到成交信息: {data}")
+            trades = data.get("trades", [])
+            for trade in trades:
+                print(f"成交价格: {trade.get('price')}, 成交单量: {trade.get('size')}, "
+                      f"成交买价: {trade.get('bid')}, 成交卖价: {trade.get('ask')}")
+        else:
+            print(f"接收到非行情消息: {message}")
 
     channel = "trades"
-    sdk.init_realtime()  # 建立行情连接
-    futopt = sdk.marketdata.websocket_client.futopt
-    futopt.on('message', handle_message)
-    futopt.connect()
-    futopt.subscribe({
-        'channel': channel,
-        'symbol': symbol,
-        'afterHours': after_hours
-    })
+
+    try:
+        # 初始化实时行情连接
+        sdk.init_realtime()
+
+        # 获取 WebSocket 客户端
+        futopt = sdk.marketdata.websocket_client.futopt
+
+        # 订阅消息处理函数
+        futopt.on('message', handle_message)
+
+        # 建立 WebSocket 连接
+        futopt.connect()
+
+        # 发送订阅请求
+        futopt.subscribe({
+            'channel': channel,
+            'symbol': symbol,
+            'afterHours': after_hours
+        })
+
+        print(f"已订阅 {symbol} 的成交信息 (夜盘: {after_hours})")
+
+    except Exception as e:
+        print(f"订阅 {symbol} 的成交信息失败: {e}")
+
 
 def print_quote_live(quote):
     """
@@ -324,26 +349,27 @@ def main():
     
     # fetch_intraday_quote(sdk, "TX123400A5")
     # fetch_intraday_quote(sdk, "TX123300A5")
-    # fetch_intraday_quote(sdk, "TXFA5")
 
     
     # fetch_intraday_quote_live(sdk, "TX123400A5")
     # fetch_intraday_quote_live(sdk, "TX123300A5")
-    # fetch_intraday_quote_live(sdk, "TXFA5")
+    fetch_intraday_quote_live(sdk, "TXFA5")
 
-    while True:
-        # 清空輸出
-        os.system('cls' if os.name == 'nt' else 'clear')
-        
-        # 執行計算函數
-        calculate_spread_strategy(sdk, "TX123300A5", "beforehours")
-        calculate_spread_strategy(sdk, "TX123300M5", "beforehours")
-        calculate_spread_strategy(sdk, "TX123300A5", "afterhours")
-        calculate_spread_strategy(sdk, "TX123300M5", "afterhours")
-        time.sleep(5)
+    # while True:
+    #     # 清空輸出
+    #     os.system('cls' if os.name == 'nt' else 'clear')
+
+    #     fetch_intraday_quote(sdk, "TXFA5")
+
+    #     # 執行計算函數
+    #     calculate_spread_strategy(sdk, "TX123300A5", "beforehours")
+    #     calculate_spread_strategy(sdk, "TX123300M5", "beforehours")
+    #     calculate_spread_strategy(sdk, "TX123300A5", "afterhours")
+    #     calculate_spread_strategy(sdk, "TX123300M5", "afterhours")
+    #     time.sleep(5)
 
 
-    OptionChipsTable(sdk, "TX123300M5")
+    # OptionChipsTable(sdk, "TX123300M5")
 
 if __name__ == "__main__":
     main()
