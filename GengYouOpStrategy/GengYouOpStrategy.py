@@ -353,20 +353,26 @@ def main():
     
     # fetch_intraday_quote_live(sdk, "TX123400A5")
     # fetch_intraday_quote_live(sdk, "TX123300A5")
-    fetch_intraday_quote_live(sdk, "TXFA5")
+    #fetch_intraday_quote_live(sdk, "TXFA5")
 
-    # while True:
-    #     # 清空輸出
-    #     os.system('cls' if os.name == 'nt' else 'clear')
+    while True:
+        # 清空輸出
+        os.system('cls' if os.name == 'nt' else 'clear')
 
-    #     fetch_intraday_quote(sdk, "TXFA5")
+        TxfPricesbeforehours = fetch_premium(sdk, "TXFA5", "beforehours")
+        TxfPricesAfterhours = fetch_premium(sdk, "TXFA5", "afterhours")
 
-    #     # 執行計算函數
-    #     calculate_spread_strategy(sdk, "TX123300A5", "beforehours")
-    #     calculate_spread_strategy(sdk, "TX123300M5", "beforehours")
-    #     calculate_spread_strategy(sdk, "TX123300A5", "afterhours")
-    #     calculate_spread_strategy(sdk, "TX123300M5", "afterhours")
-    #     time.sleep(5)
+     
+        print(f"TxfPricesbeforehours : {TxfPricesbeforehours}")
+        print(f"TxfPricesAfterhours : {TxfPricesAfterhours}")
+
+
+        # 執行計算函數
+        calculate_spread_strategy(sdk, "TX123300A5", "beforehours")
+        calculate_spread_strategy(sdk, "TX123300M5", "beforehours")
+        calculate_spread_strategy(sdk, "TX123300A5", "afterhours")
+        calculate_spread_strategy(sdk, "TX123300M5", "afterhours")
+        time.sleep(5)
 
 
     # OptionChipsTable(sdk, "TX123300M5")
