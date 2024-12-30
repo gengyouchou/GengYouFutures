@@ -367,10 +367,12 @@ def main():
         print(f"TxfPrices ({session}): {TxfPrices}")
 
         # 检查 TxfPrices 的有效性
-        if TxfPrices is None or TxfPrices < 0:
+        if TxfPrices is None or TxfPrices <= 0.0:
             print("TxfPrices 无效，重新初始化实时行情...")
             if not init_realtime():
                 return
+            # 延迟 1 秒
+            time.sleep(10)
             continue
 
         # 计算价平合约
