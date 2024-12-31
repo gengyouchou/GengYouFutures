@@ -168,45 +168,69 @@ def fetch_premium(sdk, symbol, session):
         return 0.0
 
 
+import json
+
 def calculate_spread_strategy(sdk, base_symbol, session, direction):
     """
-    計算包含價平合約在內的所有 100 點差合約對的權利金差額。
-    :param sdk: FubonSDK 實例
-    :param base_symbol: 價平合約代碼，例如 "TX123300A5"
-    :param session: 當前交易時段
-    :param direction: 合約代碼生成方向 ("both", "up", "down")
+    Calculate the premium differences for all 100-point interval contract pairs, 
+    including the at-the-money contract.
+    :param sdk: FubonSDK instance
+    :param base_symbol: At-the-money contract symbol, e.g., "TX123300A5"
+    :param session: Current trading session
+    :param direction: Contract generation direction ("both", "up", "down")
     """
-    # 生成合約代碼
+    # Generate contract symbols
     symbols = generate_ordered_symbols(base_symbol, direction=direction)
 
-    # 如果 direction 是 "down"，反轉 symbols
+    # Reverse symbols if the direction is "down"
     if direction == "down":
         symbols = symbols[::-1]
 
-    # 獲取權利金數據
+    # Fetch premium data
     premiums = {symbol: fetch_premium(sdk, symbol, session) for symbol in symbols}
 
-    print(f"價平合約: {base_symbol}, 執行價格: {parse_strike_price(base_symbol)}")
+    # Collect results in a list
+    results = []
 
-    # 遍歷當前與下一檔（100 點差）的合約對
-    for i in range(len(symbols) - 2):  # 確保索引不越界
+    # Process each contract pair
+    for i in range(len(symbols) - 2):  # Ensure no out-of-bound index
         current_symbol = symbols[i]
-        next_symbol = symbols[i + 2]  # 價差為 100 點的合約對
+        next_symbol = symbols[i + 2]  # 100-point interval pair
 
-        # 獲取權利金，跳過缺失數據的合約對
+        # Retrieve premium data, skip pairs with missing data
         current_premium = premiums.get(current_symbol)
         next_premium = premiums.get(next_symbol)
 
         if current_premium is None or next_premium is None:
-            print(f"跳過合約對: {current_symbol}, {next_symbol}（權利金數據缺失）")
+            results.append({
+                "pair": [current_symbol, next_symbol],
+                "status": "skipped",
+                "reason": "Premium data missing"
+            })
             continue
 
-        # 計算權利金差值
+        # Calculate premium difference
         premium_diff = current_premium - next_premium
-        print(
-            f"合約對: {current_symbol}, {next_symbol} | "
-            f"權利金: {current_premium}, {next_premium} | 差值: {premium_diff}"
-        )
+        results.append({
+            "pair": [current_symbol, next_symbol],
+            "premiums": {
+                "current": current_premium,
+                "next": next_premium
+            },
+            "difference": premium_diff,
+            "status": "processed"
+        })
+
+    # Wrap in a JSON response
+    response = {
+        "base_symbol": base_symbol,
+        "strike_price": parse_strike_price(base_symbol),
+        "direction": direction,
+        "results": results
+    }
+
+    # Output JSON
+    print(json.dumps(response, indent=4))
 
 
 # 示例調用
