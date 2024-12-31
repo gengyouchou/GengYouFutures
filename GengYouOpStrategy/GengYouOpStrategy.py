@@ -117,7 +117,7 @@ def parse_strike_price(symbol):
         raise ValueError(f"無法解析合約代碼中的執行價格: {symbol}")
 
 
-def generate_ordered_symbols(base_symbol, steps=5, interval=50, direction="both"):
+def generate_ordered_symbols(base_symbol, steps=10, interval=50, direction="both"):
     """
     按指定方向生成包含價平合約及上下多檔的合約代碼。
     :param base_symbol: 價平合約代碼，例如 "TX123300A5"
@@ -135,7 +135,7 @@ def generate_ordered_symbols(base_symbol, steps=5, interval=50, direction="both"
     elif direction == "up":
         range_values = range(0, steps)
     elif direction == "down":
-        range_values = range(-steps, 0)
+        range_values = [i + 1 for i in range(-steps, 0)]  # 自定義調整，生成 [-2, -1, 0]
     else:
         raise ValueError("方向參數 'direction' 必須是 'both', 'up', 或 'down'")
 
@@ -173,22 +173,40 @@ def calculate_spread_strategy(sdk, base_symbol, session, direction):
     計算包含價平合約在內的所有 100 點差合約對的權利金差額。
     :param sdk: FubonSDK 實例
     :param base_symbol: 價平合約代碼，例如 "TX123300A5"
+    :param session: 當前交易時段
+    :param direction: 合約代碼生成方向 ("both", "up", "down")
     """
-    symbols = generate_ordered_symbols(base_symbol, direction = direction)
+    # 生成合約代碼
+    symbols = generate_ordered_symbols(base_symbol, direction=direction)
+
+    # 如果 direction 是 "down"，反轉 symbols
+    if direction == "down":
+        symbols = symbols[::-1]
+
+    # 獲取權利金數據
     premiums = {symbol: fetch_premium(sdk, symbol, session) for symbol in symbols}
 
     print(f"價平合約: {base_symbol}, 執行價格: {parse_strike_price(base_symbol)}")
 
-    for i in range(len(symbols) - 2):  # 遍歷當前與下一檔（100 點差）的合約對
+    # 遍歷當前與下一檔（100 點差）的合約對
+    for i in range(len(symbols) - 2):  # 確保索引不越界
         current_symbol = symbols[i]
         next_symbol = symbols[i + 2]  # 價差為 100 點的合約對
 
-        if next_symbol in premiums and current_symbol in premiums:
-            premium_diff = premiums[current_symbol] - premiums[next_symbol]
-            print(
-                f"合約對: {current_symbol}, {next_symbol} | "
-                f"權利金: {premiums[current_symbol]}, {premiums[next_symbol]} | 差值: {premium_diff}"
-            )
+        # 獲取權利金，跳過缺失數據的合約對
+        current_premium = premiums.get(current_symbol)
+        next_premium = premiums.get(next_symbol)
+
+        if current_premium is None or next_premium is None:
+            print(f"跳過合約對: {current_symbol}, {next_symbol}（權利金數據缺失）")
+            continue
+
+        # 計算權利金差值
+        premium_diff = current_premium - next_premium
+        print(
+            f"合約對: {current_symbol}, {next_symbol} | "
+            f"權利金: {current_premium}, {next_premium} | 差值: {premium_diff}"
+        )
 
 
 # 示例調用
