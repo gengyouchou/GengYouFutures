@@ -117,21 +117,31 @@ def parse_strike_price(symbol):
         raise ValueError(f"無法解析合約代碼中的執行價格: {symbol}")
 
 
-def generate_ordered_symbols(base_symbol, steps=3, interval=50):
+def generate_ordered_symbols(base_symbol, steps=5, interval=50, direction="both"):
     """
-    按順序生成包含價平合約及上下多檔的合約代碼。
+    按指定方向生成包含價平合約及上下多檔的合約代碼。
     :param base_symbol: 價平合約代碼，例如 "TX123300A5"
-    :param steps: 向上和向下的檔數
+    :param steps: 生成的檔數
     :param interval: 每檔價差（點數）
+    :param direction: 生成方向，"both" 为上下，"up" 为向上，"down" 为向下
     :return: 排序後的合約代碼列表
     """
     base_prefix = base_symbol[:3]
     base_suffix = base_symbol[8:]
     base_price = parse_strike_price(base_symbol)
 
+    if direction == "both":
+        range_values = range(-steps, steps + 1)
+    elif direction == "up":
+        range_values = range(0, steps)
+    elif direction == "down":
+        range_values = range(-steps, 0)
+    else:
+        raise ValueError("方向參數 'direction' 必須是 'both', 'up', 或 'down'")
+
     return [
         f"{base_prefix}{base_price + i * interval:05d}{base_suffix}"
-        for i in range(-steps, steps + 1)
+        for i in range_values
     ]
 
 
@@ -158,13 +168,13 @@ def fetch_premium(sdk, symbol, session):
         return 0.0
 
 
-def calculate_spread_strategy(sdk, base_symbol, session):
+def calculate_spread_strategy(sdk, base_symbol, session, direction):
     """
     計算包含價平合約在內的所有 100 點差合約對的權利金差額。
     :param sdk: FubonSDK 實例
     :param base_symbol: 價平合約代碼，例如 "TX123300A5"
     """
-    symbols = generate_ordered_symbols(base_symbol)
+    symbols = generate_ordered_symbols(base_symbol, direction = direction)
     premiums = {symbol: fetch_premium(sdk, symbol, session) for symbol in symbols}
 
     print(f"價平合約: {base_symbol}, 執行價格: {parse_strike_price(base_symbol)}")
@@ -378,8 +388,8 @@ def main():
         print(f"价平合约: {at_the_money_contract}")
 
         # 执行计算函数
-        calculate_spread_strategy(sdk, at_the_money_contract, session)
-        calculate_spread_strategy(sdk, at_the_money_contract.replace("A5", "M5"), session)
+        calculate_spread_strategy(sdk, at_the_money_contract, session, "up")
+        calculate_spread_strategy(sdk, at_the_money_contract.replace("A5", "M5"), session, "down")
 
         # 延迟 1 秒
         time.sleep(2)
