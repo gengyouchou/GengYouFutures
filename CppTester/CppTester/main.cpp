@@ -467,7 +467,7 @@ void thread_main()
 
     std::ostringstream oss;
     oss << COMMODITY_TX_MAIN << "AM" << "," << COMMODITY_TX_MAIN << ","
-        << "TSEA" << "," << TSMC << "," << MEDIATEK << "," << FOXCONN << "TX123300A5" << "TX123900M5";
+        << "TSEA" << "," << TSMC << "," << MEDIATEK << "," << FOXCONN << "," << "TX123300A5" << "," << "TX122900M5" << "," << "TX123000M5";
     CommList = oss.str();
 
     AutoQuote(CommList, -1);

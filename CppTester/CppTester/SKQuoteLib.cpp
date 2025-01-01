@@ -1,5 +1,6 @@
 #include "SKQuoteLib.h"
 #include "Strategy.h"
+#include "config.h"
 #include <array>
 #include <deque>
 #include <iostream>
@@ -7,7 +8,6 @@
 #include <string>
 #include <unordered_map>
 #include <yaml-cpp/yaml.h>
-#include "config.h"
 
 #define SK_SUBJECT_CONNECTION_CONNECTED 3001
 #define SK_SUBJECT_CONNECTION_DISCONNECT 3002
@@ -649,6 +649,10 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
           skStock.nLow,
           skStock.nClose,
           skStock.nSimulate);
+
+    DEBUG(DEBUG_LEVEL_INFO, "nTBc= %ld, nTAc= %ld",
+          skStock.nTBc,
+          skStock.nTAc);
 
     gCurCommHighLowPoint[nStockIndex][0] = skStock.nHigh;
     gCurCommHighLowPoint[nStockIndex][1] = skStock.nLow;
