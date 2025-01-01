@@ -624,7 +624,7 @@ void ParseOpenInterestMessage(const std::string &strMessage)
         return;
     }
 
-    if (items.size() >= 7)
+    if (items.size() >= 7 && items[2].rfind("TM", 0) == 0)
     {
         gOpenInterestInfo.product = items[2];                     // 3
         gOpenInterestInfo.buySell = items[3];                     // 4

@@ -86,7 +86,7 @@ struct OPEN_INTEREST_INFO_UI
     BOOLEAN NeedToUpdate;
 };
 
-#define MAX_CACHE_LEN 10000
+#define MAX_CACHE_LEN 20000
 
 // Runtime cache to store in-memory data
 extern std::deque<YAML::Node> gCacheData;
