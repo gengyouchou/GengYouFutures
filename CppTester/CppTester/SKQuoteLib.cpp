@@ -68,7 +68,7 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
     EXCEPINFO *pexcepinfo,
     UINT *puArgErr)
 {
-    DEBUG(DEBUG_LEVEL_INFO, "dispidMember == %d", dispidMember);
+    DEBUG(DEBUG_LEVEL_DEBUG, "dispidMember == %d", dispidMember);
 
     VARIANT varlValue;
     VariantInit(&varlValue);
@@ -638,7 +638,7 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
     char *szStockNo = _com_util::ConvertBSTRToString(skStock.bstrStockNo);
     char *szStockName = _com_util::ConvertBSTRToString(skStock.bstrStockName);
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex= %ld, szStockNo: %s, szStockName : %s, nTradingDay: %ld, nDealTime: %ld, Open: %d, High: %d, Low: %d, Close: %d, Simulate: %d",
+    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex= %ld, szStockNo: %s, szStockName : %s, nTradingDay: %ld, nDealTime: %ld, Open: %d, High: %d, Low: %d, Close: %d, Simulate: %d",
           nStockIndex,
           szStockNo,
           szStockName,

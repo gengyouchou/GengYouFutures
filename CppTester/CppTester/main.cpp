@@ -9,16 +9,16 @@
 #include <conio.h> // For kbhit() and _getch()
 #include <cstdlib> // For system("cls")
 #include <deque>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 #include <yaml-cpp/yaml.h>
-#include <fstream>
-#include <sstream>
 
 #include "Strategy.h"
-#include <GengYouFuturesUI.h>
 #include "config.h"
+#include <GengYouFuturesUI.h>
 
 extern std::deque<long> gDaysKlineDiff;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
@@ -130,9 +130,9 @@ LONG AutoQuote(IN string ProductNum, short sPageNo)
     pSKCenterLib->PrintfCodeMessage("Quote", "RequestStocks", g_nCode);
     DEBUG(DEBUG_LEVEL_INFO, "RequestStocks g_nCode= %d", g_nCode);
 
-    g_nCode = pSKQuoteLib->GetStrikePrices();
-    pSKCenterLib->PrintfCodeMessage("Quote", "GetStrikePrices", g_nCode);
-    DEBUG(DEBUG_LEVEL_INFO, "GetStrikePrices g_nCode= %d", g_nCode);
+    // g_nCode = pSKQuoteLib->GetStrikePrices();
+    // pSKCenterLib->PrintfCodeMessage("Quote", "GetStrikePrices", g_nCode);
+    // DEBUG(DEBUG_LEVEL_INFO, "GetStrikePrices g_nCode= %d", g_nCode);
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 
@@ -466,7 +466,8 @@ void thread_main()
     std::string CommList;
 
     std::ostringstream oss;
-    oss << COMMODITY_TX_MAIN << "AM" << "," << COMMODITY_TX_MAIN << "," << "TSEA" << "," << TSMC << "," << MEDIATEK << "," << FOXCONN;
+    oss << COMMODITY_TX_MAIN << "AM" << "," << COMMODITY_TX_MAIN << ","
+        << "TSEA" << "," << TSMC << "," << MEDIATEK << "," << FOXCONN << "TX123300A5" << "TX123900M5";
     CommList = oss.str();
 
     AutoQuote(CommList, -1);
