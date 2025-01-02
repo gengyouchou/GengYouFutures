@@ -617,14 +617,14 @@ void ParseOpenInterestMessage(const std::string &strMessage)
 
     std::string UnKnowMarket = "##";
 
-    if (!items.empty() && items[0] == UnKnowMarket)
+    if (!items.empty() && (items[0] == UnKnowMarket || items[0] != "TF"))
     {
         LOG(DEBUG_LEVEL_DEBUG, "Message: %s", strMessage);
         gOpenInterestInfo.NeedToUpdate = FALSE;
         return;
     }
 
-    if (items.size() >= 7 && items[2].rfind("TM", 0) == 0)
+    if (items.size() >= 7)
     {
         gOpenInterestInfo.product = items[2];                     // 3
         gOpenInterestInfo.buySell = items[3];                     // 4
