@@ -22,7 +22,6 @@
             margin: 20px auto;
         }
 
-        /* 隱藏 log 區域 */
         #log {
             display: none;
         }
@@ -51,10 +50,10 @@
                         {
                             label: "LongShort",
                             data: [],
-                            borderColor: "green", // 線條顏色
-                            borderWidth: 1, // 線條寬度
-                            tension: 0.4, // 平滑曲線
-                            pointRadius: 0, // 禁用數據點的圓圈標記
+                            borderColor: "green",
+                            borderWidth: 1,
+                            tension: 0.4,
+                            pointRadius: 0,
                         }
                     ]
                 },
@@ -78,10 +77,10 @@
                         {
                             label: "BidOfferLongShortSlope",
                             data: [],
-                            borderColor: "red", // 線條顏色
-                            borderWidth: 1, // 線條寬度
-                            tension: 0.4, // 平滑曲線
-                            pointRadius: 0, // 禁用數據點的圓圈標記
+                            borderColor: "red",
+                            borderWidth: 1,
+                            tension: 0.4,
+                            pointRadius: 0,
                         }
                     ]
                 },
@@ -114,8 +113,14 @@
             }
         }
 
+        function resetChartData(chartData) {
+            // 清空圖表資料
+            chartData.labels.length = 0;
+            chartData.datasets[0].data.length = 0;
+        }
+
         function batchUpdateChartData(chartData, labels, values) {
-            // 批次更新 labels 和 data
+            // 批次更新資料
             chartData.labels.push(...labels);
             chartData.datasets[0].data.push(...values);
 
@@ -133,7 +138,7 @@
                 return;
             }
 
-            // 批次收集需要更新的資料
+            // 收集更新資料
             const longShortLabels = [];
             const longShortValues = [];
             const bidOfferSlopeLabels = [];
@@ -147,19 +152,21 @@
                 bidOfferSlopeValues.push(gBidOfferLongShortSlope);
             });
 
-            // 批次更新圖表資料
+            // 清空並更新圖表資料
+            resetChartData(longShortChart.data);
             batchUpdateChartData(longShortChart.data, longShortLabels, longShortValues);
+
+            resetChartData(bidOfferSlopeChart.data);
             batchUpdateChartData(bidOfferSlopeChart.data, bidOfferSlopeLabels, bidOfferSlopeValues);
 
             // 更新圖表一次
             longShortChart.update();
             bidOfferSlopeChart.update();
 
-            // 取得最新一筆資料，顯示在日誌中
+            // 日誌顯示最新資料
             const latestPoint = data[data.length - 1];
             appendLog(`[Time: ${latestPoint.timestamp}] LongShort: ${latestPoint.gLongShort}, BidOfferSlope: ${latestPoint.gBidOfferLongShortSlope}`);
         }
-
 
         function appendLog(message, isError = false) {
             const entry = document.createElement("div");
