@@ -168,8 +168,6 @@ def fetch_premium(sdk, symbol, session):
         return 0.0
 
 
-import json
-
 def calculate_spread_strategy(sdk, base_symbol, session, direction):
     """
     Calculate the premium differences for all 100-point interval contract pairs, 
@@ -338,6 +336,7 @@ def OptionChipsTable(sdk, base_symbol):
     生成包含價平合約及其上下10個履約價的期權籌碼表，並計算內外盤成交量差值。
     :param sdk: FubonSDK 實例
     :param base_symbol: 價平合約代碼，例如 "TX123300A5"
+    :return: JSON 格式的期權籌碼表數據
     """
     print(f"生成期權籌碼表，基準合約: {base_symbol}")
 
@@ -345,7 +344,7 @@ def OptionChipsTable(sdk, base_symbol):
     symbols = generate_ordered_symbols(base_symbol, steps=10)
 
     # 收集每個合約的數據
-    data = {}
+    data = []
     for symbol in symbols:
         try:
             # 獲取白天數據
@@ -368,31 +367,23 @@ def OptionChipsTable(sdk, base_symbol):
                 print(f"獲取合約 {symbol} 的盤後數據失敗: {e}")
 
             # 收集最終數據
-            data[symbol] = {
+            data.append({
                 "strike_price": parse_strike_price(symbol),
                 "tradeVolume": trade_volume,
                 "bid_volume": bid_volume,
                 "ask_volume": ask_volume,
                 "volume_difference": ask_volume - bid_volume,
-            }
+            })
         except Exception as e:
             print(f"獲取合約 {symbol} 數據失敗: {e}")
 
-    # 打印表格
-    print("-" * 70)
-    print(f"{'履約價':<10}{'累計成交量':<10}{'買盤累計成交量':<15}{'賣盤累計成交量':<15}{'內外盤差值':<10}")
-    print("-" * 70)
-    for symbol in symbols:
-        info = data.get(symbol, {})
-        print(
-            f"{info.get('strike_price', 'N/A'):<10}"
-            f"{info.get('tradeVolume', 0):<10}"
-            f"{info.get('bid_volume', 0):<15}"
-            f"{info.get('ask_volume', 0):<15}"
-            f"{info.get('volume_difference', 0):<10}"
-        )
-    print("-" * 70)
+    # 將數據轉為 JSON 格式
+    json_data = json.dumps(data, ensure_ascii=False, indent=4)
+    print("生成的期權籌碼表數據（JSON 格式）:")
+    print(json_data)
 
+    # 返回 JSON 數據
+    return json_data
 
 
 
@@ -462,7 +453,7 @@ def main():
 
 
         # 延迟 1 秒
-        time.sleep(20)
+        time.sleep(5)
         
         # 清空輸出
         os.system('cls' if os.name == 'nt' else 'clear')
