@@ -356,7 +356,7 @@ def OptionChipsTable(sdk, base_symbol):
                 "tradeVolume": total.get("tradeVolume", 0),
                 "bid_volume": total.get("totalBidMatch", 0),
                 "ask_volume": total.get("totalAskMatch", 0),
-                "volume_difference": total.get("totalBidMatch", 0) - total.get("totalAskMatch", 0)
+                "volume_difference": total.get("totalAskMatch", 0) - total.get("totalBidMatch", 0)
             }
         except Exception as e:
             print(f"獲取合約 {symbol} 數據失敗: {e}")
@@ -445,7 +445,7 @@ def main():
 
 
         # 延迟 1 秒
-        time.sleep(10)
+        time.sleep(20)
         
         # 清空輸出
         os.system('cls' if os.name == 'nt' else 'clear')
