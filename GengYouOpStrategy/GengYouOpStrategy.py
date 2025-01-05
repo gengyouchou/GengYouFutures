@@ -368,6 +368,7 @@ def OptionChipsTable(sdk, base_symbol):
 
             # 收集最終數據
             data.append({
+                "symbol": symbol,           # 添加對應的 symbol
                 "strike_price": parse_strike_price(symbol),
                 "tradeVolume": trade_volume,
                 "bid_volume": bid_volume,
@@ -377,8 +378,12 @@ def OptionChipsTable(sdk, base_symbol):
         except Exception as e:
             print(f"獲取合約 {symbol} 數據失敗: {e}")
 
-    # 將數據轉為 JSON 格式
-    json_data = json.dumps(data, ensure_ascii=False, indent=4)
+    # 將 base_symbol 放在外層，並組裝 JSON 格式的數據
+    json_data = json.dumps({
+        "base_symbol": base_symbol,
+        "options_data": data
+    }, ensure_ascii=False, indent=4)
+
     print("生成的期權籌碼表數據（JSON 格式）:")
     print(json_data)
 
