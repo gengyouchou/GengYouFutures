@@ -348,34 +348,51 @@ def OptionChipsTable(sdk, base_symbol):
     data = {}
     for symbol in symbols:
         try:
+            # 獲取白天數據
             quote = sdk.marketdata.rest_client.futopt.intraday.quote(symbol=symbol)
             total = quote.get('total', {})
+
+            # 初始化內外盤數據
+            trade_volume = total.get("tradeVolume", 0)
+            bid_volume = total.get("totalBidMatch", 0)
+            ask_volume = total.get("totalAskMatch", 0)
+
+            # 嘗試添加盤後數據
+            try:
+                afterhours_quote = sdk.marketdata.rest_client.futopt.intraday.quote(symbol=symbol, session="afterhours")
+                afterhours_total = afterhours_quote.get('total', {})
+                trade_volume += afterhours_total.get("tradeVolume", 0)
+                bid_volume += afterhours_total.get("totalBidMatch", 0)
+                ask_volume += afterhours_total.get("totalAskMatch", 0)
+            except Exception as e:
+                print(f"獲取合約 {symbol} 的盤後數據失敗: {e}")
+
+            # 收集最終數據
             data[symbol] = {
                 "strike_price": parse_strike_price(symbol),
-                "last_price": quote.get("lastPrice", 0.0),
-                "tradeVolume": total.get("tradeVolume", 0),
-                "bid_volume": total.get("totalBidMatch", 0),
-                "ask_volume": total.get("totalAskMatch", 0),
-                "volume_difference": total.get("totalAskMatch", 0) - total.get("totalBidMatch", 0)
+                "tradeVolume": trade_volume,
+                "bid_volume": bid_volume,
+                "ask_volume": ask_volume,
+                "volume_difference": ask_volume - bid_volume,
             }
         except Exception as e:
             print(f"獲取合約 {symbol} 數據失敗: {e}")
 
     # 打印表格
     print("-" * 70)
-    print(f"{'履約價':<10}{'最新成交價':<15}{'累計成交量':<10}{'買盤累計成交量':<15}{'賣盤累計成交量':<15}{'內外盤差值':<10}")
+    print(f"{'履約價':<10}{'累計成交量':<10}{'買盤累計成交量':<15}{'賣盤累計成交量':<15}{'內外盤差值':<10}")
     print("-" * 70)
     for symbol in symbols:
         info = data.get(symbol, {})
         print(
             f"{info.get('strike_price', 'N/A'):<10}"
-            f"{info.get('last_price', 0.0):<15.2f}"
             f"{info.get('tradeVolume', 0):<10}"
             f"{info.get('bid_volume', 0):<15}"
             f"{info.get('ask_volume', 0):<15}"
             f"{info.get('volume_difference', 0):<10}"
         )
     print("-" * 70)
+
 
 
 
