@@ -335,42 +335,49 @@ def fetch_intraday_quote_live(sdk, symbol):
 
 def OptionChipsTable(sdk, base_symbol):
     """
-    生成包含價平合約及其上下5個履約價的期權籌碼表。
+    生成包含價平合約及其上下10個履約價的期權籌碼表，並計算內外盤成交量差值。
     :param sdk: FubonSDK 實例
     :param base_symbol: 價平合約代碼，例如 "TX123300A5"
     """
     print(f"生成期權籌碼表，基準合約: {base_symbol}")
 
-    # 生成價平上下5檔的合約代碼
-    symbols = generate_ordered_symbols(base_symbol, steps=5)
+    # 生成價平上下10檔的合約代碼
+    symbols = generate_ordered_symbols(base_symbol, steps=10)
 
     # 收集每個合約的數據
     data = {}
     for symbol in symbols:
         try:
             quote = sdk.marketdata.rest_client.futopt.intraday.quote(symbol=symbol)
+            total = quote.get('total', {})
             data[symbol] = {
                 "strike_price": parse_strike_price(symbol),
                 "last_price": quote.get("lastPrice", 0.0),
-                "open_interest": quote.get("openInterest", 0),
-                "bid_volume": quote.get("bidVolume", 0),
-                "ask_volume": quote.get("askVolume", 0),
-                "change_percent": quote.get("changePercent", 0.0)
+                "tradeVolume": total.get("tradeVolume", 0),
+                "bid_volume": total.get("totalBidMatch", 0),
+                "ask_volume": total.get("totalAskMatch", 0),
+                "volume_difference": total.get("totalBidMatch", 0) - total.get("totalAskMatch", 0)
             }
         except Exception as e:
             print(f"獲取合約 {symbol} 數據失敗: {e}")
 
     # 打印表格
-    print("-" * 50)
-    print(f"{'履約價':<10}{'最新價':<10}{'持倉量':<10}{'買量':<10}{'賣量':<10}{'漲跌幅(%)':<10}")
-    print("-" * 50)
-    for symbol, info in sorted(data.items(), key=lambda x: x[1]["strike_price"]):
+    print("-" * 70)
+    print(f"{'履約價':<10}{'最新成交價':<15}{'累計成交量':<10}{'買盤累計成交量':<15}{'賣盤累計成交量':<15}{'內外盤差值':<10}")
+    print("-" * 70)
+    for symbol in symbols:
+        info = data.get(symbol, {})
         print(
-            f"{info['strike_price']:<10}{info['last_price']:<10.2f}"
-            f"{info['open_interest']:<10}{info['bid_volume']:<10}"
-            f"{info['ask_volume']:<10}{info['change_percent']:<10.2f}"
+            f"{info.get('strike_price', 'N/A'):<10}"
+            f"{info.get('last_price', 0.0):<15.2f}"
+            f"{info.get('tradeVolume', 0):<10}"
+            f"{info.get('bid_volume', 0):<15}"
+            f"{info.get('ask_volume', 0):<15}"
+            f"{info.get('volume_difference', 0):<10}"
         )
-    print("-" * 50)
+    print("-" * 70)
+
+
 
 
 def main():
@@ -433,12 +440,12 @@ def main():
         # calculate_spread_strategy(sdk, at_the_money_contract, session, "up")
         # calculate_spread_strategy(sdk, at_the_money_contract.replace("A5", "M5"), session, "down")
 
-        fetch_intraday_quote(sdk, at_the_money_contract)
-        fetch_intraday_quote(sdk, at_the_money_contract.replace("A5", "M5"))
+        OptionChipsTable(sdk, at_the_money_contract)
+        OptionChipsTable(sdk, at_the_money_contract.replace("A5", "M5"))
 
 
         # 延迟 1 秒
-        time.sleep(2)
+        time.sleep(10)
         
         # 清空輸出
         os.system('cls' if os.name == 'nt' else 'clear')
