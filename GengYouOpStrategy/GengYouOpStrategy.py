@@ -92,8 +92,8 @@ def print_quote(quote):
     # 累计数据
     total = quote.get('total', {})
     print(f"累计成交量: {total.get('tradeVolume', 'N/A')}")
-    print(f"累计内盘成交量: {total.get('tradeVolumeAtBid', 'N/A')}")
-    print(f"累计外盘成交量: {total.get('tradeVolumeAtAsk', 'N/A')}")
+    print(f"累计内盘成交量: {total.get('totalBidMatch', 'N/A')}")
+    print(f"累计外盘成交量: {total.get('totalAskMatch', 'N/A')}")
 
     # 最后一笔成交数据
     last_trade = quote.get('lastTrade', {})
@@ -430,8 +430,12 @@ def main():
         print(f"价平合约: {at_the_money_contract}")
 
         # 执行计算函数
-        calculate_spread_strategy(sdk, at_the_money_contract, session, "up")
-        calculate_spread_strategy(sdk, at_the_money_contract.replace("A5", "M5"), session, "down")
+        # calculate_spread_strategy(sdk, at_the_money_contract, session, "up")
+        # calculate_spread_strategy(sdk, at_the_money_contract.replace("A5", "M5"), session, "down")
+
+        fetch_intraday_quote(sdk, at_the_money_contract)
+        fetch_intraday_quote(sdk, at_the_money_contract.replace("A5", "M5"))
+
 
         # 延迟 1 秒
         time.sleep(2)
