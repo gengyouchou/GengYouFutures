@@ -610,6 +610,8 @@ void ParseOpenInterestMessage(const std::string &strMessage)
     // or
     // M003 NO DATA#
 
+    static bool HaveTF = false;
+
     while (std::getline(ss, item, ','))
     {
         items.push_back(item);
@@ -617,14 +619,19 @@ void ParseOpenInterestMessage(const std::string &strMessage)
 
     std::string UnKnowMarket = "##";
 
-    if (!items.empty() && (items[0] == UnKnowMarket || items[0] != "TF"))
+    if (!items.empty() && items[0] == UnKnowMarket)
     {
         LOG(DEBUG_LEVEL_DEBUG, "Message: %s", strMessage);
         gOpenInterestInfo.NeedToUpdate = FALSE;
         return;
     }
 
-    if (items.size() >= 7)
+    if (!items.empty() && items[0] == "TF")
+    {
+        HaveTF = true;
+    }
+
+    if (items.size() >= 7 && items[0] == "TF")
     {
         gOpenInterestInfo.product = items[2];                     // 3
         gOpenInterestInfo.buySell = items[3];                     // 4
@@ -645,7 +652,7 @@ void ParseOpenInterestMessage(const std::string &strMessage)
         LOG(DEBUG_LEVEL_DEBUG, "avgCost: %f", gOpenInterestInfo.avgCost);
         LOG(DEBUG_LEVEL_DEBUG, "NeedToUpdate = FALSE");
     }
-    else
+    else if (HaveTF == true)
     {
         gOpenInterestInfo = {
             "",   // product
@@ -656,6 +663,8 @@ void ParseOpenInterestMessage(const std::string &strMessage)
             0.0,  // profitAndLoss
             FALSE // NeedToUpdate
         };
+
+        HaveTF = false;
 
         DEBUG(DEBUG_LEVEL_DEBUG, "NO Open Position: %s", strMessage);
     }
