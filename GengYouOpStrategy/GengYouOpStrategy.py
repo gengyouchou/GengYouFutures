@@ -408,44 +408,57 @@ def receive_option_chips_table():
     print(f"接收到的数据: {data}")
     return jsonify({"status": "success", "message": "数据已接收"})
 
+
 def start_http_server():
     """
     启动HTTP服务器，监听8090端口。
     """
     app.run(host="0.0.0.0", port=8090, debug=False, use_reloader=False)
 
+
 def main():
     """
     主函数，整合读取配置、登录和查询报价流程。
     """
-    # 模拟读取配置文件
-    config = {"username": "test", "password": "test"}
+    config = read_config()
     if not config:
         print("无法读取配置文件。")
         return
 
-    # 模拟登录 SDK 和实时行情初始化
-    def login_sdk():
-        print("登录成功，账号: F129305651")
-        return True
+    # 初始化 SDK
+    sdk = FubonSDK()
 
+    # 登录
+    if not login_sdk(sdk, config):
+        return
+
+    # 初始化实时行情
     def init_realtime():
         try:
+            sdk.init_realtime()
             print("实时行情初始化完成。")
         except Exception as e:
             print(f"初始化实时行情失败: {e}")
             return False
         return True
 
-    if not login_sdk() or not init_realtime():
+    if not init_realtime():
         return
 
     while True:
+        # 获取当前时间
         now = datetime.datetime.now()
-        session = "beforehours" if 8 <= now.hour < 13 or (now.hour == 13 and now.minute <= 45) else "afterhours"
-        TxfPrices = 22928  # 模拟获取权利金数据
+        # 判断时段
+        if 8 <= now.hour < 13 or (now.hour == 13 and now.minute <= 45):
+            session = "beforehours"
+        else:
+            session = "afterhours"
+
+        # 根据时段获取权利金
+        TxfPrices = fetch_premium(sdk, "TXFA5", session)
         print(f"TxfPrices ({session}): {TxfPrices}")
 
+        # 检查 TxfPrices 的有效性
         if TxfPrices is None or TxfPrices <= 0.0:
             print("TxfPrices 无效，重新初始化实时行情...")
             if not init_realtime():
@@ -453,15 +466,18 @@ def main():
             time.sleep(10)
             continue
 
+        # 计算价平合约
         nearest_strike_price = round(TxfPrices / 50) * 50
         at_the_money_contract = f"TX2{nearest_strike_price:05d}A5"
         print(f"价平合约: {at_the_money_contract}")
 
+        # 生成期权筹码表数据
         combined_data = {
-            "at_the_money": {"contract": at_the_money_contract, "data": "some_data"},
-            "near_the_money": {"contract": at_the_money_contract.replace("A5", "M5"), "data": "some_other_data"}
+            "at_the_money": OptionChipsTable(sdk, at_the_money_contract),
+            "near_the_money": OptionChipsTable(sdk, at_the_money_contract.replace("A5", "M5"))
         }
 
+        # 发送数据到Flask服务器
         try:
             response = requests.post(
                 "http://localhost:8090/OptionChipsTable",
@@ -475,7 +491,9 @@ def main():
         time.sleep(5)
         os.system('cls' if os.name == 'nt' else 'clear')
 
+
 if __name__ == "__main__":
+    # 启动Flask服务器线程
     server_thread = threading.Thread(target=start_http_server)
     server_thread.daemon = True
     server_thread.start()
