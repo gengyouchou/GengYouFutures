@@ -3,6 +3,8 @@ import os
 import time
 import datetime
 from fubon_neo.sdk import FubonSDK
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 # Function to read configuration from LogConfig.json
 def read_config(file_path='LogConfig.json'):
@@ -449,18 +451,26 @@ def main():
         at_the_money_contract = f"TX2{nearest_strike_price:05d}A5"
         print(f"价平合约: {at_the_money_contract}")
 
-        # 执行计算函数
-        # calculate_spread_strategy(sdk, at_the_money_contract, session, "up")
-        # calculate_spread_strategy(sdk, at_the_money_contract.replace("A5", "M5"), session, "down")
+        # 生成并发送期权筹码表数据
+        combined_data = {
+            "at_the_money": OptionChipsTable(sdk, at_the_money_contract),
+            "near_the_money": OptionChipsTable(sdk, at_the_money_contract.replace("A5", "M5"))
+        }
 
-        OptionChipsTable(sdk, at_the_money_contract)
-        OptionChipsTable(sdk, at_the_money_contract.replace("A5", "M5"))
-
+        try:
+            response = requests.post(
+                "http://localhost:8090/OptionChipsTable",
+                json=combined_data,
+                headers={"Content-Type": "application/json"}
+            )
+            print(f"数据发送结果: {response.status_code}, {response.text}")
+        except Exception as e:
+            print(f"发送数据失败: {e}")
 
         # 延迟 1 秒
         time.sleep(5)
-        
-        # 清空輸出
+
+        # 清空输出
         os.system('cls' if os.name == 'nt' else 'clear')
 
 
