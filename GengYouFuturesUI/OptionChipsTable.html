@@ -68,26 +68,26 @@
     </div>
 
     <script>
-        async function loadJSON(url, method = 'POST') {
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({}) // Empty body or any required data
-            });
+        async function fetchData() {
+            try {
+                const response = await fetch("http://localhost:8090/OptionChipsTable");
+                if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
+                const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
+                // 更新UI
+                generateForceTable(data.data, "table-force");
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                appendLog(`Error fetching data: ${error.message}`, true);
             }
-            return response.json();
         }
 
         function generateForceTable(data, tableId) {
             const tableBody = document.getElementById(tableId);
+            tableBody.innerHTML = ""; // 清空表格內容
             const rows = {};
 
-            // Organize data by strike_price
+            // 根據 strike_price 整理數據
             data.forEach(row => {
                 if (!rows[row.strike_price]) {
                     rows[row.strike_price] = { call: null, put: null };
@@ -95,7 +95,7 @@
                 rows[row.strike_price].call = row.volume_difference;
             });
 
-            // Generate rows for table
+            // 按 strike_price 排序並生成表格
             Object.keys(rows).sort((a, b) => a - b).forEach(strikePrice => {
                 const row = rows[strikePrice];
                 const callCell = `<td class="${row.call < 0 ? 'negative' : 'positive'}">${row.call || ''}</td>`;
@@ -103,15 +103,17 @@
                 const putCell = `<td class="${row.put < 0 ? 'negative' : 'positive'}">${row.put || ''}</td>`;
 
                 const tableRow = document.createElement('tr');
-                tableRow.innerHTML = callCell + strikePriceCell + putCell; // Adjust order here
+                tableRow.innerHTML = callCell + strikePriceCell + putCell; // 調整順序
                 tableBody.appendChild(tableRow);
             });
         }
 
-        // Load data and generate table
-        loadJSON('http://localhost:8090/OptionChipsTable', 'POST')
-            .then(json => generateForceTable(json.data, "table-force"))
-            .catch(error => console.error('Error loading JSON:', error));
+        function appendLog(message, isError = false) {
+            console.log(`[${isError ? "Error" : "Log"}]: ${message}`);
+        }
+
+        // 初始化載入數據
+        fetchData();
     </script>
 </body>
 
