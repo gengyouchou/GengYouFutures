@@ -101,10 +101,9 @@
             });
         }
 
-
         // Load data and generate table
-        loadJSON('data.json')
-            .then(json => generateForceTable(json.options_data, "table-force"))
+        loadJSON('http://localhost:8090/OptionChipsTable')
+            .then(json => generateForceTable(json.data, "table-force"))
             .catch(error => console.error('Error loading JSON:', error));
     </script>
 </body>

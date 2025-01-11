@@ -395,30 +395,12 @@ def OptionChipsTable(sdk, base_symbol):
     return json_data
 
 
+
 # 初始化 Flask 应用并启用 CORS
 app = Flask(__name__)
 CORS(app, resources={r"/OptionChipsTable": {"origins": "*"}})  # 允许所有来源跨域访问特定路由
 
-@app.route("/OptionChipsTable", methods=["POST"])
-def receive_option_chips_table():
-    """
-    接收客户端POST请求的数据。
-    """
-    data = request.get_json()
-    print(f"接收到的数据: {data}")
-    return jsonify({"status": "success", "message": "数据已接收"})
-
-
-def start_http_server():
-    """
-    启动HTTP服务器，监听8090端口。
-    """
-    app.run(host="0.0.0.0", port=8090, debug=False, use_reloader=False)
-
-app = Flask(__name__)
-CORS(app, resources={r"/OptionChipsTable": {"origins": "*"}})  # 允许所有来源跨域访问特定路由
-
-@app.route("/OptionChipsTable", methods=["GET"])  # 将方法改为GET
+@app.route("/OptionChipsTable", methods=["GET"])
 def receive_option_chips_table():
     """
     接收客户端GET请求的数据。
@@ -427,7 +409,6 @@ def receive_option_chips_table():
     print(f"接收到的数据: {data}")
     return jsonify({"status": "success", "message": "数据已接收"})
 
-# 启动HTTP服务器
 def start_http_server():
     """
     启动HTTP服务器，监听8090端口。
