@@ -400,7 +400,8 @@ def OptionChipsTable(sdk, base_symbol):
 app = Flask(__name__)
 CORS(app, resources={r"/OptionChipsTable": {"origins": "*"}})  # 允许所有来源跨域访问特定路由
 
-@app.route("/OptionChipsTable", methods=["POST"])
+@app.route("/OptionChipsTable", methods=["GET"])
+
 def receive_option_chips_table():
     """
     接收客户端 POST 请求的数据。
@@ -484,18 +485,17 @@ def main():
             "near_the_money": OptionChipsTable(sdk, at_the_money_contract.replace("A5", "M5"))
         }
 
-        # 将数据转换为JSON格式
-        data = {
+        # 将数据转换为查询参数
+        params = {
             "at_the_money_contract": combined_data["at_the_money"],
             "near_the_money_contract": combined_data["near_the_money"]
         }
 
-        # 发送数据到Flask服务器
+        # 发送数据到 Flask 服务器
         try:
-            response = requests.post(
-                "http://localhost:8090/OptionChipsTable",  # 改为POST请求
-                json=data,  # 使用json传递数据
-                headers={"Content-Type": "application/json"}
+            response = requests.get(
+                "http://localhost:8090/OptionChipsTable",  # 改为 GET 请求
+                params=params  # 使用查询参数传递数据
             )
             print(f"数据发送结果: {response.status_code}, {response.text}")
         except Exception as e:

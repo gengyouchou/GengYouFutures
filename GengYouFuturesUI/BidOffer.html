@@ -94,7 +94,7 @@
 
         async function fetchData() {
             try {
-                const bidOfferDataResponse = await fetch("http://192.168.50.168:8080/bid-offer-data");
+                const bidOfferDataResponse = await fetch("http://localhost:8080/bid-offer-data");
 
                 if (!bidOfferDataResponse.ok) {
                     throw new Error(`HTTP error: ${bidOfferDataResponse.status}`);
