@@ -404,18 +404,23 @@ CORS(app, resources={r"/OptionChipsTable": {"origins": "*"}})  # 允许所有来
 
 def receive_option_chips_table():
     """
-    接收客户端 POST 请求的数据。
+    接收客户端 GET 请求的数据。
     """
     try:
-        data = request.get_json()  # 从请求体中获取 JSON 数据
-        if not data:
-            return jsonify({"status": "error", "message": "No JSON data received"}), 400
-        
-        print(f"接收到的数据: {data}")  # 打印接收到的数据
+        # 从查询参数中获取数据
+        at_the_money_contract = request.args.get("at_the_money_contract")
+        near_the_money_contract = request.args.get("near_the_money_contract")
+
+        if not at_the_money_contract or not near_the_money_contract:
+            return jsonify({"status": "error", "message": "Missing required query parameters"}), 400
+
+        print(f"接收到的数据: at_the_money_contract={at_the_money_contract}, near_the_money_contract={near_the_money_contract}")
+
         return jsonify({"status": "success", "message": "数据已接收"})
     except Exception as e:
         print(f"错误: {e}")
         return jsonify({"status": "error", "message": f"Error processing request: {str(e)}"}), 500
+
 
 def start_http_server():
     """
@@ -486,20 +491,20 @@ def main():
         }
 
         # 将数据转换为查询参数
-        params = {
-            "at_the_money_contract": combined_data["at_the_money"],
-            "near_the_money_contract": combined_data["near_the_money"]
-        }
+    params = {
+        "at_the_money_contract": json.dumps(combined_data["at_the_money"]),
+        "near_the_money_contract": json.dumps(combined_data["near_the_money"])
+    }
 
-        # 发送数据到 Flask 服务器
-        try:
-            response = requests.get(
-                "http://localhost:8090/OptionChipsTable",  # 改为 GET 请求
-                params=params  # 使用查询参数传递数据
-            )
-            print(f"数据发送结果: {response.status_code}, {response.text}")
-        except Exception as e:
-            print(f"发送数据失败: {e}")
+    # 发送 GET 请求
+    try:
+        response = requests.get(
+            "http://localhost:8090/OptionChipsTable",  # 改为 GET 请求
+            params=params  # 使用查询参数传递数据
+        )
+        print(f"数据发送结果: {response.status_code}, {response.text}")
+    except Exception as e:
+        print(f"发送数据失败: {e}")
 
         time.sleep(5)
         os.system('cls' if os.name == 'nt' else 'clear')
