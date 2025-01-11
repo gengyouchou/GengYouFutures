@@ -403,15 +403,22 @@ CORS(app, resources={r"/OptionChipsTable": {"origins": "*"}})  # 允许所有来
 @app.route("/OptionChipsTable", methods=["POST"])
 def receive_option_chips_table():
     """
-    接收客户端POST请求的数据。
+    接收客户端 POST 请求的数据。
     """
-    data = request.get_json()  # 从请求体中获取JSON数据
-    print(f"接收到的数据: {data}")
-    return jsonify({"status": "success", "message": "数据已接收"})
+    try:
+        data = request.get_json()  # 从请求体中获取 JSON 数据
+        if not data:
+            return jsonify({"status": "error", "message": "No JSON data received"}), 400
+        
+        print(f"接收到的数据: {data}")  # 打印接收到的数据
+        return jsonify({"status": "success", "message": "数据已接收"})
+    except Exception as e:
+        print(f"错误: {e}")
+        return jsonify({"status": "error", "message": f"Error processing request: {str(e)}"}), 500
 
 def start_http_server():
     """
-    启动HTTP服务器，监听8090端口。
+    启动 HTTP 服务器，监听 8090 端口。
     """
     app.run(host="0.0.0.0", port=8090, debug=False, use_reloader=False)
 
@@ -498,12 +505,12 @@ def main():
         os.system('cls' if os.name == 'nt' else 'clear')
 
 if __name__ == "__main__":
-    # 启动Flask服务器线程
+    # 启动 Flask 服务器线程
     server_thread = threading.Thread(target=start_http_server)
     server_thread.daemon = True
     server_thread.start()
 
-    print("HTTP服务器已启动，监听端口8090")
+    print("HTTP 服务器已启动，监听端口 8090")
     try:
         main()
     except KeyboardInterrupt:
