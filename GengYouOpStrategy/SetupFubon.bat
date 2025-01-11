@@ -23,9 +23,9 @@ REM Step 4: Install the .whl file
 echo Installing %WHL_FILE%...
 pip install %WHL_FILE%
 
-REM Step 5: Install missing requests package
-echo Installing requests package...
-pip install requests
+REM Step 5: Install missing requests and Flask packages
+echo Installing required packages...
+pip install requests flask flask-cors
 
 REM Step 6: Create documentation directory if it does not exist
 if not exist "%DOC_DIR%" (
@@ -45,10 +45,12 @@ if exist "fubon_neo.html" (
     echo Documentation generation failed!
 )
 
-call python GengYouOpStrategy.py
+REM Step 8: Run the main Python script
+echo Running GengYouOpStrategy.py...
+python GengYouOpStrategy.py
 
-@REM REM Deactivate virtual environment
-@REM deactivate
+REM Step 9: Deactivate virtual environment (optional)
+REM deactivate
 
 echo All tasks completed successfully.
 pause
