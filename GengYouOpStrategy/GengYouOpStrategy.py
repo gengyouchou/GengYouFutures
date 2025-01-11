@@ -5,6 +5,7 @@ import datetime
 from fubon_neo.sdk import FubonSDK
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import threading
 
 # Function to read configuration from LogConfig.json
 def read_config(file_path='LogConfig.json'):
@@ -393,6 +394,25 @@ def OptionChipsTable(sdk, base_symbol):
     return json_data
 
 
+app = Flask(__name__)
+CORS(app)  # 启用 CORS 支持
+
+
+@app.route("/OptionChipsTable", methods=["POST"])
+def receive_option_chips_table():
+    """
+    接收客户端POST请求的数据。
+    """
+    data = request.get_json()
+    print(f"接收到的数据: {data}")
+    return jsonify({"status": "success", "message": "数据已接收"})
+
+
+def start_http_server():
+    """
+    启动HTTP服务器，监听8090端口。
+    """
+    app.run(host="0.0.0.0", port=8090, debug=False, use_reloader=False)
 
 
 def main():
@@ -442,7 +462,6 @@ def main():
             print("TxfPrices 无效，重新初始化实时行情...")
             if not init_realtime():
                 return
-            # 延迟 1 秒
             time.sleep(10)
             continue
 
@@ -451,12 +470,13 @@ def main():
         at_the_money_contract = f"TX2{nearest_strike_price:05d}A5"
         print(f"价平合约: {at_the_money_contract}")
 
-        # 生成并发送期权筹码表数据
+        # 生成期权筹码表数据
         combined_data = {
             "at_the_money": OptionChipsTable(sdk, at_the_money_contract),
             "near_the_money": OptionChipsTable(sdk, at_the_money_contract.replace("A5", "M5"))
         }
 
+        # 发送数据到Flask服务器
         try:
             response = requests.post(
                 "http://localhost:8090/OptionChipsTable",
@@ -467,14 +487,18 @@ def main():
         except Exception as e:
             print(f"发送数据失败: {e}")
 
-        # 延迟 1 秒
         time.sleep(5)
-
-        # 清空输出
         os.system('cls' if os.name == 'nt' else 'clear')
 
 
-
-
 if __name__ == "__main__":
-    main()
+    # 启动Flask服务器线程
+    server_thread = threading.Thread(target=start_http_server)
+    server_thread.daemon = True
+    server_thread.start()
+
+    print("HTTP服务器已启动，监听端口8090")
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("程序已停止")
