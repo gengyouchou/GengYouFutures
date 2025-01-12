@@ -78,37 +78,33 @@
                     throw new Error(jsonResponse.message || "Failed to fetch data");
                 }
 
-                // 更新表格数据
-                generateForceTable(jsonResponse.data, "table-force");
+                const atTheMoney = JSON.parse(jsonResponse.at_the_money);
+                const nearTheMoney = JSON.parse(jsonResponse.near_the_money);
+
+                // 更新表格
+                generateOptionTable(atTheMoney.options_data, "table-at-the-money");
+                generateOptionTable(nearTheMoney.options_data, "table-near-the-money");
             } catch (error) {
                 console.error("Error fetching data:", error);
                 appendLog(`Error fetching data: ${error.message}`, true);
             }
         }
 
-        function generateForceTable(data, tableId) {
+        function generateOptionTable(data, tableId) {
             const tableBody = document.getElementById(tableId);
-            tableBody.innerHTML = ""; // 清空表格内容
+            tableBody.innerHTML = ""; // 清空表格內容
 
-            const rows = {};
-
-            // 根据 strike_price 整理数据
-            data.forEach(row => {
-                if (!rows[row.strike_price]) {
-                    rows[row.strike_price] = { call: null, put: null };
-                }
-                rows[row.strike_price].call = row.volume_difference;
-            });
-
-            // 按 strike_price 排序并生成表格
-            Object.keys(rows).sort((a, b) => a - b).forEach(strikePrice => {
-                const row = rows[strikePrice];
-                const callCell = `<td class="${row.call < 0 ? 'negative' : 'positive'}">${row.call || ''}</td>`;
-                const strikePriceCell = `<td>${strikePrice}</td>`;
-                const putCell = `<td>${row.put || ''}</td>`; // 假设未来需要 PUT 数据
-
+            // 根據 strike_price 排序並生成表格
+            data.sort((a, b) => a.strike_price - b.strike_price).forEach(row => {
                 const tableRow = document.createElement('tr');
-                tableRow.innerHTML = callCell + strikePriceCell + putCell; // 调整顺序
+
+                const strikePriceCell = `<td>${row.strike_price}</td>`;
+                const tradeVolumeCell = `<td>${row.tradeVolume}</td>`;
+                const bidVolumeCell = `<td>${row.bid_volume}</td>`;
+                const askVolumeCell = `<td>${row.ask_volume}</td>`;
+                const volumeDiffCell = `<td class="${row.volume_difference < 0 ? 'negative' : 'positive'}">${row.volume_difference}</td>`;
+
+                tableRow.innerHTML = strikePriceCell + tradeVolumeCell + bidVolumeCell + askVolumeCell + volumeDiffCell;
                 tableBody.appendChild(tableRow);
             });
         }
@@ -117,9 +113,10 @@
             console.log(`[${isError ? "Error" : "Log"}]: ${message}`);
         }
 
-        // 初始化载入数据
+        // 初始化載入數據
         fetchData();
     </script>
+
 
 </body>
 
