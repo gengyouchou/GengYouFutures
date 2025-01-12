@@ -403,15 +403,58 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 
-# 路由: 回傳模擬的 Long-Short-Cache 數據
+# 路由: 回傳實際的 OptionChipsTable 數據
 @app.route("/OptionChipsTable", methods=["GET"])
 def get_long_short_cache_data():
-    # 模擬返回數據
-    cache_data = [
-        {"key": "value1", "data": "cache1"},
-        {"key": "value2", "data": "cache2"}
-    ]
-    return jsonify(cache_data)
+    """
+    返回实际的期权筹码表数据。
+    """
+    # 初始化配置和 SDK
+    config = read_config()
+    if not config:
+        return jsonify({"error": "无法读取配置文件"}), 500
+
+    sdk = FubonSDK()
+
+    # 登录 SDK
+    if not login_sdk(sdk, config):
+        return jsonify({"error": "登录 SDK 失败"}), 500
+
+    # 初始化实时行情
+    def init_realtime():
+        try:
+            sdk.init_realtime()
+        except Exception as e:
+            return False, str(e)
+        return True, None
+
+    success, error = init_realtime()
+    if not success:
+        return jsonify({"error": f"初始化实时行情失败: {error}"}), 500
+
+    # 确定交易时段
+    now = datetime.datetime.now()
+    if 8 <= now.hour < 13 or (now.hour == 13 and now.minute <= 45):
+        session = "beforehours"
+    else:
+        session = "afterhours"
+
+    # 获取 TxfPrices
+    TxfPrices = fetch_premium(sdk, "TXFA5", session)
+    if TxfPrices is None or TxfPrices <= 0.0:
+        return jsonify({"error": "无效的 TxfPrices"}), 500
+
+    # 计算价平合约
+    nearest_strike_price = round(TxfPrices / 50) * 50
+    at_the_money_contract = f"TX2{nearest_strike_price:05d}A5"
+
+    # 获取期权筹码表数据
+    combined_data = {
+        "at_the_money": OptionChipsTable(sdk, at_the_money_contract),
+        "near_the_money": OptionChipsTable(sdk, at_the_money_contract.replace("A5", "M5"))
+    }
+
+    return jsonify(combined_data)
 
 
 # 路由: 回傳模擬的指數數據
@@ -458,19 +501,12 @@ def start_http_server():
 
 def main():
     """
-    模擬的主函數，發送請求至 HTTP 伺服器。
+    主函數，直接處理 HTTP 伺服器的請求。
     """
-    while True:
-        try:
-            # 模擬每 10 秒請求一次
-            response = requests.get("http://localhost:8090/OptionChipsTable")
-            if response.status_code == 200:
-                print(f"收到數據: {response.json()}")
-            else:
-                print(f"伺服器返回錯誤: {response.status_code}")
-        except Exception as e:
-            print(f"發送請求失敗: {e}")
-        time.sleep(10)  # 模擬每 10 秒執行一次
+    print("請使用瀏覽器訪問 http://localhost:8090/OptionChipsTable")
+
+    # 启动 Flask 服务器，监听请求
+    start_http_server()
 
 
 if __name__ == "__main__":
