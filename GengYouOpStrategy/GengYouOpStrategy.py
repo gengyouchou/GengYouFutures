@@ -402,35 +402,16 @@ app = Flask(__name__)
 # 啟用 CORS 支援，允許所有來源的請求
 CORS(app, resources={r"/*": {"origins": "*"}})
 
+# 全局变量
+sdk = None
+config = None
 
-# 路由: 回傳實際的 OptionChipsTable 數據
 @app.route("/OptionChipsTable", methods=["GET"])
 def get_long_short_cache_data():
     """
     返回实际的期权筹码表数据。
     """
-    # 初始化配置和 SDK
-    config = read_config()
-    if not config:
-        return jsonify({"error": "无法读取配置文件"}), 500
-
-    sdk = FubonSDK()
-
-    # 登录 SDK
-    if not login_sdk(sdk, config):
-        return jsonify({"error": "登录 SDK 失败"}), 500
-
-    # 初始化实时行情
-    def init_realtime():
-        try:
-            sdk.init_realtime()
-        except Exception as e:
-            return False, str(e)
-        return True, None
-
-    success, error = init_realtime()
-    if not success:
-        return jsonify({"error": f"初始化实时行情失败: {error}"}), 500
+    global sdk  # 声明使用全局变量
 
     # 确定交易时段
     now = datetime.datetime.now()
@@ -456,39 +437,6 @@ def get_long_short_cache_data():
 
     return jsonify(combined_data)
 
-
-# 路由: 回傳模擬的指數數據
-@app.route("/index-data", methods=["GET"])
-def get_index_data():
-    # 模擬返回數據
-    index_data = {
-        "index_name": "MainIndex",
-        "value": 12345.67
-    }
-    return jsonify(index_data)
-
-
-# 路由: 回傳模擬的買賣報價數據
-@app.route("/bid-offer-data", methods=["GET"])
-def get_bid_offer_data():
-    # 模擬返回數據
-    product_idx_no = 0
-    product_name = "FUTURE1"
-    bid_offer_data = {
-        "product_idx_no": product_idx_no,
-        "product_name": product_name,
-        "bids": [
-            {"price": 100, "volume": 10},
-            {"price": 99, "volume": 20}
-        ],
-        "offers": [
-            {"price": 101, "volume": 15},
-            {"price": 102, "volume": 25}
-        ]
-    }
-    return jsonify(bid_offer_data)
-
-
 def start_http_server():
     """
     啟動 HTTP 伺服器，監聽 8090 埠。
@@ -501,13 +449,39 @@ def start_http_server():
 
 def main():
     """
-    主函數，直接處理 HTTP 伺服器的請求。
+    主函数，初始化配置和 SDK，并启动 HTTP 服务器。
     """
-    print("請使用瀏覽器訪問 http://localhost:8090/OptionChipsTable")
+    global sdk, config
 
-    # 启动 Flask 服务器，监听请求
+    print("请使用浏览器访问 http://localhost:8090/OptionChipsTable")
+
+    # 初始化配置
+    config = read_config()
+    if not config:
+        print("无法读取配置文件")
+        return
+
+    # 初始化 SDK
+    sdk = FubonSDK()
+    if not login_sdk(sdk, config):
+        print("登录 SDK 失败")
+        return
+
+    # 初始化实时行情
+    def init_realtime():
+        try:
+            sdk.init_realtime()
+        except Exception as e:
+            return False, str(e)
+        return True, None
+
+    success, error = init_realtime()
+    if not success:
+        print(f"初始化实时行情失败: {error}")
+        return
+
+    # 启动 Flask 服务器
     start_http_server()
-
 
 if __name__ == "__main__":
     # 啟動伺服器線程
