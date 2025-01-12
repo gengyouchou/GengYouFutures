@@ -388,8 +388,8 @@ def OptionChipsTable(sdk, base_symbol):
         "options_data": data
     }, ensure_ascii=False, indent=4)
 
-    print("生成的期權籌碼表數據（JSON 格式）:")
-    print(json_data)
+    # print("生成的期權籌碼表數據（JSON 格式）:")
+    # print(json_data)
 
     # 返回 JSON 數據
     return json_data
@@ -398,124 +398,88 @@ def OptionChipsTable(sdk, base_symbol):
 
 # 初始化 Flask 应用并启用 CORS
 app = Flask(__name__)
-CORS(app, resources={r"/OptionChipsTable": {"origins": "*"}})  # 允许所有来源跨域访问特定路由
 
+# 啟用 CORS 支援，允許所有來源的請求
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+
+# 路由: 回傳模擬的 Long-Short-Cache 數據
 @app.route("/OptionChipsTable", methods=["GET"])
+def get_long_short_cache_data():
+    # 模擬返回數據
+    cache_data = [
+        {"key": "value1", "data": "cache1"},
+        {"key": "value2", "data": "cache2"}
+    ]
+    return jsonify(cache_data)
 
-def receive_option_chips_table():
-    """
-    接收客户端 GET 请求的数据。
-    """
-    try:
-        # 从查询参数中获取数据
-        at_the_money_contract = request.args.get("at_the_money_contract")
-        near_the_money_contract = request.args.get("near_the_money_contract")
 
-        if not at_the_money_contract or not near_the_money_contract:
-            return jsonify({"status": "error", "message": "Missing required query parameters"}), 400
+# 路由: 回傳模擬的指數數據
+@app.route("/index-data", methods=["GET"])
+def get_index_data():
+    # 模擬返回數據
+    index_data = {
+        "index_name": "MainIndex",
+        "value": 12345.67
+    }
+    return jsonify(index_data)
 
-        print(f"接收到的数据: at_the_money_contract={at_the_money_contract}, near_the_money_contract={near_the_money_contract}")
 
-        return jsonify({"status": "success", "message": "数据已接收"})
-    except Exception as e:
-        print(f"错误: {e}")
-        return jsonify({"status": "error", "message": f"Error processing request: {str(e)}"}), 500
+# 路由: 回傳模擬的買賣報價數據
+@app.route("/bid-offer-data", methods=["GET"])
+def get_bid_offer_data():
+    # 模擬返回數據
+    product_idx_no = 0
+    product_name = "FUTURE1"
+    bid_offer_data = {
+        "product_idx_no": product_idx_no,
+        "product_name": product_name,
+        "bids": [
+            {"price": 100, "volume": 10},
+            {"price": 99, "volume": 20}
+        ],
+        "offers": [
+            {"price": 101, "volume": 15},
+            {"price": 102, "volume": 25}
+        ]
+    }
+    return jsonify(bid_offer_data)
 
 
 def start_http_server():
     """
-    启动 HTTP 服务器，监听 8090 端口。
+    啟動 HTTP 伺服器，監聽 8090 埠。
     """
-    app.run(host="0.0.0.0", port=8090, debug=False, use_reloader=False)
+    try:
+        app.run(host="0.0.0.0", port=8090, debug=False, use_reloader=False)
+    except Exception as e:
+        print(f"伺服器啟動失敗: {e}")
+
 
 def main():
     """
-    主函数，整合读取配置、登录和查询报价流程。
+    模擬的主函數，發送請求至 HTTP 伺服器。
     """
-    config = read_config()
-    if not config:
-        print("无法读取配置文件。")
-        return
-
-    # 初始化 SDK
-    sdk = FubonSDK()
-
-    # 登录
-    if not login_sdk(sdk, config):
-        return
-
-    # 初始化实时行情
-    def init_realtime():
-        try:
-            sdk.init_realtime()
-            print("实时行情初始化完成。")
-        except Exception as e:
-            print(f"初始化实时行情失败: {e}")
-            return False
-        return True
-
-    if not init_realtime():
-        return
-
     while True:
-        # 获取当前时间
-        now = datetime.datetime.now()
-        # 判断时段
-        if 8 <= now.hour < 13 or (now.hour == 13 and now.minute <= 45):
-            session = "beforehours"
-        else:
-            session = "afterhours"
+        try:
+            # 模擬每 10 秒請求一次
+            response = requests.get("http://localhost:8090/OptionChipsTable")
+            if response.status_code == 200:
+                print(f"收到數據: {response.json()}")
+            else:
+                print(f"伺服器返回錯誤: {response.status_code}")
+        except Exception as e:
+            print(f"發送請求失敗: {e}")
+        time.sleep(10)  # 模擬每 10 秒執行一次
 
-        # 根据时段获取权利金
-        TxfPrices = fetch_premium(sdk, "TXFA5", session)
-        print(f"TxfPrices ({session}): {TxfPrices}")
-
-        # 检查 TxfPrices 的有效性
-        if TxfPrices is None or TxfPrices <= 0.0:
-            print("TxfPrices 无效，重新初始化实时行情...")
-
-            if not init_realtime():
-                return
-            time.sleep(10)
-            continue
-
-        # 计算价平合约
-        nearest_strike_price = round(TxfPrices / 50) * 50
-        at_the_money_contract = f"TX2{nearest_strike_price:05d}A5"
-        print(f"价平合约: {at_the_money_contract}")
-
-        # 生成期权筹码表数据
-        combined_data = {
-            "at_the_money": OptionChipsTable(sdk, at_the_money_contract),
-            "near_the_money": OptionChipsTable(sdk, at_the_money_contract.replace("A5", "M5"))
-        }
-
-        # 将数据转换为查询参数
-    params = {
-        "at_the_money_contract": json.dumps(combined_data["at_the_money"]),
-        "near_the_money_contract": json.dumps(combined_data["near_the_money"])
-    }
-
-    # 发送 GET 请求
-    try:
-        response = requests.get(
-            "http://localhost:8090/OptionChipsTable",  # 改为 GET 请求
-            params=params  # 使用查询参数传递数据
-        )
-        print(f"数据发送结果: {response.status_code}, {response.text}")
-    except Exception as e:
-        print(f"发送数据失败: {e}")
-
-        time.sleep(5)
-        os.system('cls' if os.name == 'nt' else 'clear')
 
 if __name__ == "__main__":
-    # 启动 Flask 服务器线程
+    # 啟動伺服器線程
     server_thread = threading.Thread(target=start_http_server)
     server_thread.daemon = True
     server_thread.start()
 
-    print("HTTP 服务器已启动，监听端口 8090")
+    print("HTTP 伺服器已啟動，監聽埠 8090")
     try:
         main()
     except KeyboardInterrupt:
