@@ -450,7 +450,7 @@ def main():
 
         # 计算价平合约
         nearest_strike_price = round(TxfPrices / 50) * 50
-        at_the_money_contract = f"TX2{nearest_strike_price:05d}A5"
+        at_the_money_contract = f"TXO{nearest_strike_price:05d}A5"
         print(f"价平合约: {at_the_money_contract}")
 
         # 执行计算函数
