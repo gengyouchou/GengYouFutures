@@ -436,7 +436,7 @@ def main():
             session = "afterhours"
 
         # 根据时段获取权利金
-        TxfPrices = fetch_premium(sdk, "TXFA5", session)
+        TxfPrices = fetch_premium(sdk, "TXFB5", session)
         print(f"TxfPrices ({session}): {TxfPrices}")
 
         # 检查 TxfPrices 的有效性
@@ -450,7 +450,7 @@ def main():
 
         # 计算价平合约
         nearest_strike_price = round(TxfPrices / 50) * 50
-        at_the_money_contract = f"TXO{nearest_strike_price:05d}A5"
+        at_the_money_contract = f"TX4{nearest_strike_price:05d}A5"
         print(f"价平合约: {at_the_money_contract}")
 
         # 执行计算函数
