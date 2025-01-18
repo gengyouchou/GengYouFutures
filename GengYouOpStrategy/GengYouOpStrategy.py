@@ -372,7 +372,7 @@ def OptionChipsTable(sdk, base_symbol):
 
             # 收集最終數據
             data.append({
-                "symbol": symbol,           # 添加對應的 symbol
+                "symbol": symbol,
                 "strike_price": parse_strike_price(symbol),
                 "tradeVolume": trade_volume,
                 "bid_volume": bid_volume,
@@ -382,17 +382,13 @@ def OptionChipsTable(sdk, base_symbol):
         except Exception as e:
             print(f"獲取合約 {symbol} 數據失敗: {e}")
 
-    # 將 base_symbol 放在外層，並組裝 JSON 格式的數據
-    json_data = json.dumps({
+    # 返回未格式化的 JSON 数据
+    return {
         "base_symbol": base_symbol,
         "options_data": data
-    }, ensure_ascii=False, indent=4)
+    }
 
-    # print("生成的期權籌碼表數據（JSON 格式）:")
-    # print(json_data)
 
-    # 返回 JSON 數據
-    return json_data
 
 
 
@@ -407,7 +403,7 @@ sdk = None
 config = None
 
 @app.route("/OptionChipsTable", methods=["GET"])
-def get_long_short_cache_data():
+def get_option_chips_table():
     """
     返回实际的期权筹码表数据。
     """
@@ -435,6 +431,7 @@ def get_long_short_cache_data():
         "near_the_money": OptionChipsTable(sdk, at_the_money_contract.replace("A5", "M5"))
     }
 
+    # 使用 jsonify 返回 JSON 数据
     return jsonify(combined_data)
 
 def start_http_server():
