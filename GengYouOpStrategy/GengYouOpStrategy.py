@@ -421,13 +421,13 @@ def get_long_short_cache_data():
         session = "afterhours"
 
     # 获取 TxfPrices
-    TxfPrices = fetch_premium(sdk, "TXFA5", session)
+    TxfPrices = fetch_premium(sdk, "TXFB5", session)
     if TxfPrices is None or TxfPrices <= 0.0:
         return jsonify({"error": "无效的 TxfPrices"}), 500
 
     # 计算价平合约
     nearest_strike_price = round(TxfPrices / 50) * 50
-    at_the_money_contract = f"TX2{nearest_strike_price:05d}A5"
+    at_the_money_contract = f"TX4{nearest_strike_price:05d}A5"
 
     # 获取期权筹码表数据
     combined_data = {
