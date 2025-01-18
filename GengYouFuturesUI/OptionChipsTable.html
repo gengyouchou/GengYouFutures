@@ -79,33 +79,38 @@
                 const nearTheMoney = jsonResponse.near_the_money;
 
                 // 更新表格
-                generateOptionTable(atTheMoney.options_data, "table-force");  // 更新為"table-force"
-                generateOptionTable(nearTheMoney.options_data, "table-force"); // 更新為"table-force"
+                generateOptionTable(atTheMoney.options_data, nearTheMoney.options_data);
             } catch (error) {
                 console.error("Error fetching data:", error);
                 appendLog(`Error fetching data: ${error.message}`, true);
             }
         }
 
-        function generateOptionTable(data, tableId) {
-            const tableBody = document.getElementById(tableId);
+        function generateOptionTable(atTheMoneyData, nearTheMoneyData) {
+            const tableBody = document.getElementById('table-force');
             if (!tableBody) {
-                console.error(`Table with id ${tableId} not found!`);
+                console.error("Table body not found!");
                 return;
             }
             tableBody.innerHTML = ""; // 清空表格內容
 
-            // 根據 strike_price 排序並生成表格
-            data.sort((a, b) => a.strike_price - b.strike_price).forEach(row => {
+            // 合併 at_the_money 和 near_the_money 資料，並根據 strike_price 排序
+            const allData = [];
+            atTheMoneyData.forEach(row => {
+                allData.push({ strike_price: row.strike_price, call_volume_diff: row.volume_difference, put_volume_diff: null });
+            });
+            nearTheMoneyData.forEach(row => {
+                allData.push({ strike_price: row.strike_price, call_volume_diff: null, put_volume_diff: row.volume_difference });
+            });
+
+            allData.sort((a, b) => a.strike_price - b.strike_price).forEach(row => {
                 const tableRow = document.createElement('tr');
 
+                const callVolumeDiffCell = `<td class="${row.call_volume_diff < 0 ? 'negative' : 'positive'}">${row.call_volume_diff || ''}</td>`;
                 const strikePriceCell = `<td>${row.strike_price}</td>`;
-                const tradeVolumeCell = `<td>${row.tradeVolume}</td>`;
-                const bidVolumeCell = `<td>${row.bid_volume}</td>`;
-                const askVolumeCell = `<td>${row.ask_volume}</td>`;
-                const volumeDiffCell = `<td class="${row.volume_difference < 0 ? 'negative' : 'positive'}">${row.volume_difference}</td>`;
+                const putVolumeDiffCell = `<td class="${row.put_volume_diff < 0 ? 'negative' : 'positive'}">${row.put_volume_diff || ''}</td>`;
 
-                tableRow.innerHTML = strikePriceCell + tradeVolumeCell + bidVolumeCell + askVolumeCell + volumeDiffCell;
+                tableRow.innerHTML = callVolumeDiffCell + strikePriceCell + putVolumeDiffCell;
                 tableBody.appendChild(tableRow);
             });
         }
