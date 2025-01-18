@@ -79,17 +79,20 @@
                 const nearTheMoney = jsonResponse.near_the_money;
 
                 // 更新表格
-                generateOptionTable(atTheMoney.options_data, "table-at-the-money");
-                generateOptionTable(nearTheMoney.options_data, "table-near-the-money");
+                generateOptionTable(atTheMoney.options_data, "table-force");  // 更新為"table-force"
+                generateOptionTable(nearTheMoney.options_data, "table-force"); // 更新為"table-force"
             } catch (error) {
                 console.error("Error fetching data:", error);
                 appendLog(`Error fetching data: ${error.message}`, true);
             }
         }
 
-
         function generateOptionTable(data, tableId) {
             const tableBody = document.getElementById(tableId);
+            if (!tableBody) {
+                console.error(`Table with id ${tableId} not found!`);
+                return;
+            }
             tableBody.innerHTML = ""; // 清空表格內容
 
             // 根據 strike_price 排序並生成表格
@@ -113,10 +116,7 @@
 
         // 每5秒調用一次fetchData
         setInterval(fetchData, 5000);
-
     </script>
-
-
 </body>
 
 </html>
