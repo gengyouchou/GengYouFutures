@@ -74,12 +74,9 @@
                 if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
                 const jsonResponse = await response.json();
 
-                if (jsonResponse.status !== "success") {
-                    throw new Error(jsonResponse.message || "Failed to fetch data");
-                }
-
-                const atTheMoney = JSON.parse(jsonResponse.at_the_money);
-                const nearTheMoney = JSON.parse(jsonResponse.near_the_money);
+                // 假設 jsonResponse 直接包含 at_the_money 和 near_the_money 資料
+                const atTheMoney = jsonResponse.at_the_money;
+                const nearTheMoney = jsonResponse.near_the_money;
 
                 // 更新表格
                 generateOptionTable(atTheMoney.options_data, "table-at-the-money");
@@ -89,6 +86,7 @@
                 appendLog(`Error fetching data: ${error.message}`, true);
             }
         }
+
 
         function generateOptionTable(data, tableId) {
             const tableBody = document.getElementById(tableId);
@@ -113,8 +111,9 @@
             console.log(`[${isError ? "Error" : "Log"}]: ${message}`);
         }
 
-        // 初始化載入數據
-        fetchData();
+        // 每5秒調用一次fetchData
+        setInterval(fetchData, 5000);
+
     </script>
 
 
