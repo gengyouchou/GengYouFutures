@@ -638,7 +638,7 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
     char *szStockNo = _com_util::ConvertBSTRToString(skStock.bstrStockNo);
     char *szStockName = _com_util::ConvertBSTRToString(skStock.bstrStockName);
 
-    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex= %ld, szStockNo: %s, szStockName : %s, nTradingDay: %ld, nDealTime: %ld, Open: %d, High: %d, Low: %d, Close: %d, Simulate: %d",
+    DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex= %ld, szStockNo: %s, szStockName : %s, nTradingDay: %ld, nDealTime: %ld, Open: %d, High: %d, Low: %d, Close: %d, Simulate: %d",
           nStockIndex,
           szStockNo,
           szStockName,
@@ -650,7 +650,7 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
           skStock.nClose,
           skStock.nSimulate);
 
-    DEBUG(DEBUG_LEVEL_INFO, "nTBc= %ld, nTAc= %ld",
+    DEBUG(DEBUG_LEVEL_DEBUG, "nTBc= %ld, nTAc= %ld",
           skStock.nTBc,
           skStock.nTAc);
 
