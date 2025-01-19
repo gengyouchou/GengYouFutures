@@ -1,5 +1,6 @@
 #include "SKQuoteLib.h"
 #include "Strategy.h"
+#include "config.h"
 #include <array>
 #include <deque>
 #include <iostream>
@@ -7,7 +8,6 @@
 #include <string>
 #include <unordered_map>
 #include <yaml-cpp/yaml.h>
-#include "config.h"
 
 #define SK_SUBJECT_CONNECTION_CONNECTED 3001
 #define SK_SUBJECT_CONNECTION_DISCONNECT 3002
@@ -123,6 +123,12 @@ HRESULT CSKQuoteLib::OnEventFiringObjectInvoke(
         long nQty = V_I4(&(pdispparams->rgvarg)[1]);
         long nSimulate = V_I4(&(pdispparams->rgvarg)[0]);
         OnNotifyTicksLONG(nStockIndex, nPtr, nDate, lTimehms, nBid, nAsk, nClose, nQty, nSimulate);
+        break;
+    }
+    case 15: // SKQuoteLib_GetStrikePrices
+    {
+        _bstr_t OptionData = V_BSTR(&(pdispparams->rgvarg)[0]);
+        OnNotifyStrikePrices(OptionData);
         break;
     }
     case 22: // OnNotifyBest5LONG
@@ -308,6 +314,11 @@ long CSKQuoteLib::RequestStocks(short *psPageNo, string strStockNos)
 long CSKQuoteLib::GetStockByIndexLONG(short sMarketNo, long nStockIndex, SKCOMLib::SKSTOCKLONG *pSKStock)
 {
     return m_pSKQuoteLib->SKQuoteLib_GetStockByIndexLONG(sMarketNo, nStockIndex, pSKStock);
+}
+
+long CSKQuoteLib::GetStrikePrices(VOID)
+{
+    return m_pSKQuoteLib->SKQuoteLib_GetStrikePrices();
 }
 
 long CSKQuoteLib::RequestTicks(short *psPageNo, string strStockNos)
@@ -639,6 +650,10 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
           skStock.nClose,
           skStock.nSimulate);
 
+    DEBUG(DEBUG_LEVEL_DEBUG, "nTBc= %ld, nTAc= %ld",
+          skStock.nTBc,
+          skStock.nTAc);
+
     gCurCommHighLowPoint[nStockIndex][0] = skStock.nHigh;
     gCurCommHighLowPoint[nStockIndex][1] = skStock.nLow;
     gCurCommHighLowPoint[nStockIndex][2] = skStock.nOpen;
@@ -648,6 +663,17 @@ void CSKQuoteLib::OnNotifyQuoteLONG(short sMarketNo, long nStockIndex)
 
     delete[] szStockName;
     delete[] szStockNo;
+}
+
+void CSKQuoteLib::OnNotifyStrikePrices(BSTR bstrOptionData)
+{
+    DEBUG(DEBUG_LEVEL_INFO, "start");
+
+    string OptionData = string(_bstr_t(bstrOptionData));
+
+    DEBUG(DEBUG_LEVEL_INFO, "OptionData= %s", OptionData);
+
+    DEBUG(DEBUG_LEVEL_INFO, "end");
 }
 
 void CSKQuoteLib::OnNotifyTicksLONG(long nStockIndex, long nPtr, long nDate, long lTimehms, long nBid, long nAsk, long nClose, long nQty, long nSimulate)

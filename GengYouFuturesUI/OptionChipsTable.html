@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Chips T-Report</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .table-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            background-color: black;
+            color: white;
+        }
+
+        th,
+        td {
+            border: 1px solid gray;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #333;
+        }
+
+        .negative {
+            color: red;
+            background-color: black;
+        }
+
+        .positive {
+            color: green;
+            background-color: black;
+        }
+
+        .neutral {
+            color: white;
+            background-color: black;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 20px 0 0;
+        }
+
+        .highlight-strike {
+            background-color: yellow;
+            /* 高亮背景色 */
+            color: black;
+            /* 黑色文字 */
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style="text-align: center;">Option Chips T-Report</h1>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Call (Volume Diff)</th>
+                    <th>Strike Price</th>
+                    <th>Put (Volume Diff)</th>
+                </tr>
+            </thead>
+            <tbody id="table-force"></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function fetchData() {
+            try {
+                const response = await fetch("http://192.168.50.168:8090/OptionChipsTable");
+                if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
+                const jsonResponse = await response.json();
+
+                // 假設 jsonResponse 直接包含 at_the_money 和 near_the_money 資料
+                const atTheMoney = jsonResponse.at_the_money;
+                const nearTheMoney = jsonResponse.near_the_money;
+
+                // 更新表格
+                generateOptionTable(atTheMoney.options_data, nearTheMoney.options_data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                appendLog(`Error fetching data: ${error.message}`, true);
+            }
+        }
+
+        function generateOptionTable(atTheMoneyData, nearTheMoneyData) {
+            const tableBody = document.getElementById('table-force');
+            if (!tableBody) {
+                console.error("Table body not found!");
+                return;
+            }
+            tableBody.innerHTML = ""; // 清空表格內容
+
+            const baseStrikePrice = atTheMoneyData[10]?.strike_price; // 獲取 base_symbol 的履約價
+
+            // 將 at_the_money 和 near_the_money 資料合併，並根據 strike_price 分組
+            const dataMap = new Map();
+
+            atTheMoneyData.forEach(row => {
+                if (!dataMap.has(row.strike_price)) {
+                    dataMap.set(row.strike_price, { call_volume_diff: null, put_volume_diff: null });
+                }
+                dataMap.get(row.strike_price).call_volume_diff = row.volume_difference;
+            });
+
+            nearTheMoneyData.forEach(row => {
+                if (!dataMap.has(row.strike_price)) {
+                    dataMap.set(row.strike_price, { call_volume_diff: null, put_volume_diff: null });
+                }
+                dataMap.get(row.strike_price).put_volume_diff = row.volume_difference;
+            });
+
+            // 根據 strike_price 排序並顯示資料
+            const allData = Array.from(dataMap.entries()).sort((a, b) => a[0] - b[0]);
+
+            allData.forEach(([strike_price, volume_diffs]) => {
+                const tableRow = document.createElement('tr');
+
+                // 若 strike_price 等於 base_symbol 的履約價，高亮該行
+                if (strike_price === baseStrikePrice) {
+                    tableRow.classList.add('highlight-strike');
+                }
+
+                // 計算 call 和 put 的顏色
+                const callClass = getColorClass(volume_diffs.call_volume_diff);
+                const putClass = getColorClass(volume_diffs.put_volume_diff);
+
+                const callVolumeDiffCell = `<td class="${callClass}">${getFormattedValue(volume_diffs.call_volume_diff)}</td>`;
+                const strikePriceCell = `<td>${strike_price}</td>`;
+                const putVolumeDiffCell = `<td class="${putClass}">${getFormattedValue(volume_diffs.put_volume_diff)}</td>`;
+
+                tableRow.innerHTML = callVolumeDiffCell + strikePriceCell + putVolumeDiffCell;
+                tableBody.appendChild(tableRow);
+            });
+        }
+
+        function getColorClass(value) {
+            if (value === null || value === 0) return 'neutral';  // 若為 null 或 0，顯示白色
+            return value < 0 ? 'negative' : value > 0 ? 'positive' : 'neutral'; // 負數為紅字，正數為綠字，0為白色
+        }
+
+        function getFormattedValue(value) {
+            if (value === null || value === 0) return '0';  // 顯示為 '0' 字樣
+            return value;
+        }
+
+        function appendLog(message, isError = false) {
+            console.log(`[${isError ? "Error" : "Log"}]: ${message}`);
+        }
+
+        // 每10秒調用一次fetchData
+        setInterval(fetchData, 10000);
+    </script>
+</body>
+
+</html>
