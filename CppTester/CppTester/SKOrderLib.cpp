@@ -624,7 +624,7 @@ void ParseOpenInterestMessage(const std::string &strMessage)
         return;
     }
 
-    if (items.size() >= 7 && items[2].rfind("TM", 0) == 0)
+    if (!items.empty() && items[0] == "TF")
     {
         gOpenInterestInfo.product = items[2];                     // 3
         gOpenInterestInfo.buySell = items[3];                     // 4
@@ -644,20 +644,6 @@ void ParseOpenInterestMessage(const std::string &strMessage)
         LOG(DEBUG_LEVEL_DEBUG, "dayTradePosition: %ld", gOpenInterestInfo.dayTradePosition);
         LOG(DEBUG_LEVEL_DEBUG, "avgCost: %f", gOpenInterestInfo.avgCost);
         LOG(DEBUG_LEVEL_DEBUG, "NeedToUpdate = FALSE");
-    }
-    else
-    {
-        gOpenInterestInfo = {
-            "",   // product
-            "",   // Buy/Sell Indicator
-            0,    // openPosition 0
-            0,    // dayTradePosition 0
-            0.0,  // avgCost 0.0
-            0.0,  // profitAndLoss
-            FALSE // NeedToUpdate
-        };
-
-        DEBUG(DEBUG_LEVEL_DEBUG, "NO Open Position: %s", strMessage);
     }
 }
 
