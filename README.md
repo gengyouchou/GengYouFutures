@@ -43,4 +43,5 @@ Here are some screenshots of the **GengTrader** in action:
 - **Real-time Market Data**
   ![Real-time Market Data1](screenshots/image4.png)
   ![Real-time Market Data2](screenshots/image5.png)
+  ![Real-time Market Data3](screenshots/image6.png)
 
