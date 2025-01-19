@@ -55,6 +55,13 @@
             text-align: center;
             margin: 20px 0 0;
         }
+
+        .highlight-strike {
+            background-color: yellow;
+            /* 高亮背景色 */
+            color: black;
+            /* 黑色文字 */
+        }
     </style>
 </head>
 
@@ -100,6 +107,8 @@
             }
             tableBody.innerHTML = ""; // 清空表格內容
 
+            const baseStrikePrice = atTheMoneyData[10]?.strike_price; // 獲取 base_symbol 的履約價
+
             // 將 at_the_money 和 near_the_money 資料合併，並根據 strike_price 分組
             const dataMap = new Map();
 
@@ -122,6 +131,11 @@
 
             allData.forEach(([strike_price, volume_diffs]) => {
                 const tableRow = document.createElement('tr');
+
+                // 若 strike_price 等於 base_symbol 的履約價，高亮該行
+                if (strike_price === baseStrikePrice) {
+                    tableRow.classList.add('highlight-strike');
+                }
 
                 // 計算 call 和 put 的顏色
                 const callClass = getColorClass(volume_diffs.call_volume_diff);
