@@ -125,11 +125,11 @@
     <div id="price-change">Price Change: N/A</div>
 
     <div class="iframe-container">
-        <iframe src="http://localhost:8000/LongShort.html" title="Long Short Strategy"></iframe>
+        <iframe src="http://192.168.50.168:8000/LongShort.html" title="Long Short Strategy"></iframe>
     </div>
 
     <div class="iframe-container">
-        <iframe src="http://localhost:8000/OptionChipsTable.html" title="Option Chips Table"></iframe>
+        <iframe src="http://192.168.50.168:8000/OptionChipsTable.html" title="Option Chips Table"></iframe>
     </div>
 
     <script>
@@ -138,7 +138,7 @@
 
         async function fetchIndexData() {
             try {
-                const response = await fetch("http://localhost:8080/index-data");
+                const response = await fetch("http://192.168.50.168:8080/index-data");
                 if (!response.ok) {
                     throw new Error(`HTTP error: ${response.status}`);
                 }

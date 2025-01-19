@@ -450,7 +450,7 @@ def main():
     """
     global sdk, config
 
-    print("请使用浏览器访问 http://localhost:8090/OptionChipsTable")
+    print("请使用浏览器访问 http://192.168.50.168:8090/OptionChipsTable")
 
     # 初始化配置
     config = read_config()
