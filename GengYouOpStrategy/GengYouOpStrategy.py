@@ -7,6 +7,7 @@ from flask import Flask, jsonify, request
 import requests
 from flask_cors import CORS
 import threading
+from waitress import serve  # 引入 waitress WSGI 服务器
 
 # Function to read configuration from LogConfig.json
 def read_config(file_path='LogConfig.json'):
@@ -436,10 +437,11 @@ def get_option_chips_table():
 
 def start_http_server():
     """
-    啟動 HTTP 伺服器，監聽 8090 埠。
+    使用 WSGI 服务器 waitress 启动 HTTP 服务。
     """
     try:
-        app.run(host="0.0.0.0", port=8090, debug=False, use_reloader=False)
+        print("请使用浏览器访问 http://0.0.0.0:8090/OptionChipsTable")
+        serve(app, host="0.0.0.0", port=8090)  # 使用 waitress 服务器监听 8090 端口
     except Exception as e:
         print(f"伺服器啟動失敗: {e}")
 
