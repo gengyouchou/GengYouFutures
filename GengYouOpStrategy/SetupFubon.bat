@@ -26,6 +26,7 @@ pip install %WHL_FILE%
 REM Step 5: Install missing requests and Flask packages
 echo Installing required packages...
 pip install requests flask flask-cors
+pip install requests flask flask-cors waitress
 
 REM Step 6: Create documentation directory if it does not exist
 if not exist "%DOC_DIR%" (
