@@ -11,6 +11,8 @@
 #include "TEventHandler.h"
 
 #define COMMODITY_OS_MAIN "CME,NQ0000"
+#define COMMODITY_OS_GC "CME,GC0000"
+#define COMMODITY_OS_DX "ICEUS,DX0000"
 
 struct COMMODITY_OS_INFO
 {

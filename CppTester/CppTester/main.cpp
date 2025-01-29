@@ -479,6 +479,8 @@ void thread_main()
     // For calculate 5MA
     AutoQuoteTicks(COMMODITY_TX_MAIN, -1);
     AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
+    AutoOsQuoteTicks(COMMODITY_OS_GC, -1);
+    AutoOsQuoteTicks(COMMODITY_OS_DX, -1);
 
     gMarketDataUI.Updating = FALSE;
 

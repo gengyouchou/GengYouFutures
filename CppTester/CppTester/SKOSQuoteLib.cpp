@@ -182,7 +182,7 @@ void CSKOSQuoteLib::OnNotifyTicksNineDigitLONG(LONG nStockIndex, LONG nPtr, LONG
         return;
     }
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "nStockIndex: %ld, nPtr: %ld,nDate: %ld, lTimehms: %ld, nClose: %ld, nQty: %ld\n",
+    DEBUG(DEBUG_LEVEL_INFO, "nStockIndex: %ld, nPtr: %ld,nDate: %ld, lTimehms: %ld, nClose: %ld, nQty: %ld\n",
           nStockIndex, nPtr, nDate, lTimehms, nClose, nQty);
 
     gOsTransactionList[nStockIndex][0] = nPtr;
