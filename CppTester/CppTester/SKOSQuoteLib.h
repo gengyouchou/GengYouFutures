@@ -17,6 +17,8 @@
 struct COMMODITY_OS_INFO
 {
     long NQIdxNo;
+    long GCIdxNo;
+    long DXIdxNo;
 };
 
 extern std::unordered_map<long, std::array<long, 6>> gOsTransactionList;
