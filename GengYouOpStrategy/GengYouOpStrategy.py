@@ -424,12 +424,12 @@ def get_option_chips_table():
 
     # 计算价平合约
     nearest_strike_price = round(TxfPrices / 50) * 50
-    at_the_money_contract = f"TX5{nearest_strike_price:05d}A5"
+    at_the_money_contract = f"TX1{nearest_strike_price:05d}B5"
 
     # 获取期权筹码表数据
     combined_data = {
         "at_the_money": OptionChipsTable(sdk, at_the_money_contract),
-        "near_the_money": OptionChipsTable(sdk, at_the_money_contract.replace("A5", "M5"))
+        "near_the_money": OptionChipsTable(sdk, at_the_money_contract.replace("B5", "N5"))
     }
 
     # 使用 jsonify 返回 JSON 数据
