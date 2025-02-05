@@ -424,7 +424,7 @@ def get_option_chips_table():
 
     # 计算价平合约
     nearest_strike_price = round(TxfPrices / 50) * 50
-    at_the_money_contract = f"TX1{nearest_strike_price:05d}B5"
+    at_the_money_contract = f"TX2{nearest_strike_price:05d}B5"
 
     # 获取期权筹码表数据
     combined_data = {
