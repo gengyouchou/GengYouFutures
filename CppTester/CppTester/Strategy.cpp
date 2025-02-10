@@ -90,7 +90,7 @@ LONG CountBidOfferLongShort(LONG nStockidx);
 LONG CountTransactionListLongShort(LONG nStockidx);
 
 // Function to calculate the 5-minute moving average (5MA)
-static double calculate5MA(std::deque<double> &closePrices)
+double calculate5MA(std::deque<double> &closePrices)
 {
     if (closePrices.size() <= 0)
     {
