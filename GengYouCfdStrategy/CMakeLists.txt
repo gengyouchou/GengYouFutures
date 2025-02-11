@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(GengYouFuturesUI)
+project(GengYouCfdStrategy)
 
 # 設定 C++ 標準
 set(CMAKE_CXX_STANDARD 17)
@@ -23,33 +23,21 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(nlohmann_json)
 
 # 定義庫
-add_library(GengYouFuturesUI STATIC GengYouFuturesUI.cpp)
+add_library(GengYouCfdStrategy STATIC GengYouCfdStrategy.cpp)
 
 # 添加頭文件
 set(HEADERS
-    GengYouFuturesUI.h
-    ../CppTester/CppTester/SKCenterLib.h
-    ../CppTester/CppTester/SKCOM_reference.h
-    ../CppTester/CppTester/SKOrderLib.h
-    ../CppTester/CppTester/SKQuoteLib.h
-    ../CppTester/CppTester/SKOSQuoteLib.h
-    ../CppTester/CppTester/SKReplyLib.h
-    ../CppTester/CppTester/TEventHandler.h
-    ../CppTester/CppTester/Strategy.h
-    ../Logger/Logger.h
+    GengYouCfdStrategy.h
 )
 
 # 設定包含目錄
-target_include_directories(GengYouFuturesUI PUBLIC 
+target_include_directories(GengYouCfdStrategy PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}  # 添加庫的源文件目錄
-    ../Logger
-    ../../
-    ../CppTester/CppTester
 )
 
 # 添加 httplib 和 json 作為外部庫依賴
-target_link_libraries(GengYouFuturesUI PRIVATE httplib::httplib nlohmann_json::nlohmann_json)
+target_link_libraries(GengYouCfdStrategy PRIVATE httplib::httplib nlohmann_json::nlohmann_json)
 
 # 安裝靜態庫和頭文件
-install(TARGETS GengYouFuturesUI DESTINATION lib)
+install(TARGETS GengYouCfdStrategy DESTINATION lib)
 install(FILES ${HEADERS} DESTINATION include)
