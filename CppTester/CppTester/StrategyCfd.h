@@ -10,3 +10,5 @@
 
 #define COMMODITY_OS_GC "NYM,GC0000"
 #define COMMODITY_OS_DX "ICEUS,DX0000"
+
+void CFD_thread_main();

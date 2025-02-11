@@ -32,6 +32,11 @@ extern CSKCenterLib *pSKCenterLib;
 extern CSKQuoteLib *pSKQuoteLib;
 extern CSKReplyLib *pSKReplyLib;
 extern CSKOrderLib *pSKOrderLib;
+extern CSKOSQuoteLib *pSKOsQuoteLib;
+
+extern void AutoLogIn();
+void AutoOsQuoteTicks(IN string ProductNum, short sPageNo);
+extern void release();
 
 // Global variables, initialized by main, and continuously updated by the com server
 extern SHORT gCurServerTime[3];
@@ -52,6 +57,26 @@ extern std::map<string, pair<double, double>> gDaysCommHighLowPoint;         // 
 extern std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint; // Max len: DAY_NIGHT_HIGH_LOW_K_LINE
 
 extern double calculate5MA(std::deque<double> &closePrices);
+
+void CfdAutoConnect()
+{
+    long count = 0;
+
+    while (pSKOsQuoteLib->IsConnected() != 1)
+    {
+        long g_nCode = pSKOsQuoteLib->EnterMonitorLONG();
+        pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
+        ++count;
+
+        if (count == 5)
+        {
+            DEBUG(DEBUG_LEVEL_ERROR, "pSKOsQuoteLib->IsConnected() != 1");
+            release();
+            exit(0);
+        }
+    }
+}
 
 /**
  * @brief Calculate the slope of the long-short position using bid-offer and transaction data.
@@ -145,4 +170,21 @@ VOID CfdBidOfferAndTransactionListLongShortSlope(VOID)
     }
 
     return;
+}
+
+void CFD_thread_main()
+{
+    AutoLogIn();
+
+    CfdAutoConnect();
+
+    long res = pSKQuoteLib->RequestServerTime();
+
+    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestServerTime()=%d", res);
+
+    pSKOsQuoteLib->GetCommodityIdx();
+
+    AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
+    AutoOsQuoteTicks(COMMODITY_OS_GC, -1);
+    AutoOsQuoteTicks(COMMODITY_OS_DX, -1);
 }
