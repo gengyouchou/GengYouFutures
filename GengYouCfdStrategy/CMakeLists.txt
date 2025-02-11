@@ -22,10 +22,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(nlohmann_json)
 
-# 定義庫
-add_library(GengYouCfdStrategy STATIC GengYouCfdStrategy.cpp)
+# 定義 DLL 庫，改用 SHARED 生成 DLL
+add_library(GengYouCfdStrategy SHARED GengYouCfdStrategy.cpp)
 
-# 添加頭文件
+# 添加頭文件（請根據實際需要提供對應的 .h 檔案）
 set(HEADERS
     GengYouCfdStrategy.h
 )
@@ -35,9 +35,14 @@ target_include_directories(GengYouCfdStrategy PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}  # 添加庫的源文件目錄
 )
 
-# 添加 httplib 和 json 作為外部庫依賴
+# 添加 httplib 和 nlohmann_json 作為外部庫依賴
 target_link_libraries(GengYouCfdStrategy PRIVATE httplib::httplib nlohmann_json::nlohmann_json)
 
-# 安裝靜態庫和頭文件
+# 為 Windows 平台自動匯出所有符號（可選）
+if(WIN32)
+    set_target_properties(GengYouCfdStrategy PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif()
+
+# 安裝 DLL 與頭文件
 install(TARGETS GengYouCfdStrategy DESTINATION lib)
 install(FILES ${HEADERS} DESTINATION include)
