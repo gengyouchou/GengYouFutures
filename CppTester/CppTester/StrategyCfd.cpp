@@ -48,8 +48,8 @@ extern LONG CountOsTransactionListLongShort(LONG nStockidx);
 
 // Global CFD variable
 
-LONG gGcTransactionListLongShort = 0, gDxTransactionListLongShort = 0;
-double gGcTransactionListLongShortSlope = 0, gDxTransactionListLongShortSlope = 0;
+std::unordered_map<long, long> gCfdTransactionListLongShort;
+std::unordered_map<long, double> gCfdTransactionListLongShortSlope;
 
 /**
  * @brief Calculate the slope of the long-short position using bid-offer and transaction data.
@@ -72,22 +72,13 @@ double gGcTransactionListLongShortSlope = 0, gDxTransactionListLongShortSlope = 
  *
  * @return VOID
  */
-VOID CfdBidOfferAndTransactionListLongShortSlope(VOID)
+VOID CfdBidOfferAndTransactionListLongShortSlope(long nStockidx)
 {
     // Deques to store recent values for calculating moving average (MA) and slope
     static std::deque<double> dq, dqSlop;
 
-    LONG NumberOfStocksRisingAndFallingDiff = 0;
-
-    if (gNumberOfStocksRisingAndFalling != 0)
-    {
-        static double PreNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
-        NumberOfStocksRisingAndFallingDiff = static_cast<long>(NUMBER_OF_STOCKS_RISING_AND_FALLING * (gNumberOfStocksRisingAndFalling - PreNumberOfStocksRisingAndFalling));
-        PreNumberOfStocksRisingAndFalling = gNumberOfStocksRisingAndFalling;
-    }
-
     // Get the current long-short position by invoking a custom function
-    LONG CurLongShort = StrategyCaluLongShort() + NumberOfStocksRisingAndFallingDiff;
+    LONG CurLongShort = StrategyCaluLongShort();
 
     // Store the previous long-short value for calculating the difference
     static LONG PreLongShort = CurLongShort;
@@ -153,11 +144,31 @@ VOID CfdStrategySwitch()
     {
         long nStockidx = gCommodtyOsInfo.GCIdxNo;
 
-        gGcTransactionListLongShort += CountOsTransactionListLongShort(nStockidx);
+        gCfdTransactionListLongShort[nStockidx] += CountOsTransactionListLongShort(nStockidx);
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "nStockidx: %ld, gCfdTransactionListLongShort[nStockidx]: %ld\n",
+              nStockidx, gCfdTransactionListLongShort[nStockidx]);
     }
 
-    DEBUG(DEBUG_LEVEL_DEBUG, "gGcTransactionListLongShort: %ld\n",
-          gGcTransactionListLongShort);
+    if (gCommodtyOsInfo.NQIdxNo != 0)
+    {
+        long nStockidx = gCommodtyOsInfo.GCIdxNo;
+
+        gCfdTransactionListLongShort[nStockidx] += CountOsTransactionListLongShort(nStockidx);
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "nStockidx: %ld, gCfdTransactionListLongShort[nStockidx]: %ld\n",
+              nStockidx, gCfdTransactionListLongShort[nStockidx]);
+    }
+
+    if (gCommodtyOsInfo.DXIdxNo != 0)
+    {
+        long nStockidx = gCommodtyOsInfo.DXIdxNo;
+
+        gCfdTransactionListLongShort[nStockidx] += CountOsTransactionListLongShort(nStockidx);
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "nStockidx: %ld, gCfdTransactionListLongShort[nStockidx]: %ld\n",
+              nStockidx, gCfdTransactionListLongShort[nStockidx]);
+    }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
 }
