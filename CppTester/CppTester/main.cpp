@@ -17,7 +17,6 @@
 #include <sstream>
 
 #include "Strategy.h"
-#include "StrategyCfd.h"
 #include <GengYouFuturesUI.h>
 #include "config.h"
 
@@ -768,7 +767,7 @@ int main()
 
     SetConsoleMode(hStdin, mode);
 
-    thread tMain(CFD_thread_main);
+    thread tMain(thread_main);
     if (tMain.joinable())
     {
         tMain.detach();
