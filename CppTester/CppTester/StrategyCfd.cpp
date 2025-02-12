@@ -70,70 +70,45 @@ std::unordered_map<long, double> gCfdTransactionListLongShortSlope;
  * The function also smooths the derivative term using a weighted average, which mitigates
  * the impact of noise or short-term fluctuations on the slope calculation.
  *
- * @return VOID
+ * @return double
  */
-VOID CfdBidOfferAndTransactionListLongShortSlope(long nStockidx)
+double CfdBidOfferAndTransactionListLongShortSlope(long nStockidx)
 {
     // Deques to store recent values for calculating moving average (MA) and slope
-    static std::deque<double> dq, dqSlop;
+    static std::unordered_map<long, deque<double>> dq, dqSlop;
 
     // Get the current long-short position by invoking a custom function
-    LONG CurLongShort = StrategyCaluLongShort();
-
-    // Store the previous long-short value for calculating the difference
-    static LONG PreLongShort = CurLongShort;
-
-    // Calculate the difference between current and previous long-short values
-    LONG LongShortDiff = CurLongShort - PreLongShort;
-    PreLongShort = CurLongShort;
-
-    if (LongShortDiff == 0)
-    {
-        return;
-    }
-
-    // Update the global long-short position with the smoothed difference
-    gLongShort += LongShortDiff;
-
-    // Bound the global long-short position between predefined thresholds to avoid extreme values
-    if (gLongShort > 0)
-    {
-        gLongShort = min(gLongShort, INT_MAX);
-    }
-    else
-    {
-        gLongShort = max(gLongShort, INT_MIN);
-    }
+    LONG CurLongShort = gCfdTransactionListLongShort[nStockidx];
 
     // Manage the size of the deque to store the recent long-short values for moving average calculation
-    if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
+    if (dq[nStockidx].size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
     {
-        dq.pop_front(); // Remove the oldest value
+        dq[nStockidx].pop_front(); // Remove the oldest value
     }
-    dq.push_back(gLongShort); // Add the current long-short value
+    dq[nStockidx].push_back(CurLongShort); // Add the current long-short value
 
     // Ensure the deque has enough values to calculate the moving average and slope
-    if (dq.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
+    if (dq[nStockidx].size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
     {
         // Calculate the moving average of the deque
-        double ma = calculate5MA(dq);
+        double ma = calculate5MA(dq[nStockidx]);
 
         // Maintain a deque for the moving average values to compute the slope
-        if (dqSlop.size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
+        if (dqSlop[nStockidx].size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)
         {
-            dqSlop.pop_front(); // Remove the oldest MA value
+            dqSlop[nStockidx].pop_front(); // Remove the oldest MA value
         }
-        dqSlop.push_back(ma); // Add the new MA value
+        dqSlop[nStockidx].push_back(ma); // Add the new MA value
 
         // Calculate the slope based on the difference between the first and last values in the deque
-        double deltaY = dqSlop.back() - dqSlop.front();
+        double deltaY = dqSlop[nStockidx].back() - dqSlop[nStockidx].front();
         double MaSlope = deltaY / BID_OFFER_SLOPE_LONG_SHORT_COUNT;
 
         // Update the global variable that tracks the bid-offer long-short slope
-        gBidOfferLongShortSlope = MaSlope;
+        return MaSlope;
     }
 
-    return;
+    return 0;
 }
 
 VOID CfdStrategySwitch()
@@ -145,6 +120,7 @@ VOID CfdStrategySwitch()
         long nStockidx = gCommodtyOsInfo.GCIdxNo;
 
         gCfdTransactionListLongShort[nStockidx] += CountOsTransactionListLongShort(nStockidx);
+        gCfdTransactionListLongShortSlope[nStockidx] = CfdBidOfferAndTransactionListLongShortSlope(nStockidx);
 
         DEBUG(DEBUG_LEVEL_DEBUG, "nStockidx: %ld, gCfdTransactionListLongShort[nStockidx]: %ld\n",
               nStockidx, gCfdTransactionListLongShort[nStockidx]);
@@ -155,6 +131,7 @@ VOID CfdStrategySwitch()
         long nStockidx = gCommodtyOsInfo.NQIdxNo;
 
         gCfdTransactionListLongShort[nStockidx] += CountOsTransactionListLongShort(nStockidx);
+        gCfdTransactionListLongShortSlope[nStockidx] = CfdBidOfferAndTransactionListLongShortSlope(nStockidx);
 
         DEBUG(DEBUG_LEVEL_DEBUG, "nStockidx: %ld, gCfdTransactionListLongShort[nStockidx]: %ld\n",
               nStockidx, gCfdTransactionListLongShort[nStockidx]);
@@ -165,6 +142,7 @@ VOID CfdStrategySwitch()
         long nStockidx = gCommodtyOsInfo.DXIdxNo;
 
         gCfdTransactionListLongShort[nStockidx] += CountOsTransactionListLongShort(nStockidx);
+        gCfdTransactionListLongShortSlope[nStockidx] = CfdBidOfferAndTransactionListLongShortSlope(nStockidx);
 
         DEBUG(DEBUG_LEVEL_DEBUG, "nStockidx: %ld, gCfdTransactionListLongShort[nStockidx]: %ld\n",
               nStockidx, gCfdTransactionListLongShort[nStockidx]);
