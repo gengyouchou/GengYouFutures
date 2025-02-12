@@ -668,6 +668,11 @@ void thread_main()
                    gCfdTransactionListLongShort[gCommodtyOsInfo.GCIdxNo], gCfdTransactionListLongShort[gCommodtyOsInfo.NQIdxNo], gCfdTransactionListLongShort[gCommodtyOsInfo.DXIdxNo]);
 
             printf("=========================================\n");
+
+            printf("gCfdTransactionListLongShortSlope[gCommodtyOsInfo.GCIdxNo]: %f, gCfdTransactionListLongShortSlope[gCommodtyOsInfo.NQIdxNo]: %f, gCfdTransactionListLongShortSlope[gCommodtyOsInfo.DXIdxNo]: %f,\n",
+                   gCfdTransactionListLongShortSlope[gCommodtyOsInfo.GCIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.NQIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.DXIdxNo]);
+
+            printf("=========================================\n");
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU
