@@ -545,6 +545,7 @@ void thread_main()
 
         StrategySwitch(gStrategyConfig.StrategyMode, MtxCommodtyInfo);
         CfdStrategySwitch();
+        gOsTransactionListLongShort += gCfdTransactionListLongShort[gCommodtyOsInfo.NQIdxNo];
 
         // Ouput start
 

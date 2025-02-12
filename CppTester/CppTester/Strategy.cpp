@@ -3224,7 +3224,6 @@ VOID StrategySwitch(IN LONG Mode, IN LONG MtxCommodtyInfo)
 
     StrategyCaluBidOfferLongShort();
     StrategyCaluTransactionListLongShort();
-    StrategyCaluOsTransactionListLongShort();
     BidOfferAndTransactionListLongShortSlope();
     CountNumberOfStocksRisingAndFalling();
     StrategyStopFuturesLoss(g_strUserId, MtxCommodtyInfo);
