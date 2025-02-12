@@ -11,10 +11,14 @@
 #include "TEventHandler.h"
 
 #define COMMODITY_OS_MAIN "CME,NQ0000"
+#define COMMODITY_OS_GC "NYM,GC0000"
+#define COMMODITY_OS_DX "ICEUS,DX0000"
 
 struct COMMODITY_OS_INFO
 {
     long NQIdxNo;
+    long GCIdxNo;
+    long DXIdxNo;
 };
 
 extern std::unordered_map<long, std::array<long, 6>> gOsTransactionList;

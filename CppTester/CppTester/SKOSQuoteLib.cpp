@@ -204,4 +204,16 @@ VOID CSKOSQuoteLib::GetCommodityIdx(VOID)
     gCommodtyOsInfo.NQIdxNo = skStock.nStockIdx;
 
     DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%ld, COMMODITY_OS_MAIN=%ld", res, skStock.nStockIdx);
+
+    res = RequestStockIndexMap(COMMODITY_OS_GC, &skStock);
+
+    gCommodtyOsInfo.GCIdxNo = skStock.nStockIdx;
+
+    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%ld, COMMODITY_OS_GC=%ld", res, skStock.nStockIdx);
+
+    res = RequestStockIndexMap(COMMODITY_OS_DX, &skStock);
+
+    gCommodtyOsInfo.DXIdxNo = skStock.nStockIdx;
+
+    DEBUG(DEBUG_LEVEL_INFO, "RequestStockIndexMap()=%ld, COMMODITY_OS_DX=%ld", res, skStock.nStockIdx);
 }

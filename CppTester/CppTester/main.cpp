@@ -17,6 +17,7 @@
 #include <sstream>
 
 #include "Strategy.h"
+#include "StrategyCfd.h"
 #include <GengYouFuturesUI.h>
 #include "config.h"
 
@@ -479,6 +480,8 @@ void thread_main()
     // For calculate 5MA
     AutoQuoteTicks(COMMODITY_TX_MAIN, -1);
     AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
+    AutoOsQuoteTicks(COMMODITY_OS_GC, -1);
+    AutoOsQuoteTicks(COMMODITY_OS_DX, -1);
 
     gMarketDataUI.Updating = FALSE;
 
@@ -541,6 +544,8 @@ void thread_main()
         // updatePricePeriodically(MtxCommodtyInfo);
 
         StrategySwitch(gStrategyConfig.StrategyMode, MtxCommodtyInfo);
+        CfdStrategySwitch();
+        gOsTransactionListLongShort += gCfdTransactionListLongShort[gCommodtyOsInfo.NQIdxNo];
 
         // Ouput start
 
@@ -656,6 +661,18 @@ void thread_main()
             printf("            BID : [%ld]\n", gCurTaiexInfo[0x00][2]);
             printf("TPEX Total OFFER: [%ld]\n", gCurTaiexInfo[0x01][3]);
             printf("            BID : [%ld]\n", gCurTaiexInfo[0x01][2]);
+
+            printf("=========================================\n");
+
+            printf("gCfdTransactionListLongShort[gCommodtyOsInfo.GCIdxNo]: %ld, gCfdTransactionListLongShort[gCommodtyOsInfo.NQIdxNo]: %ld, gCfdTransactionListLongShort[gCommodtyOsInfo.DXIdxNo]: %ld,\n",
+                   gCfdTransactionListLongShort[gCommodtyOsInfo.GCIdxNo], gCfdTransactionListLongShort[gCommodtyOsInfo.NQIdxNo], gCfdTransactionListLongShort[gCommodtyOsInfo.DXIdxNo]);
+
+            printf("=========================================\n");
+
+            printf("gCfdTransactionListLongShortSlope[gCommodtyOsInfo.GCIdxNo]: %f, gCfdTransactionListLongShortSlope[gCommodtyOsInfo.NQIdxNo]: %f, gCfdTransactionListLongShortSlope[gCommodtyOsInfo.DXIdxNo]: %f,\n",
+                   gCfdTransactionListLongShortSlope[gCommodtyOsInfo.GCIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.NQIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.DXIdxNo]);
+
+            printf("=========================================\n");
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU

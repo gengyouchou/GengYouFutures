@@ -20,6 +20,7 @@ set(SOURCES
     CppTester/SKReplyLib.cpp
     CppTester/Strategy.cpp
     ../Logger/Logger.cpp
+    CppTester/StrategyCfd.cpp
 )
 
 # 添加头文件
@@ -34,6 +35,7 @@ set(HEADERS
     CppTester/Strategy.h
     ../Logger/Logger.h
     ../GengYouFuturesUI/GengYouFuturesUI.h
+    CppTester/StrategyCfd.h
 )
 
 # 添加头文件目录
