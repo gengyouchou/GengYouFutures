@@ -40,43 +40,16 @@ extern void release();
 
 // Global variables, initialized by main, and continuously updated by the com server
 extern SHORT gCurServerTime[3];
-extern std::unordered_map<SHORT, std::array<long, 6>> gCurTaiexInfo;
-extern std::deque<long> gDaysKlineDiff;
-extern std::deque<long> gCostMovingAverage;
-extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
-extern std::unordered_map<long, long> gCurCommPrice;
-extern std::unordered_map<long, vector<pair<long, long>>> gBest5BidOffer;
 
-extern OpenInterestInfo gOpenInterestInfo;
-
-extern string g_strUserId;
-
-extern COMMODITY_INFO gCommodtyInfo;
-
-extern std::map<string, pair<double, double>> gDaysCommHighLowPoint;         // Max len: DAY_NIGHT_HIGH_LOW_K_LINE
-extern std::map<string, pair<double, double>> gDaysNightAllCommHighLowPoint; // Max len: DAY_NIGHT_HIGH_LOW_K_LINE
+extern COMMODITY_OS_INFO gCommodtyOsInfo;
 
 extern double calculate5MA(std::deque<double> &closePrices);
+extern LONG CountOsTransactionListLongShort(LONG nStockidx);
 
-void CfdAutoConnect()
-{
-    long count = 0;
+// Global CFD variable
 
-    while (pSKOsQuoteLib->IsConnected() != 1)
-    {
-        long g_nCode = pSKOsQuoteLib->EnterMonitorLONG();
-        pSKCenterLib->PrintfCodeMessage("Quote", "EnterMonitor", g_nCode);
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000)); //  CPU
-        ++count;
-
-        if (count == 5)
-        {
-            DEBUG(DEBUG_LEVEL_ERROR, "pSKOsQuoteLib->IsConnected() != 1");
-            release();
-            exit(0);
-        }
-    }
-}
+LONG gGcTransactionListLongShort = 0, gDxTransactionListLongShort = 0;
+double gGcTransactionListLongShortSlope = 0, gDxTransactionListLongShortSlope = 0;
 
 /**
  * @brief Calculate the slope of the long-short position using bid-offer and transaction data.
@@ -172,19 +145,6 @@ VOID CfdBidOfferAndTransactionListLongShortSlope(VOID)
     return;
 }
 
-void CFD_thread_main()
+VOID CfdStrategySwitch()
 {
-    AutoLogIn();
-
-    CfdAutoConnect();
-
-    long res = pSKQuoteLib->RequestServerTime();
-
-    DEBUG(DEBUG_LEVEL_INFO, "pSKQuoteLib->RequestServerTime()=%d", res);
-
-    pSKOsQuoteLib->GetCommodityIdx();
-
-    AutoOsQuoteTicks(COMMODITY_OS_MAIN, -1);
-    AutoOsQuoteTicks(COMMODITY_OS_GC, -1);
-    AutoOsQuoteTicks(COMMODITY_OS_DX, -1);
 }
