@@ -17,6 +17,7 @@
 #include <sstream>
 
 #include "Strategy.h"
+#include "StrategyCfd.h"
 #include <GengYouFuturesUI.h>
 #include "config.h"
 
@@ -543,6 +544,7 @@ void thread_main()
         // updatePricePeriodically(MtxCommodtyInfo);
 
         StrategySwitch(gStrategyConfig.StrategyMode, MtxCommodtyInfo);
+        CfdStrategySwitch();
 
         // Ouput start
 

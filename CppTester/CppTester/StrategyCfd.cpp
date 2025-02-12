@@ -147,4 +147,10 @@ VOID CfdBidOfferAndTransactionListLongShortSlope(VOID)
 
 VOID CfdStrategySwitch()
 {
+    if (gCommodtyOsInfo.GCIdxNo != 0)
+    {
+        long nStockidx = gCommodtyOsInfo.GCIdxNo;
+
+        gGcTransactionListLongShort += CountOsTransactionListLongShort(nStockidx);
+    }
 }
