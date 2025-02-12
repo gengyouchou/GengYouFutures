@@ -660,6 +660,13 @@ void thread_main()
             printf("            BID : [%ld]\n", gCurTaiexInfo[0x00][2]);
             printf("TPEX Total OFFER: [%ld]\n", gCurTaiexInfo[0x01][3]);
             printf("            BID : [%ld]\n", gCurTaiexInfo[0x01][2]);
+
+            printf("=========================================\n");
+
+            printf("gCfdTransactionListLongShort[gCommodtyOsInfo.GCIdxNo]: %ld, gCfdTransactionListLongShort[gCommodtyOsInfo.NQIdxNo]: %ld, gCfdTransactionListLongShort[gCommodtyOsInfo.DXIdxNo]: %ld,\n",
+                   gCfdTransactionListLongShort[gCommodtyOsInfo.GCIdxNo], gCfdTransactionListLongShort[gCommodtyOsInfo.NQIdxNo], gCfdTransactionListLongShort[gCommodtyOsInfo.DXIdxNo]);
+
+            printf("=========================================\n");
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); //  CPU

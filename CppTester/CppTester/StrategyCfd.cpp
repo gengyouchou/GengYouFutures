@@ -152,7 +152,7 @@ VOID CfdStrategySwitch()
 
     if (gCommodtyOsInfo.NQIdxNo != 0)
     {
-        long nStockidx = gCommodtyOsInfo.GCIdxNo;
+        long nStockidx = gCommodtyOsInfo.NQIdxNo;
 
         gCfdTransactionListLongShort[nStockidx] += CountOsTransactionListLongShort(nStockidx);
 

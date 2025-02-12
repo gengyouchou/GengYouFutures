@@ -11,4 +11,7 @@
 #define COMMODITY_OS_GC "NYM,GC0000"
 #define COMMODITY_OS_DX "ICEUS,DX0000"
 
+extern std::unordered_map<long, long> gCfdTransactionListLongShort;
+extern std::unordered_map<long, double> gCfdTransactionListLongShortSlope;
+
 VOID CfdStrategySwitch();
