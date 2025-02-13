@@ -74,4 +74,5 @@ Testing/
 logs/
 !assets/
 *.exe
+*.ex4
 config.yaml
