@@ -1,29 +1,38 @@
 //+------------------------------------------------------------------+
 //|                                               MyFixedRiskEA.mq4  |
-//| 示例：固定金額停損停利 (10 美金停損, 20 美金停利)                   |
+//| 示例：固定金额止损止盈 (10 美元止损, 20 美元止盈)                 |
 //+------------------------------------------------------------------+
 #property strict
 
-// 輸入參數：固定停損與停利金額，單位：美金
+// 输入参数：固定止损与止盈金额，单位：美元
 extern double FixedStopLossUSD = 10.0;
 extern double FixedTakeProfitUSD = 20.0;
-extern int Slippage = 3;
-extern color OrderColor = clrBlue;
 
-// 計算價格差距的函數：
-// 公式：價格差 = 固定金額 / (手數 * (tick_value / tick_size))
-// tick_value = 每手每 tick 的價值，tick_size = 每個 tick 的大小
+// 计算订单的当前盈亏（单位：美元）
+double GetOrderProfit(int ticket)
+{
+   if (OrderSelect(ticket, SELECT_BY_TICKET))
+   {
+      double profit = OrderProfit() + OrderSwap() + OrderCommission();
+      return profit;
+   }
+   return 0;
+}
+
+// 计算价格差距的函数：
+// 公式：价格差 = 固定金额 / (手数 * (tick_value / tick_size))
+// tick_value = 每手每tick的价值，tick_size = 每个tick的大小
 double CalculatePriceDiff(double fixedAmount, double lots)
 {
-   double tickValue = MarketInfo(Symbol(), MODE_TICKVALUE); // 每手的 tick 價值 (USD)
-   double tickSize = MarketInfo(Symbol(), MODE_TICKSIZE);   // tick 大小
+   double tickValue = MarketInfo(Symbol(), MODE_TICKVALUE); // 每手的tick价值（USD）
+   double tickSize = MarketInfo(Symbol(), MODE_TICKSIZE);   // tick大小
    if (lots <= 0 || tickValue <= 0 || tickSize <= 0)
       return 0;
    return (fixedAmount * tickSize) / (lots * tickValue);
 }
 
-// 修改訂單停損、停利的邏輯
-void UpdateOrderSLTP()
+// 检查并手动平仓达到止损或止盈条件的订单，同时打印订单信息
+void CheckAndCloseOrders()
 {
    for (int i = OrdersTotal() - 1; i >= 0; i--)
    {
@@ -35,12 +44,13 @@ void UpdateOrderSLTP()
 
          double entryPrice = OrderOpenPrice();
          double lots = OrderLots();
-         double desiredSL, desiredTP;
+         double currentProfit = GetOrderProfit(OrderTicket());
 
-         // 計算固定金額對應的價格差
+         // 计算固定金额对应的价格差
          double riskPrice = CalculatePriceDiff(FixedStopLossUSD, lots);
          double rewardPrice = CalculatePriceDiff(FixedTakeProfitUSD, lots);
 
+         double desiredSL, desiredTP;
          if (type == OP_BUY)
          {
             desiredSL = entryPrice - riskPrice;
@@ -52,24 +62,21 @@ void UpdateOrderSLTP()
             desiredTP = entryPrice - rewardPrice;
          }
 
-         // 取得目前停損與停利價格
-         double currentSL = OrderStopLoss();
-         double currentTP = OrderTakeProfit();
-         bool needModify = false;
-         if (MathAbs(currentSL - desiredSL) > 0.00001)
-            needModify = true;
-         if (MathAbs(currentTP - desiredTP) > 0.00001)
-            needModify = true;
+         // 打印订单信息
+         PrintFormat("订单票号: %d, 手数: %.2f, 当前盈亏: %.2f USD, 预设止损: %.2f USD, 预设止盈: %.2f USD",
+                     OrderTicket(), lots, currentProfit, FixedStopLossUSD, FixedTakeProfitUSD);
 
-         if (needModify)
+         // 检查是否达到止损或止盈条件
+         if (currentProfit <= -FixedStopLossUSD || currentProfit >= FixedTakeProfitUSD)
          {
-            if (!OrderModify(OrderTicket(), entryPrice, desiredSL, desiredTP, 0, OrderColor))
+            // 平仓订单
+            if (!OrderClose(OrderTicket(), OrderLots(), OrderClosePrice(), 3, clrRed))
             {
-               Print("OrderModify 失敗，票號 ", OrderTicket(), " 錯誤碼：", GetLastError());
+               Print("OrderClose 失败，票号 ", OrderTicket(), " 错误码：", GetLastError());
             }
             else
             {
-               Print("訂單票號 ", OrderTicket(), " 已更新：新停損=", desiredSL, " 新停利=", desiredTP);
+               Print("订单票号 ", OrderTicket(), " 已平仓，盈亏=", currentProfit);
             }
          }
       }
@@ -81,5 +88,5 @@ void UpdateOrderSLTP()
 //+------------------------------------------------------------------+
 void OnTick()
 {
-   UpdateOrderSLTP();
+   CheckAndCloseOrders();
 }
