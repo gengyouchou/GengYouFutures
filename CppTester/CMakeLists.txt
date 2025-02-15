@@ -72,7 +72,7 @@ target_link_libraries(GengYouFuturesUI PUBLIC yaml-cpp)
 add_executable(CppTester ${SOURCES} ${HEADERS})
 
 # 链接 yaml-cpp 和 GengYouFuturesUI 到 CppTester
-target_link_libraries(CppTester PUBLIC yaml-cpp GengYouFuturesUI)
+target_link_libraries(CppTester PUBLIC yaml-cpp GengYouFuturesUI nlohmann_json::nlohmann_json)
 
 # 设置 SQLite3 DLL 的路径
 set(SQLITE3_DLL_PATH "${CMAKE_SOURCE_DIR}/../DLL/x64/Sqlite/sqlite3.dll")
