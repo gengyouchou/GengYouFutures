@@ -9,17 +9,20 @@
 #include <conio.h> // For kbhit() and _getch()
 #include <cstdlib> // For system("cls")
 #include <deque>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 #include <yaml-cpp/yaml.h>
-#include <fstream>
-#include <sstream>
 
 #include "Strategy.h"
 #include "StrategyCfd.h"
-#include <GengYouFuturesUI.h>
 #include "config.h"
+#include <GengYouFuturesUI.h>
+
+#include <sqlite3.h>
+#include <string>
 
 extern std::deque<long> gDaysKlineDiff;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
@@ -434,6 +437,124 @@ VOID SaveCacheForOrderMachine(VOID)
         }
     }
 }
+
+// Global database pointer
+sqlite3 *db = nullptr;
+
+// Initialize the database and create table if it does not exist
+bool InitializeDatabase(const std::string &dbPath)
+{
+    if (sqlite3_open(dbPath.c_str(), &db) != SQLITE_OK)
+    {
+        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+        return false;
+    }
+    // Create table with an additional column for CommodityId to support different products
+    const char *createTableSQL =
+        "CREATE TABLE IF NOT EXISTS cache_data ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "timestamp TEXT, "
+        "CommodityId TEXT, " // 商品識別欄位
+        "gLongShort INTEGER, "
+        "gBidOfferLongShortSlope REAL"
+        ");";
+    char *errMsg = nullptr;
+    if (sqlite3_exec(db, createTableSQL, 0, 0, &errMsg) != SQLITE_OK)
+    {
+        std::cerr << "Error creating table: " << errMsg << std::endl;
+        sqlite3_free(errMsg);
+        return false;
+    }
+    return true;
+}
+
+// Insert a record into the database with support for different products
+bool InsertCacheRecord(const std::string &timestamp, const std::string &commodityId, int gLongShort, double gBidOfferLongShortSlope)
+{
+    const char *insertSQL = "INSERT INTO cache_data (timestamp, CommodityId, gLongShort, gBidOfferLongShortSlope) VALUES (?, ?, ?, ?);";
+    sqlite3_stmt *stmt;
+    if (sqlite3_prepare_v2(db, insertSQL, -1, &stmt, nullptr) != SQLITE_OK)
+    {
+        std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+        return false;
+    }
+    sqlite3_bind_text(stmt, 1, timestamp.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, commodityId.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 3, gLongShort);
+    sqlite3_bind_double(stmt, 4, gBidOfferLongShortSlope);
+
+    if (sqlite3_step(stmt) != SQLITE_DONE)
+    {
+        std::cerr << "Error executing statement: " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_finalize(stmt);
+        return false;
+    }
+    sqlite3_finalize(stmt);
+    return true;
+}
+
+// Query the data and return it as a JSON-like string (for demonstration purposes)
+std::string QueryCacheData()
+{
+    std::string result = "[";
+    const char *querySQL = "SELECT timestamp, CommodityId, gLongShort, gBidOfferLongShortSlope FROM cache_data ORDER BY id DESC LIMIT 100;";
+    sqlite3_stmt *stmt;
+    if (sqlite3_prepare_v2(db, querySQL, -1, &stmt, nullptr) != SQLITE_OK)
+    {
+        std::cerr << "Error preparing query: " << sqlite3_errmsg(db) << std::endl;
+        return result + "]";
+    }
+    bool firstRecord = true;
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        if (!firstRecord)
+            result += ",";
+        firstRecord = false;
+        const unsigned char *timestamp = sqlite3_column_text(stmt, 0);
+        const unsigned char *commodityId = sqlite3_column_text(stmt, 1);
+        int gLongShort = sqlite3_column_int(stmt, 2);
+        double slope = sqlite3_column_double(stmt, 3);
+        result += "{";
+        result += "\"timestamp\":\"" + std::string(reinterpret_cast<const char *>(timestamp)) + "\",";
+        result += "\"CommodityId\":\"" + std::string(reinterpret_cast<const char *>(commodityId)) + "\",";
+        result += "\"gLongShort\":" + std::to_string(gLongShort) + ",";
+        result += "\"gBidOfferLongShortSlope\":" + std::to_string(slope);
+        result += "}";
+    }
+    sqlite3_finalize(stmt);
+    result += "]";
+    return result;
+}
+
+void CloseDatabase()
+{
+    if (db)
+    {
+        sqlite3_close(db);
+        db = nullptr;
+    }
+}
+
+// int main()
+// {
+//     // Initialize database at a specified path
+//     std::string dbPath = "cache_data.db";
+//     if (!InitializeDatabase(dbPath))
+//         return -1;
+
+//     // Insert test records for different products
+//     InsertCacheRecord("2025-02-14 00:00:00", "XAUUSD", 1, 3.14);
+//     InsertCacheRecord("2025-02-14 00:01:00", "NQ100", -1, -2.71);
+//     InsertCacheRecord("2025-02-14 00:02:00", "USDX", 0, 0.00);
+
+//     // Query and print data (this JSON string can be served to a web page)
+//     std::string jsonData = QueryCacheData();
+//     std::cout << "Cache Data (JSON): " << jsonData << std::endl;
+
+//     // When finished, close the database
+//     CloseDatabase();
+//     return 0;
+// }
 
 void thread_main()
 {
