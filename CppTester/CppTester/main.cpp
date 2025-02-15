@@ -21,10 +21,9 @@
 #include "config.h"
 #include <GengYouFuturesUI.h>
 
+#include <nlohmann/json.hpp>
 #include <sqlite3.h>
 #include <string>
-#include <nlohmann/json.hpp>
-
 
 extern std::deque<long> gDaysKlineDiff;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
@@ -448,14 +447,15 @@ bool InsertCacheRecord(const std::string &timestamp, const std::string &commodit
 std::string GetCurrentTimestamp()
 {
     std::time_t now = std::time(nullptr);
-    std::tm *localTime = std::localtime(&now);
+    tm localTime;
+    localtime_s(&localTime, &now);
     char buffer[20];
-    std::strftime(buffer, sizeof(buffer), "%j:%H:%M:%S", localTime); // %j 表示一年中的第几天
+    std::strftime(buffer, sizeof(buffer), "%j:%H:%M:%S", &localTime); // %j 表示一年中的第几天
     return std::string(buffer);
 }
 
 // 保存缓存数据
-void SaveCacheForOrderMachine()
+void SaveCacheForOrderMachine(std::string commodityId)
 {
     static int syncCounter = 0;
     const int syncThreshold = 12; // 每分钟同步12次（每5秒一次）
@@ -464,7 +464,6 @@ void SaveCacheForOrderMachine()
     std::string timestamp = GetCurrentTimestamp();
 
     // 示例数据，实际使用中应替换为真实数据
-    std::string commodityId = "ExampleCommodity";
     int gLongShort = 1;
     double gBidOfferLongShortSlope = 0.5;
 
@@ -487,11 +486,10 @@ void SaveCacheForOrderMachine()
         }
     }
 }
-
 // 查詢指定商品的快取資料並返回 JSON 格式
 nlohmann::json QueryCacheData(const std::string &commodityId)
 {
-    const char *querySQL = "SELECT timestamp, gLongShort, gBidOfferLongShortSlope FROM cache_data WHERE CommodityId = ?;";
+    const char *querySQL = "SELECT timestamp, CommodityId, gLongShort, gBidOfferLongShortSlope FROM cache_data WHERE CommodityId = ?;";
     sqlite3_stmt *stmt;
     if (sqlite3_prepare_v2(db, querySQL, -1, &stmt, nullptr) != SQLITE_OK)
     {
@@ -504,10 +502,12 @@ nlohmann::json QueryCacheData(const std::string &commodityId)
     while (sqlite3_step(stmt) == SQLITE_ROW)
     {
         std::string timestamp = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 0));
-        int gLongShort = sqlite3_column_int(stmt, 1);
-        double gBidOfferLongShortSlope = sqlite3_column_double(stmt, 2);
+        std::string queriedCommodityId = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1)); // Get CommodityId from query
+        int gLongShort = sqlite3_column_int(stmt, 2);
+        double gBidOfferLongShortSlope = sqlite3_column_double(stmt, 3);
 
         result.push_back({{"timestamp", timestamp},
+                          {"commodityId", queriedCommodityId}, // Add commodityId to result
                           {"gLongShort", gLongShort},
                           {"gBidOfferLongShortSlope", gBidOfferLongShortSlope}});
     }
@@ -518,6 +518,7 @@ nlohmann::json QueryCacheData(const std::string &commodityId)
 
     return result;
 }
+
 void thread_main()
 {
     const int refreshInterval = 1000; // 1000 ms
@@ -634,11 +635,11 @@ void thread_main()
 
         if (elapsed.count() >= refreshInterval)
         {
-            // GengYouFuturesUI start
-            {
-                CopyDataToTheOrderMachine(MtxCommodtyInfo);
-                SaveCacheForOrderMachine();
-            }
+            // // GengYouFuturesUI start
+            // {
+            //     CopyDataToTheOrderMachine(MtxCommodtyInfo);
+            //     SaveCacheForOrderMachine();
+            // }
 
             system("cls");
             lastClearTime = now;
@@ -854,11 +855,15 @@ int main()
     // 模拟每5秒调用一次SaveCacheForOrderMachine
     for (int i = 0; i < 10; ++i)
     {
-        SaveCacheForOrderMachine();
+        SaveCacheForOrderMachine("NAS100");
+        SaveCacheForOrderMachine("XAUUSD");
+
         std::this_thread::sleep_for(std::chrono::seconds(5));
     }
 
     QueryCacheData("ExampleCommodity");
+    QueryCacheData("NAS100");
+    QueryCacheData("XAUUSD");
 
     sqlite3_close(db);
 
