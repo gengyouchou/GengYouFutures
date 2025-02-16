@@ -392,28 +392,69 @@ VOID LoadLongShort(VOID)
 // 全局数据库指针
 sqlite3 *db = nullptr;
 
-// 初始化数据库并创建表格（如果不存在）
+// 检查文件是否存在的函数
+bool FileExists(const std::string &filename)
+{
+    struct stat buffer;
+    return (stat(filename.c_str(), &buffer) == 0);
+}
+
+// 获取当前时间戳（ISO 8601 格式: YYYY-MM-DD HH:MM:SS）
+std::string GetCurrentTimestamp()
+{
+    std::time_t now = std::time(nullptr);
+    std::tm localTime;
+    localtime_s(&localTime, &now);
+    std::ostringstream oss;
+    oss << std::put_time(&localTime, "%Y-%m-%d %H:%M:%S");
+    return oss.str();
+}
+
+// 计算截止时间（当前时间减 7 天），格式为 ISO 8601
+std::string GetCutoffTimestamp()
+{
+    // 使用 chrono 计算7天之前的时间点
+    auto now = std::chrono::system_clock::now();
+    auto cutoff_time = now - std::chrono::hours(24 * 7);
+    std::time_t cutoff_tt = std::chrono::system_clock::to_time_t(cutoff_time);
+    std::tm cutoffLocal;
+    localtime_s(&cutoffLocal, &cutoff_tt);
+    std::ostringstream oss;
+    oss << std::put_time(&cutoffLocal, "%Y-%m-%d %H:%M:%S");
+    return oss.str();
+}
+
+// 初始化数据库并创建表格（如果不存在），若数据库文件存在则沿用已有数据
 bool InitializeDatabase(const std::string &dbPath)
 {
-    if (sqlite3_open(dbPath.c_str(), &db) != SQLITE_OK)
+    bool dbExists = FileExists(dbPath);
+
+    // 打开数据库，启用全互斥保证线程安全
+    int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX;
+    if (sqlite3_open_v2(dbPath.c_str(), &db, flags, nullptr) != SQLITE_OK)
     {
         std::cerr << "无法打开数据库: " << sqlite3_errmsg(db) << std::endl;
         return false;
     }
-    const char *createTableSQL =
-        "CREATE TABLE IF NOT EXISTS cache_data ("
-        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "timestamp TEXT, "
-        "CommodityId TEXT, "
-        "gLongShort INTEGER, "
-        "gBidOfferLongShortSlope REAL"
-        ");";
-    char *errMsg = nullptr;
-    if (sqlite3_exec(db, createTableSQL, 0, 0, &errMsg) != SQLITE_OK)
+
+    // 如果数据库文件不存在，则创建表格；若已存在，则不重建表格（保留原有数据）
+    if (!dbExists)
     {
-        std::cerr << "创建表格失败: " << errMsg << std::endl;
-        sqlite3_free(errMsg);
-        return false;
+        const char *createTableSQL =
+            "CREATE TABLE IF NOT EXISTS cache_data ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            "timestamp TEXT, "
+            "CommodityId TEXT, "
+            "gLongShort INTEGER, "
+            "gBidOfferLongShortSlope REAL"
+            ");";
+        char *errMsg = nullptr;
+        if (sqlite3_exec(db, createTableSQL, 0, 0, &errMsg) != SQLITE_OK)
+        {
+            std::cerr << "创建表失败: " << errMsg << std::endl;
+            sqlite3_free(errMsg);
+            return false;
+        }
     }
     return true;
 }
@@ -443,27 +484,40 @@ bool InsertCacheRecord(const std::string &timestamp, const std::string &commodit
     return true;
 }
 
-// 获取当前台湾标准时间的时间戳
-std::string GetCurrentTimestamp()
+// 删除超过7天的记录
+void DeleteOldRecords()
 {
-    std::time_t now = std::time(nullptr);
-    tm localTime;
-    localtime_s(&localTime, &now);
-    char buffer[20];
-    std::strftime(buffer, sizeof(buffer), "%j:%H:%M:%S", &localTime); // %j 表示一年中的第几天
-    return std::string(buffer);
+    std::string cutoff = GetCutoffTimestamp();
+    std::string deleteSQL = "DELETE FROM cache_data WHERE timestamp < ?";
+    sqlite3_stmt *stmt;
+    if (sqlite3_prepare_v2(db, deleteSQL.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
+    {
+        std::cerr << "删除语句准备失败: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
+    sqlite3_bind_text(stmt, 1, cutoff.c_str(), -1, SQLITE_TRANSIENT);
+
+    if (sqlite3_step(stmt) != SQLITE_DONE)
+    {
+        std::cerr << "执行删除语句失败: " << sqlite3_errmsg(db) << std::endl;
+    }
+    else
+    {
+        std::cout << "已删除早于 " << cutoff << " 的记录" << std::endl;
+    }
+    sqlite3_finalize(stmt);
 }
 
-// 保存缓存数据
-void SaveCacheForOrderMachine(std::string commodityId)
+// 保存缓存数据（使用 SQLite），并确保不会覆盖之前的数据
+void SaveCacheForOrderMachine(const std::string &commodityId)
 {
     static int syncCounter = 0;
     const int syncThreshold = 12; // 每分钟同步12次（每5秒一次）
 
-    // 获取当前时间戳
+    // 获取当前时间戳（ISO 8601 格式）
     std::string timestamp = GetCurrentTimestamp();
 
-    // 示例数据，实际使用中应替换为真实数据
+    // 示例数据（实际使用时应替换为真实数据）
     int gLongShort = 1;
     double gBidOfferLongShortSlope = 0.5;
 
@@ -473,27 +527,22 @@ void SaveCacheForOrderMachine(std::string commodityId)
         std::cerr << "插入记录失败" << std::endl;
     }
 
-    // 定期清理超过7天的数据
+    // 每隔一定次数（例如每分钟）清理超过7天的记录
     if (++syncCounter >= syncThreshold)
     {
         syncCounter = 0;
-        const char *deleteSQL = "DELETE FROM cache_data WHERE timestamp <= datetime('now', '-7 days');";
-        char *errMsg = nullptr;
-        if (sqlite3_exec(db, deleteSQL, 0, 0, &errMsg) != SQLITE_OK)
-        {
-            std::cerr << "删除旧数据失败: " << errMsg << std::endl;
-            sqlite3_free(errMsg);
-        }
+        DeleteOldRecords();
     }
 }
-// 查詢指定商品的快取資料並返回 JSON 格式
+
+// 查询指定商品的快取资料并返回 JSON 格式
 nlohmann::json QueryCacheData(const std::string &commodityId)
 {
     const char *querySQL = "SELECT timestamp, CommodityId, gLongShort, gBidOfferLongShortSlope FROM cache_data WHERE CommodityId = ?;";
     sqlite3_stmt *stmt;
     if (sqlite3_prepare_v2(db, querySQL, -1, &stmt, nullptr) != SQLITE_OK)
     {
-        std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+        std::cerr << "查询语句准备失败: " << sqlite3_errmsg(db) << std::endl;
         return nullptr;
     }
     sqlite3_bind_text(stmt, 1, commodityId.c_str(), -1, SQLITE_TRANSIENT);
@@ -502,20 +551,18 @@ nlohmann::json QueryCacheData(const std::string &commodityId)
     while (sqlite3_step(stmt) == SQLITE_ROW)
     {
         std::string timestamp = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 0));
-        std::string queriedCommodityId = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1)); // Get CommodityId from query
+        std::string queriedCommodityId = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
         int gLongShort = sqlite3_column_int(stmt, 2);
         double gBidOfferLongShortSlope = sqlite3_column_double(stmt, 3);
 
         result.push_back({{"timestamp", timestamp},
-                          {"commodityId", queriedCommodityId}, // Add commodityId to result
+                          {"commodityId", queriedCommodityId},
                           {"gLongShort", gLongShort},
                           {"gBidOfferLongShortSlope", gBidOfferLongShortSlope}});
     }
     sqlite3_finalize(stmt);
 
-    // 打印 result JSON
     std::cout << "Query Result: " << result.dump(4) << std::endl;
-
     return result;
 }
 
