@@ -445,8 +445,8 @@ bool InitializeDatabase(const std::string &dbPath)
             "id INTEGER PRIMARY KEY AUTOINCREMENT, "
             "timestamp TEXT, "
             "CommodityId TEXT, "
-            "gLongShort INTEGER, "
-            "gBidOfferLongShortSlope REAL"
+            "CurLongShort INTEGER, "
+            "CurBidOfferLongShortSlope REAL"
             ");";
         char *errMsg = nullptr;
         if (sqlite3_exec(db, createTableSQL, 0, 0, &errMsg) != SQLITE_OK)
@@ -460,9 +460,9 @@ bool InitializeDatabase(const std::string &dbPath)
 }
 
 // 插入记录到数据库
-bool InsertCacheRecord(const std::string &timestamp, const std::string &commodityId, int gLongShort, double gBidOfferLongShortSlope)
+bool InsertCacheRecord(const std::string &timestamp, const std::string &commodityId, long CurLongShort, double CurBidOfferLongShortSlope)
 {
-    const char *insertSQL = "INSERT INTO cache_data (timestamp, CommodityId, gLongShort, gBidOfferLongShortSlope) VALUES (?, ?, ?, ?);";
+    const char *insertSQL = "INSERT INTO cache_data (timestamp, CommodityId, CurLongShort, CurBidOfferLongShortSlope) VALUES (?, ?, ?, ?);";
     sqlite3_stmt *stmt;
     if (sqlite3_prepare_v2(db, insertSQL, -1, &stmt, nullptr) != SQLITE_OK)
     {
@@ -471,8 +471,8 @@ bool InsertCacheRecord(const std::string &timestamp, const std::string &commodit
     }
     sqlite3_bind_text(stmt, 1, timestamp.c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 2, commodityId.c_str(), -1, SQLITE_TRANSIENT);
-    sqlite3_bind_int(stmt, 3, gLongShort);
-    sqlite3_bind_double(stmt, 4, gBidOfferLongShortSlope);
+    sqlite3_bind_int64(stmt, 3, CurLongShort);
+    sqlite3_bind_double(stmt, 4, CurBidOfferLongShortSlope);
 
     if (sqlite3_step(stmt) != SQLITE_DONE)
     {
@@ -518,11 +518,11 @@ void SaveCacheForOrderMachine(const std::string &commodityId)
     std::string timestamp = GetCurrentTimestamp();
 
     // 示例数据（实际使用时应替换为真实数据）
-    int gLongShort = 1;
-    double gBidOfferLongShortSlope = 0.5;
+    long CurLongShort = 1;
+    double CurBidOfferLongShortSlope = 0.5;
 
     // 插入记录到数据库
-    if (!InsertCacheRecord(timestamp, commodityId, gLongShort, gBidOfferLongShortSlope))
+    if (!InsertCacheRecord(timestamp, commodityId, CurLongShort, CurBidOfferLongShortSlope))
     {
         std::cerr << "插入记录失败" << std::endl;
     }
@@ -538,7 +538,7 @@ void SaveCacheForOrderMachine(const std::string &commodityId)
 // 查询指定商品的快取资料并返回 JSON 格式
 nlohmann::json QueryCacheData(const std::string &commodityId)
 {
-    const char *querySQL = "SELECT timestamp, CommodityId, gLongShort, gBidOfferLongShortSlope FROM cache_data WHERE CommodityId = ?;";
+    const char *querySQL = "SELECT timestamp, CommodityId, CurLongShort, CurBidOfferLongShortSlope FROM cache_data WHERE CommodityId = ?;";
     sqlite3_stmt *stmt;
     if (sqlite3_prepare_v2(db, querySQL, -1, &stmt, nullptr) != SQLITE_OK)
     {
@@ -552,13 +552,13 @@ nlohmann::json QueryCacheData(const std::string &commodityId)
     {
         std::string timestamp = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 0));
         std::string queriedCommodityId = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
-        int gLongShort = sqlite3_column_int(stmt, 2);
-        double gBidOfferLongShortSlope = sqlite3_column_double(stmt, 3);
+        long CurLongShort = sqlite3_column_int64(stmt, 2);
+        double CurBidOfferLongShortSlope = sqlite3_column_double(stmt, 3);
 
         result.push_back({{"timestamp", timestamp},
                           {"commodityId", queriedCommodityId},
-                          {"gLongShort", gLongShort},
-                          {"gBidOfferLongShortSlope", gBidOfferLongShortSlope}});
+                          {"CurLongShort", CurLongShort},
+                          {"CurBidOfferLongShortSlope", CurBidOfferLongShortSlope}});
     }
     sqlite3_finalize(stmt);
 
