@@ -145,11 +145,11 @@
             const bidOfferSlopeValues = [];
 
             data.forEach(point => {
-                const { timestamp, gLongShort, gBidOfferLongShortSlope } = point;
+                const { timestamp, CurLongShort, CurBidOfferLongShortSlope } = point;
                 longShortLabels.push(timestamp);
-                longShortValues.push(gLongShort);
+                longShortValues.push(CurLongShort);
                 bidOfferSlopeLabels.push(timestamp);
-                bidOfferSlopeValues.push(gBidOfferLongShortSlope);
+                bidOfferSlopeValues.push(CurBidOfferLongShortSlope);
             });
 
             // 清空並更新圖表資料
@@ -165,7 +165,7 @@
 
             // 日誌顯示最新資料
             const latestPoint = data[data.length - 1];
-            appendLog(`[Time: ${latestPoint.timestamp}] LongShort: ${latestPoint.gLongShort}, BidOfferSlope: ${latestPoint.gBidOfferLongShortSlope}`);
+            appendLog(`[Time: ${latestPoint.timestamp}] LongShort: ${latestPoint.CurLongShort}, BidOfferSlope: ${latestPoint.CurBidOfferLongShortSlope}`);
         }
 
         function appendLog(message, isError = false) {

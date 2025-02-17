@@ -180,7 +180,7 @@ void startHttpServer(std::atomic<bool> &isRunning)
 
     svr.Get("/Long-Short-Cache-data", [](const httplib::Request &, httplib::Response &res)
             {
-            auto jsonResponse = ConvertDequeToJSON(gCacheData);
+            auto jsonResponse = QueryCacheData(COMMODITY_MAIN);
             res.set_content(jsonResponse.dump(), "application/json"); });
 
     svr.Get("/index-data", [](const httplib::Request &, httplib::Response &res)
