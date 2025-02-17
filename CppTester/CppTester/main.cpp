@@ -24,6 +24,9 @@
 #include <nlohmann/json.hpp>
 #include <sqlite3.h>
 #include <string>
+#include <mutex>
+
+std::mutex db_mutex;
 
 extern std::deque<long> gDaysKlineDiff;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
@@ -524,7 +527,10 @@ void SaveCacheForOrderMachine(const std::string &commodityId, long CurLongShort,
 // 查询指定商品的快取资料并返回 JSON 格式
 nlohmann::json QueryCacheData(const std::string &commodityId)
 {
-    const char *querySQL = "SELECT timestamp, CommodityId, CurLongShort, CurBidOfferLongShortSlope FROM cache_data WHERE CommodityId = ?;";
+    // 使用互斥锁确保线程安全
+    std::lock_guard<std::mutex> lock(db_mutex);
+
+    const char *querySQL = "SELECT timestamp, CommodityId, CurLongShort, CurBidOfferLongShortSlope FROM cache_data WHERE CommodityId = ? ORDER BY timestamp ASC;";
     sqlite3_stmt *stmt;
     if (sqlite3_prepare_v2(db, querySQL, -1, &stmt, nullptr) != SQLITE_OK)
     {
