@@ -61,6 +61,7 @@ sqlite3 *db = nullptr;
 
 bool InsertCacheRecord(const std::string &timestamp, const std::string &commodityId, long CurLongShort, double CurBidOfferLongShortSlope);
 nlohmann::json QueryCacheData(const std::string &commodityId);
+void SaveCacheForOrderMachine(const std::string &commodityId, long CurLongShort, double CurBidOfferLongShortSlope);
 
 void release();
 
@@ -492,17 +493,13 @@ void DeleteOldRecords()
 }
 
 // 保存缓存数据（使用 SQLite），并确保不会覆盖之前的数据
-void SaveCacheForOrderMachine(const std::string &commodityId)
+void SaveCacheForOrderMachine(const std::string &commodityId, long CurLongShort, double CurBidOfferLongShortSlope)
 {
     static int syncCounter = 0;
     const int syncThreshold = 12; // 每分钟同步12次（每5秒一次）
 
     // 获取当前时间戳（ISO 8601 格式）
     std::string timestamp = GetCurrentTimestamp();
-
-    // 示例数据（实际使用时应替换为真实数据）
-    long CurLongShort = 1;
-    double CurBidOfferLongShortSlope = 0.5;
 
     // 插入记录到数据库
     if (!InsertCacheRecord(timestamp, commodityId, CurLongShort, CurBidOfferLongShortSlope))
@@ -665,11 +662,15 @@ void thread_main()
 
         if (elapsed.count() >= refreshInterval)
         {
-            // // GengYouFuturesUI start
-            // {
-            //     CopyDataToTheOrderMachine(MtxCommodtyInfo);
-            //     SaveCacheForOrderMachine();
-            // }
+            // GengYouFuturesUI start
+            {
+                CopyDataToTheOrderMachine(MtxCommodtyInfo);
+
+                SaveCacheForOrderMachine(COMMODITY_MAIN, gLongShort, gBidOfferLongShortSlope);
+                SaveCacheForOrderMachine(COMMODITY_NAS_MAIN, gCfdTransactionListLongShort[gCommodtyOsInfo.NQIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.NQIdxNo]);
+                SaveCacheForOrderMachine(COMMODITY_GC_MAIN, gCfdTransactionListLongShort[gCommodtyOsInfo.GCIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.GCIdxNo]);
+                SaveCacheForOrderMachine(COMMODITY_DX_MAIN, gCfdTransactionListLongShort[gCommodtyOsInfo.DXIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.DXIdxNo]);
+            }
 
             system("cls");
             lastClearTime = now;
@@ -873,31 +874,31 @@ int main()
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
-    readConfig();
-    LoadLongShort();
-
     std::string dbPath = "cache_data.db";
     if (!InitializeDatabase(dbPath))
     {
         return -1;
     }
 
-    // 模拟每5秒调用一次SaveCacheForOrderMachine
-    for (int i = 0; i < 10; ++i)
-    {
-        SaveCacheForOrderMachine("NAS100");
-        SaveCacheForOrderMachine("XAUUSD");
+    readConfig();
+    LoadLongShort();
 
-        std::this_thread::sleep_for(std::chrono::seconds(5));
-    }
+    // // 模拟每5秒调用一次SaveCacheForOrderMachine
+    // for (int i = 0; i < 10; ++i)
+    // {
+    //     SaveCacheForOrderMachine("NAS100");
+    //     SaveCacheForOrderMachine("XAUUSD");
 
-    QueryCacheData("ExampleCommodity");
-    QueryCacheData("NAS100");
-    QueryCacheData("XAUUSD");
+    //     std::this_thread::sleep_for(std::chrono::seconds(5));
+    // }
 
-    sqlite3_close(db);
+    // QueryCacheData("ExampleCommodity");
+    // QueryCacheData("NAS100");
+    // QueryCacheData("XAUUSD");
 
-    system("pause");
+    // sqlite3_close(db);
+
+    // system("pause");
 
     CoInitialize(NULL);
 
@@ -940,6 +941,8 @@ int main()
     }
 
     serverThread.join();
+
+    sqlite3_close(db);
 
     DEBUG(DEBUG_LEVEL_INFO, "serverThread exit");
 
