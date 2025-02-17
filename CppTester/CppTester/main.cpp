@@ -351,28 +351,34 @@ VOID CopyDataToTheOrderMachine(LONG MtxCommodtyInfo)
     gOpenInterestInfoUI.avgCost = gOpenInterestInfo.avgCost;
     gOpenInterestInfoUI.profitAndLoss = gOpenInterestInfo.profitAndLoss;
 }
-
-// LoadLongShort 函数：加载并更新全局变量 gLongShort 与 gBidOfferLongShortSlope
-void LoadLongShort(void)
+void LoadLongShort(const std::string &commodityId, long &CurLongShort, double &CurBidOfferLongShortSlope)
 {
-    // 查询指定商品的缓存数据，返回一个 nlohmann::json 数组
-    nlohmann::json temp = QueryCacheData(COMMODITY_MAIN);
-
-    // 确保查询结果不为空
-    if (!temp.empty())
+    try
     {
-        // 获取数组中的最后一笔数据
-        nlohmann::json lastRecord = temp.back();
+        // 查询指定商品的缓存数据，返回一个 nlohmann::json 数组
+        nlohmann::json temp = QueryCacheData(commodityId);
 
-        // 提取 CurLongShort 和 CurBidOfferLongShortSlope 字段，并赋值给全局变量
-        gLongShort = lastRecord["CurLongShort"].get<long>();
-        gBidOfferLongShortSlope = lastRecord["CurBidOfferLongShortSlope"].get<double>();
+        // 检查返回结果是否为空
+        if (!temp.empty())
+        {
+            // 如果需要确保按时间排序，可以在此处排序（这里假设数据已按时间排序，最新记录在最后）
+            nlohmann::json lastRecord = temp.back();
 
-        DEBUG(DEBUG_LEVEL_DEBUG, "COMMODITY: %s, CurLongShort: %ld, CurBidOfferLongShortSlope: %f\n", COMMODITY_MAIN, gLongShort, gBidOfferLongShortSlope);
+            // 使用 at() 方法获取对应字段的值，若字段不存在则抛出异常
+            CurLongShort = lastRecord.at("CurLongShort").get<long>();
+            CurBidOfferLongShortSlope = lastRecord.at("CurBidOfferLongShortSlope").get<double>();
+
+            DEBUG(DEBUG_LEVEL_INFO, "COMMODITY: %s, CurLongShort: %ld, CurBidOfferLongShortSlope: %f\n",
+                  commodityId.c_str(), CurLongShort, CurBidOfferLongShortSlope);
+        }
+        else
+        {
+            DEBUG(DEBUG_LEVEL_INFO, "No cache data found for commodity: %s\n", commodityId.c_str());
+        }
     }
-    else
+    catch (const std::exception &ex)
     {
-        DEBUG(DEBUG_LEVEL_DEBUG, "No cache data found for commodity: %s\n", COMMODITY_MAIN);
+        DEBUG(DEBUG_LEVEL_ERROR, "Error retrieving market data for %s: %s\n", commodityId.c_str(), ex.what());
     }
 }
 
@@ -607,6 +613,9 @@ void thread_main()
         if (gCurServerTime[0] >= 0 &&
             gCommodtyInfo.MTXIdxNoAM >= 0 &&
             gCommodtyInfo.MTXIdxNo >= 0 &&
+            gCommodtyOsInfo.NQIdxNo >= 0 &&
+            gCommodtyOsInfo.GCIdxNo >= 0 &&
+            gCommodtyOsInfo.DXIdxNo >= 0 &&
             gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM) != 0 &&
             gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) != 0)
         {
@@ -616,6 +625,11 @@ void thread_main()
 
     DEBUG(DEBUG_LEVEL_INFO, "[ServerTime: %d: %d: %d]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
     LOG(DEBUG_LEVEL_INFO, "[ServerTime: %d: %d: %d]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+
+    LoadLongShort(COMMODITY_MAIN, gLongShort, gBidOfferLongShortSlope);
+    LoadLongShort(COMMODITY_NAS_MAIN, gCfdTransactionListLongShort[gCommodtyOsInfo.NQIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.NQIdxNo]);
+    LoadLongShort(COMMODITY_GC_MAIN, gCfdTransactionListLongShort[gCommodtyOsInfo.GCIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.GCIdxNo]);
+    LoadLongShort(COMMODITY_DX_MAIN, gCfdTransactionListLongShort[gCommodtyOsInfo.DXIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.DXIdxNo]);
 
     LONG CheckConnected = 0;
 
@@ -881,24 +895,6 @@ int main()
     }
 
     readConfig();
-    LoadLongShort();
-
-    // // 模拟每5秒调用一次SaveCacheForOrderMachine
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     SaveCacheForOrderMachine("NAS100");
-    //     SaveCacheForOrderMachine("XAUUSD");
-
-    //     std::this_thread::sleep_for(std::chrono::seconds(5));
-    // }
-
-    // QueryCacheData("ExampleCommodity");
-    // QueryCacheData("NAS100");
-    // QueryCacheData("XAUUSD");
-
-    // sqlite3_close(db);
-
-    // system("pause");
 
     CoInitialize(NULL);
 
