@@ -56,6 +56,12 @@ long g_nCode = 0;
 extern string g_strUserId;
 extern string gPwd;
 
+// 全局数据库指针
+sqlite3 *db = nullptr;
+
+bool InsertCacheRecord(const std::string &timestamp, const std::string &commodityId, long CurLongShort, double CurBidOfferLongShortSlope);
+nlohmann::json QueryCacheData(const std::string &commodityId);
+
 void release();
 
 void AutoConnect()
@@ -345,52 +351,29 @@ VOID CopyDataToTheOrderMachine(LONG MtxCommodtyInfo)
     gOpenInterestInfoUI.profitAndLoss = gOpenInterestInfo.profitAndLoss;
 }
 
-VOID LoadLongShort(VOID)
+// LoadLongShort 函数：加载并更新全局变量 gLongShort 与 gBidOfferLongShortSlope
+void LoadLongShort(void)
 {
-    static bool isInitialized = false; // Indicates if the file data has been loaded into memory
+    // 查询指定商品的缓存数据，返回一个 nlohmann::json 数组
+    nlohmann::json temp = QueryCacheData(COMMODITY_MAIN);
 
-    // Load file data into memory on the first call
-    if (!isInitialized)
+    // 确保查询结果不为空
+    if (!temp.empty())
     {
-        isInitialized = true;
-        std::ifstream inputFile(CACHE_DATABASE_PATH);
-        if (inputFile.is_open())
-        {
-            try
-            {
-                YAML::Node existingData = YAML::Load(inputFile);
-                for (const auto &record : existingData)
-                {
-                    gCacheData.push_back(record); // Add existing records to the cache
-                }
+        // 获取数组中的最后一笔数据
+        nlohmann::json lastRecord = temp.back();
 
-                // Ensure cache does not exceed MAX_CACHE_LEN after loading
-                while (gCacheData.size() > MAX_CACHE_LEN)
-                {
-                    gCacheData.pop_front(); // Remove oldest records if necessary
-                }
-            }
-            catch (const std::exception &e)
-            {
-                std::cerr << "Error loading YAML file: " << e.what() << std::endl; // Handle file loading errors
-            }
-        }
-        inputFile.close();
+        // 提取 CurLongShort 和 CurBidOfferLongShortSlope 字段，并赋值给全局变量
+        gLongShort = lastRecord["CurLongShort"].get<long>();
+        gBidOfferLongShortSlope = lastRecord["CurBidOfferLongShortSlope"].get<double>();
+
+        DEBUG(DEBUG_LEVEL_DEBUG, "COMMODITY: %s, CurLongShort: %ld, CurBidOfferLongShortSlope: %f\n", COMMODITY_MAIN, gLongShort, gBidOfferLongShortSlope);
     }
-
-    if (!gCacheData.empty())
+    else
     {
-        YAML::Node lastNode = gCacheData.back();
-
-        if (lastNode["gLongShort"])
-        {
-            gLongShort = lastNode["gLongShort"].as<long>();
-        }
+        DEBUG(DEBUG_LEVEL_DEBUG, "No cache data found for commodity: %s\n", COMMODITY_MAIN);
     }
 }
-
-// 全局数据库指针
-sqlite3 *db = nullptr;
 
 // 检查文件是否存在的函数
 bool FileExists(const std::string &filename)
