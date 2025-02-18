@@ -9,17 +9,24 @@
 #include <conio.h> // For kbhit() and _getch()
 #include <cstdlib> // For system("cls")
 #include <deque>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <thread> // For std::this_thread::sleep_for
 #include <unordered_map>
 #include <yaml-cpp/yaml.h>
-#include <fstream>
-#include <sstream>
 
 #include "Strategy.h"
 #include "StrategyCfd.h"
-#include <GengYouFuturesUI.h>
 #include "config.h"
+#include <GengYouFuturesUI.h>
+
+#include <nlohmann/json.hpp>
+#include <sqlite3.h>
+#include <string>
+#include <mutex>
+
+std::mutex db_mutex;
 
 extern std::deque<long> gDaysKlineDiff;
 extern std::unordered_map<long, std::array<long, 4>> gCurCommHighLowPoint;
@@ -51,6 +58,13 @@ CSKOSQuoteLib *pSKOsQuoteLib;
 long g_nCode = 0;
 extern string g_strUserId;
 extern string gPwd;
+
+// 全局数据库指针
+sqlite3 *db = nullptr;
+
+bool InsertCacheRecord(const std::string &timestamp, const std::string &commodityId, long CurLongShort, double CurBidOfferLongShortSlope);
+nlohmann::json QueryCacheData(const std::string &commodityId);
+void SaveCacheForOrderMachine(const std::string &commodityId, long CurLongShort, double CurBidOfferLongShortSlope);
 
 void release();
 
@@ -340,99 +354,208 @@ VOID CopyDataToTheOrderMachine(LONG MtxCommodtyInfo)
     gOpenInterestInfoUI.avgCost = gOpenInterestInfo.avgCost;
     gOpenInterestInfoUI.profitAndLoss = gOpenInterestInfo.profitAndLoss;
 }
-
-VOID LoadLongShort(VOID)
+void LoadLongShort(const std::string &commodityId, long &CurLongShort, double &CurBidOfferLongShortSlope)
 {
-    static bool isInitialized = false; // Indicates if the file data has been loaded into memory
-
-    // Load file data into memory on the first call
-    if (!isInitialized)
+    try
     {
-        isInitialized = true;
-        std::ifstream inputFile(CACHE_DATABASE_PATH);
-        if (inputFile.is_open())
-        {
-            try
-            {
-                YAML::Node existingData = YAML::Load(inputFile);
-                for (const auto &record : existingData)
-                {
-                    gCacheData.push_back(record); // Add existing records to the cache
-                }
+        // 查询指定商品的缓存数据，返回一个 nlohmann::json 数组
+        nlohmann::json temp = QueryCacheData(commodityId);
 
-                // Ensure cache does not exceed MAX_CACHE_LEN after loading
-                while (gCacheData.size() > MAX_CACHE_LEN)
-                {
-                    gCacheData.pop_front(); // Remove oldest records if necessary
-                }
-            }
-            catch (const std::exception &e)
-            {
-                std::cerr << "Error loading YAML file: " << e.what() << std::endl; // Handle file loading errors
-            }
+        // 检查返回结果是否为空
+        if (!temp.empty())
+        {
+            // 如果需要确保按时间排序，可以在此处排序（这里假设数据已按时间排序，最新记录在最后）
+            nlohmann::json lastRecord = temp.back();
+
+            // 使用 at() 方法获取对应字段的值，若字段不存在则抛出异常
+            CurLongShort = lastRecord.at("CurLongShort").get<long>();
+            CurBidOfferLongShortSlope = lastRecord.at("CurBidOfferLongShortSlope").get<double>();
+
+            DEBUG(DEBUG_LEVEL_INFO, "COMMODITY: %s, CurLongShort: %ld, CurBidOfferLongShortSlope: %f\n",
+                  commodityId.c_str(), CurLongShort, CurBidOfferLongShortSlope);
         }
-        inputFile.close();
+        else
+        {
+            DEBUG(DEBUG_LEVEL_INFO, "No cache data found for commodity: %s\n", commodityId.c_str());
+        }
     }
-
-    if (!gCacheData.empty())
+    catch (const std::exception &ex)
     {
-        YAML::Node lastNode = gCacheData.back();
-
-        if (lastNode["gLongShort"])
-        {
-            gLongShort = lastNode["gLongShort"].as<long>();
-        }
+        DEBUG(DEBUG_LEVEL_ERROR, "Error retrieving market data for %s: %s\n", commodityId.c_str(), ex.what());
     }
 }
 
-VOID SaveCacheForOrderMachine(VOID)
+// 检查文件是否存在的函数
+bool FileExists(const std::string &filename)
 {
-    static SHORT PreCurServerTimeSec = -1; // Stores the last recorded second to track changes
+    struct stat buffer;
+    return (stat(filename.c_str(), &buffer) == 0);
+}
 
-    LoadLongShort();
+// 获取当前时间戳（ISO 8601 格式: YYYY-MM-DD HH:MM:SS）
+std::string GetCurrentTimestamp()
+{
+    std::time_t now = std::time(nullptr);
+    std::tm localTime;
+    localtime_s(&localTime, &now);
+    std::ostringstream oss;
+    oss << std::put_time(&localTime, "%Y-%m-%d %H:%M:%S");
+    return oss.str();
+}
 
-    // Check if new data needs to be saved
-    if (PreCurServerTimeSec != gCurServerTime[2])
+// 计算截止时间（当前时间减 7 天），格式为 ISO 8601
+std::string GetCutoffTimestamp()
+{
+    // 使用 chrono 计算7天之前的时间点
+    auto now = std::chrono::system_clock::now();
+    auto cutoff_time = now - std::chrono::hours(24 * 7);
+    std::time_t cutoff_tt = std::chrono::system_clock::to_time_t(cutoff_time);
+    std::tm cutoffLocal;
+    localtime_s(&cutoffLocal, &cutoff_tt);
+    std::ostringstream oss;
+    oss << std::put_time(&cutoffLocal, "%Y-%m-%d %H:%M:%S");
+    return oss.str();
+}
+
+// 初始化数据库并创建表格（如果不存在），若数据库文件存在则沿用已有数据
+bool InitializeDatabase(const std::string &dbPath)
+{
+    bool dbExists = FileExists(dbPath);
+
+    // 打开数据库，启用全互斥保证线程安全
+    int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX;
+    if (sqlite3_open_v2(dbPath.c_str(), &db, flags, nullptr) != SQLITE_OK)
     {
-        PreCurServerTimeSec = gCurServerTime[2]; // Update the last recorded second
+        std::cerr << "无法打开数据库: " << sqlite3_errmsg(db) << std::endl;
+        return false;
+    }
 
-        // Generate a timestamp string for the new record
-        std::ostringstream timestamp;
-        timestamp << gCurServerTime[0] << ":" << gCurServerTime[1] << ":" << gCurServerTime[2];
-
-        // Prepare the new record
-        YAML::Node newRecord;
-        newRecord["timestamp"] = timestamp.str();                                     // Save the timestamp
-        newRecord["gLongShort"] = gMarketDataUI.gLongShort;                           // Save market data
-        newRecord["gBidOfferLongShortSlope"] = gMarketDataUI.gBidOfferLongShortSlope; // Save slope data
-
-        // Add the new record to the cache and maintain the maximum length
-        gCacheData.push_back(newRecord);
-        if (gCacheData.size() > MAX_CACHE_LEN)
+    // 如果数据库文件不存在，则创建表格；若已存在，则不重建表格（保留原有数据）
+    if (!dbExists)
+    {
+        const char *createTableSQL =
+            "CREATE TABLE IF NOT EXISTS cache_data ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            "timestamp TEXT, "
+            "CommodityId TEXT, "
+            "CurLongShort INTEGER, "
+            "CurBidOfferLongShortSlope REAL"
+            ");";
+        char *errMsg = nullptr;
+        if (sqlite3_exec(db, createTableSQL, 0, 0, &errMsg) != SQLITE_OK)
         {
-            gCacheData.pop_front(); // Remove the oldest record if the maximum size is exceeded
-        }
-
-        // Periodically sync the runtime data to the file to reduce file I/O frequency
-        static int syncCounter = 0;   // Counter to track sync intervals
-        const int syncThreshold = 10; // Sync to the file every 60 seconds
-        if (++syncCounter >= syncThreshold)
-        {
-            syncCounter = 0; // Reset the counter
-            std::ofstream outputFile(CACHE_DATABASE_PATH, std::ios::trunc);
-            if (outputFile.is_open())
-            {
-                YAML::Emitter out;
-                out << YAML::BeginSeq; // Begin writing a YAML sequence
-                for (const auto &record : gCacheData)
-                {
-                    out << record; // Write each record in the cache
-                }
-                out << YAML::EndSeq;       // End the YAML sequence
-                outputFile << out.c_str(); // Write the entire output to the file
-            }
+            std::cerr << "创建表失败: " << errMsg << std::endl;
+            sqlite3_free(errMsg);
+            return false;
         }
     }
+    return true;
+}
+
+// 插入记录到数据库
+bool InsertCacheRecord(const std::string &timestamp, const std::string &commodityId, long CurLongShort, double CurBidOfferLongShortSlope)
+{
+    const char *insertSQL = "INSERT INTO cache_data (timestamp, CommodityId, CurLongShort, CurBidOfferLongShortSlope) VALUES (?, ?, ?, ?);";
+    sqlite3_stmt *stmt;
+    if (sqlite3_prepare_v2(db, insertSQL, -1, &stmt, nullptr) != SQLITE_OK)
+    {
+        std::cerr << "准备语句失败: " << sqlite3_errmsg(db) << std::endl;
+        return false;
+    }
+    sqlite3_bind_text(stmt, 1, timestamp.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, commodityId.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int64(stmt, 3, CurLongShort);
+    sqlite3_bind_double(stmt, 4, CurBidOfferLongShortSlope);
+
+    if (sqlite3_step(stmt) != SQLITE_DONE)
+    {
+        std::cerr << "执行语句失败: " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_finalize(stmt);
+        return false;
+    }
+    sqlite3_finalize(stmt);
+    return true;
+}
+
+// 删除超过7天的记录
+void DeleteOldRecords()
+{
+    std::string cutoff = GetCutoffTimestamp();
+    std::string deleteSQL = "DELETE FROM cache_data WHERE timestamp < ?";
+    sqlite3_stmt *stmt;
+    if (sqlite3_prepare_v2(db, deleteSQL.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
+    {
+        std::cerr << "删除语句准备失败: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
+    sqlite3_bind_text(stmt, 1, cutoff.c_str(), -1, SQLITE_TRANSIENT);
+
+    if (sqlite3_step(stmt) != SQLITE_DONE)
+    {
+        std::cerr << "执行删除语句失败: " << sqlite3_errmsg(db) << std::endl;
+    }
+    else
+    {
+        std::cout << "已删除早于 " << cutoff << " 的记录" << std::endl;
+    }
+    sqlite3_finalize(stmt);
+}
+
+// 保存缓存数据（使用 SQLite），并确保不会覆盖之前的数据
+void SaveCacheForOrderMachine(const std::string &commodityId, long CurLongShort, double CurBidOfferLongShortSlope)
+{
+    static int syncCounter = 0;
+    const int syncThreshold = 12; // 每分钟同步12次（每5秒一次）
+
+    // 获取当前时间戳（ISO 8601 格式）
+    std::string timestamp = GetCurrentTimestamp();
+
+    // 插入记录到数据库
+    if (!InsertCacheRecord(timestamp, commodityId, CurLongShort, CurBidOfferLongShortSlope))
+    {
+        std::cerr << "插入记录失败" << std::endl;
+    }
+
+    // 每隔一定次数（例如每分钟）清理超过7天的记录
+    if (++syncCounter >= syncThreshold)
+    {
+        syncCounter = 0;
+        DeleteOldRecords();
+    }
+}
+
+// 查询指定商品的快取资料并返回 JSON 格式
+nlohmann::json QueryCacheData(const std::string &commodityId)
+{
+    // 使用互斥锁确保线程安全
+    std::lock_guard<std::mutex> lock(db_mutex);
+
+    const char *querySQL = "SELECT timestamp, CommodityId, CurLongShort, CurBidOfferLongShortSlope FROM cache_data WHERE CommodityId = ? ORDER BY timestamp ASC;";
+    sqlite3_stmt *stmt;
+    if (sqlite3_prepare_v2(db, querySQL, -1, &stmt, nullptr) != SQLITE_OK)
+    {
+        std::cerr << "查询语句准备失败: " << sqlite3_errmsg(db) << std::endl;
+        return nullptr;
+    }
+    sqlite3_bind_text(stmt, 1, commodityId.c_str(), -1, SQLITE_TRANSIENT);
+
+    nlohmann::json result = nlohmann::json::array();
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        std::string timestamp = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 0));
+        std::string queriedCommodityId = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
+        long CurLongShort = sqlite3_column_int64(stmt, 2);
+        double CurBidOfferLongShortSlope = sqlite3_column_double(stmt, 3);
+
+        result.push_back({{"timestamp", timestamp},
+                          {"commodityId", queriedCommodityId},
+                          {"CurLongShort", CurLongShort},
+                          {"CurBidOfferLongShortSlope", CurBidOfferLongShortSlope}});
+    }
+    sqlite3_finalize(stmt);
+
+    std::cout << "Query Result: " << result.dump(4) << std::endl;
+    return result;
 }
 
 void thread_main()
@@ -496,6 +619,9 @@ void thread_main()
         if (gCurServerTime[0] >= 0 &&
             gCommodtyInfo.MTXIdxNoAM >= 0 &&
             gCommodtyInfo.MTXIdxNo >= 0 &&
+            gCommodtyOsInfo.NQIdxNo >= 0 &&
+            gCommodtyOsInfo.GCIdxNo >= 0 &&
+            gCommodtyOsInfo.DXIdxNo >= 0 &&
             gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNoAM) != 0 &&
             gCurCommHighLowPoint.count(gCommodtyInfo.MTXIdxNo) != 0)
         {
@@ -505,6 +631,11 @@ void thread_main()
 
     DEBUG(DEBUG_LEVEL_INFO, "[ServerTime: %d: %d: %d]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
     LOG(DEBUG_LEVEL_INFO, "[ServerTime: %d: %d: %d]", gCurServerTime[0], gCurServerTime[1], gCurServerTime[2]);
+
+    LoadLongShort(COMMODITY_MAIN, gLongShort, gBidOfferLongShortSlope);
+    LoadLongShort(COMMODITY_NAS_MAIN, gCfdTransactionListLongShort[gCommodtyOsInfo.NQIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.NQIdxNo]);
+    LoadLongShort(COMMODITY_GC_MAIN, gCfdTransactionListLongShort[gCommodtyOsInfo.GCIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.GCIdxNo]);
+    LoadLongShort(COMMODITY_DX_MAIN, gCfdTransactionListLongShort[gCommodtyOsInfo.DXIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.DXIdxNo]);
 
     LONG CheckConnected = 0;
 
@@ -554,7 +685,11 @@ void thread_main()
             // GengYouFuturesUI start
             {
                 CopyDataToTheOrderMachine(MtxCommodtyInfo);
-                SaveCacheForOrderMachine();
+
+                SaveCacheForOrderMachine(COMMODITY_MAIN, gLongShort, gBidOfferLongShortSlope);
+                SaveCacheForOrderMachine(COMMODITY_NAS_MAIN, gCfdTransactionListLongShort[gCommodtyOsInfo.NQIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.NQIdxNo]);
+                SaveCacheForOrderMachine(COMMODITY_GC_MAIN, gCfdTransactionListLongShort[gCommodtyOsInfo.GCIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.GCIdxNo]);
+                SaveCacheForOrderMachine(COMMODITY_DX_MAIN, gCfdTransactionListLongShort[gCommodtyOsInfo.DXIdxNo], gCfdTransactionListLongShortSlope[gCommodtyOsInfo.DXIdxNo]);
             }
 
             system("cls");
@@ -759,8 +894,13 @@ int main()
 {
     DEBUG(DEBUG_LEVEL_DEBUG, "start");
 
+    std::string dbPath = "cache_data.db";
+    if (!InitializeDatabase(dbPath))
+    {
+        return -1;
+    }
+
     readConfig();
-    LoadLongShort();
 
     CoInitialize(NULL);
 
@@ -803,6 +943,8 @@ int main()
     }
 
     serverThread.join();
+
+    sqlite3_close(db);
 
     DEBUG(DEBUG_LEVEL_INFO, "serverThread exit");
 

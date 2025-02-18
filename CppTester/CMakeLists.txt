@@ -1,5 +1,3 @@
-# File: CMakeLists.txt
-
 # 指定所需的最低 CMake 版本
 cmake_minimum_required(VERSION 3.10...3.24)
 
@@ -21,6 +19,9 @@ set(SOURCES
     CppTester/Strategy.cpp
     ../Logger/Logger.cpp
     CppTester/StrategyCfd.cpp
+    # Sqlite
+    ../Sqlite/shell.c
+    ../Sqlite/sqlite3.c
 )
 
 # 添加头文件
@@ -36,6 +37,9 @@ set(HEADERS
     ../Logger/Logger.h
     ../GengYouFuturesUI/GengYouFuturesUI.h
     CppTester/StrategyCfd.h
+    # Sqlite
+    ../Sqlite/sqlite3.h
+    ../Sqlite/sqlite3ext.h
 )
 
 # 添加头文件目录
@@ -43,6 +47,7 @@ include_directories(${CMAKE_SOURCE_DIR}/CppTester)
 include_directories("../Logger")
 include_directories("../../")
 include_directories("../GengYouFuturesUI/")
+include_directories("../Sqlite")
 
 # 设置不同配置的编译选项
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
@@ -67,7 +72,17 @@ target_link_libraries(GengYouFuturesUI PUBLIC yaml-cpp)
 add_executable(CppTester ${SOURCES} ${HEADERS})
 
 # 链接 yaml-cpp 和 GengYouFuturesUI 到 CppTester
-target_link_libraries(CppTester PUBLIC yaml-cpp GengYouFuturesUI)
+target_link_libraries(CppTester PUBLIC yaml-cpp GengYouFuturesUI nlohmann_json::nlohmann_json)
+
+# 设置 SQLite3 DLL 的路径
+set(SQLITE3_DLL_PATH "${CMAKE_SOURCE_DIR}/../DLL/x64/Sqlite/sqlite3.dll")
+
+# 将 SQLite3 DLL 复制到可执行文件目录
+add_custom_command(TARGET CppTester POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${SQLITE3_DLL_PATH}"
+    $<TARGET_FILE_DIR:CppTester>
+)
 
 # 设置编译器标志
 target_compile_options(CppTester PRIVATE
@@ -81,42 +96,38 @@ target_link_options(CppTester PRIVATE
     $<$<CONFIG:Release>:-optimize>
 )
 
-# 设置 DLL 的路径，确保 DLL 可以被找到
+# 将 SKCOM.dll 复制到可执行文件目录
 add_custom_command(TARGET CppTester POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${CMAKE_SOURCE_DIR}/../DLL/x64/SKCOM.dll"
     $<TARGET_FILE_DIR:CppTester>
 )
 
-# 在 add_custom_command 中修改路徑
+# 将 database.yaml 复制到可执行文件目录
 add_custom_command(TARGET CppTester POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${CMAKE_SOURCE_DIR}/CppTester/database.yaml"
     $<TARGET_FILE_DIR:CppTester>
 )
-# 獲取當前 CMakeLists.txt 文件所在的目錄
+
+# 获取当前 CMakeLists.txt 文件所在的目录
 set(CPP_TESTER_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-# 從當前路徑提取 Windows 根目錄（如 "F:/"）
-get_filename_component(ROOT_DIR "${CPP_TESTER_DIR}" DIRECTORY) # 取得上層路徑
+# 从当前路径提取 Windows 根目录（如 "F:/"）
+get_filename_component(ROOT_DIR "${CPP_TESTER_DIR}" DIRECTORY) # 取得上层路径
 get_filename_component(WINDOWS_ROOT "${ROOT_DIR}" DIRECTORY)
 
-# 定義 database.yaml 的完整路徑
+# 定义 database.yaml 的完整路径
 set(DATABASE_PATH "${CPP_TESTER_DIR}/CppTester/database.yaml")
 set(CACHE_DATABASE_PATH "${CMAKE_CURRENT_BINARY_DIR}/cache.yaml")
 
-# 打印調試信息
+# 打印调试信息
 message(STATUS "CppTester directory: ${CPP_TESTER_DIR}")
 message(STATUS "Windows root: ${WINDOWS_ROOT}")
 message(STATUS "Database path: ${DATABASE_PATH}")
 
-
-# Generate the config.h file
+# 生成 config.h 文件
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
-
 
 # 将生成的头文件目录添加到包含路径中
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-
-

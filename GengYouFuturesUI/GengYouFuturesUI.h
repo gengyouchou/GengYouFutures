@@ -14,6 +14,7 @@
 #include <SKQuoteLib.h>
 #include <SKReplyLib.h>
 #include <Logger.h>
+#include <nlohmann/json.hpp>
 
 // User account
 struct USER_ACCOUNT_UI
@@ -95,5 +96,9 @@ extern USER_ACCOUNT_UI gUserAccountUI;
 extern STRATEGY_CONFIG_UI gStrategyConfigUI;
 extern MARKET_DATA_UI gMarketDataUI;
 extern OPEN_INTEREST_INFO_UI gOpenInterestInfoUI;
+
+extern bool InsertCacheRecord(const std::string &timestamp, const std::string &commodityId, long CurLongShort, double CurBidOfferLongShortSlope);
+extern nlohmann::json QueryCacheData(const std::string &commodityId);
+extern void SaveCacheForOrderMachine(const std::string &commodityId, long CurLongShort, double CurBidOfferLongShortSlope);
 
 void startHttpServer(std::atomic<bool> &isRunning);
