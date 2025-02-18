@@ -523,14 +523,23 @@ void SaveCacheForOrderMachine(const std::string &commodityId, long CurLongShort,
         DeleteOldRecords();
     }
 }
-
-// 查询指定商品的快取资料并返回 JSON 格式
+// 查询指定商品的缓存资料并返回 JSON 格式，
+// 仅返回最近两天内且时间戳中秒数模 5 为 0 的记录
 nlohmann::json QueryCacheData(const std::string &commodityId)
 {
-    // 使用互斥锁确保线程安全
-    std::lock_guard<std::mutex> lock(db_mutex);
+    // SQL 查询语句：
+    // 1. 过滤条件：CommodityId = ? 且 timestamp >= datetime('now','-2 days')
+    // 2. 过滤条件：取 timestamp 中的秒数（假设格式 "YYYY-MM-DD HH:MM:SS"，秒数为第18-19字符），
+    //    只有当秒数 % 5 = 0 的记录才会返回。
+    // 3. 按 timestamp 升序排序
+    const char *querySQL =
+        "SELECT timestamp, CommodityId, CurLongShort, CurBidOfferLongShortSlope "
+        "FROM cache_data "
+        "WHERE CommodityId = ? "
+        "AND timestamp >= datetime('now','-2 days') "
+        "AND (CAST(substr(timestamp, 18, 2) AS INTEGER) % 5 = 0) "
+        "ORDER BY timestamp ASC;";
 
-    const char *querySQL = "SELECT timestamp, CommodityId, CurLongShort, CurBidOfferLongShortSlope FROM cache_data WHERE CommodityId = ? ORDER BY timestamp ASC;";
     sqlite3_stmt *stmt;
     if (sqlite3_prepare_v2(db, querySQL, -1, &stmt, nullptr) != SQLITE_OK)
     {
