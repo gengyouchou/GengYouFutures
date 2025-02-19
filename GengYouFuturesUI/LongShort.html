@@ -115,8 +115,6 @@
             } catch (error) {
                 console.error("Error fetching data:", error);
                 appendLog(`Error fetching data: ${error.message}`, true);
-            } finally {
-                setTimeout(fetchData, 1000);
             }
         }
 
@@ -188,7 +186,7 @@
             }
         }
 
-        setInterval(fetchData, 5000);
+        setInterval(fetchData, 10000);
     </script>
 </body>
 
