@@ -178,10 +178,22 @@ void startHttpServer(std::atomic<bool> &isRunning)
 
     // 路由處理
 
-    svr.Get("/Long-Short-Cache-data", [](const httplib::Request &, httplib::Response &res)
+    svr.Get("/Long-Short-Cache-data", [](const httplib::Request &req, httplib::Response &res)
             {
-            auto jsonResponse = QueryCacheData(COMMODITY_MAIN);
-            res.set_content(jsonResponse.dump(), "application/json"); });
+    // 检查 URL 中是否存在 commodity 参数
+    if (!req.has_param("commodity"))
+    {
+        res.status = 400;
+        res.set_content("Missing 'commodity' parameter", "text/plain");
+        return;
+    }
+    
+    // 获取 commodity 参数的值
+    std::string commodity = req.get_param_value("commodity");
+    
+    // 查询对应商品的缓存数据
+    auto jsonResponse = QueryCacheData(commodity);
+    res.set_content(jsonResponse.dump(), "application/json"); });
 
     svr.Get("/index-data", [](const httplib::Request &, httplib::Response &res)
             {
