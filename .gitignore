@@ -76,4 +76,5 @@ logs/
 *.exe
 *.ex4
 *.db
+*.db-journal
 config.yaml
