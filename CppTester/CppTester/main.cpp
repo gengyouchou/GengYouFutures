@@ -563,7 +563,7 @@ nlohmann::json QueryCacheData(const std::string &commodityId)
     }
     sqlite3_finalize(stmt);
 
-    std::cout << "Query Result: " << result.dump(4) << std::endl;
+    // std::cout << "Query Result: " << result.dump(4) << std::endl;
     return result;
 }
 
