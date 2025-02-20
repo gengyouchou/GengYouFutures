@@ -102,7 +102,12 @@
 
         async function fetchData() {
             try {
-                const response = await fetch("http://192.168.50.168:8080/Long-Short-Cache-data");
+                // 从当前 URL 中获取 commodity 参数
+                const urlParams = new URLSearchParams(window.location.search);
+                const commodity = urlParams.get("commodity");
+
+                // 构造带参数的请求 URL
+                const response = await fetch(`http://192.168.50.168:8080/Long-Short-Cache-data?commodity=${commodity}`);
                 if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
                 const data = await response.json();
 
@@ -181,7 +186,7 @@
             }
         }
 
-        setInterval(fetchData, 5000);
+        setInterval(fetchData, 10000);
     </script>
 </body>
 
