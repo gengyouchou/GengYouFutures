@@ -82,7 +82,7 @@ double CfdBidOfferAndTransactionListLongShortSlope(long nStockidx)
     // Get the current long-short position by invoking a custom function
     LONG CurLongShort = gCfdTransactionListLongShort[nStockidx];
 
-    if (!PrePtr.count(nStockidx))
+    if (!PreLongShort.count(nStockidx))
     {
         // Store the previous long-short value for calculating the difference
         PreLongShort[nStockidx] = CurLongShort;
