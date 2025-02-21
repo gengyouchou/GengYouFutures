@@ -63,7 +63,12 @@
 
         async function fetchData() {
             try {
-                const response = await fetch("http://192.168.50.168:8080/Long-Short-Cache-data");
+                const commodity = getCommodityFromURL();
+                if (!commodity) {
+                    throw new Error("Missing 'commodity' parameter in URL");
+                }
+                const response = await fetch(`http://192.168.50.168:8080/Long-Short-Cache-data?commodity=${commodity}`);
+                if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
                 const data = await response.json();
 
                 const labels = data.map(point => point.timestamp);
