@@ -429,7 +429,7 @@ def get_option_chips_table():
     # 获取期权筹码表数据
     combined_data = {
         "at_the_money": OptionChipsTable(sdk, at_the_money_contract),
-        "near_the_money": OptionChipsTable(sdk, at_the_money_contract.replace("B5", "C5"))
+        "near_the_money": OptionChipsTable(sdk, at_the_money_contract.replace("B5", "N5"))
     }
 
     # 使用 jsonify 返回 JSON 数据
