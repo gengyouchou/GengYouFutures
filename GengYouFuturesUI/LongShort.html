@@ -61,6 +61,12 @@
             options: { responsive: true, scales: { x: { ticks: { color: "#e0e0e0" } }, y: { ticks: { color: "#e0e0e0" } } } }
         });
 
+        // 从 URL 中获取 commodity 参数
+        function getCommodityFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get("commodity");
+        }
+
         async function fetchData() {
             try {
                 const commodity = getCommodityFromURL();
