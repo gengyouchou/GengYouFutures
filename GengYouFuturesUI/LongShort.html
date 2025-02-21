@@ -10,94 +10,183 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            background-color: #000;
-            color: #e0e0e0;
         }
 
         h1 {
             text-align: center;
-            color: #fff;
-        }
-
-        .chart-container {
-            width: 100%;
-            max-width: 900px;
-            margin: auto;
         }
 
         canvas {
-            display: block;
-            background-color: #121212;
-            border: 1px solid #333;
+            width: 100%;
+            height: 300px;
+            margin: 20px auto;
+        }
+
+        #log {
+            display: none;
         }
     </style>
 </head>
 
 <body>
     <h1>LongShort & BidOffer Slope Viewer</h1>
-    <div class="chart-container">
-        <canvas id="longShortChart"></canvas>
-    </div>
-    <div class="chart-container">
-        <canvas id="bidOfferChart"></canvas>
-    </div>
+    <canvas id="longShortChart"></canvas>
+    <canvas id="bidOfferSlopeChart"></canvas>
 
     <script>
-        const MAX_DATA_LENGTH = 20000;
-        let sharedLabels = [];
+        const logDiv = document.getElementById("log");
+        const longShortChartCtx = document.getElementById("longShortChart").getContext("2d");
+        const bidOfferSlopeChartCtx = document.getElementById("bidOfferSlopeChart").getContext("2d");
 
-        const ctxLongShort = document.getElementById("longShortChart").getContext("2d");
-        const ctxBidOffer = document.getElementById("bidOfferChart").getContext("2d");
+        const MAX_DATA_LENGTH = 20000; // 控制圖表數據長度
+        const MAX_LOG_ENTRIES = 100; // 控制日誌長度
 
-        const longShortChart = new Chart(ctxLongShort, {
-            type: 'line',
-            data: { labels: [], datasets: [{ label: "CurLongShort", data: [], borderColor: "green", borderWidth: 2, tension: 0.3, pointRadius: 0 }] },
-            options: { responsive: true, scales: { x: { ticks: { color: "#e0e0e0" } }, y: { ticks: { color: "#e0e0e0" } } } }
-        });
+        const chartConfigs = [
+            {
+                ctx: longShortChartCtx,
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: "LongShort",
+                            data: [],
+                            borderColor: "green",
+                            borderWidth: 1,
+                            tension: 0.4,
+                            pointRadius: 0,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: true },
+                        tooltip: { mode: "index", intersect: false }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: "Time" } },
+                        y: { title: { display: true, text: "LongShort Value" } }
+                    }
+                }
+            },
+            {
+                ctx: bidOfferSlopeChartCtx,
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: "BidOfferLongShortSlope",
+                            data: [],
+                            borderColor: "red",
+                            borderWidth: 1,
+                            tension: 0.4,
+                            pointRadius: 0,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: true },
+                        tooltip: { mode: "index", intersect: false }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: "Time" } },
+                        y: { title: { display: true, text: "BidOffer Slope Value" } }
+                    }
+                }
+            }
+        ];
 
-        const bidOfferChart = new Chart(ctxBidOffer, {
-            type: 'line',
-            data: { labels: [], datasets: [{ label: "CurBidOfferLongShortSlope", data: [], borderColor: "red", borderWidth: 2, tension: 0.3, pointRadius: 0 }] },
-            options: { responsive: true, scales: { x: { ticks: { color: "#e0e0e0" } }, y: { ticks: { color: "#e0e0e0" } } } }
-        });
-
-        // 从 URL 中获取 commodity 参数
-        function getCommodityFromURL() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get("commodity");
-        }
+        const [longShortChart, bidOfferSlopeChart] = chartConfigs.map(config => new Chart(config.ctx, { type: "line", data: config.data, options: config.options }));
 
         async function fetchData() {
             try {
-                const commodity = getCommodityFromURL();
-                if (!commodity) {
-                    throw new Error("Missing 'commodity' parameter in URL");
-                }
+                // 从当前 URL 中获取 commodity 参数
+                const urlParams = new URLSearchParams(window.location.search);
+                const commodity = urlParams.get("commodity");
+
+                // 构造带参数的请求 URL
                 const response = await fetch(`http://192.168.50.168:8080/Long-Short-Cache-data?commodity=${commodity}`);
                 if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
                 const data = await response.json();
 
-                const labels = data.map(point => point.timestamp);
-                const longShortValues = data.map(point => point.CurLongShort);
-                const bidOfferValues = data.map(point => point.CurBidOfferLongShortSlope);
-
-                sharedLabels = labels;
-                updateChart(longShortChart, labels, longShortValues);
-                updateChart(bidOfferChart, labels, bidOfferValues);
+                updateUI(data);
             } catch (error) {
                 console.error("Error fetching data:", error);
-            } finally {
-                setTimeout(fetchData, 10000);
+                appendLog(`Error fetching data: ${error.message}`, true);
             }
         }
 
-        function updateChart(chart, labels, values) {
-            chart.data.labels = labels;
-            chart.data.datasets[0].data = values;
-            chart.update();
+        function resetChartData(chartData) {
+            // 清空圖表資料
+            chartData.labels.length = 0;
+            chartData.datasets[0].data.length = 0;
         }
 
-        fetchData();
+        function batchUpdateChartData(chartData, labels, values) {
+            // 批次更新資料
+            chartData.labels.push(...labels);
+            chartData.datasets[0].data.push(...values);
+
+            // 保持資料長度限制
+            if (chartData.labels.length > MAX_DATA_LENGTH) {
+                const excess = chartData.labels.length - MAX_DATA_LENGTH;
+                chartData.labels.splice(0, excess);
+                chartData.datasets[0].data.splice(0, excess);
+            }
+        }
+
+        function updateUI(data) {
+            if (!Array.isArray(data) || data.length === 0) {
+                appendLog("Error: Invalid or empty data format.", true);
+                return;
+            }
+
+            // 收集更新資料
+            const longShortLabels = [];
+            const longShortValues = [];
+            const bidOfferSlopeLabels = [];
+            const bidOfferSlopeValues = [];
+
+            data.forEach(point => {
+                const { timestamp, CurLongShort, CurBidOfferLongShortSlope } = point;
+                longShortLabels.push(timestamp);
+                longShortValues.push(CurLongShort);
+                bidOfferSlopeLabels.push(timestamp);
+                bidOfferSlopeValues.push(CurBidOfferLongShortSlope);
+            });
+
+            // 清空並更新圖表資料
+            resetChartData(longShortChart.data);
+            batchUpdateChartData(longShortChart.data, longShortLabels, longShortValues);
+
+            resetChartData(bidOfferSlopeChart.data);
+            batchUpdateChartData(bidOfferSlopeChart.data, bidOfferSlopeLabels, bidOfferSlopeValues);
+
+            // 更新圖表一次
+            longShortChart.update();
+            bidOfferSlopeChart.update();
+
+            // 日誌顯示最新資料
+            const latestPoint = data[data.length - 1];
+            appendLog(`[Time: ${latestPoint.timestamp}] LongShort: ${latestPoint.CurLongShort}, BidOfferSlope: ${latestPoint.CurBidOfferLongShortSlope}`);
+        }
+
+        function appendLog(message, isError = false) {
+            const entry = document.createElement("div");
+            entry.textContent = message;
+            if (isError) entry.style.color = "red";
+
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+
+            while (logDiv.childNodes.length > MAX_LOG_ENTRIES) {
+                logDiv.removeChild(logDiv.firstChild);
+            }
+        }
+
+        setInterval(fetchData, 10000);
     </script>
 </body>
 
