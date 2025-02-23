@@ -6,10 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LongShort & BidOffer Slope Viewer</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1/dist/chartjs-plugin-zoom.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            background-color: #222;
+            color: #fff;
         }
 
         h1 {
@@ -20,10 +23,7 @@
             width: 100%;
             height: 300px;
             margin: 20px auto;
-        }
-
-        #log {
-            display: none;
+            background-color: #333;
         }
     </style>
 </head>
@@ -34,66 +34,40 @@
     <canvas id="bidOfferSlopeChart"></canvas>
 
     <script>
-        const logDiv = document.getElementById("log");
         const longShortChartCtx = document.getElementById("longShortChart").getContext("2d");
         const bidOfferSlopeChartCtx = document.getElementById("bidOfferSlopeChart").getContext("2d");
-
-        const MAX_DATA_LENGTH = 20000; // 控制圖表數據長度
-        const MAX_LOG_ENTRIES = 100; // 控制日誌長度
 
         const chartConfigs = [
             {
                 ctx: longShortChartCtx,
-                data: {
-                    labels: [],
-                    datasets: [
-                        {
-                            label: "LongShort",
-                            data: [],
-                            borderColor: "green",
-                            borderWidth: 1,
-                            tension: 0.4,
-                            pointRadius: 0,
-                        }
-                    ]
-                },
+                data: { labels: [], datasets: [{ label: "LongShort", data: [], borderColor: "green", borderWidth: 1, tension: 0.4, pointRadius: 0 }] },
                 options: {
                     responsive: true,
                     plugins: {
                         legend: { display: true },
-                        tooltip: { mode: "index", intersect: false }
+                        tooltip: { mode: "index", intersect: false },
+                        zoom: {
+                            pan: { enabled: true, mode: 'x' },
+                            zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+                        }
                     },
-                    scales: {
-                        x: { title: { display: true, text: "Time" } },
-                        y: { title: { display: true, text: "LongShort Value" } }
-                    }
+                    scales: { x: { title: { display: true, text: "Time" } }, y: { title: { display: true, text: "LongShort Value" } } }
                 }
             },
             {
                 ctx: bidOfferSlopeChartCtx,
-                data: {
-                    labels: [],
-                    datasets: [
-                        {
-                            label: "BidOfferLongShortSlope",
-                            data: [],
-                            borderColor: "red",
-                            borderWidth: 1,
-                            tension: 0.4,
-                            pointRadius: 0,
-                        }
-                    ]
-                },
+                data: { labels: [], datasets: [{ label: "BidOfferLongShortSlope", data: [], borderColor: "red", borderWidth: 1, tension: 0.4, pointRadius: 0 }] },
                 options: {
                     responsive: true,
                     plugins: {
                         legend: { display: true },
-                        tooltip: { mode: "index", intersect: false }
+                        tooltip: { mode: "index", intersect: false },
+                        zoom: {
+                            pan: { enabled: true, mode: 'x' },
+                            zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+                        }
                     },
-                    scales: {
-                        x: { title: { display: true, text: "Time" } },
-                        y: { title: { display: true, text: "BidOffer Slope Value" } }
-                    }
+                    scales: { x: { title: { display: true, text: "Time" } }, y: { title: { display: true, text: "BidOffer Slope Value" } } }
                 }
             }
         ];
