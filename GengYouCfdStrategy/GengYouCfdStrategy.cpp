@@ -11,6 +11,7 @@
 #include <sstream>
 #include <windows.h>
 #include <algorithm> // for std::min
+#include <ctime>
 
 using json = nlohmann::json;
 
@@ -21,7 +22,7 @@ static std::thread server_thread;
 // 儲存最新從 MQL4 傳入的未平倉部位資料（全 JSON 格式）
 static json g_latestPositions;
 
-// 新增：用來存放最新接收到的訂單訊號 JSON（來自發訊機的 POST 請求）
+// 用來存放最新接收到的訂單訊號 JSON（來自發訊機的 POST 請求）
 static std::mutex g_orderMutex;
 static std::string g_newOrder = "";
 
@@ -39,9 +40,9 @@ void Receive_Strategy_Server_Signals()
 {
     httplib::Server svr;
 
-    // 新增 GET 接口：供外部查詢是否有新訂單訊號
+    // GET 接口：供外部查詢是否有新訂單訊號
     svr.Get("/getNewOrder", [](const httplib::Request &req, httplib::Response &res)
-            {
+    {
         std::lock_guard<std::mutex> lock(g_orderMutex);
         if(g_newOrder.empty())
             res.set_content("{}", "application/json");
@@ -50,11 +51,12 @@ void Receive_Strategy_Server_Signals()
             res.set_content(g_newOrder, "application/json");
             // 回傳後清空訂單訊號
             g_newOrder = "";
-        } });
+        }
+    });
 
     // HTTP POST /createPosition 接口：接收新訂單訊號
     svr.Post("/createPosition", [](const httplib::Request &req, httplib::Response &res)
-             {
+    {
         try {
             json newSignal = json::parse(req.body);
             json retOrder;
@@ -132,7 +134,8 @@ void Receive_Strategy_Server_Signals()
             err["error"] = e.what();
             res.status = 400;
             res.set_content(err.dump(), "application/json");
-        } });
+        }
+    });
 
     server_running = true;
     // 改用 port 1688
@@ -234,7 +237,7 @@ extern "C" __declspec(dllexport) const char *ProcessPositions(const char *jsonIn
 }
 
 //--------------------------------------------------------------
-// 新增導出函數：供 MQ4 輕鬆取得最新訂單訊號 JSON
+// 導出函數：供 MQL4 取得最新訂單訊號 JSON
 //--------------------------------------------------------------
 extern "C" __declspec(dllexport) const char *GetNewOrder()
 {
@@ -247,15 +250,59 @@ extern "C" __declspec(dllexport) const char *GetNewOrder()
     else
     {
         orderOut = g_newOrder;
+        // 若需要每次返回後清空，則執行以下操作：
         g_newOrder = "";
     }
     return orderOut.c_str();
 }
 
 //--------------------------------------------------------------
+// 新增導出函數：解析原始下單 JSON 並返回分開的下單資訊
+// 此函數會讀取 g_newOrder（或傳入的 JSON 字串），解析後返回一個結構化的 JSON 字串，
+// 例如分別返回 CommodityId、OrderType、Lots、LongShort 以及（若存在）Amount 欄位。
+//--------------------------------------------------------------
+extern "C" __declspec(dllexport) const char *ParseNewOrder()
+{
+    static std::string parsed;
+    try
+    {
+        if(g_newOrder.empty())
+        {
+            parsed = "{}";
+            return parsed.c_str();
+        }
+        // 解析全域訂單 JSON
+        json orderJson = json::parse(g_newOrder);
+        
+        // 建立新的 JSON 物件，分別存放各欄位
+        json parsedJson;
+        parsedJson["CommodityId"] = orderJson.value("CommodityId", "");
+        parsedJson["OrderType"]   = orderJson.value("OrderType", "");
+        parsedJson["Lots"]        = orderJson.value("Lots", 0.0);
+        parsedJson["LongShort"]   = orderJson.value("LongShort", 0);
+        if(orderJson.find("Amount") != orderJson.end())
+            parsedJson["Amount"] = orderJson["Amount"];
+        
+        parsed = parsedJson.dump();
+        
+        // 若需要解析後清空 g_newOrder，可執行以下動作：
+        g_newOrder = "";
+        
+        return parsed.c_str();
+    }
+    catch (const std::exception &e)
+    {
+        json err;
+        err["error"] = e.what();
+        parsed = err.dump();
+        return parsed.c_str();
+    }
+}
+
+//--------------------------------------------------------------
 // 新增函數：CustomProcessParameters
-// 此函數接受必要參數（例如 margin、closedPL 以及單個開盤倉位的資料），
-// 由 DLL 內部構造 JSON，並附加處理時間後返回 JSON 字串。
+// 此函數接受必要參數（例如 margin、closedPL 以及單個開盤倉位資料），
+// DLL 內部構造 JSON 並附加處理時間後返回 JSON 字串。
 //--------------------------------------------------------------
 extern "C" __declspec(dllexport) const char *CustomProcessParameters(
     double margin,
@@ -284,8 +331,6 @@ extern "C" __declspec(dllexport) const char *CustomProcessParameters(
         // 加入處理時間 (UNIX 時間)
         std::time_t now = std::time(nullptr);
         j["ProcessedTime"] = now;
-
-        // 可在此進行其他客製化處理，例如轉換 OrderType 欄位等
 
         output = j.dump();
         return output.c_str();
