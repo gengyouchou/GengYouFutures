@@ -2,11 +2,16 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LongShort & BidOffer Slope Viewer</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+
+    <!-- 1. 載入 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
+
+    <!-- 2. 載入 chartjs-plugin-zoom (請注意要載入與 Chart.js 相容的版本) -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.0/dist/chartjs-plugin-zoom.min.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,10 +24,12 @@
             text-align: center;
         }
 
+        /* 固定 canvas 高度，避免高度自動壓縮為 0 */
         canvas {
             max-width: 100%;
-            height: auto;
+            height: 400px;
             background-color: #333;
+            margin-bottom: 30px;
         }
 
         #logDiv {
@@ -42,85 +49,176 @@
     <div id="logDiv"></div>
 
     <script>
-        const MAX_DATA_LENGTH = 1000; // 限制數據長度
-        const MAX_LOG_ENTRIES = 50; // 限制日誌條數
-
+        // ------------------------
+        // 全域常數設定
+        // ------------------------
+        const MAX_DATA_LENGTH = 1000;  // 限制圖表資料筆數
+        const MAX_LOG_ENTRIES = 50;    // 限制日誌條數
         const logDiv = document.getElementById("logDiv");
 
-        // 確保 Chart.js 和 Zoom 插件正確加載
-        if (typeof ChartZoom !== "undefined") {
-            Chart.register(ChartZoom);
-        } else if (typeof zoom !== "undefined") {
-            Chart.register(zoom);
-        } else if (window['chartjs-plugin-zoom']) {
-            Chart.register(window['chartjs-plugin-zoom']);
-        } else {
-            console.error("Chart.js Zoom 插件未正確加載");
-        }
+        // ------------------------
+        // 註冊 chartjs-plugin-zoom
+        // ------------------------
+        // ChartJS v4 之後可直接用 Chart.register(...)
+        Chart.register(ChartZoomPlugin);
 
+        // ------------------------
+        // 建立 Chart.js 實例
+        // ------------------------
         const longShortChartCtx = document.getElementById("longShortChart").getContext("2d");
         const bidOfferSlopeChartCtx = document.getElementById("bidOfferSlopeChart").getContext("2d");
 
-        const chartConfigs = [
-            {
-                ctx: longShortChartCtx,
-                data: { labels: [], datasets: [{ label: "LongShort", data: [], borderColor: "green", borderWidth: 1, tension: 0.4, pointRadius: 0 }] },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: true },
-                        tooltip: { mode: "index", intersect: false },
-                        zoom: {
-                            pan: { enabled: true, mode: 'x' },
-                            zoom: { wheel: { enabled: true }, pinch: { enabled: true }, drag: { enabled: true }, mode: 'x' }
-                        }
-                    },
-                    scales: { x: { title: { display: true, text: "Time" } }, y: { title: { display: true, text: "LongShort Value" } } }
-                }
+        // LongShort 圖表設定
+        const longShortChart = new Chart(longShortChartCtx, {
+            type: "line",
+            data: {
+                labels: [],
+                datasets: [{
+                    label: "LongShort",
+                    data: [],
+                    borderColor: "green",
+                    borderWidth: 1,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
             },
-            {
-                ctx: bidOfferSlopeChartCtx,
-                data: { labels: [], datasets: [{ label: "BidOfferLongShortSlope", data: [], borderColor: "red", borderWidth: 1, tension: 0.4, pointRadius: 0 }] },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: true },
-                        tooltip: { mode: "index", intersect: false },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true },
+                    tooltip: { mode: "index", intersect: false },
+                    zoom: {
+                        pan: { enabled: true, mode: 'x' },
                         zoom: {
-                            pan: { enabled: true, mode: 'x' },
-                            zoom: { wheel: { enabled: true }, pinch: { enabled: true }, drag: { enabled: true }, mode: 'x' }
+                            wheel: { enabled: true },
+                            pinch: { enabled: true },
+                            drag: { enabled: true },
+                            mode: 'x'
                         }
-                    },
-                    scales: { x: { title: { display: true, text: "Time" } }, y: { title: { display: true, text: "BidOffer Slope Value" } } }
+                    }
+                },
+                scales: {
+                    x: { title: { display: true, text: "Time" } },
+                    y: { title: { display: true, text: "LongShort Value" } }
                 }
             }
-        ];
+        });
 
-        const [longShortChart, bidOfferSlopeChart] = chartConfigs.map(config => new Chart(config.ctx, { type: "line", data: config.data, options: config.options }));
+        // BidOfferSlope 圖表設定
+        const bidOfferSlopeChart = new Chart(bidOfferSlopeChartCtx, {
+            type: "line",
+            data: {
+                labels: [],
+                datasets: [{
+                    label: "BidOfferLongShortSlope",
+                    data: [],
+                    borderColor: "red",
+                    borderWidth: 1,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true },
+                    tooltip: { mode: "index", intersect: false },
+                    zoom: {
+                        pan: { enabled: true, mode: 'x' },
+                        zoom: {
+                            wheel: { enabled: true },
+                            pinch: { enabled: true },
+                            drag: { enabled: true },
+                            mode: 'x'
+                        }
+                    }
+                },
+                scales: {
+                    x: { title: { display: true, text: "Time" } },
+                    y: { title: { display: true, text: "BidOffer Slope Value" } }
+                }
+            }
+        });
 
+        // ------------------------
+        // 主函式：抓取 API 資料並更新圖表
+        // ------------------------
         async function fetchData() {
             try {
+                // 取得網址參數 ?commodity=xxxx
                 const urlParams = new URLSearchParams(window.location.search);
                 const commodity = urlParams.get("commodity");
 
+                // 呼叫後端 API (請確保這個網址正確 & 後端有回傳 JSON)
                 const response = await fetch(`http://192.168.50.168:8080/Long-Short-Cache-data?commodity=${commodity}`);
                 if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
+
                 const data = await response.json();
 
+                // 更新 UI 與圖表
                 updateUI(data);
+
             } catch (error) {
                 console.error("Error fetching data:", error);
                 appendLog(`Error fetching data: ${error.message}`, true);
             }
         }
 
+        // ------------------------
+        // 更新圖表與日誌的函式
+        // ------------------------
+        function updateUI(data) {
+            // 確認資料格式是否正確
+            if (!Array.isArray(data) || data.length === 0) {
+                appendLog("Error: Invalid or empty data format.", true);
+                return;
+            }
+
+            // 建立兩個陣列以填入圖表
+            const longShortLabels = [];
+            const longShortValues = [];
+            const bidOfferSlopeLabels = [];
+            const bidOfferSlopeValues = [];
+
+            // 將後端回傳的每筆資料分別推入陣列
+            data.forEach(point => {
+                const { timestamp, CurLongShort, CurBidOfferLongShortSlope } = point;
+                longShortLabels.push(timestamp);
+                longShortValues.push(CurLongShort);
+                bidOfferSlopeLabels.push(timestamp);
+                bidOfferSlopeValues.push(CurBidOfferLongShortSlope);
+            });
+
+            // 清空舊資料
+            resetChartData(longShortChart.data);
+            resetChartData(bidOfferSlopeChart.data);
+
+            // 批次更新新資料
+            batchUpdateChartData(longShortChart.data, longShortLabels, longShortValues);
+            batchUpdateChartData(bidOfferSlopeChart.data, bidOfferSlopeLabels, bidOfferSlopeValues);
+
+            // 重新渲染圖表
+            longShortChart.update();
+            bidOfferSlopeChart.update();
+
+            // 顯示最後一筆資料在日誌
+            const latestPoint = data[data.length - 1];
+            appendLog(`[Time: ${latestPoint.timestamp}] LongShort: ${latestPoint.CurLongShort}, BidOfferSlope: ${latestPoint.CurBidOfferLongShortSlope}`);
+        }
+
+        // ------------------------
+        // 清空圖表資料
+        // ------------------------
         function resetChartData(chartData) {
             chartData.labels.length = 0;
             chartData.datasets[0].data.length = 0;
         }
 
+        // ------------------------
+        // 將新資料批次推入圖表，並控制最大長度
+        // ------------------------
         function batchUpdateChartData(chartData, labels, values) {
             chartData.labels.push(...labels);
             chartData.datasets[0].data.push(...values);
@@ -132,38 +230,9 @@
             }
         }
 
-        function updateUI(data) {
-            if (!Array.isArray(data) || data.length === 0) {
-                appendLog("Error: Invalid or empty data format.", true);
-                return;
-            }
-
-            const longShortLabels = [];
-            const longShortValues = [];
-            const bidOfferSlopeLabels = [];
-            const bidOfferSlopeValues = [];
-
-            data.forEach(point => {
-                const { timestamp, CurLongShort, CurBidOfferLongShortSlope } = point;
-                longShortLabels.push(timestamp);
-                longShortValues.push(CurLongShort);
-                bidOfferSlopeLabels.push(timestamp);
-                bidOfferSlopeValues.push(CurBidOfferLongShortSlope);
-            });
-
-            resetChartData(longShortChart.data);
-            batchUpdateChartData(longShortChart.data, longShortLabels, longShortValues);
-
-            resetChartData(bidOfferSlopeChart.data);
-            batchUpdateChartData(bidOfferSlopeChart.data, bidOfferSlopeLabels, bidOfferSlopeValues);
-
-            longShortChart.update();
-            bidOfferSlopeChart.update();
-
-            const latestPoint = data[data.length - 1];
-            appendLog(`[Time: ${latestPoint.timestamp}] LongShort: ${latestPoint.CurLongShort}, BidOfferSlope: ${latestPoint.CurBidOfferLongShortSlope}`);
-        }
-
+        // ------------------------
+        // 將訊息附加到下方日誌區
+        // ------------------------
         function appendLog(message, isError = false) {
             const entry = document.createElement("div");
             entry.textContent = message;
@@ -172,11 +241,16 @@
             logDiv.appendChild(entry);
             logDiv.scrollTop = logDiv.scrollHeight;
 
+            // 超過最大日誌條數就刪除最早的一條
             while (logDiv.childNodes.length > MAX_LOG_ENTRIES) {
                 logDiv.removeChild(logDiv.firstChild);
             }
         }
 
+        // ------------------------
+        // 立即抓資料一次，並每 10 秒重抓
+        // ------------------------
+        fetchData();
         setInterval(fetchData, 10000);
     </script>
 </body>
