@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LongShort & BidOffer Slope Viewer</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1/dist/chartjs-plugin-zoom.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -42,12 +42,21 @@
     <div id="logDiv"></div>
 
     <script>
-        const MAX_DATA_LENGTH = 1000; // 設定最大數據長度
-        const MAX_LOG_ENTRIES = 50; // 設定最大日誌數量
+        const MAX_DATA_LENGTH = 1000; // 限制數據長度
+        const MAX_LOG_ENTRIES = 50; // 限制日誌條數
 
         const logDiv = document.getElementById("logDiv");
 
-        Chart.register(zoomPlugin);
+        // 確保 Chart.js 和 Zoom 插件正確加載
+        if (typeof ChartZoom !== "undefined") {
+            Chart.register(ChartZoom);
+        } else if (typeof zoom !== "undefined") {
+            Chart.register(zoom);
+        } else if (window['chartjs-plugin-zoom']) {
+            Chart.register(window['chartjs-plugin-zoom']);
+        } else {
+            console.error("Chart.js Zoom 插件未正確加載");
+        }
 
         const longShortChartCtx = document.getElementById("longShortChart").getContext("2d");
         const bidOfferSlopeChartCtx = document.getElementById("bidOfferSlopeChart").getContext("2d");
