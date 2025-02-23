@@ -24,6 +24,14 @@
             height: auto;
             background-color: #333;
         }
+
+        #logDiv {
+            height: 200px;
+            overflow-y: auto;
+            background: #444;
+            padding: 10px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 
@@ -31,9 +39,15 @@
     <h1>LongShort & BidOffer Slope Viewer</h1>
     <canvas id="longShortChart"></canvas>
     <canvas id="bidOfferSlopeChart"></canvas>
+    <div id="logDiv"></div>
 
     <script>
-        Chart.register(ChartZoom);
+        const MAX_DATA_LENGTH = 1000; // 設定最大數據長度
+        const MAX_LOG_ENTRIES = 50; // 設定最大日誌數量
+
+        const logDiv = document.getElementById("logDiv");
+
+        Chart.register(zoomPlugin);
 
         const longShortChartCtx = document.getElementById("longShortChart").getContext("2d");
         const bidOfferSlopeChartCtx = document.getElementById("bidOfferSlopeChart").getContext("2d");
@@ -79,11 +93,9 @@
 
         async function fetchData() {
             try {
-                // 从当前 URL 中获取 commodity 参数
                 const urlParams = new URLSearchParams(window.location.search);
                 const commodity = urlParams.get("commodity");
 
-                // 构造带参数的请求 URL
                 const response = await fetch(`http://192.168.50.168:8080/Long-Short-Cache-data?commodity=${commodity}`);
                 if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
                 const data = await response.json();
@@ -96,17 +108,14 @@
         }
 
         function resetChartData(chartData) {
-            // 清空圖表資料
             chartData.labels.length = 0;
             chartData.datasets[0].data.length = 0;
         }
 
         function batchUpdateChartData(chartData, labels, values) {
-            // 批次更新資料
             chartData.labels.push(...labels);
             chartData.datasets[0].data.push(...values);
 
-            // 保持資料長度限制
             if (chartData.labels.length > MAX_DATA_LENGTH) {
                 const excess = chartData.labels.length - MAX_DATA_LENGTH;
                 chartData.labels.splice(0, excess);
@@ -120,7 +129,6 @@
                 return;
             }
 
-            // 收集更新資料
             const longShortLabels = [];
             const longShortValues = [];
             const bidOfferSlopeLabels = [];
@@ -134,18 +142,15 @@
                 bidOfferSlopeValues.push(CurBidOfferLongShortSlope);
             });
 
-            // 清空並更新圖表資料
             resetChartData(longShortChart.data);
             batchUpdateChartData(longShortChart.data, longShortLabels, longShortValues);
 
             resetChartData(bidOfferSlopeChart.data);
             batchUpdateChartData(bidOfferSlopeChart.data, bidOfferSlopeLabels, bidOfferSlopeValues);
 
-            // 更新圖表一次
             longShortChart.update();
             bidOfferSlopeChart.update();
 
-            // 日誌顯示最新資料
             const latestPoint = data[data.length - 1];
             appendLog(`[Time: ${latestPoint.timestamp}] LongShort: ${latestPoint.CurLongShort}, BidOfferSlope: ${latestPoint.CurBidOfferLongShortSlope}`);
         }
