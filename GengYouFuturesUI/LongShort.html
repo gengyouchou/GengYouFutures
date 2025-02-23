@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LongShort & BidOffer Slope Viewer</title>
 
-    <!-- 1. 載入 Chart.js -->
+    <!-- 1. 載入 Chart.js (v4.2.1) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
 
-    <!-- 2. 載入 chartjs-plugin-zoom (請注意要載入與 Chart.js 相容的版本) -->
+    <!-- 2. 載入 chartjs-plugin-zoom (v2.0.0) -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.0/dist/chartjs-plugin-zoom.min.js"></script>
 
     <style>
@@ -49,18 +49,16 @@
     <div id="logDiv"></div>
 
     <script>
+        // 1. 取得並註冊 chartjs-plugin-zoom
+        const zoomPlugin = window['chartjs-plugin-zoom'];
+        Chart.register(zoomPlugin);
+
         // ------------------------
         // 全域常數設定
         // ------------------------
         const MAX_DATA_LENGTH = 1000;  // 限制圖表資料筆數
         const MAX_LOG_ENTRIES = 50;    // 限制日誌條數
         const logDiv = document.getElementById("logDiv");
-
-        // ------------------------
-        // 註冊 chartjs-plugin-zoom
-        // ------------------------
-        // ChartJS v4 之後可直接用 Chart.register(...)
-        Chart.register(ChartZoomPlugin);
 
         // ------------------------
         // 建立 Chart.js 實例
