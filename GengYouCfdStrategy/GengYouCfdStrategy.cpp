@@ -251,3 +251,50 @@ extern "C" __declspec(dllexport) const char *GetNewOrder()
     }
     return orderOut.c_str();
 }
+
+//--------------------------------------------------------------
+// 新增函數：CustomProcessParameters
+// 此函數接受必要參數（例如 margin、closedPL 以及單個開盤倉位的資料），
+// 由 DLL 內部構造 JSON，並附加處理時間後返回 JSON 字串。
+//--------------------------------------------------------------
+extern "C" __declspec(dllexport) const char *CustomProcessParameters(
+    double margin,
+    double closedPL,
+    const char *commodityId,
+    double lots,
+    double floatingPL)
+{
+    static std::string output;
+    try
+    {
+        // 建立 JSON 物件
+        json j;
+        j["Margin"] = margin;
+        j["ClosedProfitLoss"] = closedPL;
+
+        // 構造單一開盤倉位資料
+        json openPos;
+        openPos["CommodityId"] = std::string(commodityId);
+        openPos["Lots"] = lots;
+        openPos["FloatingProfitLoss"] = floatingPL;
+
+        // 將開盤倉位資料放入陣列中
+        j["OpenPosition"] = json::array({openPos});
+
+        // 加入處理時間 (UNIX 時間)
+        std::time_t now = std::time(nullptr);
+        j["ProcessedTime"] = now;
+
+        // 可在此進行其他客製化處理，例如轉換 OrderType 欄位等
+
+        output = j.dump();
+        return output.c_str();
+    }
+    catch (const std::exception &e)
+    {
+        json err;
+        err["error"] = e.what();
+        output = err.dump();
+        return output.c_str();
+    }
+}
