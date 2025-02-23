@@ -6,12 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LongShort & BidOffer Slope Viewer</title>
 
-    <!-- 載入 Chart.js v3.9.1 -->
+    <!-- 1. 載入 Chart.js v3.9.1 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-    <!-- 載入 chartjs-plugin-zoom v1.2.1 -->
+
+    <!-- 2. 載入 chartjs-plugin-zoom v1.2.1 -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1/dist/chartjs-plugin-zoom.min.js"></script>
 
     <style>
+        /* 將網頁背景設為深色、字體為淺色 */
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -23,14 +25,16 @@
             text-align: center;
         }
 
-        /* 固定 canvas 高度，避免高度自動為 0 */
+        /* 關鍵：固定 canvas 高度，避免高度被壓縮為 0 */
         canvas {
+            display: block;
             max-width: 100%;
             height: 400px;
             background-color: #333;
             margin-bottom: 30px;
         }
 
+        /* 下方日誌區 */
         #logDiv {
             height: 200px;
             overflow-y: auto;
@@ -43,19 +47,23 @@
 
 <body>
     <h1>LongShort & BidOffer Slope Viewer</h1>
+
+    <!-- 兩個圖表的 Canvas -->
     <canvas id="longShortChart"></canvas>
     <canvas id="bidOfferSlopeChart"></canvas>
+
+    <!-- 日誌顯示區 -->
     <div id="logDiv"></div>
 
     <script>
-        // 對於 Chart.js v3，當載入 chartjs-plugin-zoom v1.2.1 後，外掛會自動註冊
-        // 如有需要，也可手動呼叫：Chart.register(ChartZoom);
+        // Chart.js v3 + chartjs-plugin-zoom v1.2.1 通常自動註冊 Zoom 外掛
+        // 若未自動註冊，可手動呼叫：Chart.register(ChartZoom);
 
         const MAX_DATA_LENGTH = 1000;  // 限制圖表資料筆數
         const MAX_LOG_ENTRIES = 50;    // 限制日誌條數
         const logDiv = document.getElementById("logDiv");
 
-        // 取得 canvas 繪圖環境
+        // 取得兩個 canvas 的繪圖環境
         const longShortChartCtx = document.getElementById("longShortChart").getContext("2d");
         const bidOfferSlopeChartCtx = document.getElementById("bidOfferSlopeChart").getContext("2d");
 
@@ -163,12 +171,20 @@
                 bidOfferSlopeLabels.push(timestamp);
                 bidOfferSlopeValues.push(CurBidOfferLongShortSlope);
             });
+
+            // 清空舊資料
             resetChartData(longShortChart.data);
             resetChartData(bidOfferSlopeChart.data);
+
+            // 批次更新新資料
             batchUpdateChartData(longShortChart.data, longShortLabels, longShortValues);
             batchUpdateChartData(bidOfferSlopeChart.data, bidOfferSlopeLabels, bidOfferSlopeValues);
+
+            // 重新渲染圖表
             longShortChart.update();
             bidOfferSlopeChart.update();
+
+            // 顯示最後一筆資料在日誌
             const latestPoint = data[data.length - 1];
             appendLog(`[Time: ${latestPoint.timestamp}] LongShort: ${latestPoint.CurLongShort}, BidOfferSlope: ${latestPoint.CurBidOfferLongShortSlope}`);
         }
@@ -202,7 +218,7 @@
             }
         }
 
-        // 初次抓取資料並每 10 秒重抓
+        // 立即抓資料一次，並每 10 秒重抓
         fetchData();
         setInterval(fetchData, 10000);
     </script>
