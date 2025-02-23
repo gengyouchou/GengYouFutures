@@ -46,6 +46,13 @@
     <div id="log"></div>
 
     <script>
+        // 取得 URL 中的 commodity 參數，並根據此參數更新大標題
+        const urlParams = new URLSearchParams(window.location.search);
+        const commodity = urlParams.get("commodity");
+        if (commodity) {
+            document.querySelector("h1").textContent = `${commodity} - LongShort & BidOffer Slope Viewer`;
+        }
+
         const logDiv = document.getElementById("log");
         const longShortChartCtx = document.getElementById("longShortChart").getContext("2d");
         const bidOfferSlopeChartCtx = document.getElementById("bidOfferSlopeChart").getContext("2d");
@@ -53,7 +60,7 @@
         const MAX_DATA_LENGTH = 20000; // 控制圖表數據長度
         const MAX_LOG_ENTRIES = 100;     // 控制日誌條數
 
-        // 定義兩個圖表的設定，增加 interaction 與 tooltip 的精細顯示（四位小數）
+        // 定義兩個圖表的設定，包含 interaction 與 tooltip 的精細顯示（四位小數）
         const chartConfigs = [
             {
                 ctx: longShortChartCtx,
@@ -145,15 +152,10 @@
 
         async function fetchData() {
             try {
-                // 從 URL 中取得 commodity 參數
-                const urlParams = new URLSearchParams(window.location.search);
-                const commodity = urlParams.get("commodity");
-
-                // 從後端 API 取得資料
+                // 從 URL 中取得 commodity 參數 (已於上方取得)
                 const response = await fetch(`http://192.168.50.168:8080/Long-Short-Cache-data?commodity=${commodity}`);
                 if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
                 const data = await response.json();
-
                 updateUI(data);
             } catch (error) {
                 console.error("Error fetching data:", error);
