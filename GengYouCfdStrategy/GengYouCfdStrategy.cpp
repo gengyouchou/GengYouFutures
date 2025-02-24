@@ -42,7 +42,7 @@ void Receive_Strategy_Server_Signals()
 
     // GET 接口：供外部查詢是否有新訂單訊號
     svr.Get("/getNewOrder", [](const httplib::Request &req, httplib::Response &res)
-    {
+            {
         std::lock_guard<std::mutex> lock(g_orderMutex);
         if(g_newOrder.empty())
             res.set_content("{}", "application/json");
@@ -51,12 +51,11 @@ void Receive_Strategy_Server_Signals()
             res.set_content(g_newOrder, "application/json");
             // 回傳後清空訂單訊號
             g_newOrder = "";
-        }
-    });
+        } });
 
     // HTTP POST /createPosition 接口：接收新訂單訊號
     svr.Post("/createPosition", [](const httplib::Request &req, httplib::Response &res)
-    {
+             {
         try {
             json newSignal = json::parse(req.body);
             json retOrder;
@@ -134,8 +133,7 @@ void Receive_Strategy_Server_Signals()
             err["error"] = e.what();
             res.status = 400;
             res.set_content(err.dump(), "application/json");
-        }
-    });
+        } });
 
     server_running = true;
     // 改用 port 1688
@@ -266,28 +264,28 @@ extern "C" __declspec(dllexport) const char *ParseNewOrder()
     static std::string parsed;
     try
     {
-        if(g_newOrder.empty())
+        if (g_newOrder.empty())
         {
             parsed = "{}";
             return parsed.c_str();
         }
         // 解析全域訂單 JSON
         json orderJson = json::parse(g_newOrder);
-        
+
         // 建立新的 JSON 物件，分別存放各欄位
         json parsedJson;
         parsedJson["CommodityId"] = orderJson.value("CommodityId", "");
-        parsedJson["OrderType"]   = orderJson.value("OrderType", "");
-        parsedJson["Lots"]        = orderJson.value("Lots", 0.0);
-        parsedJson["LongShort"]   = orderJson.value("LongShort", 0);
-        if(orderJson.find("Amount") != orderJson.end())
+        parsedJson["OrderType"] = orderJson.value("OrderType", "");
+        parsedJson["Lots"] = orderJson.value("Lots", 0.0);
+        parsedJson["LongShort"] = orderJson.value("LongShort", 0);
+        if (orderJson.find("Amount") != orderJson.end())
             parsedJson["Amount"] = orderJson["Amount"];
-        
+
         parsed = parsedJson.dump();
-        
+
         // 若需要解析後清空 g_newOrder，可執行以下動作：
         g_newOrder = "";
-        
+
         return parsed.c_str();
     }
     catch (const std::exception &e)
@@ -342,4 +340,17 @@ extern "C" __declspec(dllexport) const char *CustomProcessParameters(
         output = err.dump();
         return output.c_str();
     }
+}
+
+//--------------------------------------------------------------
+// 新增函數：GetCurOpenPosition
+// 此函數接受必要參數（例如 margin、closedPL 以及單個開盤倉位資料），
+// DLL 內部構造 相對應商品目前的全局變量: unordered_map<commodityId, floatingPL>。
+// 如果目前沒有遍歷到該commodityId 則 floatingPL 設為0.0
+//--------------------------------------------------------------
+extern "C" __declspec(dllexport) void GetCurOpenPosition(
+    const char *commodityId,
+    double lots,
+    double floatingPL)
+{
 }
