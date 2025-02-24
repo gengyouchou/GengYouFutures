@@ -1,19 +1,20 @@
 //+------------------------------------------------------------------+
 //|                                           GetOrderFromServer.mq4 |
-//| 此 EA 定時呼叫 DLL 的 CustomProcessParameters() 傳入必要參數，    |
-//| 並直接呼叫 ParseNewOrder() 取得 DLL 解析後的下單資訊，然後打印出來。 |
+//| This EA periodically calls DLL's CustomProcessParameters() to    |
+//| pass required parameters, then calls ParseNewOrder() to obtain     |
+//| the parsed order information, and prints the result.             |
 //+------------------------------------------------------------------+
 #property strict
 
-// 輪詢間隔（最小單位為 1 秒）
+// Polling interval (minimum 1 second)
 int TimerPeriod = 1;
 
-// 導入 DLL 中的函數
+// Import functions from the DLL
 #import "GengYouCfdStrategy.dll"
    void   StartHttpServer();
    void   StopHttpServer();
    string CustomProcessParameters(double margin, double closedPL, string commodityId, double lots, double floatingPL);
-   string ParseNewOrder(); // 解析並返回分開的下單資訊
+   string ParseNewOrder(); // Parse and return separated order information
 #import
 
 //+------------------------------------------------------------------+
@@ -21,11 +22,11 @@ int TimerPeriod = 1;
 //+------------------------------------------------------------------+
 int OnInit()
 {
-   // 啟動 DLL 的 HTTP 服務器
+   // Start the DLL's HTTP server
    StartHttpServer();
-   Print("GetOrderFromServer EA 啟動，等待外部訂單傳入...");
+   Print("GetOrderFromServer EA started, waiting for external order input...");
 
-   // 每秒輪詢一次
+   // Set the timer to poll every second
    EventSetTimer(TimerPeriod);
    return(INIT_SUCCEEDED);
 }
@@ -37,19 +38,19 @@ void OnDeinit(const int reason)
 {
    EventKillTimer();
    StopHttpServer();
-   Print("GetOrderFromServer EA 停止。");
+   Print("GetOrderFromServer EA stopped.");
 }
 
 //+------------------------------------------------------------------+
-//| 每秒呼叫一次                                                     |
+//| Called every second                                               |
 //+------------------------------------------------------------------+
 void OnTimer()
 {
-   // 取得必要參數
+   // Retrieve required parameters
    double margin = AccountFreeMargin();
-   double closedPL = 0.0; // 可依實際情況計算
+   double closedPL = 0.0; // This can be calculated based on historical data
 
-   // 若有至少一筆持倉，取第一筆參數
+   // If at least one open order exists, get the first order's parameters
    string commodityId = "";
    double lots = 0.0;
    double floatingPL = 0.0;
@@ -63,15 +64,15 @@ void OnTimer()
       }
    }
 
-   // 呼叫 DLL 函數，構造 JSON（僅作為參考示例）
+   // Call the DLL function to construct the JSON (for demonstration)
    string jsonResult = CustomProcessParameters(margin, closedPL, commodityId, lots, floatingPL);
-   Print("CustomProcessParameters 返回的 JSON: ", jsonResult);
+   Print("CustomProcessParameters returned JSON: ", jsonResult);
 
-   // 呼叫 DLL 新增的解析函數，取得分開的下單資訊
+   // Call the DLL function to parse and get the order information
    string parsedOrder = ParseNewOrder();
    if(parsedOrder != "{}" && StringLen(parsedOrder) > 2)
    {
-      Print("取得解析後的下單資訊: ", parsedOrder);
-      // 進一步處理 parsedOrder（例如解析各欄位，下單操作等）
+      Print("Parsed order information obtained: ", parsedOrder);
+      // Further process parsedOrder (e.g. parse individual fields, execute orders, etc.)
    }
 }
