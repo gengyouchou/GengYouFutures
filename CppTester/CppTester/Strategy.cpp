@@ -644,6 +644,8 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
     // Get the current long-short position by invoking a custom function
     LONG CurLongShort = StrategyCaluLongShort();
 
+    gLongShort = CurLongShort;
+
     // Store the previous long-short value for calculating the difference
     static LONG PreLongShort = CurLongShort;
 
@@ -655,9 +657,6 @@ VOID BidOfferAndTransactionListLongShortSlope(VOID)
     {
         return;
     }
-
-    // Update the global long-short position with the smoothed difference
-    gLongShort += LongShortDiff;
 
     // Bound the global long-short position between predefined thresholds to avoid extreme values
     if (gLongShort > 0)
