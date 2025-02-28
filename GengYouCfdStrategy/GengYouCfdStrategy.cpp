@@ -18,7 +18,7 @@
 using json = nlohmann::json;
 
 //-----------------------------
-// 新增：定義 MQ4 傳入的訂單結構
+// 定義 MQ4 傳入的訂單結構
 struct SIMULATED_POSITION
 {
     unsigned long long OrderSerialNumber;
@@ -32,10 +32,10 @@ struct SIMULATED_POSITION
 static std::atomic<bool> server_running(false);
 static std::thread server_thread;
 
-// 儲存最新從 MQL4 傳入的未平倉部位資料（目前以商品代號為 key）
+// 儲存 MQ4 傳入的未平倉資料（以商品代號為 key）
 static std::unordered_map<std::string, std::vector<SIMULATED_POSITION>> gCurOpenPosition;
 
-// 其他全域變數（原有 HTTP 服務等，可保留）
+// 其他全域變數（例如 HTTP 服務用）
 static json g_latestPositions;
 static std::mutex g_orderMutex;
 static std::string g_newOrder = "";
@@ -70,7 +70,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 }
 
 //-------------------------------------------
-// 現有 HTTP 服務器邏輯 (保留，如需與其他系統溝通)
+// HTTP 服務器邏輯 (保留，如需與其他系統溝通)
 //-------------------------------------------
 void Receive_Strategy_Server_Signals()
 {
@@ -89,16 +89,14 @@ void Receive_Strategy_Server_Signals()
              {
         try {
             json newSignal = json::parse(req.body);
-            // 此處邏輯可保留，若外部系統也會透過 HTTP 傳入訂單訊號
             json retOrder;
             std::string commodity = newSignal.value("CommodityId", "");
             double signalLots = newSignal.value("Lots", 0.0);
             int longShort = newSignal.value("LongShort", 1);
             int newOrClosed = newSignal.value("NewOrClosedPosition", 1);
-            // ... 其他處理邏輯略
             retOrder["CommodityId"] = commodity;
             retOrder["Lots"] = signalLots;
-            retOrder["OrderType"] = (newOrClosed==0) ? "CloseOrder" : "BaseOrder";
+            retOrder["OrderType"] = (newOrClosed == 0) ? "CloseOrder" : "BaseOrder";
             retOrder["LongShort"] = longShort;
             res.set_content(retOrder.dump(), "application/json");
             {
@@ -135,18 +133,22 @@ extern "C" __declspec(dllexport) void StopHttpServer()
 }
 
 //-----------------------------------------------------------
-// MQ4 傳入訂單資料：將單筆資料存入全局 gCurOpenPosition
+// MQ4 傳入訂單資料：多參數傳遞方式
 //-----------------------------------------------------------
-extern "C" __declspec(dllexport) void GetCurOpenPosition(const char *commodityId, SIMULATED_POSITION Position)
+extern "C" __declspec(dllexport) void GetCurOpenPosition(const char *commodityId, int ticket, double costPrice, double lots, double floatingPL)
 {
     std::string comm(commodityId);
-    gCurOpenPosition[comm].push_back(Position);
-    // 輸出到 CMD log
+    SIMULATED_POSITION pos;
+    pos.OrderSerialNumber = static_cast<unsigned long long>(ticket);
+    pos.CostPrice = costPrice;
+    pos.Lots = lots;
+    pos.FloatingPL = floatingPL;
+    gCurOpenPosition[comm].push_back(pos);
     std::cout << "[Received Position] Commodity: " << comm
-              << ", OrderSerial: " << Position.OrderSerialNumber
-              << ", CostPrice: " << Position.CostPrice
-              << ", Lots: " << Position.Lots
-              << ", FloatingPL: " << Position.FloatingPL << std::endl;
+              << ", Ticket: " << ticket
+              << ", CostPrice: " << costPrice
+              << ", Lots: " << lots
+              << ", FloatingPL: " << floatingPL << std::endl;
 }
 
 //-----------------------------------------------------------
@@ -164,7 +166,7 @@ extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
         const std::vector<SIMULATED_POSITION> &positions = pair.second;
         for (const auto &pos : positions)
         {
-            // 依據 FloatingPL 判斷
+            // 根據 FloatingPL 判斷：停利、停損邏輯
             if (pos.FloatingPL >= TAKE_PROFIT_AMOUNT)
             {
                 json order;
@@ -193,18 +195,16 @@ extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
                           << ", Lots: " << pos.Lots
                           << ", Amount: " << STOP_LOSS_AMOUNT << std::endl;
             }
-            // 可根據需求添加加碼邏輯
+            // 如有需要，其他邏輯（例如加碼）可在此添加
         }
     }
     ret = orders.dump();
-    // 將處理結果輸出到 CMD log
     std::cout << "[ProcessSimulatedPositions] Orders: " << ret << std::endl;
     return ret.c_str();
 }
 
 //-----------------------------------------------------------
-// 其他現有函數，例如 ProcessPositions, GetNewOrder, ParseNewOrder, CustomProcessParameters 等
-// 可根據需求保留或修改，以下僅保留 CustomProcessParameters 作示範
+// 保留 CustomProcessParameters (僅作示範)
 //-----------------------------------------------------------
 extern "C" __declspec(dllexport) const char *CustomProcessParameters(
     double margin,
