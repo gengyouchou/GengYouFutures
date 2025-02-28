@@ -12,6 +12,8 @@
 #include <windows.h>
 #include <algorithm> // for std::min
 #include <ctime>
+#include <unordered_map>
+#include <vector>
 
 using json = nlohmann::json;
 
@@ -344,18 +346,20 @@ extern "C" __declspec(dllexport) const char *CustomProcessParameters(
 
 struct SIMULATED_POSITION
 {
-    SHORT OrderSerialNumber;
+    UINT64 OrderSerialNumber;
     double CostPrice;
     double Lots;
     double FloatingPL;
 };
 
+std::unordered_map<std::string, std::vector<SIMULATED_POSITION>> gCurOpenPosition, gCurSimulatedPosition;
+
 //--------------------------------------------------------------
-// 新增函數：GetCurOpenPosition
 // 此函數接受必要參數（例如 margin、closedPL 以及單個開盤倉位資料），
 // DLL 內部構造 相對應商品目前的全局變量: unordered_map<commodityId, vector<SIMULATED_POSITION>>。
 //--------------------------------------------------------------
-extern "C" __declspec(dllexport) void GetCurOpenPosition(
+extern "C" __declspec(dllexport) void
+GetCurOpenPosition(
     const char *commodityId,
     SIMULATED_POSITION Position)
 {
