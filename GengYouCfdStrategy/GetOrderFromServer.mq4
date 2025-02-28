@@ -3,19 +3,17 @@
 // 定義與 C++ DLL 相容的訂單結構
 struct SIMULATED_POSITION
 {
-   ulong   OrderSerialNumber;  // 訂單號（64 位整數）
+   ulong   OrderSerialNumber;  // 64位訂單號
    double  CostPrice;          // 開倉價格
    double  Lots;               // 口數
    double  FloatingPL;         // 浮動盈虧
 };
 
-// 導入 DLL 中的函數
+// 導入 DLL 中的函數，注意第二個參數使用 & 表示傳引用
 #import "GengYouCfdStrategy.dll"
    void StartHttpServer();
    void StopHttpServer();
-   // 傳入單筆訂單資料，將其存入 DLL 的全局變量
-   void GetCurOpenPosition(string commodityId, SIMULATED_POSITION Position);
-   // 處理所有接收到的未平倉資料，計算停損、停利、加碼邏輯後返回下單 JSON 字串
+   void GetCurOpenPosition(string commodityId, SIMULATED_POSITION &Position);
    string ProcessSimulatedPositions();
 #import
 
@@ -44,28 +42,27 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
 {
-   // 遍歷所有開倉訂單，將每筆資料傳給 DLL
+   // 每個 Tick 遍歷所有開倉訂單，將每筆資料傳給 DLL
    int total = OrdersTotal();
    for(int i = 0; i < total; i++)
    {
       if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
       {
          SIMULATED_POSITION pos;
-         // 以 OrderTicket 作為訂單號 (MQ4 的 OrderTicket 為 int，但視為 ulong 處理)
+         // 以 OrderTicket 作為訂單號 (MQ4 的 OrderTicket 為整數，但視為 64 位處理)
          pos.OrderSerialNumber = OrderTicket();
          pos.CostPrice = OrderOpenPrice();
          pos.Lots = OrderLots();
          pos.FloatingPL = OrderProfit() + OrderSwap() + OrderCommission();
          
-         // 取得商品代號
+         // 傳入商品代號（通常與 OrderSymbol() 相同）
          string sym = OrderSymbol();
-         // 傳入 DLL
          GetCurOpenPosition(sym, pos);
       }
    }
    
    // 每次 Tick 呼叫 ProcessSimulatedPositions() 來計算停損/停利邏輯，
-   // 並取得下單 JSON（若有有效下單訊號，返回的 JSON 字串長度會大於 2）
+   // 並取得下單 JSON (若返回的 JSON 字串長度大於 2 則輸出至日誌)
    string ordersJson = ProcessSimulatedPositions();
    if(StringLen(ordersJson) > 2)
    {
