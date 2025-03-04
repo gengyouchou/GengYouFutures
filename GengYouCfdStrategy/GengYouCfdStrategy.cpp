@@ -18,7 +18,7 @@
 using json = nlohmann::json;
 
 //-----------------------------
-// 定義 MQ4 傳入的訂單結構 (加入 CommodityId 欄位)
+// 定義 MQ4 傳入的訂單結構 (新增 LongShort 欄位：1 = 多頭, -1 = 空頭)
 struct SIMULATED_POSITION
 {
     unsigned long long OrderSerialNumber;
@@ -26,6 +26,7 @@ struct SIMULATED_POSITION
     double CostPrice;
     double Lots;
     double FloatingPL;
+    int LongShort; // 1 for long, -1 for short
 };
 
 //-----------------------------
@@ -34,7 +35,7 @@ static std::atomic<bool> server_running(false);
 static std::thread server_thread;
 
 // 使用 ticket 為 key，確保同一個 ticket 只存一筆資料
-static std::unordered_map<int, SIMULATED_POSITION> gCurOpenPosition;
+static std::unordered_map<int, SIMULATED_POSITION> gCurOpenPosition, gSimulatedPosition;
 
 // 其他全域變數（例如 HTTP 服務用）
 static json g_latestPositions;
@@ -135,8 +136,9 @@ extern "C" __declspec(dllexport) void StopHttpServer()
 
 //-----------------------------------------------------------
 // MQ4 傳入訂單資料：多參數傳遞方式，使用 ticket 為 key
+// 新增參數 longShort (1 表多頭, -1 表空頭)
 //-----------------------------------------------------------
-extern "C" __declspec(dllexport) void GetCurOpenPosition(const char *commodityId, int ticket, double costPrice, double lots, double floatingPL)
+extern "C" __declspec(dllexport) void GetCurOpenPosition(const char *commodityId, int ticket, double costPrice, double lots, double floatingPL, int longShort)
 {
     SIMULATED_POSITION pos;
     pos.OrderSerialNumber = static_cast<unsigned long long>(ticket);
@@ -144,13 +146,56 @@ extern "C" __declspec(dllexport) void GetCurOpenPosition(const char *commodityId
     pos.CostPrice = costPrice;
     pos.Lots = lots;
     pos.FloatingPL = floatingPL;
+    pos.LongShort = longShort;
     // 使用 ticket 作為 key，若已有則更新
     gCurOpenPosition[ticket] = pos;
     std::cout << "[Received Position] Ticket: " << ticket
               << ", Commodity: " << commodityId
               << ", CostPrice: " << costPrice
               << ", Lots: " << lots
-              << ", FloatingPL: " << floatingPL << std::endl;
+              << ", FloatingPL: " << floatingPL
+              << ", LongShort: " << longShort << std::endl;
+}
+
+//-----------------------------------------------------------
+// 接收策略主機傳入模擬訂單資料：多參數傳遞方式，使用 ticket 為 key
+// 這裡預設 LongShort 為 1 (多頭)
+extern "C" __declspec(dllexport) void GetSimulatedOpenPosition(const char *commodityId, int ticket, double costPrice, double lots, int longShort)
+{
+    SIMULATED_POSITION pos;
+    pos.OrderSerialNumber = static_cast<unsigned long long>(ticket);
+    pos.CommodityId = std::string(commodityId);
+    pos.CostPrice = costPrice;
+    pos.Lots = lots;
+    pos.FloatingPL = 0.0;
+    pos.LongShort = longShort; // 由傳入參數決定，多頭: 1, 空頭: -1
+    gSimulatedPosition[ticket] = pos;
+    std::cout << "[Received Simulated Position] Ticket: " << ticket
+              << ", Commodity: " << commodityId
+              << ", CostPrice: " << costPrice
+              << ", Lots: " << lots
+              << ", FloatingPL: " << pos.FloatingPL
+              << ", LongShort: " << pos.LongShort << std::endl;
+}
+
+//-----------------------------------------------------------
+// 更新 gSimulatedPosition 的 FloatingPL：僅更新指定商品的資料
+// 公式：FloatingPL = (commodityCurPrice - CostPrice) * Lots * LongShort
+extern "C" __declspec(dllexport) void UpdatedSimulatedOpenPosition(const char *commodityId, double commodityCurPrice)
+{
+    std::string comm(commodityId);
+    for (auto &pair : gSimulatedPosition)
+    {
+        SIMULATED_POSITION &pos = pair.second;
+        if (pos.CommodityId == comm)
+        {
+            // 考慮多空方向：若 LongShort 為 1，多頭；若為 -1，空頭，計算公式如下：
+            pos.FloatingPL = (commodityCurPrice - pos.CostPrice) * pos.Lots * pos.LongShort;
+            std::cout << "[UpdatedSimulatedOpenPosition] Ticket: " << pair.first
+                      << ", Commodity: " << pos.CommodityId
+                      << ", New FloatingPL: " << pos.FloatingPL << std::endl;
+        }
+    }
 }
 
 //-----------------------------------------------------------
@@ -173,11 +218,13 @@ extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
             order["Lots"] = pos.Lots;
             order["Amount"] = TAKE_PROFIT_AMOUNT;
             order["OrderSerialNumber"] = pos.OrderSerialNumber;
+            order["LongShort"] = pos.LongShort;
             orders.push_back(order);
             std::cout << "[TakeProfit] Commodity: " << pos.CommodityId
                       << ", OrderSerial: " << pos.OrderSerialNumber
                       << ", Lots: " << pos.Lots
-                      << ", Amount: " << TAKE_PROFIT_AMOUNT << std::endl;
+                      << ", Amount: " << TAKE_PROFIT_AMOUNT
+                      << ", LongShort: " << pos.LongShort << std::endl;
         }
         else if (pos.FloatingPL <= -STOP_LOSS_AMOUNT)
         {
@@ -187,11 +234,13 @@ extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
             order["Lots"] = pos.Lots;
             order["Amount"] = STOP_LOSS_AMOUNT;
             order["OrderSerialNumber"] = pos.OrderSerialNumber;
+            order["LongShort"] = pos.LongShort;
             orders.push_back(order);
             std::cout << "[StopLoss] Commodity: " << pos.CommodityId
                       << ", OrderSerial: " << pos.OrderSerialNumber
                       << ", Lots: " << pos.Lots
-                      << ", Amount: " << STOP_LOSS_AMOUNT << std::endl;
+                      << ", Amount: " << STOP_LOSS_AMOUNT
+                      << ", LongShort: " << pos.LongShort << std::endl;
         }
         // 如有需要，可添加其他邏輯（例如加碼）
     }
