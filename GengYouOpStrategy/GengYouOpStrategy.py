@@ -9,7 +9,9 @@ from flask_cors import CORS
 import threading
 from waitress import serve  # 引入 waitress WSGI 服务器
 
-# 讀取配置檔
+# ---------------------------
+# 配置与登录相关函数
+# ---------------------------
 def read_config(file_path='LogConfig.json'):
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -18,7 +20,6 @@ def read_config(file_path='LogConfig.json'):
         print(f"Error reading configuration file '{file_path}': {e}")
         return None
 
-# 使用 SDK 登錄
 def login_sdk(sdk, config):
     try:
         account = config.get('account')
@@ -32,7 +33,10 @@ def login_sdk(sdk, config):
         print(f"登录失败: {e}")
         return None
 
-# 輔助函數：計算當前月份的第三個星期三
+# ---------------------------
+# 辅助函数：日期与合约编码处理
+# ---------------------------
+# 返回指定年份、月份的第三个星期三（通常为月选结算日）
 def get_third_wednesday(year, month):
     count = 0
     for day in range(1, 32):
@@ -46,19 +50,36 @@ def get_third_wednesday(year, month):
                 return d
     return None
 
-# 輔助函數：獲取月份對應代碼 (A=1, B=2, … L=12)
+# 根据当天日期判断结算周别代码（1-3位）
+def get_settlement_week_code(date_obj):
+    day = date_obj.day
+    if day <= 7:
+        return "TX1"
+    elif day <= 14:
+        return "TX2"
+    elif day <= 21:
+        return "TXO"  # 第三周（月选）
+    elif day <= 28:
+        return "TX4"
+    else:
+        return "TX5"
+
+# 将数字月份转换为字母代码 (A=1, B=2, …, L=12)
 def get_month_code(month):
     mapping = {1:"A", 2:"B", 3:"C", 4:"D", 5:"E", 6:"F", 7:"G", 8:"H", 9:"I", 10:"J", 11:"K", 12:"L"}
     return mapping.get(month, "A")
 
-# 原有函數：從合約代碼中提取履約價格
+# 从合约代码中解析履约价格（假设占第4～8位）
 def parse_strike_price(symbol):
     try:
         return int(symbol[3:8])
     except ValueError:
-        raise ValueError(f"無法解析合約代碼中的執行價格: {symbol}")
+        raise ValueError(f"无法解析合约代码中的执行价格: {symbol}")
 
-# 原有函數：依據基準合約生成上下檔（每檔間隔 interval 點）
+# ---------------------------
+# 合约代码生成与数据聚合
+# ---------------------------
+# 根据基准合约生成上下档合约代码（每档间隔 interval 点）
 def generate_ordered_symbols(base_symbol, steps=10, interval=50, direction="both"):
     base_prefix = base_symbol[:3]
     base_suffix = base_symbol[8:]
@@ -70,13 +91,13 @@ def generate_ordered_symbols(base_symbol, steps=10, interval=50, direction="both
     elif direction == "down":
         range_values = [i + 1 for i in range(-steps, 0)]
     else:
-        raise ValueError("方向參數 'direction' 必須是 'both', 'up', 或 'down'")
+        raise ValueError("方向参数 'direction' 必须是 'both', 'up', 或 'down'")
     return [
         f"{base_prefix}{base_price + i * interval:05d}{base_suffix}"
         for i in range_values
     ]
 
-# 原有函數：根據 session 取權利金
+# 获取指定合约的权利金（或台指期货价格）
 def fetch_premium(sdk, symbol, session):
     try:
         if session == "beforehours":
@@ -84,15 +105,15 @@ def fetch_premium(sdk, symbol, session):
         elif session == "afterhours":
             quote = sdk.marketdata.rest_client.futopt.intraday.quote(symbol=symbol, session=session)
         else:
-            raise ValueError("無效的 session 類型，只能為 'beforehours' 或 'afterhours'")
+            raise ValueError("无效的 session 类型，只能为 'beforehours' 或 'afterhours'")
         return quote.get("closePrice", 0.0)
     except Exception as e:
-        print(f"無法獲取 {symbol} 的權利金: {e}")
+        print(f"无法获取 {symbol} 的权利金: {e}")
         return 0.0
 
-# 產生籌碼表，原 OptionChipsTable 函數保持基本邏輯
+# 生成单一合约的期权筹码表，并计算内外盘比
 def OptionChipsTable(sdk, base_symbol):
-    print(f"生成期權籌碼表，基準合約: {base_symbol}")
+    print(f"生成期权筹码表，基准合约: {base_symbol}")
     symbols = generate_ordered_symbols(base_symbol, steps=10)
     data = []
     for symbol in symbols:
@@ -109,7 +130,8 @@ def OptionChipsTable(sdk, base_symbol):
                 bid_volume += afterhours_total.get("totalBidMatch", 0)
                 ask_volume += afterhours_total.get("totalAskMatch", 0)
             except Exception as e:
-                print(f"獲取合約 {symbol} 的盤後數據失敗: {e}")
+                print(f"获取合约 {symbol} 的盘后数据失败: {e}")
+            ratio = (bid_volume / ask_volume) if ask_volume != 0 else None
             data.append({
                 "symbol": symbol,
                 "strike_price": parse_strike_price(symbol),
@@ -117,69 +139,121 @@ def OptionChipsTable(sdk, base_symbol):
                 "bid_volume": bid_volume,
                 "ask_volume": ask_volume,
                 "volume_difference": ask_volume - bid_volume,
+                "bid_ask_ratio": ratio
             })
         except Exception as e:
-            print(f"獲取合約 {symbol} 數據失敗: {e}")
+            print(f"获取合约 {symbol} 数据失败: {e}")
     return {
         "base_symbol": base_symbol,
         "options_data": data
     }
 
-# Flask 應用及 CORS 設定
+# 聚合多个筹码表（按履约价格累加）
+def aggregate_chip_tables(tables_list):
+    aggregated = {}
+    for table in tables_list:
+        for item in table.get("options_data", []):
+            strike = item.get("strike_price")
+            if strike not in aggregated:
+                aggregated[strike] = {
+                    "tradeVolume": 0,
+                    "bid_volume": 0,
+                    "ask_volume": 0,
+                    "volume_difference": 0,
+                    "bid_ask_ratio_sum": 0,
+                    "count": 0
+                }
+            aggregated[strike]["tradeVolume"] += item.get("tradeVolume", 0)
+            aggregated[strike]["bid_volume"] += item.get("bid_volume", 0)
+            aggregated[strike]["ask_volume"] += item.get("ask_volume", 0)
+            aggregated[strike]["volume_difference"] += item.get("volume_difference", 0)
+            ratio = item.get("bid_ask_ratio")
+            if ratio is not None:
+                aggregated[strike]["bid_ask_ratio_sum"] += ratio
+                aggregated[strike]["count"] += 1
+    result = []
+    for strike, data in aggregated.items():
+        avg_ratio = data["bid_ask_ratio_sum"] / data["count"] if data["count"] > 0 else None
+        result.append({
+            "strike_price": strike,
+            "tradeVolume": data["tradeVolume"],
+            "bid_volume": data["bid_volume"],
+            "ask_volume": data["ask_volume"],
+            "volume_difference": data["volume_difference"],
+            "avg_bid_ask_ratio": avg_ratio
+        })
+    result.sort(key=lambda x: x["strike_price"])
+    return result
+
+# ---------------------------
+# Flask 应用与服务
+# ---------------------------
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# 修改後的 get_option_chips_table：
+# 修改后的 get_option_chips_table：
+# 自动计算最接近结算的选权商品筹码表
 @app.route("/OptionChipsTable", methods=["GET"])
 def get_option_chips_table():
     global sdk
 
     now = datetime.datetime.now()
-    # 判斷交易時段（日盤：08:00-13:45；否則盤後）
+    # 判断交易时段（日盘：08:00-13:45；否则盘后）
     if 8 <= now.hour < 13 or (now.hour == 13 and now.minute <= 45):
         session = "beforehours"
     else:
         session = "afterhours"
 
-    today = datetime.date.today()
-    third_wed = get_third_wednesday(today.year, today.month)
-    # 判斷是否處於當月第三個星期三之前（含當天13:00前）
-    if third_wed and (today < third_wed or (today == third_wed and now.hour < 13)):
-        prefix = "TXO"
-        # 使用當月台指期貨合約代碼
-        year_str = str(today.year)[-2:]
-        month_code = get_month_code(today.month)
-    else:
-        # 過了當月第三個星期三後，使用週選合約（TX1）
-        prefix = "TX1"
-        # 使用下一個月的台指期貨合約代碼
-        next_month = today.month + 1
-        next_year = today.year
-        if next_month > 12:
-            next_month = 1
-            next_year += 1
-        year_str = str(next_year)[-2:]
-        month_code = get_month_code(next_month)
-    # 構造台指期貨合約代碼，格式例如 "TXF25C"
-    future_symbol = f"TXF{year_str}{month_code}"
-    print(f"使用的台指期貨合約: {future_symbol}")
-
-    # 获取 TxfPrices 使用當前或下一月的台指期貨合約代碼
-    TxfPrices = fetch_premium(sdk, future_symbol, session)
+    # 使用基础台指期货价格获取依据，固定使用 "TXF"
+    future_contract = "TXFC5"
+    print(f"使用的台指期货合约（基础）: {future_contract}")
+    TxfPrices = fetch_premium(sdk, future_contract, session)
     if TxfPrices is None or TxfPrices <= 0.0:
         return jsonify({"error": "无效的 TxfPrices"}), 500
 
     nearest_strike_price = round(TxfPrices / 50) * 50
-    # 以目前自動判斷的前綴產生期權合約代碼（以賣權B5為例，若需要其他類型可自行調整）
-    at_the_money_contract = f"{prefix}{nearest_strike_price:05d}B5"
 
-    combined_data = {
-        "at_the_money": OptionChipsTable(sdk, at_the_money_contract),
-        "near_the_money": OptionChipsTable(sdk, at_the_money_contract.replace("B5", "N5"))
+    # 判断目标结算月份：若今天在本月第三个星期三之前，则使用本月；否则使用下月
+    today = datetime.date.today()
+    third_wed = get_third_wednesday(today.year, today.month)
+    if third_wed and (today < third_wed or (today == third_wed and now.hour < 13)):
+        target_month = today.month
+        target_year = today.year
+    else:
+        target_month = today.month + 1
+        target_year = today.year
+        if target_month > 12:
+            target_month = 1
+            target_year += 1
+
+    # 根据当天日期确定结算周别代码（第1-3位），例如 TX1、TX2、TXO、TX4、TX5
+    settlement_week_code = get_settlement_week_code(today)
+    # 根据目标结算月份生成第9位：买权使用 A-L，卖权使用 M-X；第10位为目标年份最后一位
+    call_month_letter = chr(ord('A') + (target_month - 1))
+    put_month_letter  = chr(ord('M') + (target_month - 1))
+    year_last_digit = str(target_year)[-1]
+
+    call_contract = f"{settlement_week_code}{nearest_strike_price:05d}{call_month_letter}{year_last_digit}"
+    put_contract  = f"{settlement_week_code}{nearest_strike_price:05d}{put_month_letter}{year_last_digit}"
+    print(f"生成买权合约代码: {call_contract}")
+    print(f"生成卖权合约代码: {put_contract}")
+
+    # 生成买权与卖权的筹码表（均计算内外盘比）
+    call_table = OptionChipsTable(sdk, call_contract)
+    put_table = OptionChipsTable(sdk, put_contract)
+    aggregated_call = aggregate_chip_tables([call_table])
+    aggregated_put  = aggregate_chip_tables([put_table])
+    response = {
+        "future_contract": future_contract,
+        "nearest_strike_price": nearest_strike_price,
+        "call_contract": call_contract,
+        "put_contract": put_contract,
+        "aggregated_call_chip_table": aggregated_call,
+        "aggregated_put_chip_table": aggregated_put
     }
-    return jsonify(combined_data)
+    return jsonify(response)
 
-# 其他函數保持不變：例如 subscribe_trades, print_quote_live, fetch_intraday_quote_live 等...
+# 以下其他函数保持不变
 def subscribe_trades(sdk, symbol, after_hours):
     def handle_message(message):
         if message.get("event") == "data":
@@ -190,7 +264,6 @@ def subscribe_trades(sdk, symbol, after_hours):
                 print(f"成交价格: {trade.get('price')}, 成交单量: {trade.get('size')}, 成交买价: {trade.get('bid')}, 成交卖价: {trade.get('ask')}")
         else:
             print(f"接收到非行情消息: {message}")
-
     channel = "trades"
     try:
         sdk.init_realtime()
@@ -236,7 +309,6 @@ def fetch_intraday_quote_live(sdk, symbol):
     except Exception as e:
         print(f"获取报价时发生错误: {e}")
 
-# Flask 服務初始化及 main() 保持不變
 def start_http_server():
     try:
         print("请使用浏览器访问 http://0.0.0.0:8090/OptionChipsTable")
