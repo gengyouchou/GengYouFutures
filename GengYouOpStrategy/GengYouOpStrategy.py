@@ -50,7 +50,7 @@ def get_third_wednesday(year, month):
                 return d
     return None
 
-# 根据当天日期判断结算周别代码（1-3位）
+# 根据当天日期判断结算周别代码（1-3位），不考虑时间，仅基于日历
 def get_settlement_week_code(date_obj):
     day = date_obj.day
     if day <= 7:
@@ -192,7 +192,8 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # 修改后的 get_option_chips_table：
-# 自动计算最接近结算的选权商品筹码表
+# 基于候选台股期货合约数据（如 TXFC5）确定基础价格，
+# 并自动生成10码选权合约代码（包括买权和卖权），生成筹码表并聚合返回。
 @app.route("/OptionChipsTable", methods=["GET"])
 def get_option_chips_table():
     global sdk
@@ -204,9 +205,9 @@ def get_option_chips_table():
     else:
         session = "afterhours"
 
-    # 使用基础台指期货价格获取依据，固定使用 "TXF"
+    # 使用候选合约中的基础合约，此处固定使用 "TXFC5"（例如：臺股期貨2025/03）
     future_contract = "TXFC5"
-    print(f"使用的台指期货合约（基础）: {future_contract}")
+    print(f"使用的台股期货基础合约: {future_contract}")
     TxfPrices = fetch_premium(sdk, future_contract, session)
     if TxfPrices is None or TxfPrices <= 0.0:
         return jsonify({"error": "无效的 TxfPrices"}), 500
@@ -216,7 +217,7 @@ def get_option_chips_table():
     # 判断目标结算月份：若今天在本月第三个星期三之前，则使用本月；否则使用下月
     today = datetime.date.today()
     third_wed = get_third_wednesday(today.year, today.month)
-    if third_wed and (today < third_wed or (today == third_wed and now.hour < 13)):
+    if third_wed and (today < third_wed or (today == third_wed and now.hour < 13 and now.minute < 45)):
         target_month = today.month
         target_year = today.year
     else:
@@ -226,11 +227,18 @@ def get_option_chips_table():
             target_month = 1
             target_year += 1
 
-    # 根据当天日期确定结算周别代码（第1-3位），例如 TX1、TX2、TXO、TX4、TX5
-    settlement_week_code = get_settlement_week_code(today)
-    # 根据目标结算月份生成第9位：买权使用 A-L，卖权使用 M-X；第10位为目标年份最后一位
+    # 根据当天日期确定结算周别代码：
+    # 如果今天正好是第三个星期三且未过13:45，则应使用 TXO，否则采用 get_settlement_week_code(today)
+    if third_wed and today == third_wed and (now.hour < 13 or (now.hour == 13 and now.minute < 45)):
+        settlement_week_code = "TXO"
+    else:
+        settlement_week_code = get_settlement_week_code(today)
+
+    # 生成第9位：到期月份代码
+    # 买权使用 A-L（A代表1月，…，L代表12月），卖权使用 M-X（M代表1月，…，X代表12月）
     call_month_letter = chr(ord('A') + (target_month - 1))
     put_month_letter  = chr(ord('M') + (target_month - 1))
+    # 第10位：目标年份的最后一位数字
     year_last_digit = str(target_year)[-1]
 
     call_contract = f"{settlement_week_code}{nearest_strike_price:05d}{call_month_letter}{year_last_digit}"
@@ -238,13 +246,14 @@ def get_option_chips_table():
     print(f"生成买权合约代码: {call_contract}")
     print(f"生成卖权合约代码: {put_contract}")
 
-    # 生成买权与卖权的筹码表（均计算内外盘比）
+    # 生成买权与卖权的筹码表
     call_table = OptionChipsTable(sdk, call_contract)
-    put_table = OptionChipsTable(sdk, put_contract)
+    put_table  = OptionChipsTable(sdk, put_contract)
     aggregated_call = aggregate_chip_tables([call_table])
     aggregated_put  = aggregate_chip_tables([put_table])
     response = {
-        "future_contract": future_contract,
+        "base_contract_used": future_contract,
+        "TxfPrices": TxfPrices,
         "nearest_strike_price": nearest_strike_price,
         "call_contract": call_contract,
         "put_contract": put_contract,
