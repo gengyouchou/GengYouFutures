@@ -18,10 +18,11 @@
 using json = nlohmann::json;
 
 //-----------------------------
-// 定義 MQ4 傳入的訂單結構
+// 定義 MQ4 傳入的訂單結構 (加入 CommodityId 欄位)
 struct SIMULATED_POSITION
 {
     unsigned long long OrderSerialNumber;
+    std::string CommodityId;
     double CostPrice;
     double Lots;
     double FloatingPL;
@@ -32,8 +33,8 @@ struct SIMULATED_POSITION
 static std::atomic<bool> server_running(false);
 static std::thread server_thread;
 
-// 儲存 MQ4 傳入的未平倉資料（以商品代號為 key）
-static std::unordered_map<std::string, std::vector<SIMULATED_POSITION>> gCurOpenPosition;
+// 使用 ticket 為 key，確保同一個 ticket 只存一筆資料
+static std::unordered_map<int, SIMULATED_POSITION> gCurOpenPosition;
 
 // 其他全域變數（例如 HTTP 服務用）
 static json g_latestPositions;
@@ -133,19 +134,20 @@ extern "C" __declspec(dllexport) void StopHttpServer()
 }
 
 //-----------------------------------------------------------
-// MQ4 傳入訂單資料：多參數傳遞方式
+// MQ4 傳入訂單資料：多參數傳遞方式，使用 ticket 為 key
 //-----------------------------------------------------------
 extern "C" __declspec(dllexport) void GetCurOpenPosition(const char *commodityId, int ticket, double costPrice, double lots, double floatingPL)
 {
-    std::string comm(commodityId);
     SIMULATED_POSITION pos;
     pos.OrderSerialNumber = static_cast<unsigned long long>(ticket);
+    pos.CommodityId = std::string(commodityId);
     pos.CostPrice = costPrice;
     pos.Lots = lots;
     pos.FloatingPL = floatingPL;
-    gCurOpenPosition[comm].push_back(pos);
-    std::cout << "[Received Position] Commodity: " << comm
-              << ", Ticket: " << ticket
+    // 使用 ticket 作為 key，若已有則更新
+    gCurOpenPosition[ticket] = pos;
+    std::cout << "[Received Position] Ticket: " << ticket
+              << ", Commodity: " << commodityId
               << ", CostPrice: " << costPrice
               << ", Lots: " << lots
               << ", FloatingPL: " << floatingPL << std::endl;
@@ -159,44 +161,39 @@ extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
     static std::string ret;
     json orders = json::array();
 
-    // 遍歷所有商品的開倉資料
+    // 遍歷所有 ticket 的未平倉資料
     for (const auto &pair : gCurOpenPosition)
     {
-        const std::string &commodity = pair.first;
-        const std::vector<SIMULATED_POSITION> &positions = pair.second;
-        for (const auto &pos : positions)
+        const SIMULATED_POSITION &pos = pair.second;
+        if (pos.FloatingPL >= TAKE_PROFIT_AMOUNT)
         {
-            // 根據 FloatingPL 判斷：停利、停損邏輯
-            if (pos.FloatingPL >= TAKE_PROFIT_AMOUNT)
-            {
-                json order;
-                order["CommodityId"] = commodity;
-                order["OrderType"] = "TakeProfit";
-                order["Lots"] = pos.Lots;
-                order["Amount"] = TAKE_PROFIT_AMOUNT;
-                order["OrderSerialNumber"] = pos.OrderSerialNumber;
-                orders.push_back(order);
-                std::cout << "[TakeProfit] Commodity: " << commodity
-                          << ", OrderSerial: " << pos.OrderSerialNumber
-                          << ", Lots: " << pos.Lots
-                          << ", Amount: " << TAKE_PROFIT_AMOUNT << std::endl;
-            }
-            else if (pos.FloatingPL <= -STOP_LOSS_AMOUNT)
-            {
-                json order;
-                order["CommodityId"] = commodity;
-                order["OrderType"] = "StopLoss";
-                order["Lots"] = pos.Lots;
-                order["Amount"] = STOP_LOSS_AMOUNT;
-                order["OrderSerialNumber"] = pos.OrderSerialNumber;
-                orders.push_back(order);
-                std::cout << "[StopLoss] Commodity: " << commodity
-                          << ", OrderSerial: " << pos.OrderSerialNumber
-                          << ", Lots: " << pos.Lots
-                          << ", Amount: " << STOP_LOSS_AMOUNT << std::endl;
-            }
-            // 如有需要，其他邏輯（例如加碼）可在此添加
+            json order;
+            order["CommodityId"] = pos.CommodityId;
+            order["OrderType"] = "TakeProfit";
+            order["Lots"] = pos.Lots;
+            order["Amount"] = TAKE_PROFIT_AMOUNT;
+            order["OrderSerialNumber"] = pos.OrderSerialNumber;
+            orders.push_back(order);
+            std::cout << "[TakeProfit] Commodity: " << pos.CommodityId
+                      << ", OrderSerial: " << pos.OrderSerialNumber
+                      << ", Lots: " << pos.Lots
+                      << ", Amount: " << TAKE_PROFIT_AMOUNT << std::endl;
         }
+        else if (pos.FloatingPL <= -STOP_LOSS_AMOUNT)
+        {
+            json order;
+            order["CommodityId"] = pos.CommodityId;
+            order["OrderType"] = "StopLoss";
+            order["Lots"] = pos.Lots;
+            order["Amount"] = STOP_LOSS_AMOUNT;
+            order["OrderSerialNumber"] = pos.OrderSerialNumber;
+            orders.push_back(order);
+            std::cout << "[StopLoss] Commodity: " << pos.CommodityId
+                      << ", OrderSerial: " << pos.OrderSerialNumber
+                      << ", Lots: " << pos.Lots
+                      << ", Amount: " << STOP_LOSS_AMOUNT << std::endl;
+        }
+        // 如有需要，可添加其他邏輯（例如加碼）
     }
     ret = orders.dump();
     std::cout << "[ProcessSimulatedPositions] Orders: " << ret << std::endl;
