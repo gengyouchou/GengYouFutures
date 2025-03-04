@@ -505,7 +505,7 @@ void DeleteOldRecords()
 void SaveCacheForOrderMachine(const std::string &commodityId, long CurLongShort, double CurBidOfferLongShortSlope)
 {
     static int syncCounter = 0;
-    const int syncThreshold = 12; // 每分钟同步12次（每5秒一次）
+    const int syncThreshold = 3600; // 每分钟同步12次（每5秒一次）
 
     // 获取当前时间戳（ISO 8601 格式）
     std::string timestamp = GetCurrentTimestamp();
@@ -563,7 +563,7 @@ nlohmann::json QueryCacheData(const std::string &commodityId)
     }
     sqlite3_finalize(stmt);
 
-    std::cout << "Query Result: " << result.dump(4) << std::endl;
+    // std::cout << "Query Result: " << result.dump(4) << std::endl;
     return result;
 }
 

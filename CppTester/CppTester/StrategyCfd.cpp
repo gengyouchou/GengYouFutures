@@ -77,8 +77,25 @@ double CfdBidOfferAndTransactionListLongShortSlope(long nStockidx)
     // Deques to store recent values for calculating moving average (MA) and slope
     static std::unordered_map<long, deque<double>> dq, dqSlop;
 
+    static unordered_map<long, long> PreLongShort;
+
     // Get the current long-short position by invoking a custom function
     LONG CurLongShort = gCfdTransactionListLongShort[nStockidx];
+
+    if (!PreLongShort.count(nStockidx))
+    {
+        // Store the previous long-short value for calculating the difference
+        PreLongShort[nStockidx] = CurLongShort;
+    }
+
+    // Calculate the difference between current and previous long-short values
+    LONG LongShortDiff = CurLongShort - PreLongShort[nStockidx];
+    PreLongShort[nStockidx] = CurLongShort;
+
+    if (LongShortDiff == 0)
+    {
+        return gCfdTransactionListLongShortSlope[nStockidx];
+    }
 
     // Manage the size of the deque to store the recent long-short values for moving average calculation
     if (dq[nStockidx].size() >= BID_OFFER_SLOPE_LONG_SHORT_COUNT)

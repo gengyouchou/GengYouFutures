@@ -7,23 +7,34 @@
     <title>LongShort & BidOffer Slope Viewer</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* 整體頁面採用黑色背景，文字為白色 */
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            background-color: #000;
+            color: #fff;
         }
 
         h1 {
             text-align: center;
         }
 
+        /* Canvas 以黑色調為背景 */
         canvas {
             width: 100%;
             height: 300px;
             margin: 20px auto;
+            background-color: #222;
         }
 
+        /* 日誌區塊，方便查看更新訊息 */
         #log {
-            display: none;
+            height: 200px;
+            overflow-y: auto;
+            background-color: #333;
+            color: #fff;
+            margin: 20px auto;
+            padding: 10px;
         }
     </style>
 </head>
@@ -32,15 +43,24 @@
     <h1>LongShort & BidOffer Slope Viewer</h1>
     <canvas id="longShortChart"></canvas>
     <canvas id="bidOfferSlopeChart"></canvas>
+    <div id="log"></div>
 
     <script>
+        // 取得 URL 中的 commodity 參數，並根據此參數更新大標題
+        const urlParams = new URLSearchParams(window.location.search);
+        const commodity = urlParams.get("commodity");
+        if (commodity) {
+            document.querySelector("h1").textContent = `${commodity} - LongShort & BidOffer Slope Viewer`;
+        }
+
         const logDiv = document.getElementById("log");
         const longShortChartCtx = document.getElementById("longShortChart").getContext("2d");
         const bidOfferSlopeChartCtx = document.getElementById("bidOfferSlopeChart").getContext("2d");
 
         const MAX_DATA_LENGTH = 20000; // 控制圖表數據長度
-        const MAX_LOG_ENTRIES = 100; // 控制日誌長度
+        const MAX_LOG_ENTRIES = 100;     // 控制日誌條數
 
+        // 定義兩個圖表的設定，包含 interaction 與 tooltip 的精細顯示（四位小數）
         const chartConfigs = [
             {
                 ctx: longShortChartCtx,
@@ -59,9 +79,23 @@
                 },
                 options: {
                     responsive: true,
+                    interaction: { mode: "index", intersect: false },
                     plugins: {
                         legend: { display: true },
-                        tooltip: { mode: "index", intersect: false }
+                        tooltip: {
+                            mode: "index",
+                            intersect: false,
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.dataset.label || "";
+                                    if (label) label += ": ";
+                                    if (context.parsed.y !== null) {
+                                        label += parseFloat(context.parsed.y).toFixed(4);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
                     },
                     scales: {
                         x: { title: { display: true, text: "Time" } },
@@ -86,9 +120,23 @@
                 },
                 options: {
                     responsive: true,
+                    interaction: { mode: "index", intersect: false },
                     plugins: {
                         legend: { display: true },
-                        tooltip: { mode: "index", intersect: false }
+                        tooltip: {
+                            mode: "index",
+                            intersect: false,
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.dataset.label || "";
+                                    if (label) label += ": ";
+                                    if (context.parsed.y !== null) {
+                                        label += parseFloat(context.parsed.y).toFixed(4);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
                     },
                     scales: {
                         x: { title: { display: true, text: "Time" } },
@@ -98,19 +146,16 @@
             }
         ];
 
-        const [longShortChart, bidOfferSlopeChart] = chartConfigs.map(config => new Chart(config.ctx, { type: "line", data: config.data, options: config.options }));
+        const [longShortChart, bidOfferSlopeChart] = chartConfigs.map(config =>
+            new Chart(config.ctx, { type: "line", data: config.data, options: config.options })
+        );
 
         async function fetchData() {
             try {
-                // 从当前 URL 中获取 commodity 参数
-                const urlParams = new URLSearchParams(window.location.search);
-                const commodity = urlParams.get("commodity");
-
-                // 构造带参数的请求 URL
+                // 從 URL 中取得 commodity 參數 (已於上方取得)
                 const response = await fetch(`http://192.168.50.168:8080/Long-Short-Cache-data?commodity=${commodity}`);
                 if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
                 const data = await response.json();
-
                 updateUI(data);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -119,17 +164,13 @@
         }
 
         function resetChartData(chartData) {
-            // 清空圖表資料
             chartData.labels.length = 0;
             chartData.datasets[0].data.length = 0;
         }
 
         function batchUpdateChartData(chartData, labels, values) {
-            // 批次更新資料
             chartData.labels.push(...labels);
             chartData.datasets[0].data.push(...values);
-
-            // 保持資料長度限制
             if (chartData.labels.length > MAX_DATA_LENGTH) {
                 const excess = chartData.labels.length - MAX_DATA_LENGTH;
                 chartData.labels.splice(0, excess);
@@ -143,7 +184,6 @@
                 return;
             }
 
-            // 收集更新資料
             const longShortLabels = [];
             const longShortValues = [];
             const bidOfferSlopeLabels = [];
@@ -157,18 +197,15 @@
                 bidOfferSlopeValues.push(CurBidOfferLongShortSlope);
             });
 
-            // 清空並更新圖表資料
             resetChartData(longShortChart.data);
             batchUpdateChartData(longShortChart.data, longShortLabels, longShortValues);
 
             resetChartData(bidOfferSlopeChart.data);
             batchUpdateChartData(bidOfferSlopeChart.data, bidOfferSlopeLabels, bidOfferSlopeValues);
 
-            // 更新圖表一次
             longShortChart.update();
             bidOfferSlopeChart.update();
 
-            // 日誌顯示最新資料
             const latestPoint = data[data.length - 1];
             appendLog(`[Time: ${latestPoint.timestamp}] LongShort: ${latestPoint.CurLongShort}, BidOfferSlope: ${latestPoint.CurBidOfferLongShortSlope}`);
         }
@@ -177,10 +214,8 @@
             const entry = document.createElement("div");
             entry.textContent = message;
             if (isError) entry.style.color = "red";
-
             logDiv.appendChild(entry);
             logDiv.scrollTop = logDiv.scrollHeight;
-
             while (logDiv.childNodes.length > MAX_LOG_ENTRIES) {
                 logDiv.removeChild(logDiv.firstChild);
             }

@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 REM 设置源代码和构建目录
 set "SOURCE_DIR=%cd%"
-set "BUILD_DIR=%cd%\x64"
+set "BUILD_DIR=%cd%\Win32"
 
 REM 检查构建目录是否存在，不存在则创建
 if not exist "%BUILD_DIR%" (
@@ -21,8 +21,8 @@ if exist "%SOURCE_DIR%\CMakeLists.txt" (
         rd /s /q "%BUILD_DIR%"
     )
     
-    REM 运行 CMake 配置
-    cmake -S "%SOURCE_DIR%" -B "%BUILD_DIR%" -A x64
+    REM 运行 CMake 配置，并指定生成 Win32（32 位）版本
+    cmake -S "%SOURCE_DIR%" -B "%BUILD_DIR%" -A Win32
     if %errorlevel% neq 0 (
         echo Error: CMake configuration failed with error code %errorlevel%.
         exit /b %errorlevel%
