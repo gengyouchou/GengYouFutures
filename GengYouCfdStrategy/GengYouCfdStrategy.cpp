@@ -215,7 +215,6 @@ extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
 {
     static std::string ret;
     json orders = json::array();
-
     for (const auto &pair : gCurOpenPosition)
     {
         const SIMULATED_POSITION &pos = pair.second;
@@ -258,15 +257,13 @@ extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
 }
 
 //-----------------------------------------------------------
-// 新增函數：返回可直接執行下單的資訊字串
+// 提供一個新的導出函數：返回可直接執行下單的資訊字串
 // 格式: 每筆訂單以分號分隔, 各欄位以逗號分隔：
 // CommodityId,OrderType,Lots,Amount,OrderSerialNumber,LongShort;
-extern "C" __declspec(dllexport) const char *GetOrdersForExecution()
+extern "C" __declspec(dllexport) std::string GetOrdersForExecution()
 {
-    static std::string ordersStr;
-    ordersStr = "";
+    std::string ordersStr = "";
     json orders = json::array();
-
     for (const auto &pair : gCurOpenPosition)
     {
         const SIMULATED_POSITION &pos = pair.second;
@@ -309,7 +306,7 @@ extern "C" __declspec(dllexport) const char *GetOrdersForExecution()
         ordersStr += std::to_string(longShort) + ";";
     }
     std::cout << "[GetOrdersForExecution] " << ordersStr << std::endl;
-    return ordersStr.c_str();
+    return ordersStr;
 }
 
 //-----------------------------------------------------------
