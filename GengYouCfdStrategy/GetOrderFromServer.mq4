@@ -1,16 +1,13 @@
 #property strict
 
-// 導入 DLL 中的函數 (請確保 DLL 已放在 MQL4\Libraries 目錄中)
+// 導入 DLL 中的函數
 #import "GengYouCfdStrategy.dll"
-   // 啟動與停止 DLL 內部 HTTP 服務器（及 CMD log 輸出）
    void StartHttpServer();
    void StopHttpServer();
-   // 更新當前 CFD 價格，以商品代號與價格傳遞
    void GetCurCfdPrices(string commodityId, double commodityCurPrice);
-   // 傳遞單筆未平倉訂單資料給 DLL，包含多空方向（1：多頭，-1：空頭）
    void GetCurOpenPosition(string commodityId, int ticket, double costPrice, double lots, double floatingPL, int longShort);
-   // 處理所有傳入的開倉資料，計算停損／停利邏輯，返回下單 JSON
    string ProcessSimulatedPositions();
+   const char* GetOrdersForExecution();
 #import
 
 //+------------------------------------------------------------------+
@@ -33,41 +30,118 @@ void OnDeinit(const int reason)
 }
 
 //+------------------------------------------------------------------+
+//| Helper function: Process orders from DLL and execute trades      |
+//| 訂單格式: CommodityId,OrderType,Lots,Amount,OrderSerialNumber,LongShort;... |
+//+------------------------------------------------------------------+
+void ProcessOrdersFromDLL(string ordersStr)
+{
+   if(StringLen(ordersStr) <= 2)
+      return;
+   string ordersArray[];
+   int orderCount = StringSplit(ordersStr, ";", ordersArray);
+   for(int i=0; i<orderCount; i++)
+   {
+      if(StringLen(ordersArray[i]) < 5)
+         continue;
+      string fields[];
+      int fieldCount = StringSplit(ordersArray[i], ",", fields);
+      if(fieldCount < 6)
+         continue;
+      string commodityId = fields[0];
+      string orderType = fields[1];
+      double lots = StrToDouble(fields[2]);
+      double amount = StrToDouble(fields[3]);
+      int ticket = (int)StrToDouble(fields[4]);
+      int longShort = (int)StrToDouble(fields[5]);
+      
+      // 若為停利或停損，則平倉 (OrderClose)
+      if(orderType=="TakeProfit" || orderType=="StopLoss")
+      {
+         if(OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES))
+         {
+            double price = 0.0;
+            if(longShort==1)
+               price = SymbolInfoDouble(commodityId, SYMBOL_BID);
+            else if(longShort==-1)
+               price = SymbolInfoDouble(commodityId, SYMBOL_ASK);
+            if(OrderClose(ticket, OrderLots(), price, 3, clrRed))
+               Print("OrderClose succeeded for Ticket ", ticket);
+            else
+               Print("OrderClose failed for Ticket ", ticket, " Error: ", GetLastError());
+         }
+         else
+         {
+            Print("OrderSelect failed for Ticket ", ticket);
+         }
+      }
+      // 若為 BaseOrder 或 AddOrder，則下單 (OrderSend)
+      else if(orderType=="BaseOrder" || orderType=="AddOrder")
+      {
+         int type;
+         double price, stoploss, takeprofit;
+         if(longShort==1)
+         {
+            type = OP_BUY;
+            price = SymbolInfoDouble(commodityId, SYMBOL_ASK);
+            stoploss = price - amount;
+            takeprofit = price + amount;
+         }
+         else // longShort == -1
+         {
+            type = OP_SELL;
+            price = SymbolInfoDouble(commodityId, SYMBOL_BID);
+            stoploss = price + amount;
+            takeprofit = price - amount;
+         }
+         int newTicket = OrderSend(commodityId, type, lots, price, 3, stoploss, takeprofit, "AutoTrade", 12345, 0, (type==OP_BUY)?clrGreen:clrRed);
+         if(newTicket > 0)
+            Print("OrderSend succeeded: Ticket ", newTicket);
+         else
+            Print("OrderSend failed. Error: ", GetLastError());
+      }
+   }
+}
+
+//+------------------------------------------------------------------+
 //| Expert Tick function                                             |
 //+------------------------------------------------------------------+
 void OnTick()
 {
-   // 1. 更新 CFD 價格：僅對指定商品更新成交價
-   // 根據您的需求，僅對 "XAUUSD", "USDX", "NAS100ft" 更新 CFD 價格
-   string symbol = _Symbol;
-   if(symbol=="XAUUSD" || symbol=="USDX" || symbol=="NAS100ft")
+   // 1. 更新 CFD 價格：僅對 "GOLD", "USD", "NAS100" 使用 iClose() (成交價)
+   string sym = _Symbol;
+   if(sym=="GOLD" || sym=="USD" || sym=="NAS100")
    {
-      // 使用成交價 (最近一根 K 線的收盤價)
-      double curPrice = iClose(symbol, 0, 0);
-      GetCurCfdPrices(symbol, curPrice);
+      double curPrice = iClose(sym, 0, 0);
+      GetCurCfdPrices(sym, curPrice);
    }
-
-   // 2. 遍歷所有開倉訂單，將每筆資料傳遞給 DLL
+   
+   // 2. 遍歷所有開倉訂單，傳送未平倉資訊給 DLL
    int total = OrdersTotal();
-   for (int i = 0; i < total; i++)
+   for(int i = 0; i < total; i++)
    {
-      if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+      if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
       {
          int ticket = OrderTicket();
          double costPrice = OrderOpenPrice();
          double lots = OrderLots();
          double floatingPL = OrderProfit() + OrderSwap() + OrderCommission();
-         string sym = OrderSymbol();
-         // 判斷訂單方向：OP_BUY 為多頭 (1)，OP_SELL 為空頭 (-1)
+         string orderSym = OrderSymbol();
          int direction = (OrderType() == OP_BUY) ? 1 : -1;
-         GetCurOpenPosition(sym, ticket, costPrice, lots, floatingPL, direction);
+         GetCurOpenPosition(orderSym, ticket, costPrice, lots, floatingPL, direction);
       }
    }
-
-   // 3. 呼叫 ProcessSimulatedPositions() 進行停損/停利邏輯計算，並取得下單 JSON
+   
+   // 3. 呼叫 ProcessSimulatedPositions() 更新停損/停利邏輯，取得下單 JSON (以 JSON 格式返回)
    string ordersJson = ProcessSimulatedPositions();
-   if (StringLen(ordersJson) > 2)
+   if(StringLen(ordersJson) > 2)
    {
-      Print("DLL orders: ", ordersJson);
+      Print("DLL orders (JSON): ", ordersJson);
+      // 4. 呼叫 GetOrdersForExecution() 返回簡單格式訂單資訊字串，並執行下單操作
+      const char* ordersStr = GetOrdersForExecution();
+      if(StringLen(ordersStr) > 2)
+      {
+         Print("DLL orders (for execution): ", ordersStr);
+         ProcessOrdersFromDLL(ordersStr);
+      }
    }
 }
