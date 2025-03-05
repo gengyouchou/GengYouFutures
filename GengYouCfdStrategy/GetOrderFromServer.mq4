@@ -1,12 +1,15 @@
 #property strict
 
-// 導入 DLL 中的函數，使用多個參數傳遞訂單明細
+// 導入 DLL 中的函數 (請確保 DLL 已放在 MQL4\Libraries 目錄中)
 #import "GengYouCfdStrategy.dll"
+   // 啟動與停止 DLL 內部 HTTP 服務器（及 CMD log 輸出）
    void StartHttpServer();
    void StopHttpServer();
-   // 以多參數傳遞未平倉資訊：商品代號、訂單號(ticket)、開倉價格、口數、浮動盈虧
-   void GetCurOpenPosition(string commodityId, int ticket, double costPrice, double lots, double floatingPL);
-   // 處理所有傳入的開倉資料，並返回下單 JSON 字串
+   // 更新當前 CFD 價格，以商品代號與價格傳遞
+   void GetCurCfdPrices(string commodityId, double commodityCurPrice);
+   // 傳遞單筆未平倉訂單資料給 DLL，包含多空方向（1：多頭，-1：空頭）
+   void GetCurOpenPosition(string commodityId, int ticket, double costPrice, double lots, double floatingPL, int longShort);
+   // 處理所有傳入的開倉資料，計算停損／停利邏輯，返回下單 JSON
    string ProcessSimulatedPositions();
 #import
 
@@ -15,7 +18,6 @@
 //+------------------------------------------------------------------+
 int OnInit()
 {
-   // 啟動 DLL 的 HTTP 服務器（並開啟 CMD 視窗輸出 log）
    StartHttpServer();
    Print("EA initialized. DLL HTTP server started.");
    return(INIT_SUCCEEDED);
@@ -35,27 +37,37 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
 {
-   // 每個 Tick 遍歷所有開倉訂單，傳送未平倉資訊給 DLL
-   int total = OrdersTotal();
-   for(int i = 0; i < total; i++)
+   // 1. 更新 CFD 價格：僅對指定商品更新成交價
+   // 根據您的需求，僅對 "XAUUSD", "USDX", "NAS100ft" 更新 CFD 價格
+   string symbol = _Symbol;
+   if(symbol=="XAUUSD" || symbol=="USDX" || symbol=="NAS100ft")
    {
-      if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+      // 使用成交價 (最近一根 K 線的收盤價)
+      double curPrice = iClose(symbol, 0, 0);
+      GetCurCfdPrices(symbol, curPrice);
+   }
+
+   // 2. 遍歷所有開倉訂單，將每筆資料傳遞給 DLL
+   int total = OrdersTotal();
+   for (int i = 0; i < total; i++)
+   {
+      if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
       {
          int ticket = OrderTicket();
          double costPrice = OrderOpenPrice();
          double lots = OrderLots();
          double floatingPL = OrderProfit() + OrderSwap() + OrderCommission();
          string sym = OrderSymbol();
-         // 呼叫 DLL 函數，依據多參數傳遞
-         GetCurOpenPosition(sym, ticket, costPrice, lots, floatingPL);
+         // 判斷訂單方向：OP_BUY 為多頭 (1)，OP_SELL 為空頭 (-1)
+         int direction = (OrderType() == OP_BUY) ? 1 : -1;
+         GetCurOpenPosition(sym, ticket, costPrice, lots, floatingPL, direction);
       }
    }
-   
-   // 每次 Tick 呼叫 ProcessSimulatedPositions()，取得 DLL 處理後的下單 JSON
+
+   // 3. 呼叫 ProcessSimulatedPositions() 進行停損/停利邏輯計算，並取得下單 JSON
    string ordersJson = ProcessSimulatedPositions();
-   if(StringLen(ordersJson) > 2)
+   if (StringLen(ordersJson) > 2)
    {
-      // 將 DLL 返回的下單訊號輸出到 Experts 日誌
       Print("DLL orders: ", ordersJson);
    }
 }
