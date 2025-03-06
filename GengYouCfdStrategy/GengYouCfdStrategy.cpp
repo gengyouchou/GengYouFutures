@@ -14,6 +14,7 @@
 #include <ctime>
 #include <unordered_map>
 #include <cstdio>
+#include <cstring> // for strlen
 
 using json = nlohmann::json;
 
@@ -40,7 +41,6 @@ static std::unordered_map<int, SIMULATED_POSITION> gCurOpenPosition, gSimulatedP
 static std::unordered_map<std::string, double> gCurCfdPrices;
 
 // 其他全域變數（例如 HTTP 服務用）
-static json g_latestPositions;
 static std::mutex g_orderMutex;
 static std::string g_newOrder = "";
 
@@ -64,6 +64,11 @@ BOOL APIENTRY DllMain(HMODULE hModule,
         AllocConsole();
         freopen("CONOUT$", "w", stdout);
         std::cout << "Console allocated for logging." << std::endl;
+        // [ADDED LOG] 顯示賺賠比數值
+        std::cout << "[DllMain] STOP_LOSS_AMOUNT=" << STOP_LOSS_AMOUNT
+                  << ", TAKE_PROFIT_AMOUNT=" << TAKE_PROFIT_AMOUNT
+                  << " (ratio 1:" << (TAKE_PROFIT_AMOUNT / STOP_LOSS_AMOUNT)
+                  << ")" << std::endl;
         break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
@@ -87,7 +92,7 @@ void Receive_Strategy_Server_Signals()
         else
         {
             res.set_content(g_newOrder, "application/json");
-            g_newOrder = "";
+            g_newOrder.clear();
         } });
     svr.Post("/createPosition", [](const httplib::Request &req, httplib::Response &res)
              {
@@ -143,8 +148,13 @@ extern "C" __declspec(dllexport) void GetCurCfdPrices(const char *commodityId, d
 {
     std::string comm(commodityId);
     gCurCfdPrices[comm] = commodityCurPrice;
-    std::cout << "[Received CFD Price] Commodity: " << comm
-              << ", Price: " << commodityCurPrice << std::endl;
+    std::cout << "[GetCurCfdPrices] Commodity: " << comm
+              << " (length=" << comm.size() << ") => Price: " << commodityCurPrice << std::endl;
+    std::cout << "=== gCurCfdPrices ===" << std::endl;
+    for (const auto &kv : gCurCfdPrices)
+    {
+        std::cout << "  " << kv.first << " => " << kv.second << std::endl;
+    }
 }
 
 //-----------------------------------------------------------
@@ -160,8 +170,8 @@ extern "C" __declspec(dllexport) void GetCurOpenPosition(const char *commodityId
     pos.FloatingPL = floatingPL;
     pos.LongShort = longShort;
     gCurOpenPosition[ticket] = pos;
-    std::cout << "[Received Position] Ticket: " << ticket
-              << ", Commodity: " << commodityId
+    std::cout << "[GetCurOpenPosition] Ticket: " << ticket
+              << ", Commodity: " << pos.CommodityId.c_str() << " (length=" << pos.CommodityId.size() << ")"
               << ", CostPrice: " << costPrice
               << ", Lots: " << lots
               << ", FloatingPL: " << floatingPL
@@ -181,8 +191,8 @@ extern "C" __declspec(dllexport) void GetSimulatedOpenPosition(const char *commo
     pos.FloatingPL = 0.0;
     pos.LongShort = longShort;
     gSimulatedPosition[ticket] = pos;
-    std::cout << "[Received Simulated Position] Ticket: " << ticket
-              << ", Commodity: " << commodityId
+    std::cout << "[GetSimulatedOpenPosition] Ticket: " << ticket
+              << ", Commodity: " << pos.CommodityId.c_str()
               << ", CostPrice: " << costPrice
               << ", Lots: " << lots
               << ", FloatingPL: " << pos.FloatingPL
@@ -195,6 +205,7 @@ extern "C" __declspec(dllexport) void GetSimulatedOpenPosition(const char *commo
 extern "C" __declspec(dllexport) void UpdatedSimulatedOpenPosition(const char *commodityId, double commodityCurPrice)
 {
     std::string comm(commodityId);
+    bool updated = false;
     for (auto &pair : gSimulatedPosition)
     {
         SIMULATED_POSITION &pos = pair.second;
@@ -204,6 +215,21 @@ extern "C" __declspec(dllexport) void UpdatedSimulatedOpenPosition(const char *c
             std::cout << "[UpdatedSimulatedOpenPosition] Ticket: " << pair.first
                       << ", Commodity: " << pos.CommodityId
                       << ", New FloatingPL: " << pos.FloatingPL << std::endl;
+            updated = true;
+        }
+    }
+    if (updated)
+    {
+        std::cout << "=== gSimulatedPosition ===" << std::endl;
+        for (const auto &kv : gSimulatedPosition)
+        {
+            const SIMULATED_POSITION &p = kv.second;
+            std::cout << "  Ticket=" << kv.first
+                      << ", CommodityId=" << p.CommodityId
+                      << ", CostPrice=" << p.CostPrice
+                      << ", Lots=" << p.Lots
+                      << ", FloatingPL=" << p.FloatingPL
+                      << ", LongShort=" << p.LongShort << std::endl;
         }
     }
 }
@@ -215,6 +241,8 @@ extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
 {
     static std::string ret;
     json orders = json::array();
+    bool stopLossTriggered = false;
+    bool takeProfitTriggered = false;
     for (const auto &pair : gCurOpenPosition)
     {
         const SIMULATED_POSITION &pos = pair.second;
@@ -228,6 +256,7 @@ extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
             order["OrderSerialNumber"] = pos.OrderSerialNumber;
             order["LongShort"] = pos.LongShort;
             orders.push_back(order);
+            takeProfitTriggered = true;
             std::cout << "[TakeProfit] Commodity: " << pos.CommodityId
                       << ", OrderSerial: " << pos.OrderSerialNumber
                       << ", Lots: " << pos.Lots
@@ -244,6 +273,7 @@ extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
             order["OrderSerialNumber"] = pos.OrderSerialNumber;
             order["LongShort"] = pos.LongShort;
             orders.push_back(order);
+            stopLossTriggered = true;
             std::cout << "[StopLoss] Commodity: " << pos.CommodityId
                       << ", OrderSerial: " << pos.OrderSerialNumber
                       << ", Lots: " << pos.Lots
@@ -253,57 +283,46 @@ extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
     }
     ret = orders.dump();
     std::cout << "[ProcessSimulatedPositions] Orders: " << ret << std::endl;
+    if (stopLossTriggered || takeProfitTriggered)
+    {
+        std::cout << "[ProcessSimulatedPositions] => Some SL/TP triggered: ";
+        if (stopLossTriggered)
+            std::cout << "StopLoss ";
+        if (takeProfitTriggered)
+            std::cout << "TakeProfit";
+        std::cout << std::endl;
+    }
     return ret.c_str();
 }
 
 //-----------------------------------------------------------
-// 提供一個新的導出函數：返回可直接執行下單的資訊字串
-// 格式: 每筆訂單以分號分隔, 各欄位以逗號分隔：
-// CommodityId,OrderType,Lots,Amount,OrderSerialNumber,LongShort;
+// 返回可執行下單的資訊字串
+// 格式: CommodityId,OrderType,Lots,Amount,OrderSerialNumber,LongShort;
 extern "C" __declspec(dllexport) std::string GetOrdersForExecution()
 {
-    std::string ordersStr = "";
-    json orders = json::array();
+    std::string ordersStr;
+    ordersStr.clear();
     for (const auto &pair : gCurOpenPosition)
     {
         const SIMULATED_POSITION &pos = pair.second;
         if (pos.FloatingPL >= TAKE_PROFIT_AMOUNT)
         {
-            json order;
-            order["CommodityId"] = pos.CommodityId;
-            order["OrderType"] = "TakeProfit";
-            order["Lots"] = pos.Lots;
-            order["Amount"] = TAKE_PROFIT_AMOUNT;
-            order["OrderSerialNumber"] = pos.OrderSerialNumber;
-            order["LongShort"] = pos.LongShort;
-            orders.push_back(order);
+            ordersStr += pos.CommodityId + ",";
+            ordersStr += "TakeProfit,";
+            ordersStr += std::to_string(pos.Lots) + ",";
+            ordersStr += std::to_string(TAKE_PROFIT_AMOUNT) + ",";
+            ordersStr += std::to_string(pos.OrderSerialNumber) + ",";
+            ordersStr += std::to_string(pos.LongShort) + ";";
         }
         else if (pos.FloatingPL <= -STOP_LOSS_AMOUNT)
         {
-            json order;
-            order["CommodityId"] = pos.CommodityId;
-            order["OrderType"] = "StopLoss";
-            order["Lots"] = pos.Lots;
-            order["Amount"] = STOP_LOSS_AMOUNT;
-            order["OrderSerialNumber"] = pos.OrderSerialNumber;
-            order["LongShort"] = pos.LongShort;
-            orders.push_back(order);
+            ordersStr += pos.CommodityId + ",";
+            ordersStr += "StopLoss,";
+            ordersStr += std::to_string(pos.Lots) + ",";
+            ordersStr += std::to_string(STOP_LOSS_AMOUNT) + ",";
+            ordersStr += std::to_string(pos.OrderSerialNumber) + ",";
+            ordersStr += std::to_string(pos.LongShort) + ";";
         }
-    }
-    for (auto &order : orders)
-    {
-        std::string commodity = order["CommodityId"];
-        std::string orderType = order["OrderType"];
-        double lots = order["Lots"];
-        double amount = order["Amount"];
-        unsigned long long orderSerial = order["OrderSerialNumber"];
-        int longShort = order["LongShort"];
-        ordersStr += commodity + ",";
-        ordersStr += orderType + ",";
-        ordersStr += std::to_string(lots) + ",";
-        ordersStr += std::to_string(amount) + ",";
-        ordersStr += std::to_string(orderSerial) + ",";
-        ordersStr += std::to_string(longShort) + ";";
     }
     std::cout << "[GetOrdersForExecution] " << ordersStr << std::endl;
     return ordersStr;
