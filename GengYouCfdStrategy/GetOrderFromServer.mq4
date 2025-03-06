@@ -39,7 +39,7 @@ void ProcessOrdersFromDLL(string ordersStr)
       return;
    string ordersArray[];
    int orderCount = StringSplit(ordersStr, ";", ordersArray);
-   for(int i=0; i<orderCount; i++)
+   for(int i = 0; i < orderCount; i++)
    {
       if(StringLen(ordersArray[i]) < 5)
          continue;
@@ -54,32 +54,32 @@ void ProcessOrdersFromDLL(string ordersStr)
       int ticket = (int)StrToDouble(fields[4]);
       int longShort = (int)StrToDouble(fields[5]);
       
-      // 若為停利或停損，則平倉 (OrderClose)
+      // 若為停利或停損，則以 OrderClose() 平倉
       if(orderType=="TakeProfit" || orderType=="StopLoss")
       {
          if(OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES))
          {
             double price = 0.0;
-            if(longShort==1)
+            if(longShort == 1)
                price = SymbolInfoDouble(commodityId, SYMBOL_BID);
-            else if(longShort==-1)
+            else if(longShort == -1)
                price = SymbolInfoDouble(commodityId, SYMBOL_ASK);
             if(OrderClose(ticket, OrderLots(), price, 3, clrRed))
-               Print("OrderClose succeeded for Ticket ", ticket);
+               Print("OrderClose succeeded for Ticket ", IntegerToString(ticket));
             else
-               Print("OrderClose failed for Ticket ", ticket, " Error: ", GetLastError());
+               Print("OrderClose failed for Ticket ", IntegerToString(ticket), " Error: ", IntegerToString(GetLastError()));
          }
          else
          {
-            Print("OrderSelect failed for Ticket ", ticket);
+            Print("OrderSelect failed for Ticket ", IntegerToString(ticket));
          }
       }
-      // 若為 BaseOrder 或 AddOrder，則下單 (OrderSend)
+      // 若為 BaseOrder 或 AddOrder，則以 OrderSend() 開倉
       else if(orderType=="BaseOrder" || orderType=="AddOrder")
       {
          int type;
          double price, stoploss, takeprofit;
-         if(longShort==1)
+         if(longShort == 1)
          {
             type = OP_BUY;
             price = SymbolInfoDouble(commodityId, SYMBOL_ASK);
@@ -93,11 +93,11 @@ void ProcessOrdersFromDLL(string ordersStr)
             stoploss = price + amount;
             takeprofit = price - amount;
          }
-         int newTicket = OrderSend(commodityId, type, lots, price, 3, stoploss, takeprofit, "AutoTrade", 12345, 0, (type==OP_BUY)?clrGreen:clrRed);
+         int newTicket = OrderSend(commodityId, type, lots, price, 3, stoploss, takeprofit, "AutoTrade", 12345, 0, (type == OP_BUY) ? clrGreen : clrRed);
          if(newTicket > 0)
-            Print("OrderSend succeeded: Ticket ", newTicket);
+            Print("OrderSend succeeded: Ticket ", IntegerToString(newTicket));
          else
-            Print("OrderSend failed. Error: ", GetLastError());
+            Print("OrderSend failed. Error: ", IntegerToString(GetLastError()));
       }
    }
 }
@@ -107,7 +107,7 @@ void ProcessOrdersFromDLL(string ordersStr)
 //+------------------------------------------------------------------+
 void OnTick()
 {
-   // 1. 更新 CFD 價格：僅對 "GOLD", "USD", "NAS100" 使用 iClose() (成交價)
+   // 1. 更新 CFD 價格：僅針對 "GOLD", "USD", "NAS100" 使用 iClose() (成交價)
    string sym = _Symbol;
    if(sym=="GOLD" || sym=="USD" || sym=="NAS100")
    {
@@ -131,7 +131,7 @@ void OnTick()
       }
    }
    
-   // 3. 呼叫 ProcessSimulatedPositions() 更新停損/停利邏輯，取得下單 JSON (以 JSON 格式返回)
+   // 3. 呼叫 ProcessSimulatedPositions() 更新停損/停利邏輯 (JSON 格式)
    string ordersJson = ProcessSimulatedPositions();
    if(StringLen(ordersJson) > 2)
    {
