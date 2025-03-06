@@ -7,7 +7,6 @@ void StopHttpServer();
 void GetCurCfdPrices(string commodityId, double commodityCurPrice);
 void GetCurOpenPosition(string commodityId, int ticket, double costPrice, double lots, double floatingPL, int longShort);
 string ProcessSimulatedPositions();
-// 注意此處回傳型態為 string
 string GetOrdersForExecution();
 #import
 
@@ -32,21 +31,16 @@ void OnDeinit(const int reason)
 
 //+------------------------------------------------------------------+
 //| Helper function: Process orders from DLL and execute trades      |
-//| 格式: CommodityId,OrderType,Lots,Amount,OrderSerialNumber,LongShort;... |
+//| 訂單格式: CommodityId,OrderType,Lots,Amount,OrderSerialNumber,LongShort;... |
 //+------------------------------------------------------------------+
 void ProcessOrdersFromDLL(string ordersStr)
 {
    if (StringLen(ordersStr) <= 2)
       return;
-
-   // *** 修改處：先把分隔符號存到變數 delimiter，避免 "implicit conversion" 錯誤 ***
-   string delimiter = ";";
-
-   // 以 delimiter 分割 ordersStr
    string ordersArray[];
+   // 將分隔符號存入變數，確保為 ASCII 半形分號
+   string delimiter = ";";
    int orderCount = StringSplit(ordersStr, delimiter, ordersArray);
-
-   // 其餘程式碼保持原狀
    for (int i = 0; i < orderCount; i++)
    {
       if (StringLen(ordersArray[i]) < 5)
@@ -63,7 +57,7 @@ void ProcessOrdersFromDLL(string ordersStr)
       int ticket = (int)StrToDouble(fields[4]);
       int longShort = (int)StrToDouble(fields[5]);
 
-      // (以下示範停損停利/開倉/平倉邏輯皆不變)
+      // 若為停利或停損，則使用 OrderClose() 平倉
       if (orderType == "TakeProfit" || orderType == "StopLoss")
       {
          if (OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES))
@@ -71,7 +65,7 @@ void ProcessOrdersFromDLL(string ordersStr)
             double price = 0.0;
             if (longShort == 1)
                price = SymbolInfoDouble(commodityId, SYMBOL_BID);
-            else
+            else if (longShort == -1)
                price = SymbolInfoDouble(commodityId, SYMBOL_ASK);
 
             if (OrderClose(ticket, OrderLots(), price, 3, clrRed))
@@ -84,6 +78,7 @@ void ProcessOrdersFromDLL(string ordersStr)
             Print("OrderSelect failed for Ticket ", IntegerToString(ticket));
          }
       }
+      // 若為 BaseOrder 或 AddOrder，則使用 OrderSend() 開倉
       else if (orderType == "BaseOrder" || orderType == "AddOrder")
       {
          int type;
@@ -116,15 +111,15 @@ void ProcessOrdersFromDLL(string ordersStr)
 //+------------------------------------------------------------------+
 void OnTick()
 {
-   // 1. 更新 CFD 價格 (針對 "GOLD", "USD", "NAS100" 等)
+   // 1. 更新 CFD 價格：僅針對 "GOLD", "USD", "NAS100" 使用 iClose() (成交價)
    string sym = _Symbol;
-   if (sym == "GOLD" || sym == "USD" || sym == "NAS100")
+   if (sym == "XAUUSD" || sym == "nas100ft")
    {
       double curPrice = iClose(sym, 0, 0);
       GetCurCfdPrices(sym, curPrice);
    }
 
-   // 2. 遍歷所有開倉訂單，將未平倉資訊傳給 DLL
+   // 2. 遍歷所有開倉訂單，傳送未平倉資訊給 DLL
    int total = OrdersTotal();
    for (int i = 0; i < total; i++)
    {
@@ -140,13 +135,13 @@ void OnTick()
       }
    }
 
-   // 3. 呼叫 ProcessSimulatedPositions() 更新邏輯，並列印 JSON
+   // 3. 呼叫 ProcessSimulatedPositions() 更新停損/停利邏輯 (JSON 格式)
    string ordersJson = ProcessSimulatedPositions();
    if (StringLen(ordersJson) > 2)
    {
       Print("DLL orders (JSON): ", ordersJson);
 
-      // 4. 取得執行訂單字串 => ProcessOrdersFromDLL()
+      // 4. 呼叫 GetOrdersForExecution() 返回簡單格式訂單資訊字串，並執行下單操作
       string ordersStr = GetOrdersForExecution();
       if (StringLen(ordersStr) > 2)
       {
