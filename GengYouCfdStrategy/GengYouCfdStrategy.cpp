@@ -146,7 +146,9 @@ extern "C" __declspec(dllexport) void StopHttpServer()
 //-----------------------------------------------------------
 extern "C" __declspec(dllexport) void GetCurCfdPrices(const char *commodityId, double commodityCurPrice)
 {
-    std::string comm(commodityId);
+    // 使用 strlen 取得實際長度
+    int len = (int)strlen(commodityId);
+    std::string comm(commodityId, len);
     gCurCfdPrices[comm] = commodityCurPrice;
     std::cout << "[GetCurCfdPrices] Commodity: " << comm
               << " => Price: " << commodityCurPrice << std::endl;
@@ -170,13 +172,16 @@ static double GetCurrentCfdPrice(const std::string &commodityId)
 
 //-----------------------------------------------------------
 // MQ4 傳入訂單資料：以 ticket 為 key，多參數傳遞 (包含 LongShort)
-// 並輸出完整商品名稱與當前 CFD 價格
+// 此處將使用 strlen() 以確保取得完整字串
 //-----------------------------------------------------------
 extern "C" __declspec(dllexport) void GetCurOpenPosition(const char *commodityId, int ticket, double costPrice, double lots, double floatingPL, int longShort)
 {
+    int len = (int)strlen(commodityId);
+    std::string fullCommodity(commodityId, len);
+
     SIMULATED_POSITION pos;
     pos.OrderSerialNumber = static_cast<unsigned long long>(ticket);
-    pos.CommodityId = std::string(commodityId);
+    pos.CommodityId = fullCommodity;
     pos.CostPrice = costPrice;
     pos.Lots = lots;
     pos.FloatingPL = floatingPL;
@@ -194,13 +199,15 @@ extern "C" __declspec(dllexport) void GetCurOpenPosition(const char *commodityId
 
 //-----------------------------------------------------------
 // MQ4 傳入模擬訂單資料：以 ticket 為 key，多參數傳遞 (包含 LongShort)
-// 並輸出完整商品名稱與當前 CFD 價格
 //-----------------------------------------------------------
 extern "C" __declspec(dllexport) void GetSimulatedOpenPosition(const char *commodityId, int ticket, double costPrice, double lots, int longShort)
 {
+    int len = (int)strlen(commodityId);
+    std::string fullCommodity(commodityId, len);
+
     SIMULATED_POSITION pos;
     pos.OrderSerialNumber = static_cast<unsigned long long>(ticket);
-    pos.CommodityId = std::string(commodityId);
+    pos.CommodityId = fullCommodity;
     pos.CostPrice = costPrice;
     pos.Lots = lots;
     pos.FloatingPL = 0.0;
@@ -221,7 +228,8 @@ extern "C" __declspec(dllexport) void GetSimulatedOpenPosition(const char *commo
 //-----------------------------------------------------------
 extern "C" __declspec(dllexport) void UpdatedSimulatedOpenPosition(const char *commodityId, double commodityCurPrice)
 {
-    std::string comm(commodityId);
+    int len = (int)strlen(commodityId);
+    std::string comm(commodityId, len);
     bool updated = false;
     for (auto &pair : gSimulatedPosition)
     {
@@ -252,7 +260,7 @@ extern "C" __declspec(dllexport) void UpdatedSimulatedOpenPosition(const char *c
 }
 
 //-----------------------------------------------------------
-// 處理所有 MQ4 傳入的開倉資料，計算停損/停利/加碼邏輯，並返回下單 JSON
+// 處理所有 MQ4 傳入的開倉資料，計算停損/停利邏輯，並返回下單 JSON
 //-----------------------------------------------------------
 extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
 {
@@ -362,7 +370,8 @@ extern "C" __declspec(dllexport) const char *CustomProcessParameters(
         j["Margin"] = margin;
         j["ClosedProfitLoss"] = closedPL;
         json openPos;
-        openPos["CommodityId"] = std::string(commodityId);
+        int len = (int)strlen(commodityId);
+        openPos["CommodityId"] = std::string(commodityId, len);
         openPos["Lots"] = lots;
         openPos["FloatingProfitLoss"] = floatingPL;
         j["OpenPosition"] = json::array({openPos});

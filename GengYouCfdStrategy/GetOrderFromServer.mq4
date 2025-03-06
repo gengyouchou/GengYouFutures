@@ -38,7 +38,7 @@ void ProcessOrdersFromDLL(string ordersStr)
    if (StringLen(ordersStr) <= 2)
       return;
 
-   // 將分隔符號存入變數，避免隱式轉換問題
+   // 使用變數存放分隔符號，避免隱式轉換問題
    string delimiter = ";";
    string ordersArray[];
    int orderCount = StringSplit(ordersStr, delimiter, ordersArray);
@@ -59,7 +59,6 @@ void ProcessOrdersFromDLL(string ordersStr)
       int ticket = (int)StrToDouble(fields[4]);
       int longShort = (int)StrToDouble(fields[5]);
 
-      // 使用 StringCompare() 進行比對
       if (StringCompare(orderType, "TakeProfit") == 0 || StringCompare(orderType, "StopLoss") == 0)
       {
          if (OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES))
@@ -112,14 +111,10 @@ void ProcessOrdersFromDLL(string ordersStr)
 //+------------------------------------------------------------------+
 void OnTick()
 {
-   // 1. 更新 CFD 價格：僅針對 "XAUUSD", "nas100ft" 使用 iClose() (成交價)
+   // 1. 更新 CFD 價格：直接傳入 MQ4 抓到的 Symbol (不再限定特定符號)
    string sym = _Symbol;
-   // 注意：使用 StringCompare() 來比較字串，避免直接使用 "==" 帶來的問題
-   if (StringCompare(sym, "XAUUSD") == 0 || StringCompare(sym, "nas100ft") == 0)
-   {
-      double curPrice = iClose(sym, 0, 0);
-      GetCurCfdPrices(sym, curPrice);
-   }
+   double curPrice = iClose(sym, 0, 0);
+   GetCurCfdPrices(sym, curPrice);
 
    // 2. 遍歷所有開倉訂單，傳送未平倉資訊給 DLL
    int total = OrdersTotal();
@@ -143,7 +138,7 @@ void OnTick()
    {
       Print("DLL orders (JSON): ", ordersJson);
 
-      // 4. 取得執行訂單字串並執行下單操作
+      // 4. 取得可執行訂單字串並執行下單操作
       string ordersStr = GetOrdersForExecution();
       if (StringLen(ordersStr) > 2)
       {
