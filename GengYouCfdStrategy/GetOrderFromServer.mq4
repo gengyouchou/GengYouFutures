@@ -37,10 +37,12 @@ void ProcessOrdersFromDLL(string ordersStr)
 {
    if (StringLen(ordersStr) <= 2)
       return;
-   string ordersArray[];
-   // 將分隔符號存入變數，確保為 ASCII 半形分號
+
+   // 將分隔符號存入變數，避免隱式轉換問題
    string delimiter = ";";
+   string ordersArray[];
    int orderCount = StringSplit(ordersStr, delimiter, ordersArray);
+
    for (int i = 0; i < orderCount; i++)
    {
       if (StringLen(ordersArray[i]) < 5)
@@ -57,8 +59,8 @@ void ProcessOrdersFromDLL(string ordersStr)
       int ticket = (int)StrToDouble(fields[4]);
       int longShort = (int)StrToDouble(fields[5]);
 
-      // 若為停利或停損，則使用 OrderClose() 平倉
-      if (orderType == "TakeProfit" || orderType == "StopLoss")
+      // 使用 StringCompare() 進行比對
+      if (StringCompare(orderType, "TakeProfit") == 0 || StringCompare(orderType, "StopLoss") == 0)
       {
          if (OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES))
          {
@@ -78,8 +80,7 @@ void ProcessOrdersFromDLL(string ordersStr)
             Print("OrderSelect failed for Ticket ", IntegerToString(ticket));
          }
       }
-      // 若為 BaseOrder 或 AddOrder，則使用 OrderSend() 開倉
-      else if (orderType == "BaseOrder" || orderType == "AddOrder")
+      else if (StringCompare(orderType, "BaseOrder") == 0 || StringCompare(orderType, "AddOrder") == 0)
       {
          int type;
          double price, stoploss, takeprofit;
@@ -111,9 +112,10 @@ void ProcessOrdersFromDLL(string ordersStr)
 //+------------------------------------------------------------------+
 void OnTick()
 {
-   // 1. 更新 CFD 價格：僅針對 "GOLD", "USD", "NAS100" 使用 iClose() (成交價)
+   // 1. 更新 CFD 價格：僅針對 "XAUUSD", "nas100ft" 使用 iClose() (成交價)
    string sym = _Symbol;
-   if (sym == "XAUUSD" || sym == "nas100ft")
+   // 注意：使用 StringCompare() 來比較字串，避免直接使用 "==" 帶來的問題
+   if (StringCompare(sym, "XAUUSD") == 0 || StringCompare(sym, "nas100ft") == 0)
    {
       double curPrice = iClose(sym, 0, 0);
       GetCurCfdPrices(sym, curPrice);
@@ -141,7 +143,7 @@ void OnTick()
    {
       Print("DLL orders (JSON): ", ordersJson);
 
-      // 4. 呼叫 GetOrdersForExecution() 返回簡單格式訂單資訊字串，並執行下單操作
+      // 4. 取得執行訂單字串並執行下單操作
       string ordersStr = GetOrdersForExecution();
       if (StringLen(ordersStr) > 2)
       {

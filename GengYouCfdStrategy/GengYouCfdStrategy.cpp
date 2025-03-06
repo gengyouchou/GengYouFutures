@@ -14,7 +14,7 @@
 #include <ctime>
 #include <unordered_map>
 #include <cstdio>
-#include <cstring> // for strlen
+#include <cstring>
 
 using json = nlohmann::json;
 
@@ -64,9 +64,9 @@ BOOL APIENTRY DllMain(HMODULE hModule,
         AllocConsole();
         freopen("CONOUT$", "w", stdout);
         std::cout << "Console allocated for logging." << std::endl;
-        // [ADDED LOG] 顯示賺賠比數值
-        std::cout << "[DllMain] STOP_LOSS_AMOUNT=" << STOP_LOSS_AMOUNT
-                  << ", TAKE_PROFIT_AMOUNT=" << TAKE_PROFIT_AMOUNT
+        // 輸出賺賠比數值
+        std::cout << "[DllMain] STOP_LOSS_AMOUNT = " << STOP_LOSS_AMOUNT
+                  << ", TAKE_PROFIT_AMOUNT = " << TAKE_PROFIT_AMOUNT
                   << " (ratio 1:" << (TAKE_PROFIT_AMOUNT / STOP_LOSS_AMOUNT)
                   << ")" << std::endl;
         break;
@@ -149,7 +149,7 @@ extern "C" __declspec(dllexport) void GetCurCfdPrices(const char *commodityId, d
     std::string comm(commodityId);
     gCurCfdPrices[comm] = commodityCurPrice;
     std::cout << "[GetCurCfdPrices] Commodity: " << comm
-              << " (length=" << comm.size() << ") => Price: " << commodityCurPrice << std::endl;
+              << " => Price: " << commodityCurPrice << std::endl;
     std::cout << "=== gCurCfdPrices ===" << std::endl;
     for (const auto &kv : gCurCfdPrices)
     {
@@ -158,7 +158,19 @@ extern "C" __declspec(dllexport) void GetCurCfdPrices(const char *commodityId, d
 }
 
 //-----------------------------------------------------------
+// 輔助函式：取得指定商品的 CFD 價格
+//-----------------------------------------------------------
+static double GetCurrentCfdPrice(const std::string &commodityId)
+{
+    auto it = gCurCfdPrices.find(commodityId);
+    if (it != gCurCfdPrices.end())
+        return it->second;
+    return 0.0;
+}
+
+//-----------------------------------------------------------
 // MQ4 傳入訂單資料：以 ticket 為 key，多參數傳遞 (包含 LongShort)
+// 並輸出完整商品名稱與當前 CFD 價格
 //-----------------------------------------------------------
 extern "C" __declspec(dllexport) void GetCurOpenPosition(const char *commodityId, int ticket, double costPrice, double lots, double floatingPL, int longShort)
 {
@@ -170,8 +182,10 @@ extern "C" __declspec(dllexport) void GetCurOpenPosition(const char *commodityId
     pos.FloatingPL = floatingPL;
     pos.LongShort = longShort;
     gCurOpenPosition[ticket] = pos;
+    double cfdPrice = GetCurrentCfdPrice(pos.CommodityId);
     std::cout << "[GetCurOpenPosition] Ticket: " << ticket
-              << ", Commodity: " << pos.CommodityId.c_str() << " (length=" << pos.CommodityId.size() << ")"
+              << ", Commodity: " << pos.CommodityId
+              << ", CFD Price: " << cfdPrice
               << ", CostPrice: " << costPrice
               << ", Lots: " << lots
               << ", FloatingPL: " << floatingPL
@@ -180,6 +194,7 @@ extern "C" __declspec(dllexport) void GetCurOpenPosition(const char *commodityId
 
 //-----------------------------------------------------------
 // MQ4 傳入模擬訂單資料：以 ticket 為 key，多參數傳遞 (包含 LongShort)
+// 並輸出完整商品名稱與當前 CFD 價格
 //-----------------------------------------------------------
 extern "C" __declspec(dllexport) void GetSimulatedOpenPosition(const char *commodityId, int ticket, double costPrice, double lots, int longShort)
 {
@@ -191,8 +206,10 @@ extern "C" __declspec(dllexport) void GetSimulatedOpenPosition(const char *commo
     pos.FloatingPL = 0.0;
     pos.LongShort = longShort;
     gSimulatedPosition[ticket] = pos;
+    double cfdPrice = GetCurrentCfdPrice(pos.CommodityId);
     std::cout << "[GetSimulatedOpenPosition] Ticket: " << ticket
-              << ", Commodity: " << pos.CommodityId.c_str()
+              << ", Commodity: " << pos.CommodityId
+              << ", CFD Price: " << cfdPrice
               << ", CostPrice: " << costPrice
               << ", Lots: " << lots
               << ", FloatingPL: " << pos.FloatingPL
