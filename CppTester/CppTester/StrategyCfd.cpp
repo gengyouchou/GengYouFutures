@@ -1,3 +1,4 @@
+#include "httplib.h"
 #include "Strategy.h"
 #include "StrategyCfd.h"
 #include "SKCenterLib.h"
@@ -166,4 +167,35 @@ VOID CfdStrategySwitch()
     }
 
     DEBUG(DEBUG_LEVEL_DEBUG, "end");
+}
+
+// 新增函數：SendOrderJsonSignal
+void SendOrderJsonSignal(const std::string &orderJson)
+{
+    // 建立到本機 1688 埠的 HTTP client
+    httplib::Client cli("http://127.0.0.1", 1688);
+    cli.set_connection_timeout(5, 0); // 連線超時 5 秒
+
+    // 送出 POST 請求，Content-Type 為 "application/json"
+    auto res = cli.Post("/createPosition", orderJson, "application/json");
+
+    // DEBUG 輸出訊息
+    if (res && res->status == 200)
+    {
+        DEBUG(DEBUG_LEVEL_DEBUG, "SendOrderJsonSignal succeeded. Response: %s\n", res->body.c_str());
+        std::cout << "SendOrderJsonSignal succeeded. Response: " << res->body << std::endl;
+    }
+    else
+    {
+        if (res)
+        {
+            DEBUG(DEBUG_LEVEL_DEBUG, "SendOrderJsonSignal failed. HTTP status: %d\n", res->status);
+            std::cout << "SendOrderJsonSignal failed. HTTP status: " << res->status << std::endl;
+        }
+        else
+        {
+            DEBUG(DEBUG_LEVEL_DEBUG, "SendOrderJsonSignal failed. No response received.\n");
+            std::cout << "SendOrderJsonSignal failed. No response received." << std::endl;
+        }
+    }
 }
