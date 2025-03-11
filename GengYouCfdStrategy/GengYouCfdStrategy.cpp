@@ -23,6 +23,7 @@ using json = nlohmann::json;
 struct SIMULATED_POSITION
 {
     unsigned long long OrderSerialNumber;
+    unsigned long long RealPositionSerialNumber;
     std::string CommodityId;
     double CostPrice;
     double Lots;
@@ -198,7 +199,10 @@ extern "C" __declspec(dllexport) void GetCurOpenPosition(const char *commodityId
 }
 
 //-----------------------------------------------------------
-// MQ4 傳入模擬訂單資料：以 ticket 為 key，多參數傳遞 (包含 LongShort)
+// 傳入模擬訂單資料：以 ticket 為 key，多參數傳遞 (包含 LongShort)
+// 如果是新訂單則傳入的 ticket 為 0，由此函數邏輯自動由1開始按序列編號ticket
+// 否則按順序更新 gSimulatedPosition 的內容與真倉 gCurOpenPosition 同步
+// 如果還有未更新的訂單在 gSimulatedPosition 則發送新訂單信號給MT4下單
 //-----------------------------------------------------------
 extern "C" __declspec(dllexport) void GetSimulatedOpenPosition(const char *commodityId, int ticket, double costPrice, double lots, int longShort)
 {
@@ -337,6 +341,7 @@ extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
 //-----------------------------------------------------------
 // 返回可執行下單的資訊字串
 // 格式: CommodityId,OrderType,Lots,Amount,OrderSerialNumber,LongShort;
+// 遍歷 gCurOpenPosition 來停損停利，遍歷
 extern "C" __declspec(dllexport) std::string GetOrdersForExecution()
 {
     std::string ordersStr;
