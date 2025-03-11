@@ -223,20 +223,34 @@ extern "C" __declspec(dllexport) void GetSimulatedOpenPosition(const char *commo
               << ", LongShort: " << pos.LongShort << std::endl;
 }
 
-//-----------------------------------------------------------
-// 更新 gSimulatedPosition 的 FloatingPL：公式：FloatingPL = (commodityCurPrice - CostPrice) * Lots * LongShort
-//-----------------------------------------------------------
+// 更新 gSimulatedPosition 的 FloatingPL：
+// 若商品為 "XAUUSD"，則 multiplier 為 100；
+// 若為 "NAS100" 或 "nas100ft"，則 multiplier 為 10；
+// 其他商品則不做額外放大處理。
 extern "C" __declspec(dllexport) void UpdatedSimulatedOpenPosition(const char *commodityId, double commodityCurPrice)
 {
     int len = (int)strlen(commodityId);
     std::string comm(commodityId, len);
+
+    // 根據商品代號選擇 multiplier
+    double multiplier = 1.0;
+    if (comm == "XAUUSD")
+    {
+        multiplier = 100.0;
+    }
+    else if (comm == "NAS100" || comm == "nas100ft")
+    {
+        multiplier = 10.0;
+    }
+
     bool updated = false;
     for (auto &pair : gSimulatedPosition)
     {
         SIMULATED_POSITION &pos = pair.second;
+        // 注意：這裡假設 MQ4 傳入的商品代號與資料庫中存儲的完全相同
         if (pos.CommodityId == comm)
         {
-            pos.FloatingPL = (commodityCurPrice - pos.CostPrice) * pos.Lots * pos.LongShort;
+            pos.FloatingPL = (commodityCurPrice - pos.CostPrice) * pos.Lots * multiplier * pos.LongShort;
             std::cout << "[UpdatedSimulatedOpenPosition] Ticket: " << pair.first
                       << ", Commodity: " << pos.CommodityId
                       << ", New FloatingPL: " << pos.FloatingPL << std::endl;
