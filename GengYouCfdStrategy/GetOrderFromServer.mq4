@@ -28,30 +28,44 @@ void OnDeinit(const int reason)
    StopHttpServer();
    Print("EA deinitialized. DLL HTTP server stopped.");
 }
-
 //+------------------------------------------------------------------+
-//| Helper function: Process orders from DLL and execute trades      |
+//| ProcessOrdersFromDLL: 解析 DLL 返回的訂單字串並執行下單操作      |
 //| 訂單格式: CommodityId,OrderType,Lots,Amount,OrderSerialNumber,LongShort;... |
 //+------------------------------------------------------------------+
 void ProcessOrdersFromDLL(string ordersStr)
 {
+   // 加入額外的 debug 訊息以確保訂單字串正確解析
+   Print("[ProcessOrdersFromDLL] Starting processing of orders string: ", ordersStr);
    if (StringLen(ordersStr) <= 2)
+   {
+      Print("[ProcessOrdersFromDLL] No orders received. ordersStr = ", ordersStr);
       return;
+   }
 
-   // 使用變數存放分隔符號，避免隱式轉換問題
-   string delimiter = ";";
+   // 將訂單字串以分號分割成各筆訂單
    string ordersArray[];
-   int orderCount = StringSplit(ordersStr, delimiter, ordersArray);
+   int orderCount = StringSplit(ordersStr, ";", ordersArray);
+   Print("[ProcessOrdersFromDLL] Order count: ", orderCount);
 
    for (int i = 0; i < orderCount; i++)
    {
       if (StringLen(ordersArray[i]) < 5)
+      {
+         Print("[ProcessOrdersFromDLL] Skipping order index ", i, " because its length is less than 5.");
          continue;
+      }
+
+      // 以逗號分割各個欄位
       string fields[];
       int fieldCount = StringSplit(ordersArray[i], ",", fields);
+      Print("[ProcessOrdersFromDLL] Order index ", i, " has ", fieldCount, " fields.");
       if (fieldCount < 6)
+      {
+         Print("[ProcessOrdersFromDLL] Skipping order index ", i, " because field count (", fieldCount, ") is less than 6.");
          continue;
+      }
 
+      // 解析各欄位
       string commodityId = fields[0];
       string orderType = fields[1];
       double lots = StrToDouble(fields[2]);
@@ -59,27 +73,39 @@ void ProcessOrdersFromDLL(string ordersStr)
       int ticket = (int)StrToDouble(fields[4]);
       int longShort = (int)StrToDouble(fields[5]);
 
-      if (StringCompare(orderType, "TakeProfit") == 0 || StringCompare(orderType, "StopLoss") == 0)
+      Print("[ProcessOrdersFromDLL] Parsed Order (index ", i, "): CommodityId = ", commodityId,
+            ", OrderType = ", orderType, ", Lots = ", DoubleToString(lots, 2),
+            ", Amount = ", DoubleToString(amount, 2), ", Ticket = ", IntegerToString(ticket),
+            ", LongShort = ", IntegerToString(longShort));
+
+      // 若為停損或停利訂單，則以 OrderClose() 平倉
+      if (orderType == "TakeProfit" || orderType == "StopLoss")
       {
+         Print("[ProcessOrdersFromDLL] Processing SL/TP order for Ticket = ", IntegerToString(ticket));
          if (OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES))
          {
             double price = 0.0;
+            // 若多單，平倉價格取 BID；若空單，取 ASK
             if (longShort == 1)
                price = SymbolInfoDouble(commodityId, SYMBOL_BID);
             else if (longShort == -1)
                price = SymbolInfoDouble(commodityId, SYMBOL_ASK);
 
+            Print("[ProcessOrdersFromDLL] Attempting OrderClose for Ticket = ", IntegerToString(ticket),
+                  " at price = ", DoubleToString(price, 2));
             if (OrderClose(ticket, OrderLots(), price, 3, clrRed))
-               Print("OrderClose succeeded for Ticket ", IntegerToString(ticket));
+               Print("[ProcessOrdersFromDLL] OrderClose succeeded for Ticket = ", IntegerToString(ticket));
             else
-               Print("OrderClose failed for Ticket ", IntegerToString(ticket), " Error: ", IntegerToString(GetLastError()));
+               Print("[ProcessOrdersFromDLL] OrderClose failed for Ticket = ", IntegerToString(ticket),
+                     " Error = ", IntegerToString(GetLastError()));
          }
          else
          {
-            Print("OrderSelect failed for Ticket ", IntegerToString(ticket));
+            Print("[ProcessOrdersFromDLL] OrderSelect failed for Ticket = ", IntegerToString(ticket));
          }
       }
-      else if (StringCompare(orderType, "BaseOrder") == 0 || StringCompare(orderType, "AddOrder") == 0)
+      // 若為開倉訂單，則以 OrderSend() 下單
+      else if (orderType == "BaseOrder" || orderType == "AddOrder")
       {
          int type;
          double price, stoploss, takeprofit;
@@ -90,18 +116,28 @@ void ProcessOrdersFromDLL(string ordersStr)
             stoploss = price - amount;
             takeprofit = price + amount;
          }
-         else
+         else // longShort == -1
          {
             type = OP_SELL;
             price = SymbolInfoDouble(commodityId, SYMBOL_BID);
             stoploss = price + amount;
             takeprofit = price - amount;
          }
-         int newTicket = OrderSend(commodityId, type, lots, price, 3, stoploss, takeprofit, "AutoTrade", 12345, 0, (type == OP_BUY) ? clrGreen : clrRed);
+         Print("[ProcessOrdersFromDLL] Attempting OrderSend for Commodity = ", commodityId,
+               ", Type = ", (type == OP_BUY ? "Buy" : "Sell"),
+               ", Price = ", DoubleToString(price, 2),
+               ", Lots = ", DoubleToString(lots, 2),
+               ", StopLoss = ", DoubleToString(stoploss, 2),
+               ", TakeProfit = ", DoubleToString(takeprofit, 2));
+         int newTicket = OrderSend(commodityId, type, lots, price, 3, stoploss, takeprofit, "AutoTrade", 12345, 0, (type == OP_BUY ? clrGreen : clrRed));
          if (newTicket > 0)
-            Print("OrderSend succeeded: Ticket ", IntegerToString(newTicket));
+            Print("[ProcessOrdersFromDLL] OrderSend succeeded: New Ticket = ", IntegerToString(newTicket));
          else
-            Print("OrderSend failed. Error: ", IntegerToString(GetLastError()));
+            Print("[ProcessOrdersFromDLL] OrderSend failed. Error = ", IntegerToString(GetLastError()));
+      }
+      else
+      {
+         Print("[ProcessOrdersFromDLL] Unknown order type: ", orderType, " for Ticket = ", IntegerToString(ticket));
       }
    }
 }

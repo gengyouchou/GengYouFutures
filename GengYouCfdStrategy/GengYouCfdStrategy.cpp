@@ -47,7 +47,7 @@ static std::string g_newOrder = "";
 
 // 固定策略參數（可根據需求調整）
 const double STOP_LOSS_AMOUNT = 50.0;
-const double TAKE_PROFIT_AMOUNT = STOP_LOSS_AMOUNT * 2; // 1:2 盈虧比
+const double TAKE_PROFIT_AMOUNT = STOP_LOSS_AMOUNT * 1.6; // 1:1.6 盈虧比
 const double BASE_ORDER_PNL_RANGE = 100.0;
 const double ADD_ORDER_THRESHOLD = 20.0;
 const double MAX_POSITION_LOTS = 1.0;
@@ -65,7 +65,6 @@ BOOL APIENTRY DllMain(HMODULE hModule,
         AllocConsole();
         freopen("CONOUT$", "w", stdout);
         std::cout << "Console allocated for logging." << std::endl;
-        // 輸出賺賠比數值
         std::cout << "[DllMain] STOP_LOSS_AMOUNT = " << STOP_LOSS_AMOUNT
                   << ", TAKE_PROFIT_AMOUNT = " << TAKE_PROFIT_AMOUNT
                   << " (ratio 1:" << (TAKE_PROFIT_AMOUNT / STOP_LOSS_AMOUNT)
@@ -147,7 +146,6 @@ extern "C" __declspec(dllexport) void StopHttpServer()
 //-----------------------------------------------------------
 extern "C" __declspec(dllexport) void GetCurCfdPrices(const char *commodityId, double commodityCurPrice)
 {
-    // 使用 strlen 取得實際長度
     int len = (int)strlen(commodityId);
     std::string comm(commodityId, len);
     gCurCfdPrices[comm] = commodityCurPrice;
@@ -173,8 +171,6 @@ static double GetCurrentCfdPrice(const std::string &commodityId)
 
 //-----------------------------------------------------------
 // MQ4 傳入訂單資料：以 ticket 為 key，多參數傳遞 (包含 LongShort)
-// 此處將使用 strlen() 以確保取得完整字串
-//-----------------------------------------------------------
 extern "C" __declspec(dllexport) void GetCurOpenPosition(const char *commodityId, int ticket, double costPrice, double lots, double floatingPL, int longShort)
 {
     int len = (int)strlen(commodityId);
@@ -200,10 +196,6 @@ extern "C" __declspec(dllexport) void GetCurOpenPosition(const char *commodityId
 
 //-----------------------------------------------------------
 // 傳入模擬訂單資料：以 ticket 為 key，多參數傳遞 (包含 LongShort)
-// 如果是新訂單則傳入的 ticket 為 0，由此函數邏輯自動由1開始按序列編號ticket
-// 否則按順序更新 gSimulatedPosition 的內容與真倉 gCurOpenPosition 同步
-// 如果還有未更新的訂單在 gSimulatedPosition 則發送新訂單信號給MT4下單
-//-----------------------------------------------------------
 extern "C" __declspec(dllexport) void GetSimulatedOpenPosition(const char *commodityId, int ticket, double costPrice, double lots, int longShort)
 {
     int len = (int)strlen(commodityId);
@@ -227,16 +219,16 @@ extern "C" __declspec(dllexport) void GetSimulatedOpenPosition(const char *commo
               << ", LongShort: " << pos.LongShort << std::endl;
 }
 
+//-----------------------------------------------------------
 // 更新 gSimulatedPosition 的 FloatingPL：
 // 若商品為 "XAUUSD"，則 multiplier 為 100；
 // 若為 "NAS100" 或 "nas100ft"，則 multiplier 為 10；
-// 其他商品則不做額外放大處理。
+// 其他商品則 multiplier = 1
 extern "C" __declspec(dllexport) void UpdatedSimulatedOpenPosition(const char *commodityId, double commodityCurPrice)
 {
     int len = (int)strlen(commodityId);
     std::string comm(commodityId, len);
 
-    // 根據商品代號選擇 multiplier
     double multiplier = 1.0;
     if (comm == "XAUUSD")
     {
@@ -251,7 +243,6 @@ extern "C" __declspec(dllexport) void UpdatedSimulatedOpenPosition(const char *c
     for (auto &pair : gSimulatedPosition)
     {
         SIMULATED_POSITION &pos = pair.second;
-        // 注意：這裡假設 MQ4 傳入的商品代號與資料庫中存儲的完全相同
         if (pos.CommodityId == comm)
         {
             pos.FloatingPL = (commodityCurPrice - pos.CostPrice) * pos.Lots * multiplier * pos.LongShort;
@@ -279,16 +270,21 @@ extern "C" __declspec(dllexport) void UpdatedSimulatedOpenPosition(const char *c
 
 //-----------------------------------------------------------
 // 處理所有 MQ4 傳入的開倉資料，計算停損/停利邏輯，並返回下單 JSON
-//-----------------------------------------------------------
 extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
 {
     static std::string ret;
     json orders = json::array();
     bool stopLossTriggered = false;
     bool takeProfitTriggered = false;
+
+    std::cout << "[ProcessSimulatedPositions] Checking Open Positions for SL/TP..." << std::endl;
     for (const auto &pair : gCurOpenPosition)
     {
         const SIMULATED_POSITION &pos = pair.second;
+        std::cout << "[ProcessSimulatedPositions] Ticket: " << pos.OrderSerialNumber
+                  << ", Commodity: " << pos.CommodityId
+                  << ", FloatingPL: " << pos.FloatingPL << std::endl;
+
         if (pos.FloatingPL >= TAKE_PROFIT_AMOUNT)
         {
             json order;
@@ -300,11 +296,7 @@ extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
             order["LongShort"] = pos.LongShort;
             orders.push_back(order);
             takeProfitTriggered = true;
-            std::cout << "[TakeProfit] Commodity: " << pos.CommodityId
-                      << ", OrderSerial: " << pos.OrderSerialNumber
-                      << ", Lots: " << pos.Lots
-                      << ", Amount: " << TAKE_PROFIT_AMOUNT
-                      << ", LongShort: " << pos.LongShort << std::endl;
+            std::cout << "[ProcessSimulatedPositions] TakeProfit Order Created: " << order.dump() << std::endl;
         }
         else if (pos.FloatingPL <= -STOP_LOSS_AMOUNT)
         {
@@ -317,15 +309,11 @@ extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
             order["LongShort"] = pos.LongShort;
             orders.push_back(order);
             stopLossTriggered = true;
-            std::cout << "[StopLoss] Commodity: " << pos.CommodityId
-                      << ", OrderSerial: " << pos.OrderSerialNumber
-                      << ", Lots: " << pos.Lots
-                      << ", Amount: " << STOP_LOSS_AMOUNT
-                      << ", LongShort: " << pos.LongShort << std::endl;
+            std::cout << "[ProcessSimulatedPositions] StopLoss Order Created: " << order.dump() << std::endl;
         }
     }
     ret = orders.dump();
-    std::cout << "[ProcessSimulatedPositions] Orders: " << ret << std::endl;
+    std::cout << "[ProcessSimulatedPositions] Final Orders JSON: " << ret << std::endl;
     if (stopLossTriggered || takeProfitTriggered)
     {
         std::cout << "[ProcessSimulatedPositions] => Some SL/TP triggered: ";
@@ -340,15 +328,16 @@ extern "C" __declspec(dllexport) const char *ProcessSimulatedPositions()
 
 //-----------------------------------------------------------
 // 返回可執行下單的資訊字串
-// 格式: CommodityId,OrderType,Lots,Amount,OrderSerialNumber,LongShort;
-// 遍歷 gCurOpenPosition 來停損停利，遍歷
 extern "C" __declspec(dllexport) std::string GetOrdersForExecution()
 {
     std::string ordersStr;
     ordersStr.clear();
+    std::cout << "[GetOrdersForExecution] Generating orders string from open positions..." << std::endl;
     for (const auto &pair : gCurOpenPosition)
     {
         const SIMULATED_POSITION &pos = pair.second;
+        std::cout << "[GetOrdersForExecution] Checking Ticket: " << pos.OrderSerialNumber
+                  << ", FloatingPL: " << pos.FloatingPL << std::endl;
         if (pos.FloatingPL >= TAKE_PROFIT_AMOUNT)
         {
             ordersStr += pos.CommodityId + ",";
@@ -357,6 +346,7 @@ extern "C" __declspec(dllexport) std::string GetOrdersForExecution()
             ordersStr += std::to_string(TAKE_PROFIT_AMOUNT) + ",";
             ordersStr += std::to_string(pos.OrderSerialNumber) + ",";
             ordersStr += std::to_string(pos.LongShort) + ";";
+            std::cout << "[GetOrdersForExecution] Added TakeProfit order for Ticket: " << pos.OrderSerialNumber << std::endl;
         }
         else if (pos.FloatingPL <= -STOP_LOSS_AMOUNT)
         {
@@ -366,15 +356,15 @@ extern "C" __declspec(dllexport) std::string GetOrdersForExecution()
             ordersStr += std::to_string(STOP_LOSS_AMOUNT) + ",";
             ordersStr += std::to_string(pos.OrderSerialNumber) + ",";
             ordersStr += std::to_string(pos.LongShort) + ";";
+            std::cout << "[GetOrdersForExecution] Added StopLoss order for Ticket: " << pos.OrderSerialNumber << std::endl;
         }
     }
-    std::cout << "[GetOrdersForExecution] " << ordersStr << std::endl;
+    std::cout << "[GetOrdersForExecution] Final Orders String: " << ordersStr << std::endl;
     return ordersStr;
 }
 
 //-----------------------------------------------------------
 // 保留 CustomProcessParameters (僅作示範)
-//-----------------------------------------------------------
 extern "C" __declspec(dllexport) const char *CustomProcessParameters(
     double margin,
     double closedPL,
