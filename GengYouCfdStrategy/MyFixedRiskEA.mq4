@@ -10,7 +10,13 @@ extern double FixedStopLossUSD = 10.0;
 extern double FixedTakeProfitUSD = 20.0;
 extern int Slippage = 3;
 
-// Function to calculate the current profit/loss of an order (in USD)
+// 全域變數：記錄上次自動平倉的日期（以天為單位）
+datetime g_lastAutoCloseDate = 0;
+
+//------------------------------------------------------------------
+// Function: GetOrderProfit
+// 取得訂單當前損益 (含盈虧、Swap 與手續費)，單位 USD
+//------------------------------------------------------------------
 double GetOrderProfit(int ticket)
 {
    if(OrderSelect(ticket, SELECT_BY_TICKET))
@@ -21,10 +27,11 @@ double GetOrderProfit(int ticket)
    return 0;
 }
 
-// Function to calculate the price difference (in price units):
+//------------------------------------------------------------------
+// Function: CalculatePriceDiff
+// 計算固定金額對應的價格差值 (以點數計)
 // Price difference = Fixed amount / (lots * (tick_value / tick_size))
-// tick_value: value per tick per lot (in USD)
-// tick_size: size of one tick
+//------------------------------------------------------------------
 double CalculatePriceDiff(double fixedAmount, double lots)
 {
    double tickValue = MarketInfo(OrderSymbol(), MODE_TICKVALUE); 
@@ -34,7 +41,51 @@ double CalculatePriceDiff(double fixedAmount, double lots)
    return (fixedAmount * tickSize) / (lots * tickValue);
 }
 
-// Function to check orders, print details, and send a market close order if conditions are met.
+//------------------------------------------------------------------
+// 新增函數: CloseAllPositions
+// 每天凌晨 5 點時平掉所有持倉
+//------------------------------------------------------------------
+void CloseAllPositions()
+{
+   int total = OrdersTotal();
+   Print("[CloseAllPositions] AutoClose: Attempting to close all positions, count = ", total);
+   // 從後往前遍歷，避免平倉時 index 變動問題
+   for(int i = total - 1; i >= 0; i--)
+   {
+      if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+      {
+         int ticket = OrderTicket();
+         string symbol = OrderSymbol();
+         double lots = OrderLots();
+         int type = OrderType();
+         double closePrice = 0.0;
+         // 根據訂單類型決定平倉價格：買單以 BID 平倉、賣單以 ASK 平倉
+         if(type == OP_BUY)
+            closePrice = MarketInfo(symbol, MODE_BID);
+         else if(type == OP_SELL)
+            closePrice = MarketInfo(symbol, MODE_ASK);
+         else
+            continue;
+         
+         PrintFormat("[CloseAllPositions] Closing Ticket: %d, Symbol: %s, Price: %.5f, Lots: %.2f", 
+                     ticket, symbol, closePrice, lots);
+         
+         if(OrderClose(ticket, lots, closePrice, Slippage, clrRed))
+            PrintFormat("[CloseAllPositions] Order %d closed successfully.", ticket);
+         else
+            PrintFormat("[CloseAllPositions] Order %d close failed. Error: %d", ticket, GetLastError());
+      }
+      else
+      {
+         Print("[CloseAllPositions] OrderSelect failed at index: ", i);
+      }
+   }
+}
+
+//------------------------------------------------------------------
+// Function: CheckAndCloseOrders
+// 檢查訂單，若損益達到固定 stop loss 或 take profit 則以市價平倉
+//------------------------------------------------------------------
 void CheckAndCloseOrders()
 {
    for(int i = OrdersTotal()-1; i >= 0; i--)
@@ -49,23 +100,19 @@ void CheckAndCloseOrders()
          double lots = OrderLots();
          double currentProfit = GetOrderProfit(OrderTicket());
          
-         // Print order basic information
+         // 輸出訂單基本資訊
          PrintFormat("Order Ticket: %d, Symbol: %s, Lots: %.2f, Current Profit/Loss: %.2f USD", 
                      OrderTicket(), symbol, lots, currentProfit);
          
-         // Check if profit/loss condition is met (fixed amounts: stop loss = -10 USD, take profit = 20 USD)
+         // 若損益條件達到，則平倉 (固定 stop loss = -10 USD, take profit = 20 USD)
          if(currentProfit <= -FixedStopLossUSD || currentProfit >= FixedTakeProfitUSD)
          {
             double closePrice;
-            // Use market price to close the order
+            // 使用市價平倉：買單以 BID 平倉、賣單以 ASK 平倉
             if(type == OP_BUY)
-            {
-               closePrice = MarketInfo(symbol, MODE_BID); // For BUY orders, use Bid price
-            }
-            else  // For SELL orders, use Ask price
-            {
+               closePrice = MarketInfo(symbol, MODE_BID);
+            else // OP_SELL
                closePrice = MarketInfo(symbol, MODE_ASK);
-            }
             
             if(!OrderClose(OrderTicket(), lots, closePrice, Slippage, clrRed))
             {
@@ -73,7 +120,7 @@ void CheckAndCloseOrders()
             }
             else
             {
-               PrintFormat("Order Ticket: %d has been closed at market price %.5f. Profit/Loss: %.2f USD", 
+               PrintFormat("Order Ticket: %d closed at market price %.5f. Profit/Loss: %.2f USD", 
                            OrderTicket(), closePrice, currentProfit);
             }
          }
@@ -81,10 +128,45 @@ void CheckAndCloseOrders()
    }
 }
 
-//+------------------------------------------------------------------+
-//| Expert tick function                                             |
-//+------------------------------------------------------------------+
+//------------------------------------------------------------------
+// Expert Tick function
+//------------------------------------------------------------------
 void OnTick()
 {
+   // 新增：每天凌晨 5 點自動平倉
+   datetime currentTime = TimeCurrent();
+   int currentHour = TimeHour(currentTime);
+   int currentDay = TimeDay(currentTime);
+   // 若當前小時為 5 且今日尚未執行過自動平倉
+   if(currentHour == 5 && TimeDay(g_lastAutoCloseDate) != currentDay)
+   {
+      Print("[OnTick] It is 5 AM. Initiating auto-close of all positions.");
+      CloseAllPositions();
+      g_lastAutoCloseDate = currentTime;
+   }
+   
+   // 原有邏輯：
+   // 1. 更新 CFD 價格：以 _Symbol 為準，使用 iClose() (成交價)
+   string sym = _Symbol;
+   double curPrice = iClose(sym, 0, 0);
+   GetCurCfdPrices(sym, curPrice);
+   
+   // 2. 遍歷所有開倉訂單，傳送未平倉資訊給 DLL
+   int total = OrdersTotal();
+   for(int i = 0; i < total; i++)
+   {
+      if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+      {
+         int ticket = OrderTicket();
+         double costPrice = OrderOpenPrice();
+         double lots = OrderLots();
+         double floatingPL = OrderProfit() + OrderSwap() + OrderCommission();
+         string orderSym = OrderSymbol();
+         int direction = (OrderType() == OP_BUY) ? 1 : -1;
+         GetCurOpenPosition(orderSym, ticket, costPrice, lots, floatingPL, direction);
+      }
+   }
+   
+   // 3. 檢查訂單並根據固定條件平倉
    CheckAndCloseOrders();
 }
