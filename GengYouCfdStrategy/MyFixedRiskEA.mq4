@@ -145,28 +145,6 @@ void OnTick()
       g_lastAutoCloseDate = currentTime;
    }
    
-   // 原有邏輯：
-   // 1. 更新 CFD 價格：以 _Symbol 為準，使用 iClose() (成交價)
-   string sym = _Symbol;
-   double curPrice = iClose(sym, 0, 0);
-   GetCurCfdPrices(sym, curPrice);
-   
-   // 2. 遍歷所有開倉訂單，傳送未平倉資訊給 DLL
-   int total = OrdersTotal();
-   for(int i = 0; i < total; i++)
-   {
-      if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
-      {
-         int ticket = OrderTicket();
-         double costPrice = OrderOpenPrice();
-         double lots = OrderLots();
-         double floatingPL = OrderProfit() + OrderSwap() + OrderCommission();
-         string orderSym = OrderSymbol();
-         int direction = (OrderType() == OP_BUY) ? 1 : -1;
-         GetCurOpenPosition(orderSym, ticket, costPrice, lots, floatingPL, direction);
-      }
-   }
-   
    // 3. 檢查訂單並根據固定條件平倉
    CheckAndCloseOrders();
 }
