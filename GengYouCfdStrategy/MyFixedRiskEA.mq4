@@ -13,7 +13,10 @@ extern int Slippage = 3;
 // 全域變數：記錄上次自動平倉的日期
 datetime g_lastAutoCloseDate = 0;
 
-// Function to calculate the current profit/loss of an order (in USD)
+//------------------------------------------------------------------+
+// Function: GetOrderProfit
+// 取得訂單當前損益 (含盈虧、Swap 與手續費)，單位 USD
+//------------------------------------------------------------------+
 double GetOrderProfit(int ticket)
 {
    if(OrderSelect(ticket, SELECT_BY_TICKET))
@@ -24,10 +27,11 @@ double GetOrderProfit(int ticket)
    return 0;
 }
 
-// Function to calculate the price difference (in price units):
+//------------------------------------------------------------------+
+// Function: CalculatePriceDiff
+// 計算固定金額對應的價格差值 (以點數計)
 // Price difference = Fixed amount / (lots * (tick_value / tick_size))
-// tick_value: value per tick per lot (in USD)
-// tick_size: size of one tick
+//------------------------------------------------------------------+
 double CalculatePriceDiff(double fixedAmount, double lots)
 {
    double tickValue = MarketInfo(OrderSymbol(), MODE_TICKVALUE); 
@@ -37,13 +41,15 @@ double CalculatePriceDiff(double fixedAmount, double lots)
    return (fixedAmount * tickSize) / (lots * tickValue);
 }
 
-// 新增函數：CloseAllPositions
-// 每天凌晨 5 點時平掉所有持倉
+//------------------------------------------------------------------+
+// Function: CloseAllPositions
+// 每天凌晨 4:00 本地時間時平掉所有持倉
+//------------------------------------------------------------------+
 void CloseAllPositions()
 {
    int total = OrdersTotal();
    Print("CloseAllPositions: Attempting to close all positions, count = ", total);
-   // 從後往前遍歷，避免平倉時索引改變問題
+   // 從後往前遍歷以避免平倉時索引改變問題
    for(int i = total - 1; i >= 0; i--)
    {
       if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
@@ -53,7 +59,7 @@ void CloseAllPositions()
          double lots = OrderLots();
          int type = OrderType();
          double closePrice = 0.0;
-         // 對於 BUY 訂單，以 Bid 價平倉；對於 SELL 訂單，以 Ask 價平倉
+         // 對於 BUY 訂單，採用 Bid 價平倉；對於 SELL 訂單，採用 Ask 價平倉
          if(type == OP_BUY)
             closePrice = MarketInfo(symbol, MODE_BID);
          else if(type == OP_SELL)
@@ -76,7 +82,10 @@ void CloseAllPositions()
    }
 }
 
-// Function to check orders, print details, and send a market close order if conditions are met.
+//------------------------------------------------------------------+
+// Function: CheckAndCloseOrders
+// 檢查訂單是否達到固定停損/停利條件，並平倉
+//------------------------------------------------------------------+
 void CheckAndCloseOrders()
 {
    for(int i = OrdersTotal()-1; i >= 0; i--)
@@ -91,17 +100,17 @@ void CheckAndCloseOrders()
          double lots = OrderLots();
          double currentProfit = GetOrderProfit(OrderTicket());
          
-         // Print order basic information
+         // 輸出訂單基本資訊
          PrintFormat("Order Ticket: %d, Symbol: %s, Lots: %.2f, Current Profit/Loss: %.2f USD", 
                      OrderTicket(), symbol, lots, currentProfit);
          
-         // Check if profit/loss condition is met (stop loss = -10 USD, take profit = 20 USD)
+         // 如果損益達到固定值則平倉 (止損 = -10 USD, 止盈 = 20 USD)
          if(currentProfit <= -FixedStopLossUSD || currentProfit >= FixedTakeProfitUSD)
          {
             double closePrice = 0.0;
             if(type == OP_BUY)
-               closePrice = MarketInfo(symbol, MODE_BID); // For BUY orders, use Bid price
-            else // For SELL orders, use Ask price
+               closePrice = MarketInfo(symbol, MODE_BID); // BUY 訂單以 Bid 價平倉
+            else // SELL 訂單以 Ask 價平倉
                closePrice = MarketInfo(symbol, MODE_ASK);
             
             if(!OrderClose(OrderTicket(), lots, closePrice, Slippage, clrRed))
@@ -118,23 +127,24 @@ void CheckAndCloseOrders()
    }
 }
 
-//+------------------------------------------------------------------+
+//------------------------------------------------------------------+
 //| Expert tick function                                             |
-//+------------------------------------------------------------------+
+//------------------------------------------------------------------+
 void OnTick()
 {
-   // 新增部分：每天凌晨 5 點自動平倉 (以本地時間判斷)
-   // 注意：請確保您的電腦時區設定為台灣時間
+   // 自動平倉功能：每天凌晨 4:00（本地時間）自動平倉所有持倉
+   // 使用 TimeLocal() 取得本地時間 (請確保電腦時區設定正確)
    datetime currentTime = TimeLocal();
    int currentHour = TimeHour(currentTime);
    int currentDay = TimeDay(currentTime);
-   if(currentHour == 5 && TimeDay(g_lastAutoCloseDate) != currentDay)
+   // 如果當前時間為 4:00 且今日尚未執行過自動平倉
+   if(currentHour == 4 && TimeDay(g_lastAutoCloseDate) != currentDay)
    {
-      Print("AutoClose: It is 5 AM local time. Initiating auto-close of all positions.");
+      Print("AutoClose: It is 4 AM local time. Initiating auto-close of all positions.");
       CloseAllPositions();
       g_lastAutoCloseDate = currentTime;
    }
    
-   // 3. 檢查訂單是否達到固定停損/停利條件，並平倉
+   // 原有的訂單檢查邏輯
    CheckAndCloseOrders();
 }
