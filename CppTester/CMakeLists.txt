@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(CppTester)
 
-# 設定 C++ 標準為 C++17 並必需
+# 設定 C++ 標準為 C++17 並必須
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -14,8 +14,9 @@ set(SOURCES
     CppTester/SKOSQuoteLib.cpp
     CppTester/SKReplyLib.cpp
     CppTester/Strategy.cpp
-    ../Logger/Logger.cpp
     CppTester/StrategyCfd.cpp
+    CppTester/StrategyOF.cpp          # <<< 新增：海外期貨停損停利邏輯
+    ../Logger/Logger.cpp
     # Sqlite
     ../Sqlite/shell.c
     ../Sqlite/sqlite3.c
@@ -31,9 +32,10 @@ set(HEADERS
     CppTester/SKReplyLib.h
     CppTester/TEventHandler.h
     CppTester/Strategy.h
+    CppTester/StrategyCfd.h
+    CppTester/StrategyOF.h           # <<< 新增：海外期貨停損停利介面
     ../Logger/Logger.h
     ../GengYouFuturesUI/GengYouFuturesUI.h
-    CppTester/StrategyCfd.h
     # Sqlite
     ../Sqlite/sqlite3.h
     ../Sqlite/sqlite3ext.h
@@ -69,8 +71,12 @@ target_link_libraries(GengYouFuturesUI PUBLIC yaml-cpp)
 # 定義生成的目標
 add_executable(CppTester ${SOURCES} ${HEADERS})
 
-# 鏈接 yaml-cpp 和 GengYouFuturesUI 到 CppTester
-target_link_libraries(CppTester PUBLIC yaml-cpp GengYouFuturesUI nlohmann_json::nlohmann_json)
+# 鏈接 yaml-cpp、GengYouFuturesUI 與 nlohmann_json 到 CppTester
+target_link_libraries(CppTester 
+    PUBLIC yaml-cpp 
+           GengYouFuturesUI 
+           nlohmann_json::nlohmann_json
+)
 
 # 設置 SQLite3 DLL 的路徑
 set(SQLITE3_DLL_PATH "${CMAKE_SOURCE_DIR}/../DLL/x64/Sqlite/sqlite3.dll")
