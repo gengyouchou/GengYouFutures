@@ -1,220 +1,198 @@
 //+------------------------------------------------------------------+
-//|                                                AutoSLTPManager.mq5|
-//|                      Copyright © 2025                            |
+//|                                            AutoSLTPManager.mq5  |
+//|        固定美元止损/止盈 + 风控管理 EA                           |
 //+------------------------------------------------------------------+
-#property script_show_inputs
+#property copyright "AutoSLTPManager"
+#property version   "1.00"
 #property strict
+#property description "Manage USD-based SL/TP, auto-close and SL/TP recovery"
 
-input double LotSize = 0.1;
-input double FixedStopLossUSD = 30.0;
-input double FixedTakeProfitUSD = 60.0;
-input double MaxLossPerPositionUSD = 35.0;
-datetime g_lastAutoCloseDate = 0;
+//—— 输入参数 ——//
+input double FixedStopLossUSD    = 30.0;   // 每单固定止损（美元）
+input double FixedTakeProfitUSD  = 60.0;   // 每单固定止盈（美元）
+input double MaxLossPerPositionUSD = 35.0; // 超过此美元亏损则强制平仓
+
+//—— 全局变量 ——//
+datetime g_lastCloseAllTime = 0;  // 记录上次每日清仓时间
 
 //+------------------------------------------------------------------+
-//| 計算某個 USD 金額對應的價格差距                                  |
+//| 计算给定 USD 金额对应的价格差（以点为单位）                     |
 //+------------------------------------------------------------------+
 double CalculatePriceDiff(double usd, double volume, string symbol)
 {
    double tick_value = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_VALUE);
    double tick_size  = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_SIZE);
-   if (tick_value == 0 || tick_size == 0)
-      return 0;
-
+   if (tick_value <= 0 || tick_size <= 0 || volume <= 0)
+      return 0.0;
+   // USD / (每手每点价值) 再除以手数 = 点差
    return (usd / (tick_value / tick_size)) / volume;
 }
 
 //+------------------------------------------------------------------+
-//| 建立帶止損 / 止盈的下單請求                                      |
+//| 下单并自动带入 SL/TP                                            |
 //+------------------------------------------------------------------+
-void OpenOrderWithSLTP(string symbol, ENUM_ORDER_TYPE order_type, double lot)
+bool OpenOrderWithSLTP(string symbol, ENUM_ORDER_TYPE order_type, double volume)
 {
-   double price = (order_type == ORDER_TYPE_BUY) ? SymbolInfoDouble(symbol, SYMBOL_ASK)
-                                                 : SymbolInfoDouble(symbol, SYMBOL_BID);
+   double price = (order_type == ORDER_TYPE_BUY)
+                  ? SymbolInfoDouble(symbol, SYMBOL_ASK)
+                  : SymbolInfoDouble(symbol, SYMBOL_BID);
 
-   double slDiff = CalculatePriceDiff(FixedStopLossUSD, lot, symbol);
-   double tpDiff = CalculatePriceDiff(FixedTakeProfitUSD, lot, symbol);
+   double sl_diff = CalculatePriceDiff(FixedStopLossUSD,    volume, symbol);
+   double tp_diff = CalculatePriceDiff(FixedTakeProfitUSD,  volume, symbol);
 
-   double sl = 0, tp = 0;
-   if (order_type == ORDER_TYPE_BUY)
-   {
-      sl = price - slDiff;
-      tp = price + tpDiff;
-   }
-   else
-   {
-      sl = price + slDiff;
-      tp = price - tpDiff;
-   }
+   double sl = (order_type == ORDER_TYPE_BUY) ? price - sl_diff : price + sl_diff;
+   double tp = (order_type == ORDER_TYPE_BUY) ? price + tp_diff : price - tp_diff;
 
-   MqlTradeRequest request;
-   MqlTradeResult result;
-   ZeroMemory(request);
-   ZeroMemory(result);
+   MqlTradeRequest request; MqlTradeResult result;
+   ZeroMemory(request); ZeroMemory(result);
 
-   request.action = TRADE_ACTION_DEAL;
-   request.symbol = symbol;
-   request.type = order_type;
-   request.volume = lot;
-   request.price = NormalizeDouble(price, _Digits);
-   request.sl = NormalizeDouble(sl, _Digits);
-   request.tp = NormalizeDouble(tp, _Digits);
-   request.deviation = 10;
-   request.magic = 12345;
+   request.action   = TRADE_ACTION_DEAL;
+   request.symbol   = symbol;
+   request.type     = order_type;
+   request.volume   = volume;
+   request.price    = NormalizeDouble(price, _Digits);
+   request.sl       = NormalizeDouble(sl,    _Digits);
+   request.tp       = NormalizeDouble(tp,    _Digits);
+   request.deviation= 10;
+   request.magic    = 12345;
+   request.type_filling = ORDER_FILLING_IOC;
 
-   if (!OrderSend(request, result))
-      Print("下單失敗: ", result.retcode, " - ", result.comment);
-   else
-      Print("✅ 已下單：", symbol, ", SL=", request.sl, ", TP=", request.tp);
+   return OrderSend(request, result);
 }
 
 //+------------------------------------------------------------------+
-//| 自動平倉超過損失限制的部位                                      |
+//| 若浮动亏损超限／盈利达标，则市价平仓                             |
 //+------------------------------------------------------------------+
 void CheckAndCloseOrders()
 {
-   for (int i = PositionsTotal() - 1; i >= 0; i--)
+   int total = PositionsTotal();
+   for(int i = 0; i < total; i++)
    {
-      if (!PositionGetTicket(i)) continue;
+      if(!PositionSelectByIndex(i)) 
+         continue;
 
       string symbol = PositionGetString(POSITION_SYMBOL);
       double profit = PositionGetDouble(POSITION_PROFIT);
-      ulong ticket = PositionGetInteger(POSITION_IDENTIFIER);
-      int type = (int)PositionGetInteger(POSITION_TYPE);
       double volume = PositionGetDouble(POSITION_VOLUME);
+      int    type   = (int)PositionGetInteger(POSITION_TYPE);
+      ulong  ticket = PositionGetInteger(POSITION_TICKET);
 
-      if (profit <= -MaxLossPerPositionUSD)
+      if(profit <= -MaxLossPerPositionUSD || profit >=  FixedTakeProfitUSD)
       {
-         double price = (type == POSITION_TYPE_BUY) ? SymbolInfoDouble(symbol, SYMBOL_BID)
-                                                    : SymbolInfoDouble(symbol, SYMBOL_ASK);
+         double price = (type == POSITION_TYPE_BUY)
+                        ? SymbolInfoDouble(symbol, SYMBOL_BID)
+                        : SymbolInfoDouble(symbol, SYMBOL_ASK);
 
-         MqlTradeRequest request;
-         MqlTradeResult result;
-         ZeroMemory(request);
-         ZeroMemory(result);
+         MqlTradeRequest request; MqlTradeResult result;
+         ZeroMemory(request); ZeroMemory(result);
 
-         request.action = TRADE_ACTION_DEAL;
-         request.symbol = symbol;
+         request.action   = TRADE_ACTION_DEAL;
+         request.symbol   = symbol;
          request.position = ticket;
-         request.volume = volume;
-         request.type = (type == POSITION_TYPE_BUY) ? ORDER_TYPE_SELL : ORDER_TYPE_BUY;
-         request.price = NormalizeDouble(price, _Digits);
-         request.deviation = 10;
+         request.volume   = volume;
+         request.type     = (type == POSITION_TYPE_BUY) ? ORDER_TYPE_SELL : ORDER_TYPE_BUY;
+         request.price    = NormalizeDouble(price, _Digits);
+         request.deviation= 10;
+         request.type_filling = ORDER_FILLING_IOC;
 
-         if (!OrderSend(request, result))
-            Print("❌ 平倉失敗：", result.retcode, " - ", result.comment);
-         else
-            Print("⚠️ 已平倉超損部位：", symbol, " 損益=", profit);
+         OrderSend(request, result);
       }
    }
 }
 
 //+------------------------------------------------------------------+
-//| 自動補上未設定 SL/TP 的倉位                                      |
+//| 补齐未带 SL/TP 的持仓                                            |
 //+------------------------------------------------------------------+
 void CheckAndSetSLTPIfMissing()
 {
-   for (int i = PositionsTotal() - 1; i >= 0; i--)
+   int total = PositionsTotal();
+   for(int i = 0; i < total; i++)
    {
-      if (!PositionGetTicket(i)) continue;
+      if(!PositionSelectByIndex(i)) 
+         continue;
 
       string symbol = PositionGetString(POSITION_SYMBOL);
-      double sl = PositionGetDouble(POSITION_SL);
-      double tp = PositionGetDouble(POSITION_TP);
+      double sl_open = PositionGetDouble(POSITION_SL);
+      double tp_open = PositionGetDouble(POSITION_TP);
+      if(sl_open != 0.0 && tp_open != 0.0) 
+         continue;
+
+      double volume     = PositionGetDouble(POSITION_VOLUME);
       double price_open = PositionGetDouble(POSITION_PRICE_OPEN);
-      double volume = PositionGetDouble(POSITION_VOLUME);
-      int type = (int)PositionGetInteger(POSITION_TYPE);
-      ulong ticket = PositionGetInteger(POSITION_IDENTIFIER);
+      int    type       = (int)PositionGetInteger(POSITION_TYPE);
+      ulong  ticket     = PositionGetInteger(POSITION_TICKET);
 
-      if (sl != 0 && tp != 0) continue;
+      double sl_diff = CalculatePriceDiff(FixedStopLossUSD,   volume, symbol);
+      double tp_diff = CalculatePriceDiff(FixedTakeProfitUSD, volume, symbol);
 
-      double slDiff = CalculatePriceDiff(FixedStopLossUSD, volume, symbol);
-      double tpDiff = CalculatePriceDiff(FixedTakeProfitUSD, volume, symbol);
+      double new_sl = (type == POSITION_TYPE_BUY) ? price_open - sl_diff : price_open + sl_diff;
+      double new_tp = (type == POSITION_TYPE_BUY) ? price_open + tp_diff : price_open - tp_diff;
 
-      double new_sl = 0, new_tp = 0;
-      if (type == POSITION_TYPE_BUY)
-      {
-         new_sl = price_open - slDiff;
-         new_tp = price_open + tpDiff;
-      }
-      else
-      {
-         new_sl = price_open + slDiff;
-         new_tp = price_open - tpDiff;
-      }
+      MqlTradeRequest request; MqlTradeResult result;
+      ZeroMemory(request); ZeroMemory(result);
 
-      MqlTradeRequest request;
-      MqlTradeResult result;
-      ZeroMemory(request);
-      ZeroMemory(result);
-
-      request.action = TRADE_ACTION_SLTP;
-      request.symbol = symbol;
+      request.action   = TRADE_ACTION_SLTP;
+      request.symbol   = symbol;
       request.position = ticket;
-      request.sl = NormalizeDouble(new_sl, _Digits);
-      request.tp = NormalizeDouble(new_tp, _Digits);
-      request.magic = 12345;
+      request.sl       = NormalizeDouble(new_sl, _Digits);
+      request.tp       = NormalizeDouble(new_tp, _Digits);
+      request.magic    = 12345;
 
-      if (!OrderSend(request, result))
-         PrintFormat("❌ SLTP補設失敗：%d - %s", result.retcode, result.comment);
-      else
-         PrintFormat("✅ 自動補上 SL/TP：%s, SL=%.5f, TP=%.5f", symbol, request.sl, request.tp);
+      OrderSend(request, result);
    }
 }
 
 //+------------------------------------------------------------------+
-//| 每天清晨全平倉                                                   |
+//| 每天 04:00 全平仓                                                  |
 //+------------------------------------------------------------------+
-void CloseAllPositions()
+void CloseAllPositionsAt4AM()
 {
-   for (int i = PositionsTotal() - 1; i >= 0; i--)
+   datetime now = TimeCurrent();
+   MqlDateTime dt_now, dt_last;
+   TimeToStruct(now,     dt_now);
+   TimeToStruct(g_lastCloseAllTime, dt_last);
+
+   if(dt_now.hour == 4 && dt_now.day != dt_last.day)
    {
-      if (!PositionGetTicket(i)) continue;
+      int total = PositionsTotal();
+      for(int i = 0; i < total; i++)
+      {
+         if(!PositionSelectByIndex(i)) 
+            continue;
 
-      string symbol = PositionGetString(POSITION_SYMBOL);
-      int type = (int)PositionGetInteger(POSITION_TYPE);
-      double volume = PositionGetDouble(POSITION_VOLUME);
-      ulong ticket = PositionGetInteger(POSITION_IDENTIFIER);
+         string symbol = PositionGetString(POSITION_SYMBOL);
+         double volume = PositionGetDouble(POSITION_VOLUME);
+         int    type   = (int)PositionGetInteger(POSITION_TYPE);
+         ulong  ticket = PositionGetInteger(POSITION_TICKET);
 
-      double price = (type == POSITION_TYPE_BUY) ? SymbolInfoDouble(symbol, SYMBOL_BID)
-                                                 : SymbolInfoDouble(symbol, SYMBOL_ASK);
+         double price = (type == POSITION_TYPE_BUY)
+                        ? SymbolInfoDouble(symbol, SYMBOL_BID)
+                        : SymbolInfoDouble(symbol, SYMBOL_ASK);
 
-      MqlTradeRequest request;
-      MqlTradeResult result;
-      ZeroMemory(request);
-      ZeroMemory(result);
+         MqlTradeRequest request; MqlTradeResult result;
+         ZeroMemory(request); ZeroMemory(result);
 
-      request.action = TRADE_ACTION_DEAL;
-      request.symbol = symbol;
-      request.position = ticket;
-      request.volume = volume;
-      request.type = (type == POSITION_TYPE_BUY) ? ORDER_TYPE_SELL : ORDER_TYPE_BUY;
-      request.price = NormalizeDouble(price, _Digits);
-      request.deviation = 10;
+         request.action   = TRADE_ACTION_DEAL;
+         request.symbol   = symbol;
+         request.position = ticket;
+         request.volume   = volume;
+         request.type     = (type == POSITION_TYPE_BUY) ? ORDER_TYPE_SELL : ORDER_TYPE_BUY;
+         request.price    = NormalizeDouble(price, _Digits);
+         request.deviation= 10;
+         request.type_filling = ORDER_FILLING_IOC;
 
-      if (!OrderSend(request, result))
-         Print("❌ 全平倉失敗：", result.retcode, " - ", result.comment);
-      else
-         Print("🕓 已平倉 (每日清晨)：", symbol);
+         OrderSend(request, result);
+      }
+      g_lastCloseAllTime = now;
    }
 }
 
 //+------------------------------------------------------------------+
-//| OnTick 主函式                                                    |
+//| Expert 主循环                                                    |
 //+------------------------------------------------------------------+
 void OnTick()
 {
-   datetime now = TimeLocal();
-
-   // 每天 4:00 清晨自動平倉（只執行一次）
-   if (TimeHour(now) == 4 && TimeDay(now) != TimeDay(g_lastAutoCloseDate))
-   {
-      Print("🕓 執行每日自動平倉...");
-      CloseAllPositions();
-      g_lastAutoCloseDate = now;
-   }
-
-   CheckAndCloseOrders();
+   CloseAllPositionsAt4AM();
    CheckAndSetSLTPIfMissing();
-   
+   CheckAndCloseOrders();
 }
