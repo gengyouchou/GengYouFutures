@@ -127,11 +127,11 @@ void CheckAndSetSLTPIfMissing()
 }
 
 //+------------------------------------------------------------------+
-//| 每天 04:00 全平倉                                                 |
+//| 每天 04:00 全平倉 (使用本地時間)                                 |
 //+------------------------------------------------------------------+
 void CloseAllPositionsAt4AM()
 {
-   datetime now = TimeCurrent();
+   datetime now = TimeLocal();  // ← 改這裡：使用本地時間
    int hour = TimeHour(now);
    int day  = TimeDay(now);
    int last_day = TimeDay(g_lastCloseAllTime);
